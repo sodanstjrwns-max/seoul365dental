@@ -18,7 +18,7 @@ app.get('/', (c) => {
 
   return c.render(
     <>
-      {/* ===== S1: CINEMATIC HERO — SHOCK ===== */}
+      {/* ===== S1: CINEMATIC HERO — ELECTRIC SHOCK v5 ===== */}
       <section class="hero-premium">
         {/* Background layers */}
         <div class="hero-grid"></div>
@@ -29,62 +29,62 @@ app.get('/', (c) => {
 
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 w-full">
           <div class="max-w-4xl pt-28 pb-16 md:pt-0 md:pb-0">
-            {/* Status Badge */}
+            {/* Status Badge — Electric */}
             <div class="flex items-center gap-3 mb-10 reveal" style="transition-delay:0.3s">
               <div class="glass trust-badge text-white/90" data-status>
                 <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
                 <span class="font-semibold">진료중</span>
               </div>
-              <span class="text-white/15 text-xs">|</span>
+              <span class="text-[#0066FF]/30 text-xs">|</span>
               <span class="text-white/30 text-xs font-medium tracking-wider">인천 구월동 · 예술회관역 5번 출구</span>
             </div>
 
-            {/* H1 — Massive Display */}
+            {/* H1 — Massive Display with Electric Gradient */}
             <h1 class="hero-display gradient-text-white mb-8 reveal" style="transition-delay:0.5s">
-              과잉진료 없는<br/>양심치과
+              과잉진료 없는<br/><span class="gradient-text-electric">양심치과</span>
             </h1>
 
             {/* Highlight Description */}
-            <p class="text-white/40 text-lg md:text-xl leading-relaxed max-w-2xl mb-6 reveal" style="transition-delay:0.7s">
-              <span class="text-white/70 font-semibold">서울대 출신 5인 원장</span>이 협력하는 유일한 치과.
+            <p class="text-white/45 text-lg md:text-xl leading-relaxed max-w-2xl mb-6 reveal" style="transition-delay:0.7s">
+              <span class="text-[#00E5FF] font-semibold">서울대 출신 5인 원장</span>이 협력하는 유일한 치과.
             </p>
 
-            {/* Metric Bar */}
-            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mb-12 reveal" style="transition-delay:0.85s">
+            {/* Metric Bar — Electric Tags */}
+            <div class="flex flex-wrap items-center gap-3 mb-12 reveal" style="transition-delay:0.85s">
               {[
                 { label: '365일 진료', icon: 'fa-calendar-check' },
                 { label: '야간 21시', icon: 'fa-moon' },
                 { label: '자체 기공실', icon: 'fa-gear' },
                 { label: '수면진료', icon: 'fa-bed' },
               ].map(m => (
-                <div class="flex items-center gap-2 text-white/25 text-sm">
-                  <i class={`fa-solid ${m.icon} text-primary/60 text-xs`}></i>
-                  <span class="text-white/50 font-medium">{m.label}</span>
+                <div class="flex items-center gap-2 text-sm px-3 py-1.5 rounded-full border border-[#0066FF]/15 bg-[#0066FF]/[0.04]">
+                  <i class={`fa-solid ${m.icon} text-[#0066FF]/70 text-xs`}></i>
+                  <span class="text-white/55 font-medium">{m.label}</span>
                 </div>
               ))}
             </div>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons — Electric Glow */}
             <div class="flex flex-wrap gap-4 mb-14 reveal" style="transition-delay:1s">
-              <a href="/reservation" class="btn-premium btn-premium-fill text-[0.95rem] px-10 py-4.5" data-cursor-hover>
+              <a href="/reservation" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic text-[0.95rem] px-10 py-4.5" data-cursor-hover>
                 <i class="fa-solid fa-calendar-check"></i> 상담 예약하기
               </a>
-              <a href="/pricing" class="btn-premium btn-premium-white text-[0.95rem] px-10 py-4.5" data-cursor-hover>
+              <a href="/pricing" class="btn-premium btn-premium-white btn-magnetic text-[0.95rem] px-10 py-4.5" data-cursor-hover>
                 <i class="fa-solid fa-won-sign"></i> 비용 안내
               </a>
             </div>
 
-            {/* Trust Scores */}
+            {/* Trust Scores — Electric Style */}
             <div class="flex flex-wrap gap-5 reveal" style="transition-delay:1.15s">
               {[
                 { label: '네이버', score: '4.85', icon: 'fa-star', color: 'text-amber-400' },
                 { label: '구글', score: '4.9', icon: 'fa-star', color: 'text-amber-400' },
                 { label: '만족도', score: '98%', icon: 'fa-heart', color: 'text-rose-400' },
-                { label: '재방문율', score: '87%', icon: 'fa-rotate', color: 'text-emerald-400' },
+                { label: '재방문율', score: '87%', icon: 'fa-rotate', color: 'text-[#00E5FF]' },
               ].map(m => (
                 <div class="flex items-center gap-2 text-white/35 text-[0.82rem]">
                   <i class={`fa-solid ${m.icon} ${m.color} text-[0.7rem]`}></i>
-                  <span class="font-bold text-white/80">{m.score}</span>
+                  <span class="font-bold text-white/85">{m.score}</span>
                   <span>{m.label}</span>
                 </div>
               ))}
@@ -92,18 +92,19 @@ app.get('/', (c) => {
           </div>
         </div>
 
-        {/* Scroll Indicator */}
+        {/* Scroll Indicator — Electric */}
         <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-white/15 text-center reveal" style="transition-delay:1.3s">
-          <div class="w-7 h-11 border-2 border-white/10 rounded-full flex justify-center pt-2 mx-auto mb-2">
-            <div class="w-1 h-3 bg-white/25 rounded-full animate-bounce"></div>
+          <div class="w-7 h-11 border-2 border-[#0066FF]/20 rounded-full flex justify-center pt-2 mx-auto mb-2">
+            <div class="w-1 h-3 bg-[#0066FF]/40 rounded-full animate-bounce"></div>
           </div>
-          <span class="text-[0.6rem] tracking-[0.2em] uppercase font-medium">Scroll</span>
+          <span class="text-[0.6rem] tracking-[0.2em] uppercase font-medium text-[#0066FF]/30">Scroll</span>
         </div>
       </section>
 
-      {/* ===== S2: MARQUEE TICKER ===== */}
-      <section class="bg-navy-light border-y border-white/[0.03] overflow-hidden">
-        <div class="marquee-wrapper py-5" style="--marquee-bg: #0A1628;">
+      {/* ===== S2: MARQUEE TICKER — ELECTRIC ===== */}
+      <section class="bg-navy-light border-y border-[#0066FF]/[0.06] overflow-hidden relative">
+        <div class="absolute inset-0 bg-gradient-to-r from-[#0066FF]/[0.02] via-transparent to-[#00E5FF]/[0.02]"></div>
+        <div class="marquee-wrapper py-5 relative" style="--marquee-bg: #0A1628;">
           <div class="marquee-track">
             {[...Array(2)].map(() => (
               <div class="flex items-center gap-12 px-6">
@@ -118,7 +119,7 @@ app.get('/', (c) => {
                   { text: '구글 4.9점', icon: 'fa-star' },
                 ].map(item => (
                   <div class="flex items-center gap-2.5 text-white/30 text-sm whitespace-nowrap">
-                    <i class={`fa-solid ${item.icon} text-primary/50 text-xs`}></i>
+                    <i class={`fa-solid ${item.icon} text-[#0066FF]/60 text-xs`}></i>
                     <span class="font-medium">{item.text}</span>
                   </div>
                 ))}
@@ -128,15 +129,16 @@ app.get('/', (c) => {
         </div>
       </section>
 
-      {/* ===== S3: STATS — DRAMATIC COUNTER ===== */}
+      {/* ===== S3: STATS — ELECTRIC COUNTER ===== */}
       <section class="section-lg bg-white relative overflow-hidden" data-counter-section>
-        {/* Background accent */}
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/[0.03] rounded-full blur-3xl pointer-events-none"></div>
+        {/* Background accent — Electric */}
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#0066FF]/[0.04] rounded-full blur-3xl pointer-events-none morph-blob"></div>
+        <div class="absolute bottom-0 right-0 w-[400px] h-[300px] bg-[#00E5FF]/[0.03] rounded-full blur-3xl pointer-events-none morph-blob" style="animation-delay:-4s"></div>
 
         <div class="relative max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
-            <span class="section-eyebrow text-primary mb-4 block">BY THE NUMBERS</span>
-            <h2 class="section-headline text-gray-900">숫자가 증명합니다</h2>
+            <span class="section-eyebrow text-[#0066FF] mb-4 block">BY THE NUMBERS</span>
+            <h2 class="section-headline text-gray-900">숫자가 <span class="gradient-text-blue">증명</span>합니다</h2>
           </div>
 
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10 stagger-children">
@@ -147,10 +149,10 @@ app.get('/', (c) => {
               { number: '4.9', suffix: '', label: '구글 평점', icon: 'fa-star', desc: '네이버 4.85 / 만족도 98%' },
             ].map(s => (
               <div class="text-center group">
-                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/8 to-primary/[0.02] flex items-center justify-center mx-auto mb-5 group-hover:from-primary/15 group-hover:to-primary/5 transition-all duration-500">
-                  <i class={`fa-solid ${s.icon} text-primary text-xl`}></i>
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0066FF]/10 to-[#00E5FF]/[0.04] flex items-center justify-center mx-auto mb-5 group-hover:from-[#0066FF]/20 group-hover:to-[#00E5FF]/10 transition-all duration-500 group-hover:shadow-lg group-hover:shadow-[#0066FF]/10">
+                  <i class={`fa-solid ${s.icon} text-[#0066FF] text-xl`}></i>
                 </div>
-                <div class="stat-number gradient-text-premium mb-2" data-count={s.number} data-suffix={s.suffix}>
+                <div class="stat-number gradient-text-blue mb-2" data-count={s.number} data-suffix={s.suffix}>
                   {s.number}{s.suffix}
                 </div>
                 <p class="font-bold text-gray-900 text-[0.95rem]">{s.label}</p>
@@ -163,11 +165,12 @@ app.get('/', (c) => {
 
       <div class="divider-gradient"></div>
 
-      {/* ===== S4: DIFFERENTIATION — BENTO GRID ===== */}
-      <section class="section-lg bg-mesh">
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+      {/* ===== S4: DIFFERENTIATION — ELECTRIC BENTO GRID ===== */}
+      <section class="section-lg bg-mesh relative overflow-hidden">
+        <div class="absolute top-20 right-10 w-[300px] h-[300px] bg-[#0066FF]/[0.04] rounded-full blur-[100px] pointer-events-none morph-blob"></div>
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
           <div class="text-center mb-16 reveal">
-            <span class="section-eyebrow text-primary mb-4 block">WHY SEOUL 365</span>
+            <span class="section-eyebrow text-[#0066FF] mb-4 block">WHY SEOUL 365</span>
             <h2 class="section-headline text-gray-900">
               다른 치과와는<br class="md:hidden" /> <span class="highlight-word">차원이 다릅니다</span>
             </h2>
@@ -176,11 +179,11 @@ app.get('/', (c) => {
 
           <div class="bento-grid stagger-children">
             {DIFF_CARDS.map((card, i) => (
-              <div class={`glass-card p-7 group cursor-default tilt-card ${i === 0 ? 'bento-wide' : ''}`}>
+              <div class={`glass-card p-7 group cursor-default tilt-card electric-card-border ${i === 0 ? 'bento-wide' : ''}`}>
                 <div class="icon-circle mb-5">
                   <i class={`fa-solid ${card.icon}`}></i>
                 </div>
-                <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-primary transition-colors">{card.title}</h3>
+                <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-[#0066FF] transition-colors">{card.title}</h3>
                 <p class="text-gray-500 text-[0.9rem] leading-relaxed">{card.desc}</p>
               </div>
             ))}
@@ -188,13 +191,14 @@ app.get('/', (c) => {
         </div>
       </section>
 
-      {/* ===== S5: TREATMENTS — HORIZONTAL SCROLL ===== */}
-      <section class="section-lg bg-white">
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+      {/* ===== S5: TREATMENTS — HORIZONTAL SCROLL ELECTRIC ===== */}
+      <section class="section-lg bg-white relative overflow-hidden">
+        <div class="absolute bottom-0 left-0 w-[500px] h-[300px] bg-[#0066FF]/[0.03] rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
           <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4 reveal">
             <div>
-              <span class="section-eyebrow text-primary mb-4 block">TREATMENTS</span>
-              <h2 class="section-headline text-gray-900">주력 진료 안내</h2>
+              <span class="section-eyebrow text-[#0066FF] mb-4 block">TREATMENTS</span>
+              <h2 class="section-headline text-gray-900">주력 <span class="gradient-text-blue">진료 안내</span></h2>
             </div>
             <a href="/treatments" class="btn-premium btn-premium-outline text-sm" data-cursor-hover>
               전체 진료 보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
@@ -203,13 +207,13 @@ app.get('/', (c) => {
 
           <div class="horizontal-scroll-wrapper flex gap-5 pb-4 reveal-3d">
             {topTreatments.map(t => (
-              <a href={`/treatments/${t.slug}`} class="premium-card p-7 group block min-w-[300px] md:min-w-[340px] flex-shrink-0" data-cursor-hover>
+              <a href={`/treatments/${t.slug}`} class="premium-card p-7 group block min-w-[300px] md:min-w-[340px] flex-shrink-0 electric-card-border" data-cursor-hover>
                 <div class="icon-circle mb-5">
                   <i class={`fa-solid ${t.icon}`}></i>
                 </div>
-                <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-primary transition-colors">{t.name}</h3>
+                <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-[#0066FF] transition-colors">{t.name}</h3>
                 <p class="text-gray-500 text-[0.9rem] leading-relaxed mb-5">{t.shortDesc}</p>
-                <span class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold">
+                <span class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-semibold">
                   자세히 보기 <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1.5"></i>
                 </span>
               </a>
@@ -218,28 +222,30 @@ app.get('/', (c) => {
         </div>
       </section>
 
-      {/* ===== S6: DOCTORS — CINEMATIC ===== */}
+      {/* ===== S6: DOCTORS — ELECTRIC CINEMATIC ===== */}
       <section class="section-lg bg-premium-dark bg-mesh-dark relative overflow-hidden">
+        {/* Extra electric accent */}
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0066FF]/20 to-transparent"></div>
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
-            <span class="section-eyebrow text-primary mb-4 block">OUR DOCTORS</span>
+            <span class="section-eyebrow text-[#0066FF] mb-4 block">OUR DOCTORS</span>
             <h2 class="section-headline text-white">
-              서울대 출신<br class="md:hidden" /> <span class="gradient-text-premium">5인 전문의</span>
+              서울대 출신<br class="md:hidden" /> <span class="gradient-text-electric">5인 전문의</span>
             </h2>
             <p class="section-body text-white/30 mt-5 max-w-xl mx-auto">각 분야별 전문의가 협력하여 최적의 치료를 제공합니다.</p>
           </div>
 
-          {/* Lead Doctor — Premium Card */}
+          {/* Lead Doctor — Electric Card */}
           <div class="premium-card-dark p-0 overflow-hidden mb-8 reveal-3d">
             <div class="md:flex">
-              <div class="md:w-2/5 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent p-10 flex items-center justify-center min-h-[340px] relative">
+              <div class="md:w-2/5 bg-gradient-to-br from-[#0066FF]/20 via-[#0066FF]/10 to-transparent p-10 flex items-center justify-center min-h-[340px] relative">
                 <div class="absolute inset-0 bg-gradient-to-t from-navy/80 to-transparent"></div>
                 <div class="text-center relative z-10">
                   <div class="w-36 h-36 rounded-full bg-white/[0.05] border-2 border-white/[0.08] mx-auto mb-5 flex items-center justify-center pulse-ring">
                     <i class="fa-solid fa-user-doctor text-5xl text-white/25"></i>
                   </div>
                   <h3 class="text-2xl font-bold text-white">{doctors[0].name}</h3>
-                  <p class="text-primary text-sm font-semibold mt-1">{doctors[0].title}</p>
+                  <p class="text-[#00E5FF] text-sm font-semibold mt-1">{doctors[0].title}</p>
                   <div class="flex flex-wrap justify-center gap-2 mt-4">
                     {doctors[0].specialties.slice(0,3).map(s => (
                       <span class="text-[0.7rem] bg-white/[0.06] text-white/60 px-3 py-1 rounded-full border border-white/[0.06]">{s}</span>
@@ -248,15 +254,15 @@ app.get('/', (c) => {
                 </div>
               </div>
               <div class="md:w-3/5 p-8 md:p-10 flex flex-col justify-center">
-                <blockquote class="text-lg text-white/60 italic border-l-2 border-primary/60 pl-5 mb-6 leading-relaxed">
+                <blockquote class="text-lg text-white/60 italic border-l-2 border-[#0066FF]/60 pl-5 mb-6 leading-relaxed">
                   "{doctors[0].philosophy.split('.')[0]}."
                 </blockquote>
                 <ul class="space-y-2.5 text-sm text-white/40">
                   {doctors[0].education.slice(0,2).map(e => (
-                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-graduation-cap text-primary/70 text-xs mt-1"></i>{e}</li>
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-graduation-cap text-[#0066FF]/70 text-xs mt-1"></i>{e}</li>
                   ))}
                   {doctors[0].credentials.slice(0,2).map(e => (
-                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-certificate text-primary/70 text-xs mt-1"></i>{e}</li>
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-certificate text-[#00E5FF]/70 text-xs mt-1"></i>{e}</li>
                   ))}
                 </ul>
                 <a href="/doctors/park-junkyu" class="btn-premium btn-premium-white mt-8 self-start text-sm px-6 py-3" data-cursor-hover>
@@ -270,8 +276,8 @@ app.get('/', (c) => {
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger-children">
             {doctors.slice(1).map(doc => (
               <a href={`/doctors/${doc.slug}`} class="premium-card-dark p-6 text-center block group tilt-card" data-cursor-hover>
-                <div class="w-20 h-20 rounded-full bg-white/[0.04] border border-white/[0.06] mx-auto mb-4 flex items-center justify-center group-hover:border-primary/30 group-hover:bg-primary/[0.08] transition-all duration-500">
-                  <i class="fa-solid fa-user-doctor text-2xl text-white/20 group-hover:text-primary/60 transition-colors"></i>
+                <div class="w-20 h-20 rounded-full bg-white/[0.04] border border-white/[0.06] mx-auto mb-4 flex items-center justify-center group-hover:border-[#0066FF]/30 group-hover:bg-[#0066FF]/[0.08] transition-all duration-500">
+                  <i class="fa-solid fa-user-doctor text-2xl text-white/20 group-hover:text-[#0066FF]/60 transition-colors"></i>
                 </div>
                 <h3 class="font-bold text-white text-[0.95rem]">{doc.name}</h3>
                 <p class="text-white/35 text-xs mt-0.5">{doc.titleShort}</p>
@@ -288,12 +294,12 @@ app.get('/', (c) => {
         </div>
       </section>
 
-      {/* ===== S7: BEFORE/AFTER ===== */}
-      <section class="section-lg bg-white">
+      {/* ===== S7: BEFORE/AFTER — ELECTRIC ===== */}
+      <section class="section-lg bg-white relative overflow-hidden">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
-            <span class="section-eyebrow text-primary mb-4 block">BEFORE &amp; AFTER</span>
-            <h2 class="section-headline text-gray-900">치료 사례</h2>
+            <span class="section-eyebrow text-[#0066FF] mb-4 block">BEFORE &amp; AFTER</span>
+            <h2 class="section-headline text-gray-900">치료 <span class="gradient-text-blue">사례</span></h2>
             <p class="section-body text-gray-400 mt-5 max-w-xl mx-auto">실제 치료 사례로 결과를 확인하세요.</p>
           </div>
 
@@ -303,20 +309,20 @@ app.get('/', (c) => {
               { title: '올온X – 하악 즉시로딩', tag: '올온X', doctor: '박준규 대표원장' },
               { title: '인비절라인 – 성인 투명교정', tag: '교정', doctor: '하누리 원장' },
             ].map(cs => (
-              <div class="premium-card overflow-hidden group tilt-card" data-cursor-hover>
+              <div class="premium-card overflow-hidden group tilt-card electric-card-border" data-cursor-hover>
                 <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
                   <div class="absolute inset-0 flex">
                     <div class="w-1/2 flex items-center justify-center bg-gray-100/80 border-r border-gray-200/50 group-hover:bg-gray-50 transition-colors">
                       <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
                     </div>
-                    <div class="w-1/2 flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/[0.02] group-hover:from-primary/8 transition-all">
-                      <span class="text-primary/30 text-sm font-bold tracking-widest uppercase">After</span>
+                    <div class="w-1/2 flex items-center justify-center bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.02] group-hover:from-[#0066FF]/10 transition-all">
+                      <span class="text-[#0066FF]/30 text-sm font-bold tracking-widest uppercase">After</span>
                     </div>
                   </div>
                 </div>
                 <div class="p-5">
                   <div class="flex items-center gap-2 mb-2.5">
-                    <span class="text-[0.7rem] bg-primary/8 text-primary px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
+                    <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
                   </div>
                   <h3 class="font-bold text-gray-900 text-[0.95rem]">{cs.title}</h3>
                   <p class="text-xs text-gray-400 mt-1">담당: {cs.doctor}</p>
@@ -327,16 +333,17 @@ app.get('/', (c) => {
 
           <p class="text-[0.72rem] text-gray-300 text-center mt-10">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
           <div class="text-center mt-4 reveal">
-            <a href="/cases/gallery" class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold link-underline" data-cursor-hover>전체 사례 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
+            <a href="/cases/gallery" class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-semibold link-underline" data-cursor-hover>전체 사례 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
           </div>
         </div>
       </section>
 
-      {/* ===== S8: REVIEWS — INFINITE SCROLL ===== */}
+      {/* ===== S8: REVIEWS — ELECTRIC INFINITE SCROLL ===== */}
       <section class="section-lg bg-mesh relative overflow-hidden">
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+        <div class="absolute top-20 left-10 w-[400px] h-[400px] bg-[#0066FF]/[0.03] rounded-full blur-[120px] pointer-events-none morph-blob" style="animation-delay:-6s"></div>
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
           <div class="text-center mb-16 reveal">
-            <span class="section-eyebrow text-primary mb-4 block">REVIEWS</span>
+            <span class="section-eyebrow text-[#0066FF] mb-4 block">REVIEWS</span>
             <h2 class="section-headline text-gray-900">환자분들의 <span class="highlight-word">솔직한 후기</span></h2>
           </div>
 
@@ -378,7 +385,7 @@ app.get('/', (c) => {
                       <div class="flex items-center justify-between">
                         <span class="text-gray-300 text-xs font-medium">{review.name}</span>
                         <div class="flex gap-1.5">
-                          {review.tags.map(tag => <span class="text-[0.65rem] bg-primary/6 text-primary px-2.5 py-0.5 rounded-full font-medium">{tag}</span>)}
+                          {review.tags.map(tag => <span class="text-[0.65rem] bg-[#0066FF]/6 text-[#0066FF] px-2.5 py-0.5 rounded-full font-medium">{tag}</span>)}
                         </div>
                       </div>
                     </div>
@@ -390,13 +397,13 @@ app.get('/', (c) => {
         </div>
       </section>
 
-      {/* ===== S9: PRICING PREVIEW ===== */}
-      <section class="section-lg bg-white">
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+      {/* ===== S9: PRICING PREVIEW — ELECTRIC ===== */}
+      <section class="section-lg bg-white relative overflow-hidden">
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
           <div class="max-w-3xl mx-auto">
             <div class="text-center mb-16 reveal">
-              <span class="section-eyebrow text-primary mb-4 block">PRICING</span>
-              <h2 class="section-headline text-gray-900">투명한 비용 안내</h2>
+              <span class="section-eyebrow text-[#0066FF] mb-4 block">PRICING</span>
+              <h2 class="section-headline text-gray-900">투명한 <span class="gradient-text-blue">비용 안내</span></h2>
               <p class="section-body text-gray-400 mt-4">부담 없이 확인하세요.</p>
             </div>
 
@@ -412,7 +419,7 @@ app.get('/', (c) => {
                   </thead>
                   <tbody class="divide-y divide-gray-50">
                     {pricingData.slice(0, 7).map((p, i) => (
-                      <tr class={`hover:bg-primary/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                      <tr class={`hover:bg-[#0066FF]/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
                         <td class="px-6 py-4 text-gray-800 font-medium">{p.treatment}</td>
                         <td class="px-6 py-4 text-right font-bold gradient-text-dark" style="background-size:100% 100%">{p.price}</td>
                         <td class="px-6 py-4 text-right text-gray-400 hidden sm:table-cell text-xs">{p.insurance}</td>
@@ -434,10 +441,10 @@ app.get('/', (c) => {
       </section>
 
       {/* ===== S10: FAQ PREVIEW ===== */}
-      <section class="section-lg bg-mesh" itemscope itemtype="https://schema.org/FAQPage">
+      <section class="section-lg bg-mesh relative overflow-hidden" itemscope itemtype="https://schema.org/FAQPage">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
-            <span class="section-eyebrow text-primary mb-4 block">FAQ</span>
+            <span class="section-eyebrow text-[#0066FF] mb-4 block">FAQ</span>
             <h2 class="section-headline text-gray-900">자주 묻는 질문</h2>
           </div>
 
@@ -456,17 +463,17 @@ app.get('/', (c) => {
           </div>
 
           <div class="text-center mt-10 reveal">
-            <a href="/faq" class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold link-underline" data-cursor-hover>FAQ 전체 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
+            <a href="/faq" class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-semibold link-underline" data-cursor-hover>FAQ 전체 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
           </div>
         </div>
       </section>
 
-      {/* ===== S11: CONTENT / COLUMNS ===== */}
+      {/* ===== S11: CONTENT / COLUMNS — ELECTRIC ===== */}
       <section class="section-lg bg-white">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
-            <span class="section-eyebrow text-primary mb-4 block">COLUMNS</span>
-            <h2 class="section-headline text-gray-900">전문 칼럼</h2>
+            <span class="section-eyebrow text-[#0066FF] mb-4 block">COLUMNS</span>
+            <h2 class="section-headline text-gray-900">전문 <span class="gradient-text-blue">칼럼</span></h2>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
@@ -475,16 +482,16 @@ app.get('/', (c) => {
               { title: '치아교정 나이 제한? 성인교정 궁금증 해결', tag: '교정', date: '2026.02.10' },
               { title: '수면진료, 정말 안전한가요?', tag: '수면진료', date: '2026.02.05' },
             ].map(article => (
-              <div class="premium-card overflow-hidden group cursor-pointer tilt-card" data-cursor-hover>
-                <div class="aspect-[16/9] bg-gradient-to-br from-primary/[0.06] to-primary/[0.01] flex items-center justify-center overflow-hidden">
-                  <i class="fa-solid fa-newspaper text-4xl text-primary/10 group-hover:text-primary/20 group-hover:scale-110 transition-all duration-700"></i>
+              <div class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border" data-cursor-hover>
+                <div class="aspect-[16/9] bg-gradient-to-br from-[#0066FF]/[0.06] to-[#00E5FF]/[0.02] flex items-center justify-center overflow-hidden">
+                  <i class="fa-solid fa-newspaper text-4xl text-[#0066FF]/10 group-hover:text-[#0066FF]/20 group-hover:scale-110 transition-all duration-700"></i>
                 </div>
                 <div class="p-5">
                   <div class="flex items-center gap-2 mb-2.5">
-                    <span class="text-[0.7rem] bg-primary/8 text-primary px-2.5 py-0.5 rounded-full font-semibold">{article.tag}</span>
+                    <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{article.tag}</span>
                     <span class="text-[0.7rem] text-gray-300">{article.date}</span>
                   </div>
-                  <h3 class="font-bold text-gray-900 text-[0.95rem] leading-snug group-hover:text-primary transition-colors">{article.title}</h3>
+                  <h3 class="font-bold text-gray-900 text-[0.95rem] leading-snug group-hover:text-[#0066FF] transition-colors">{article.title}</h3>
                 </div>
               </div>
             ))}
@@ -492,26 +499,29 @@ app.get('/', (c) => {
         </div>
       </section>
 
-      {/* ===== S12: FINAL CTA ===== */}
+      {/* ===== S12: FINAL CTA — ELECTRIC ===== */}
       <section class="cta-dark section-lg relative">
+        {/* Extra electric accents */}
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full morph-blob pointer-events-none" style="background:radial-gradient(circle,rgba(0,102,255,0.15),transparent 60%);animation-delay:-3s"></div>
+
         <div class="relative z-10 max-w-4xl mx-auto px-5 md:px-8 text-center">
           <div class="reveal-blur">
-            <span class="section-eyebrow text-primary mb-5 block">CONSULTATION</span>
+            <span class="section-eyebrow text-[#0066FF] mb-5 block">CONSULTATION</span>
             <h2 class="section-headline text-white mb-6">
-              지금 바로<br class="md:hidden" /> 상담 받아보세요
+              지금 바로<br class="md:hidden" /> <span class="gradient-text-electric">상담 받아보세요</span>
             </h2>
             <p class="text-white/35 section-body mb-12">
               전화, 카카오톡, 온라인 예약 모두 가능합니다.
             </p>
 
             <div class="flex flex-wrap justify-center gap-4">
-              <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white px-9 py-4 text-[0.95rem]" data-cursor-hover>
+              <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white btn-magnetic px-9 py-4 text-[0.95rem]" data-cursor-hover>
                 <i class="fa-solid fa-phone"></i> 전화 상담
               </a>
-              <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium px-9 py-4 text-[0.95rem]" style="background:#FEE500;color:#3C1E1E;border:none;" data-cursor-hover>
+              <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium btn-magnetic px-9 py-4 text-[0.95rem]" style="background:#FEE500;color:#3C1E1E;border:none;" data-cursor-hover>
                 <i class="fa-solid fa-comment"></i> 카카오톡
               </a>
-              <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="btn-premium btn-premium-fill px-9 py-4 text-[0.95rem]" data-cursor-hover>
+              <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic px-9 py-4 text-[0.95rem]" data-cursor-hover>
                 <i class="fa-solid fa-calendar-check"></i> 네이버 예약
               </a>
             </div>
@@ -565,7 +575,7 @@ app.get('/treatments', (c) => {
                         <i class={`fa-solid ${t.icon} text-sm`}></i>
                       </div>
                       <div class="min-w-0">
-                        <h3 class="font-bold text-gray-900 text-sm group-hover:text-primary transition-colors truncate">{t.name}</h3>
+                        <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#0066FF] transition-colors truncate">{t.name}</h3>
                         <p class="text-xs text-gray-400 truncate">{t.shortDesc}</p>
                       </div>
                     </div>
@@ -619,14 +629,14 @@ app.get('/treatments/:slug', (c) => {
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">FOR YOU</span>
+            <span class="section-eyebrow text-[#0066FF] mb-3 block">FOR YOU</span>
             <h2 class="section-sub-headline text-gray-900">{t.name}, 이런 고민 있으신가요?</h2>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 stagger-children">
             {t.concerns.map(concern => (
               <div class="glass-card p-5 flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i class="fa-solid fa-circle-check text-primary text-sm"></i>
+                <div class="w-8 h-8 rounded-lg bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-circle-check text-[#0066FF] text-sm"></i>
                 </div>
                 <p class="text-gray-700 text-[0.9rem] leading-relaxed">{concern}</p>
               </div>
@@ -639,7 +649,7 @@ app.get('/treatments/:slug', (c) => {
       <section class="section-lg bg-white">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">TYPES</span>
+            <span class="section-eyebrow text-[#0066FF] mb-3 block">TYPES</span>
             <h2 class="section-sub-headline text-gray-900">서울365치과 {t.name} 종류</h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
@@ -657,7 +667,7 @@ app.get('/treatments/:slug', (c) => {
       <section class="section-lg bg-mesh">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">WHY US</span>
+            <span class="section-eyebrow text-[#0066FF] mb-3 block">WHY US</span>
             <h2 class="section-sub-headline text-gray-900">왜 서울365치과의 {t.name}인가요?</h2>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
@@ -666,7 +676,7 @@ app.get('/treatments/:slug', (c) => {
                 <div class="icon-circle mb-5">
                   <i class={`fa-solid ${w.icon}`}></i>
                 </div>
-                <h3 class="font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">{w.title}</h3>
+                <h3 class="font-bold text-gray-900 mb-2 group-hover:text-[#0066FF] transition-colors">{w.title}</h3>
                 <p class="text-gray-500 text-[0.9rem] leading-relaxed">{w.desc}</p>
               </div>
             ))}
@@ -678,7 +688,7 @@ app.get('/treatments/:slug', (c) => {
       <section class="section-lg bg-white">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">PROCESS</span>
+            <span class="section-eyebrow text-[#0066FF] mb-3 block">PROCESS</span>
             <h2 class="section-sub-headline text-gray-900">{t.name} 치료 과정</h2>
           </div>
           <div class="space-y-0 stagger-children">
@@ -700,26 +710,26 @@ app.get('/treatments/:slug', (c) => {
         <section class="section-lg bg-mesh">
           <div class="max-w-4xl mx-auto px-5 md:px-8">
             <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-primary mb-3 block">DOCTOR</span>
+              <span class="section-eyebrow text-[#0066FF] mb-3 block">DOCTOR</span>
               <h2 class="section-sub-headline text-gray-900">담당 의료진</h2>
             </div>
             <div class="glass-card p-0 overflow-hidden reveal-3d">
               <div class="md:flex items-center">
-                <div class="md:w-1/3 bg-gradient-to-br from-primary/8 to-primary/[0.02] p-8 flex items-center justify-center min-h-[200px]">
+                <div class="md:w-1/3 bg-gradient-to-br from-[#0066FF]/8 to-[#00E5FF]/[0.02] p-8 flex items-center justify-center min-h-[200px]">
                   <div class="text-center">
-                    <div class="w-24 h-24 rounded-full bg-primary/10 mx-auto mb-3 flex items-center justify-center">
-                      <i class="fa-solid fa-user-doctor text-3xl text-primary/40"></i>
+                    <div class="w-24 h-24 rounded-full bg-[#0066FF]/10 mx-auto mb-3 flex items-center justify-center">
+                      <i class="fa-solid fa-user-doctor text-3xl text-[#0066FF]/40"></i>
                     </div>
                     <h3 class="font-bold text-gray-900 text-lg">{doc.name}</h3>
-                    <p class="text-primary text-sm font-semibold">{doc.titleShort}</p>
+                    <p class="text-[#0066FF] text-sm font-semibold">{doc.titleShort}</p>
                   </div>
                 </div>
                 <div class="md:w-2/3 p-6 md:p-8">
-                  <blockquote class="text-gray-600 italic border-l-2 border-primary pl-4 mb-4 text-[0.9rem] leading-relaxed">
+                  <blockquote class="text-gray-600 italic border-l-2 border-[#0066FF] pl-4 mb-4 text-[0.9rem] leading-relaxed">
                     "{doc.philosophy.split('.')[0]}."
                   </blockquote>
                   <p class="text-gray-400 text-sm mb-4">{doc.specialties.join(' · ')}</p>
-                  <a href={`/doctors/${doc.slug}`} class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold link-underline" data-cursor-hover>
+                  <a href={`/doctors/${doc.slug}`} class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-semibold link-underline" data-cursor-hover>
                     프로필 보기 <i class="fa-solid fa-arrow-right text-xs"></i>
                   </a>
                 </div>
@@ -733,7 +743,7 @@ app.get('/treatments/:slug', (c) => {
       <section class="section-lg bg-white" itemscope itemtype="https://schema.org/FAQPage">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">FAQ</span>
+            <span class="section-eyebrow text-[#0066FF] mb-3 block">FAQ</span>
             <h2 class="section-sub-headline text-gray-900">{t.name} 자주 묻는 질문</h2>
           </div>
           <div class="space-y-3 stagger-children">
@@ -801,30 +811,30 @@ app.get('/doctors', (c) => {
           {/* Lead doctor */}
           <div class="premium-card overflow-hidden mb-10 reveal-3d">
             <div class="md:flex">
-              <div class="md:w-2/5 bg-gradient-to-br from-primary/10 to-primary/[0.02] p-10 flex items-center justify-center min-h-[360px]">
+              <div class="md:w-2/5 bg-gradient-to-br from-[#0066FF]/10 to-[#00E5FF]/[0.02] p-10 flex items-center justify-center min-h-[360px]">
                 <div class="text-center">
-                  <div class="w-40 h-40 rounded-full bg-primary/10 mx-auto mb-5 flex items-center justify-center border-2 border-primary/15">
-                    <i class="fa-solid fa-user-doctor text-6xl text-primary/30"></i>
+                  <div class="w-40 h-40 rounded-full bg-[#0066FF]/10 mx-auto mb-5 flex items-center justify-center border-2 border-[#0066FF]/15">
+                    <i class="fa-solid fa-user-doctor text-6xl text-[#0066FF]/30"></i>
                   </div>
                   <h2 class="text-2xl font-bold text-gray-900">박준규 대표원장</h2>
-                  <p class="text-primary font-semibold text-sm mt-1">통합치의학과 전문의</p>
+                  <p class="text-[#0066FF] font-semibold text-sm mt-1">통합치의학과 전문의</p>
                   <div class="flex flex-wrap justify-center gap-2 mt-4">
-                    {doctors[0].specialties.map(s => <span class="text-[0.7rem] bg-primary/8 text-primary px-3 py-1 rounded-full font-medium">{s}</span>)}
+                    {doctors[0].specialties.map(s => <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-3 py-1 rounded-full font-medium">{s}</span>)}
                   </div>
                 </div>
               </div>
               <div class="md:w-3/5 p-8 md:p-10">
-                <blockquote class="text-lg text-gray-600 italic border-l-3 border-primary pl-5 mb-8 leading-relaxed" style="border-left-width:3px">
+                <blockquote class="text-lg text-gray-600 italic border-l-3 border-[#0066FF] pl-5 mb-8 leading-relaxed" style="border-left-width:3px">
                   "{doctors[0].philosophy}"
                 </blockquote>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
                   <div>
-                    <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-primary text-sm"></i> 학력</h3>
-                    <ul class="space-y-2">{doctors[0].education.map(e => <li class="text-gray-500 flex items-start gap-2"><span class="w-1 h-1 bg-primary rounded-full mt-2 flex-shrink-0"></span>{e}</li>)}</ul>
+                    <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-[#0066FF] text-sm"></i> 학력</h3>
+                    <ul class="space-y-2">{doctors[0].education.map(e => <li class="text-gray-500 flex items-start gap-2"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2 flex-shrink-0"></span>{e}</li>)}</ul>
                   </div>
                   <div>
-                    <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2"><i class="fa-solid fa-certificate text-primary text-sm"></i> 자격</h3>
-                    <ul class="space-y-2">{doctors[0].credentials.slice(0,3).map(e => <li class="text-gray-500 flex items-start gap-2"><span class="w-1 h-1 bg-primary rounded-full mt-2 flex-shrink-0"></span>{e}</li>)}</ul>
+                    <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2"><i class="fa-solid fa-certificate text-[#0066FF] text-sm"></i> 자격</h3>
+                    <ul class="space-y-2">{doctors[0].credentials.slice(0,3).map(e => <li class="text-gray-500 flex items-start gap-2"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2 flex-shrink-0"></span>{e}</li>)}</ul>
                   </div>
                 </div>
                 <a href="/doctors/park-junkyu" class="btn-premium btn-premium-fill mt-8 text-sm px-6 py-3" data-cursor-hover>프로필 상세 보기</a>
@@ -836,14 +846,14 @@ app.get('/doctors', (c) => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5 stagger-children">
             {doctors.slice(1).map(doc => (
               <a href={`/doctors/${doc.slug}`} class="glass-card p-6 block md:flex gap-5 items-start group" data-cursor-hover>
-                <div class="w-20 h-20 rounded-full bg-primary/8 flex items-center justify-center flex-shrink-0 mx-auto md:mx-0 mb-4 md:mb-0 group-hover:bg-primary/15 transition-colors">
-                  <i class="fa-solid fa-user-doctor text-2xl text-primary/40 group-hover:text-primary/60 transition-colors"></i>
+                <div class="w-20 h-20 rounded-full bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0 mx-auto md:mx-0 mb-4 md:mb-0 group-hover:bg-[#0066FF]/15 transition-colors">
+                  <i class="fa-solid fa-user-doctor text-2xl text-[#0066FF]/40 group-hover:text-[#0066FF]/60 transition-colors"></i>
                 </div>
                 <div class="text-center md:text-left">
                   <h2 class="font-bold text-gray-900 text-lg">{doc.name} <span class="text-gray-400 font-normal text-sm">{doc.title}</span></h2>
                   <p class="text-sm text-gray-400 mt-1">{doc.specialties.join(' · ')}</p>
                   <p class="text-sm text-gray-500 mt-3 italic leading-relaxed">"{doc.philosophy.split('.')[0]}."</p>
-                  <span class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold mt-3 link-underline">프로필 보기 <i class="fa-solid fa-arrow-right text-xs"></i></span>
+                  <span class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-semibold mt-3 link-underline">프로필 보기 <i class="fa-solid fa-arrow-right text-xs"></i></span>
                 </div>
               </a>
             ))}
@@ -894,39 +904,39 @@ app.get('/doctors/:slug', (c) => {
 
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <blockquote class="text-xl text-gray-600 italic border-l-3 border-primary pl-6 mb-14 leading-relaxed reveal" style="border-left-width:3px">
+          <blockquote class="text-xl text-gray-600 italic border-l-3 border-[#0066FF] pl-6 mb-14 leading-relaxed reveal" style="border-left-width:3px">
             "{doc.philosophy}"
           </blockquote>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 stagger-children">
             <div class="glass-card p-7">
-              <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-primary"></i> 학력</h2>
-              <ul class="space-y-2.5">{doc.education.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-primary rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+              <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-[#0066FF]"></i> 학력</h2>
+              <ul class="space-y-2.5">{doc.education.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
             </div>
 
             {doc.credentials.length > 0 && (
               <div class="glass-card p-7">
-                <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-certificate text-primary"></i> 자격/전문의</h2>
-                <ul class="space-y-2.5">{doc.credentials.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-primary rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+                <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-certificate text-[#0066FF]"></i> 자격/전문의</h2>
+                <ul class="space-y-2.5">{doc.credentials.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
               </div>
             )}
 
             <div class="glass-card p-7">
-              <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-briefcase text-primary"></i> 경력</h2>
-              <ul class="space-y-2.5">{doc.career.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-primary rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+              <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-briefcase text-[#0066FF]"></i> 경력</h2>
+              <ul class="space-y-2.5">{doc.career.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
             </div>
 
             {doc.societies.length > 0 && (
               <div class="glass-card p-7">
-                <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-users text-primary"></i> 학회</h2>
-                <ul class="space-y-2.5">{doc.societies.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-primary rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+                <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-users text-[#0066FF]"></i> 학회</h2>
+                <ul class="space-y-2.5">{doc.societies.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
               </div>
             )}
           </div>
 
           {/* Treatment Links */}
           <div class="mt-12 reveal">
-            <h2 class="font-bold text-gray-900 text-lg mb-5 flex items-center gap-2"><i class="fa-solid fa-stethoscope text-primary"></i> 담당 치료</h2>
+            <h2 class="font-bold text-gray-900 text-lg mb-5 flex items-center gap-2"><i class="fa-solid fa-stethoscope text-[#0066FF]"></i> 담당 치료</h2>
             <div class="flex flex-wrap gap-3">
               {doc.treatmentLinks.map(link => {
                 const treat = getTreatmentBySlug(link.split('/').pop()!);
@@ -986,15 +996,15 @@ app.get('/reservation', (c) => {
               <div class="icon-circle mx-auto mb-4">
                 <i class="fa-solid fa-phone"></i>
               </div>
-              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-primary transition-colors">전화 상담</h2>
-              <p class="text-primary font-extrabold text-xl">{CLINIC.phone}</p>
+              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#0066FF] transition-colors">전화 상담</h2>
+              <p class="text-[#0066FF] font-extrabold text-xl">{CLINIC.phone}</p>
               <p class="text-sm text-gray-400 mt-2">가장 빠른 상담 방법</p>
             </a>
             <a href={CLINIC.kakao} target="_blank" rel="noopener" class="glass-card p-8 text-center group block" data-cursor-hover>
               <div class="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-100 transition-colors">
                 <i class="fa-solid fa-comment text-yellow-500 text-xl"></i>
               </div>
-              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-primary transition-colors">카카오톡 상담</h2>
+              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#0066FF] transition-colors">카카오톡 상담</h2>
               <p class="text-yellow-600 font-bold">채팅으로 편하게</p>
               <p class="text-sm text-gray-400 mt-2">사진/영상 전송 가능</p>
             </a>
@@ -1002,7 +1012,7 @@ app.get('/reservation', (c) => {
               <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-100 transition-colors">
                 <i class="fa-solid fa-calendar-check text-green-500 text-xl"></i>
               </div>
-              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-primary transition-colors">네이버 예약</h2>
+              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#0066FF] transition-colors">네이버 예약</h2>
               <p class="text-green-600 font-bold">온라인 간편 예약</p>
               <p class="text-sm text-gray-400 mt-2">원하는 시간 선택</p>
             </a>
@@ -1015,16 +1025,16 @@ app.get('/reservation', (c) => {
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label class="block text-sm font-semibold text-gray-700 mb-2">이름 *</label>
-                  <input type="text" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all text-sm" placeholder="이름을 입력해주세요" />
+                  <input type="text" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="이름을 입력해주세요" />
                 </div>
                 <div>
                   <label class="block text-sm font-semibold text-gray-700 mb-2">연락처 *</label>
-                  <input type="tel" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all text-sm" placeholder="010-0000-0000" />
+                  <input type="tel" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-0000-0000" />
                 </div>
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">관심 치료</label>
-                <select class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all text-sm text-gray-600">
+                <select class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm text-gray-600">
                   <option value="">선택해주세요</option>
                   <option>전체임플란트</option><option>올온X 임플란트</option><option>일반 임플란트</option>
                   <option>치아교정</option><option>인비절라인</option><option>수면진료</option>
@@ -1033,12 +1043,12 @@ app.get('/reservation', (c) => {
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">상담 내용</label>
-                <textarea rows={4} class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all text-sm resize-none" placeholder="궁금하신 내용을 자유롭게 적어주세요"></textarea>
+                <textarea rows={4} class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm resize-none" placeholder="궁금하신 내용을 자유롭게 적어주세요"></textarea>
               </div>
               <div class="flex items-start gap-2.5">
-                <input type="checkbox" required class="mt-1 accent-primary" id="privacy-agree" />
+                <input type="checkbox" required class="mt-1 accent-[#0066FF]" id="privacy-agree" />
                 <label for="privacy-agree" class="text-sm text-gray-500">
-                  <a href="/privacy" class="text-primary font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
+                  <a href="/privacy" class="text-[#0066FF] font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
                 </label>
               </div>
               <button type="submit" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>상담 신청하기</button>
@@ -1087,9 +1097,9 @@ app.get('/pricing', (c) => {
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                   {pricingData.map((p, i) => (
-                    <tr class={`hover:bg-primary/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                    <tr class={`hover:bg-[#0066FF]/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
                       <td class="px-6 py-4 text-gray-800 font-medium">{p.treatment}</td>
-                      <td class="px-6 py-4 text-right text-primary font-bold">{p.price}</td>
+                      <td class="px-6 py-4 text-right text-[#0066FF] font-bold">{p.price}</td>
                       <td class="px-6 py-4 text-right text-gray-400 hidden sm:table-cell text-xs">{p.insurance}</td>
                     </tr>
                   ))}

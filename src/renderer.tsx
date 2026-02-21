@@ -14,7 +14,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
         <link rel="canonical" href={canonicalUrl} />
-        <meta name="theme-color" content="#050d1a" />
+        <meta name="theme-color" content="#0066FF" />
 
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="서울365치과의원" />
@@ -34,9 +34,10 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             theme: {
               extend: {
                 colors: {
-                  primary: { DEFAULT: '#1B6FC9', dark: '#155BA3', light: '#E8F0FE', lighter: '#F0F6FF' },
-                  navy: { DEFAULT: '#050d1a', light: '#0A1628', lighter: '#111827' },
-                  accent: '#10B981',
+                  primary: { DEFAULT: '#0066FF', bright: '#2979FF', dark: '#0050CC', light: '#E3F0FF', lighter: '#F0F7FF' },
+                  navy: { DEFAULT: '#040B18', light: '#0A1628', lighter: '#111827' },
+                  accent: '#00E5FF',
+                  cyan: '#00E5FF',
                 },
                 fontFamily: {
                   sans: ['Pretendard Variable', 'Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'Helvetica Neue', 'sans-serif'],
@@ -72,6 +73,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           <div class="preloader-logo">
             <i class="fa-solid fa-tooth text-white text-2xl"></i>
           </div>
+          <p class="text-white/20 text-xs font-semibold tracking-[0.3em] uppercase mt-5">Seoul 365 Dental</p>
           <div class="preloader-bar">
             <div class="preloader-bar-inner"></div>
           </div>
@@ -89,7 +91,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           <nav class="max-w-[1400px] mx-auto px-5 md:px-8 h-[72px] flex items-center justify-between">
             {/* Logo */}
             <a href="/" class="flex items-center gap-2.5 group relative z-10">
-              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-blue-400 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#00E5FF] flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#0066FF]/30 logo-pulse">
                 <i class="fa-solid fa-tooth text-white text-sm"></i>
               </div>
               <div class="flex flex-col leading-none">
@@ -140,7 +142,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 { href: '/directions', label: '오시는길', icon: 'fa-location-dot' },
                 { href: '/faq', label: 'FAQ', icon: 'fa-circle-question' },
               ].map(item => (
-                <a href={item.href} class="flex items-center gap-3 py-3.5 px-4 text-gray-700 font-medium text-[0.95rem] rounded-2xl hover:bg-gray-50 transition-colors">
+                <a href={item.href} class="flex items-center gap-3 py-3.5 px-4 text-gray-700 font-medium text-[0.95rem] rounded-2xl hover:bg-primary/5 transition-colors">
                   <i class={`fa-solid ${item.icon} text-primary/60 w-5 text-center text-sm`}></i>
                   {item.label}
                 </a>
@@ -161,14 +163,18 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <main>{children}</main>
 
         {/* === PREMIUM FOOTER === */}
-        <footer class="bg-navy pb-28 md:pb-0">
-          <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+        <footer class="bg-navy pb-28 md:pb-0 relative overflow-hidden">
+          {/* Aurora footer accent */}
+          <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0066FF]/30 to-transparent"></div>
+          <div class="absolute top-0 left-1/4 w-1/2 h-64 bg-[#0066FF]/[0.03] blur-[100px] pointer-events-none"></div>
+
+          <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
             {/* Top */}
             <div class="py-16 md:py-20 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
               {/* Brand */}
               <div class="md:col-span-4">
                 <a href="/" class="flex items-center gap-2.5 mb-6">
-                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-blue-400 flex items-center justify-center">
+                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#00E5FF] flex items-center justify-center">
                     <i class="fa-solid fa-tooth text-white text-sm"></i>
                   </div>
                   <div class="flex flex-col leading-none">
@@ -187,7 +193,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                     { href: CLINIC.naverBlog, icon: 'fa-solid fa-n', label: 'Blog' },
                     { href: CLINIC.kakao, icon: 'fa-solid fa-comment', label: 'KakaoTalk' },
                   ].map(s => (
-                    <a href={s.href} target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 hover:border-white/15 transition-all text-sm" aria-label={s.label} data-cursor-hover>
+                    <a href={s.href} target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-[#00E5FF] hover:bg-[#0066FF]/10 hover:border-[#0066FF]/20 transition-all text-sm" aria-label={s.label} data-cursor-hover>
                       <i class={s.icon}></i>
                     </a>
                   ))}
@@ -196,7 +202,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
               {/* Navigation */}
               <div class="md:col-span-2">
-                <h4 class="text-[0.68rem] font-bold text-white/15 tracking-[0.2em] uppercase mb-5">진료</h4>
+                <h4 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">진료</h4>
                 <ul class="space-y-3 text-[0.85rem]">
                   {[
                     { name: '전체임플란트', slug: 'full-implant' },
@@ -204,24 +210,24 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                     { name: '수면진료', slug: 'sedation' },
                     { name: '심미치료', slug: 'cosmetic' },
                   ].map(t => (
-                    <li><a href={`/treatments/${t.slug}`} class="text-white/35 hover:text-white transition-colors">{t.name}</a></li>
+                    <li><a href={`/treatments/${t.slug}`} class="text-white/35 hover:text-[#00E5FF] transition-colors">{t.name}</a></li>
                   ))}
                 </ul>
               </div>
 
               <div class="md:col-span-2">
-                <h4 class="text-[0.68rem] font-bold text-white/15 tracking-[0.2em] uppercase mb-5">안내</h4>
+                <h4 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">안내</h4>
                 <ul class="space-y-3 text-[0.85rem]">
-                  <li><a href="/doctors" class="text-white/35 hover:text-white transition-colors">의료진</a></li>
-                  <li><a href="/pricing" class="text-white/35 hover:text-white transition-colors">비용안내</a></li>
-                  <li><a href="/directions" class="text-white/35 hover:text-white transition-colors">오시는길</a></li>
-                  <li><a href="/faq" class="text-white/35 hover:text-white transition-colors">FAQ</a></li>
+                  <li><a href="/doctors" class="text-white/35 hover:text-[#00E5FF] transition-colors">의료진</a></li>
+                  <li><a href="/pricing" class="text-white/35 hover:text-[#00E5FF] transition-colors">비용안내</a></li>
+                  <li><a href="/directions" class="text-white/35 hover:text-[#00E5FF] transition-colors">오시는길</a></li>
+                  <li><a href="/faq" class="text-white/35 hover:text-[#00E5FF] transition-colors">FAQ</a></li>
                 </ul>
               </div>
 
               {/* Hours */}
               <div class="md:col-span-4">
-                <h4 class="text-[0.68rem] font-bold text-white/15 tracking-[0.2em] uppercase mb-5">진료시간</h4>
+                <h4 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">진료시간</h4>
                 <div class="space-y-0 text-[0.85rem]">
                   {HOURS.map(h => (
                     <div class="flex justify-between items-center py-2.5 border-b border-white/[0.04]">
@@ -230,8 +236,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                     </div>
                   ))}
                   <div class="pt-3 flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 bg-primary rounded-full"></span>
-                    <span class="text-primary text-[0.78rem] font-semibold">점심시간 없이 연속 진료</span>
+                    <span class="w-1.5 h-1.5 bg-[#0066FF] rounded-full animate-pulse"></span>
+                    <span class="text-[#00E5FF] text-[0.78rem] font-semibold">점심시간 없이 연속 진료</span>
                   </div>
                 </div>
               </div>
@@ -265,9 +271,10 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               <i class="fa-solid fa-comment text-[1.1rem]"></i>
               <span class="text-[10px] mt-1 font-medium">카카오톡</span>
             </a>
-            <a href="/reservation" class="flex flex-col items-center justify-center py-3 bg-gradient-to-r from-primary to-blue-500 text-white">
-              <i class="fa-solid fa-calendar-check text-[1.1rem]"></i>
-              <span class="text-[10px] mt-1 font-bold">예약</span>
+            <a href="/reservation" class="flex flex-col items-center justify-center py-3 bg-gradient-to-r from-[#0066FF] to-[#2979FF] text-white relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-r from-[#00E5FF]/0 via-white/10 to-[#00E5FF]/0 animate-shimmer-slow"></div>
+              <i class="fa-solid fa-calendar-check text-[1.1rem] relative z-10"></i>
+              <span class="text-[10px] mt-1 font-bold relative z-10">예약</span>
             </a>
             <a href="/directions" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors">
               <i class="fa-solid fa-location-dot text-[1.1rem]"></i>
@@ -281,8 +288,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           <a href={CLINIC.kakao} target="_blank" rel="noopener" class="floating-btn bg-[#FEE500] text-[#3C1E1E] rounded-2xl flex items-center justify-center" aria-label="카카오톡" style="width:52px;height:52px;" data-cursor-hover>
             <i class="fa-solid fa-comment text-lg"></i>
           </a>
-          <a href={CLINIC.phoneTel} class="floating-btn bg-gradient-to-br from-primary to-blue-500 text-white rounded-2xl flex items-center justify-center" aria-label="전화" style="width:52px;height:52px;" data-cursor-hover>
-            <i class="fa-solid fa-phone text-lg"></i>
+          <a href={CLINIC.phoneTel} class="floating-btn bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white rounded-2xl flex items-center justify-center relative overflow-hidden" aria-label="전화" style="width:52px;height:52px;" data-cursor-hover>
+            <i class="fa-solid fa-phone text-lg relative z-10"></i>
+            <div class="absolute inset-0 rounded-2xl electric-border-glow"></div>
           </a>
           <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="floating-btn bg-gray-900/90 text-white rounded-2xl flex items-center justify-center backdrop-blur-sm" aria-label="맨 위로" style="width:52px;height:52px;" data-cursor-hover>
             <i class="fa-solid fa-arrow-up"></i>
@@ -311,8 +319,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             });
 
             function animateRing() {
-              rx += (mx - rx) * 0.15;
-              ry += (my - ry) * 0.15;
+              rx += (mx - rx) * 0.12;
+              ry += (my - ry) * 0.12;
               if (ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
               requestAnimationFrame(animateRing);
             }
@@ -414,7 +422,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           const counterEl = document.querySelector('[data-counter-section]');
           if (counterEl) counterObserver.observe(counterEl);
 
-          // Hero particles
+          // Hero particles — ELECTRIC BLUE
           (function initParticles() {
             const canvas = document.getElementById('hero-particles');
             if (!canvas) return;
@@ -427,16 +435,24 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             resize();
             window.addEventListener('resize', resize);
 
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 70; i++) {
               particles.push({
                 x: Math.random() * w,
                 y: Math.random() * h,
-                r: Math.random() * 1.5 + 0.5,
-                dx: (Math.random() - 0.5) * 0.4,
-                dy: (Math.random() - 0.5) * 0.4,
-                o: Math.random() * 0.4 + 0.1
+                r: Math.random() * 2 + 0.5,
+                dx: (Math.random() - 0.5) * 0.5,
+                dy: (Math.random() - 0.5) * 0.5,
+                o: Math.random() * 0.5 + 0.15,
+                c: Math.random() > 0.3 ? '0,102,255' : '0,229,255'
               });
             }
+
+            let mouseX = -999, mouseY = -999;
+            canvas.parentElement.addEventListener('mousemove', (e) => {
+              const rect = canvas.parentElement.getBoundingClientRect();
+              mouseX = e.clientX - rect.left;
+              mouseY = e.clientY - rect.top;
+            });
 
             function draw() {
               ctx.clearRect(0, 0, w, h);
@@ -444,10 +460,28 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 p.x += p.dx; p.y += p.dy;
                 if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
                 if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+
+                // Mouse repulsion
+                const dmx = p.x - mouseX;
+                const dmy = p.y - mouseY;
+                const dm = Math.sqrt(dmx*dmx + dmy*dmy);
+                if (dm < 120) {
+                  p.x += (dmx / dm) * 2;
+                  p.y += (dmy / dm) * 2;
+                }
+
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(27,111,201,' + p.o + ')';
+                ctx.fillStyle = 'rgba(' + p.c + ',' + p.o + ')';
                 ctx.fill();
+
+                // Glow effect
+                if (p.r > 1.2) {
+                  ctx.beginPath();
+                  ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
+                  ctx.fillStyle = 'rgba(' + p.c + ',' + (p.o * 0.1) + ')';
+                  ctx.fill();
+                }
               });
               // Connect nearby
               for (let i = 0; i < particles.length; i++) {
@@ -455,11 +489,11 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                   const dx = particles[i].x - particles[j].x;
                   const dy = particles[i].y - particles[j].y;
                   const dist = Math.sqrt(dx*dx + dy*dy);
-                  if (dist < 150) {
+                  if (dist < 140) {
                     ctx.beginPath();
                     ctx.moveTo(particles[i].x, particles[i].y);
                     ctx.lineTo(particles[j].x, particles[j].y);
-                    ctx.strokeStyle = 'rgba(27,111,201,' + (0.06 * (1 - dist/150)) + ')';
+                    ctx.strokeStyle = 'rgba(0,102,255,' + (0.08 * (1 - dist/140)) + ')';
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                   }
@@ -490,22 +524,57 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           updateStatus();
           setInterval(updateStatus, 60000);
 
-          // 3D Tilt effect on cards
-          document.querySelectorAll('.tilt-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-              const rect = card.getBoundingClientRect();
-              const x = (e.clientX - rect.left) / rect.width - 0.5;
-              const y = (e.clientY - rect.top) / rect.height - 0.5;
-              card.style.transform = 'perspective(1000px) rotateY(' + (x*8) + 'deg) rotateX(' + (-y*8) + 'deg)';
+          // 3D Tilt effect on cards (Desktop)
+          if (window.innerWidth > 768) {
+            document.querySelectorAll('.tilt-card').forEach(card => {
+              card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                card.style.transform = 'perspective(1000px) rotateY(' + (x*10) + 'deg) rotateX(' + (-y*10) + 'deg) scale(1.02)';
+              });
+              card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) scale(1)';
+                card.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+              });
+              card.addEventListener('mouseenter', () => {
+                card.style.transition = 'none';
+              });
             });
-            card.addEventListener('mouseleave', () => {
-              card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)';
-              card.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+          }
+
+          // Magnetic buttons (Desktop)
+          if (window.innerWidth > 1024) {
+            document.querySelectorAll('.btn-magnetic').forEach(btn => {
+              btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                btn.style.transform = 'translate(' + (x * 0.3) + 'px, ' + (y * 0.3) + 'px)';
+              });
+              btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0, 0)';
+              });
             });
-            card.addEventListener('mouseenter', () => {
-              card.style.transition = 'none';
-            });
-          });
+          }
+
+          // Parallax on scroll
+          let ticking = false;
+          window.addEventListener('scroll', () => {
+            if (!ticking) {
+              requestAnimationFrame(() => {
+                const scrolled = window.scrollY;
+                document.querySelectorAll('.parallax-slow').forEach(el => {
+                  el.style.transform = 'translateY(' + (scrolled * 0.08) + 'px)';
+                });
+                document.querySelectorAll('.parallax-fast').forEach(el => {
+                  el.style.transform = 'translateY(' + (scrolled * -0.05) + 'px)';
+                });
+                ticking = false;
+              });
+              ticking = true;
+            }
+          }, { passive: true });
         `}} />
       </body>
     </html>
