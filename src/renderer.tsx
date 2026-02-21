@@ -14,7 +14,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
         <link rel="canonical" href={canonicalUrl} />
-        <meta name="theme-color" content="#0A1628" />
+        <meta name="theme-color" content="#050d1a" />
 
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="서울365치과의원" />
@@ -35,7 +35,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               extend: {
                 colors: {
                   primary: { DEFAULT: '#1B6FC9', dark: '#155BA3', light: '#E8F0FE', lighter: '#F0F6FF' },
-                  navy: { DEFAULT: '#0A1628', light: '#111827', lighter: '#1e293b' },
+                  navy: { DEFAULT: '#050d1a', light: '#0A1628', lighter: '#111827' },
                   accent: '#10B981',
                 },
                 fontFamily: {
@@ -67,17 +67,34 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       </head>
       <body class="font-sans text-gray-900 bg-white antialiased">
 
+        {/* === PRELOADER === */}
+        <div id="preloader" class="preloader">
+          <div class="preloader-logo">
+            <i class="fa-solid fa-tooth text-white text-2xl"></i>
+          </div>
+          <div class="preloader-bar">
+            <div class="preloader-bar-inner"></div>
+          </div>
+        </div>
+
+        {/* === SCROLL PROGRESS === */}
+        <div id="scroll-progress" class="scroll-progress"></div>
+
+        {/* === CUSTOM CURSOR (Desktop only) === */}
+        <div id="cursor-dot" class="cursor-dot hidden lg:block"></div>
+        <div id="cursor-ring" class="cursor-ring hidden lg:block"></div>
+
         {/* === PREMIUM HEADER === */}
         <header id="main-header" class="header-premium">
           <nav class="max-w-[1400px] mx-auto px-5 md:px-8 h-[72px] flex items-center justify-between">
             {/* Logo */}
             <a href="/" class="flex items-center gap-2.5 group relative z-10">
-              <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-blue-400 flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/30">
                 <i class="fa-solid fa-tooth text-white text-sm"></i>
               </div>
               <div class="flex flex-col leading-none">
                 <span class="logo-text text-[1.05rem] font-extrabold tracking-tight text-gray-900">서울365치과</span>
-                <span class="logo-text text-[0.6rem] font-medium text-gray-400 tracking-widest mt-0.5">SEOUL 365 DENTAL</span>
+                <span class="logo-text text-[0.6rem] font-medium text-gray-400 tracking-[0.15em] mt-0.5">SEOUL 365 DENTAL</span>
               </div>
             </a>
 
@@ -91,16 +108,16 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 { href: '/directions', label: '오시는길' },
                 { href: '/faq', label: 'FAQ' },
               ].map(item => (
-                <a href={item.href} class="nav-link link-underline text-[0.88rem] font-medium text-gray-600 hover:text-primary transition-colors">{item.label}</a>
+                <a href={item.href} class="nav-link link-underline text-[0.88rem] font-medium text-gray-600 hover:text-primary transition-colors" data-cursor-hover>{item.label}</a>
               ))}
             </div>
 
             {/* Desktop CTA */}
             <div class="hidden lg:flex items-center gap-3">
-              <a href={CLINIC.phoneTel} class="nav-link flex items-center gap-1.5 text-[0.82rem] font-medium text-gray-500 hover:text-primary transition-colors">
+              <a href={CLINIC.phoneTel} class="nav-link flex items-center gap-1.5 text-[0.82rem] font-medium text-gray-500 hover:text-primary transition-colors" data-cursor-hover>
                 <i class="fa-solid fa-phone text-[0.7rem]"></i> {CLINIC.phone}
               </a>
-              <a href="/reservation" class="btn-premium btn-premium-fill text-[0.82rem] px-5 py-2.5">
+              <a href="/reservation" class="btn-premium btn-premium-fill text-[0.82rem] px-5 py-2.5" data-cursor-hover>
                 <i class="fa-solid fa-calendar-check text-[0.75rem]"></i> 예약하기
               </a>
             </div>
@@ -151,15 +168,15 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               {/* Brand */}
               <div class="md:col-span-4">
                 <a href="/" class="flex items-center gap-2.5 mb-6">
-                  <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
+                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-blue-400 flex items-center justify-center">
                     <i class="fa-solid fa-tooth text-white text-sm"></i>
                   </div>
                   <div class="flex flex-col leading-none">
                     <span class="text-[1.05rem] font-extrabold text-white tracking-tight">서울365치과</span>
-                    <span class="text-[0.6rem] font-medium text-white/30 tracking-widest mt-0.5">SEOUL 365 DENTAL</span>
+                    <span class="text-[0.6rem] font-medium text-white/25 tracking-[0.15em] mt-0.5">SEOUL 365 DENTAL</span>
                   </div>
                 </a>
-                <p class="text-sm leading-relaxed text-white/40 max-w-xs">
+                <p class="text-sm leading-relaxed text-white/35 max-w-xs">
                   과잉진료 없는 양심치과.<br/>
                   서울대 출신 5인 원장이 협력하여<br/>
                   365일 최적의 치료를 제공합니다.
@@ -170,7 +187,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                     { href: CLINIC.naverBlog, icon: 'fa-solid fa-n', label: 'Blog' },
                     { href: CLINIC.kakao, icon: 'fa-solid fa-comment', label: 'KakaoTalk' },
                   ].map(s => (
-                    <a href={s.href} target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 hover:border-white/15 transition-all text-sm" aria-label={s.label}>
+                    <a href={s.href} target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-white hover:bg-white/10 hover:border-white/15 transition-all text-sm" aria-label={s.label} data-cursor-hover>
                       <i class={s.icon}></i>
                     </a>
                   ))}
@@ -179,7 +196,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
               {/* Navigation */}
               <div class="md:col-span-2">
-                <h4 class="text-[0.7rem] font-bold text-white/20 tracking-[0.2em] uppercase mb-5">진료</h4>
+                <h4 class="text-[0.68rem] font-bold text-white/15 tracking-[0.2em] uppercase mb-5">진료</h4>
                 <ul class="space-y-3 text-[0.85rem]">
                   {[
                     { name: '전체임플란트', slug: 'full-implant' },
@@ -187,29 +204,29 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                     { name: '수면진료', slug: 'sedation' },
                     { name: '심미치료', slug: 'cosmetic' },
                   ].map(t => (
-                    <li><a href={`/treatments/${t.slug}`} class="text-white/40 hover:text-white transition-colors">{t.name}</a></li>
+                    <li><a href={`/treatments/${t.slug}`} class="text-white/35 hover:text-white transition-colors">{t.name}</a></li>
                   ))}
                 </ul>
               </div>
 
               <div class="md:col-span-2">
-                <h4 class="text-[0.7rem] font-bold text-white/20 tracking-[0.2em] uppercase mb-5">안내</h4>
+                <h4 class="text-[0.68rem] font-bold text-white/15 tracking-[0.2em] uppercase mb-5">안내</h4>
                 <ul class="space-y-3 text-[0.85rem]">
-                  <li><a href="/doctors" class="text-white/40 hover:text-white transition-colors">의료진</a></li>
-                  <li><a href="/pricing" class="text-white/40 hover:text-white transition-colors">비용안내</a></li>
-                  <li><a href="/directions" class="text-white/40 hover:text-white transition-colors">오시는길</a></li>
-                  <li><a href="/faq" class="text-white/40 hover:text-white transition-colors">FAQ</a></li>
+                  <li><a href="/doctors" class="text-white/35 hover:text-white transition-colors">의료진</a></li>
+                  <li><a href="/pricing" class="text-white/35 hover:text-white transition-colors">비용안내</a></li>
+                  <li><a href="/directions" class="text-white/35 hover:text-white transition-colors">오시는길</a></li>
+                  <li><a href="/faq" class="text-white/35 hover:text-white transition-colors">FAQ</a></li>
                 </ul>
               </div>
 
               {/* Hours */}
               <div class="md:col-span-4">
-                <h4 class="text-[0.7rem] font-bold text-white/20 tracking-[0.2em] uppercase mb-5">진료시간</h4>
+                <h4 class="text-[0.68rem] font-bold text-white/15 tracking-[0.2em] uppercase mb-5">진료시간</h4>
                 <div class="space-y-0 text-[0.85rem]">
                   {HOURS.map(h => (
                     <div class="flex justify-between items-center py-2.5 border-b border-white/[0.04]">
-                      <span class="text-white/50">{h.day}</span>
-                      <span class="text-white/75 font-semibold tabular-nums">{h.time}</span>
+                      <span class="text-white/40">{h.day}</span>
+                      <span class="text-white/70 font-semibold tabular-nums">{h.time}</span>
                     </div>
                   ))}
                   <div class="pt-3 flex items-center gap-2">
@@ -221,7 +238,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             </div>
 
             {/* Bottom */}
-            <div class="border-t border-white/[0.04] py-6 flex flex-col md:flex-row justify-between gap-3 text-[0.72rem] text-white/20">
+            <div class="border-t border-white/[0.04] py-6 flex flex-col md:flex-row justify-between gap-3 text-[0.72rem] text-white/15">
               <div class="flex flex-wrap gap-x-4 gap-y-1">
                 <span>서울365치과의원</span>
                 <span>대표 박준규</span>
@@ -248,7 +265,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               <i class="fa-solid fa-comment text-[1.1rem]"></i>
               <span class="text-[10px] mt-1 font-medium">카카오톡</span>
             </a>
-            <a href="/reservation" class="flex flex-col items-center justify-center py-3 bg-primary text-white">
+            <a href="/reservation" class="flex flex-col items-center justify-center py-3 bg-gradient-to-r from-primary to-blue-500 text-white">
               <i class="fa-solid fa-calendar-check text-[1.1rem]"></i>
               <span class="text-[10px] mt-1 font-bold">예약</span>
             </a>
@@ -261,19 +278,60 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === DESKTOP FLOATING CTA === */}
         <div class="hidden md:flex fixed bottom-8 right-8 z-40 flex-col gap-3">
-          <a href={CLINIC.kakao} target="_blank" rel="noopener" class="floating-btn w-13 h-13 bg-[#FEE500] text-[#3C1E1E] rounded-2xl flex items-center justify-center shadow-lg" aria-label="카카오톡" style="width:52px;height:52px;">
+          <a href={CLINIC.kakao} target="_blank" rel="noopener" class="floating-btn bg-[#FEE500] text-[#3C1E1E] rounded-2xl flex items-center justify-center" aria-label="카카오톡" style="width:52px;height:52px;" data-cursor-hover>
             <i class="fa-solid fa-comment text-lg"></i>
           </a>
-          <a href={CLINIC.phoneTel} class="floating-btn w-13 h-13 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg" aria-label="전화" style="width:52px;height:52px;">
+          <a href={CLINIC.phoneTel} class="floating-btn bg-gradient-to-br from-primary to-blue-500 text-white rounded-2xl flex items-center justify-center" aria-label="전화" style="width:52px;height:52px;" data-cursor-hover>
             <i class="fa-solid fa-phone text-lg"></i>
           </a>
-          <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="floating-btn w-13 h-13 bg-gray-900/90 text-white rounded-2xl flex items-center justify-center shadow-lg backdrop-blur-sm" aria-label="맨 위로" style="width:52px;height:52px;">
+          <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="floating-btn bg-gray-900/90 text-white rounded-2xl flex items-center justify-center backdrop-blur-sm" aria-label="맨 위로" style="width:52px;height:52px;" data-cursor-hover>
             <i class="fa-solid fa-arrow-up"></i>
           </button>
         </div>
 
         {/* === SCRIPTS === */}
         <script dangerouslySetInnerHTML={{__html: `
+          // Preloader
+          window.addEventListener('load', () => {
+            setTimeout(() => {
+              document.getElementById('preloader')?.classList.add('hidden');
+              document.body.style.overflow = '';
+            }, 1600);
+          });
+
+          // Custom Cursor (Desktop only)
+          if (window.innerWidth > 1024) {
+            const dot = document.getElementById('cursor-dot');
+            const ring = document.getElementById('cursor-ring');
+            let mx = 0, my = 0, rx = 0, ry = 0;
+
+            document.addEventListener('mousemove', (e) => {
+              mx = e.clientX; my = e.clientY;
+              if (dot) { dot.style.left = mx + 'px'; dot.style.top = my + 'px'; }
+            });
+
+            function animateRing() {
+              rx += (mx - rx) * 0.15;
+              ry += (my - ry) * 0.15;
+              if (ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
+              requestAnimationFrame(animateRing);
+            }
+            animateRing();
+
+            document.querySelectorAll('a, button, [data-cursor-hover], input, textarea, select').forEach(el => {
+              el.addEventListener('mouseenter', () => { dot?.classList.add('hovering'); ring?.classList.add('hovering'); });
+              el.addEventListener('mouseleave', () => { dot?.classList.remove('hovering'); ring?.classList.remove('hovering'); });
+            });
+          }
+
+          // Scroll Progress
+          window.addEventListener('scroll', () => {
+            const h = document.documentElement.scrollHeight - window.innerHeight;
+            const p = h > 0 ? window.scrollY / h : 0;
+            const bar = document.getElementById('scroll-progress');
+            if (bar) bar.style.transform = 'scaleX(' + p + ')';
+          }, { passive: true });
+
           // Mobile menu
           document.getElementById('mobile-menu-btn')?.addEventListener('click', function() {
             const menu = document.getElementById('mobile-menu');
@@ -300,9 +358,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 entry.target.classList.add('visible');
               }
             });
-          }, { threshold: 0.06, rootMargin: '0px 0px -50px 0px' });
+          }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
 
-          document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger-children, .img-reveal').forEach(el => {
+          document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-3d, .reveal-blur, .stagger-children, .img-reveal, .highlight-word').forEach(el => {
             revealObserver.observe(el);
           });
 
@@ -325,12 +383,14 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           // Animated counter
           function animateCounters() {
             document.querySelectorAll('[data-count]').forEach(el => {
+              if (el.dataset.animated) return;
+              el.dataset.animated = 'true';
               const target = parseFloat(el.dataset.count);
               const suffix = el.dataset.suffix || '';
               const prefix = el.dataset.prefix || '';
               const decimals = (target % 1 !== 0) ? 1 : 0;
               let current = 0;
-              const duration = 2000;
+              const duration = 2200;
               const step = target / (duration / 16);
               const counter = setInterval(() => {
                 current += step;
@@ -351,9 +411,64 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               }
             });
           }, { threshold: 0.3 });
-          document.querySelector('[data-counter-section]')?.let?.(el => counterObserver.observe(el));
           const counterEl = document.querySelector('[data-counter-section]');
           if (counterEl) counterObserver.observe(counterEl);
+
+          // Hero particles
+          (function initParticles() {
+            const canvas = document.getElementById('hero-particles');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w, h, particles = [];
+            function resize() {
+              w = canvas.width = canvas.parentElement.offsetWidth;
+              h = canvas.height = canvas.parentElement.offsetHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            for (let i = 0; i < 60; i++) {
+              particles.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                r: Math.random() * 1.5 + 0.5,
+                dx: (Math.random() - 0.5) * 0.4,
+                dy: (Math.random() - 0.5) * 0.4,
+                o: Math.random() * 0.4 + 0.1
+              });
+            }
+
+            function draw() {
+              ctx.clearRect(0, 0, w, h);
+              particles.forEach(p => {
+                p.x += p.dx; p.y += p.dy;
+                if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+                if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(27,111,201,' + p.o + ')';
+                ctx.fill();
+              });
+              // Connect nearby
+              for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                  const dx = particles[i].x - particles[j].x;
+                  const dy = particles[i].y - particles[j].y;
+                  const dist = Math.sqrt(dx*dx + dy*dy);
+                  if (dist < 150) {
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = 'rgba(27,111,201,' + (0.06 * (1 - dist/150)) + ')';
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                  }
+                }
+              }
+              requestAnimationFrame(draw);
+            }
+            draw();
+          })();
 
           // Operating status
           function updateStatus() {
@@ -374,6 +489,23 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           }
           updateStatus();
           setInterval(updateStatus, 60000);
+
+          // 3D Tilt effect on cards
+          document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+              const rect = card.getBoundingClientRect();
+              const x = (e.clientX - rect.left) / rect.width - 0.5;
+              const y = (e.clientY - rect.top) / rect.height - 0.5;
+              card.style.transform = 'perspective(1000px) rotateY(' + (x*8) + 'deg) rotateX(' + (-y*8) + 'deg)';
+            });
+            card.addEventListener('mouseleave', () => {
+              card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)';
+              card.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+            });
+            card.addEventListener('mouseenter', () => {
+              card.style.transition = 'none';
+            });
+          });
         `}} />
       </body>
     </html>

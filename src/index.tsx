@@ -9,7 +9,7 @@ const app = new Hono()
 app.use(renderer)
 
 // ============================================================
-// HOME PAGE — 13 Premium Sections
+// HOME PAGE — SHOCK EDITION v3
 // ============================================================
 app.get('/', (c) => {
   const topTreatments = treatments.filter(t =>
@@ -18,57 +18,73 @@ app.get('/', (c) => {
 
   return c.render(
     <>
-      {/* ===== S1: CINEMATIC HERO ===== */}
+      {/* ===== S1: CINEMATIC HERO — SHOCK ===== */}
       <section class="hero-premium">
-        {/* Floating orbs */}
+        {/* Background layers */}
+        <div class="hero-grid"></div>
+        <canvas id="hero-particles"></canvas>
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="orb orb-3"></div>
 
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 w-full">
-          <div class="max-w-3xl pt-24 pb-16 md:pt-0 md:pb-0">
+          <div class="max-w-4xl pt-28 pb-16 md:pt-0 md:pb-0">
             {/* Status Badge */}
-            <div class="flex items-center gap-3 mb-8 reveal" style="transition-delay:0.1s">
+            <div class="flex items-center gap-3 mb-10 reveal" style="transition-delay:0.3s">
               <div class="glass trust-badge text-white/90" data-status>
                 <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
                 <span class="font-semibold">진료중</span>
               </div>
-              <span class="text-white/25 text-xs">|</span>
-              <span class="text-white/40 text-xs font-medium tracking-wide">인천 구월동 · 예술회관역 5번 출구</span>
+              <span class="text-white/15 text-xs">|</span>
+              <span class="text-white/30 text-xs font-medium tracking-wider">인천 구월동 · 예술회관역 5번 출구</span>
             </div>
 
-            {/* H1 — Hero Display */}
-            <h1 class="hero-display gradient-text-white mb-6 reveal" style="transition-delay:0.2s">
+            {/* H1 — Massive Display */}
+            <h1 class="hero-display gradient-text-white mb-8 reveal" style="transition-delay:0.5s">
               과잉진료 없는<br/>양심치과
             </h1>
 
-            {/* Subtext */}
-            <p class="hero-sub text-white/50 max-w-xl mb-10 reveal" style="transition-delay:0.35s">
-              서울대 출신 5인 원장 · 365일 야간진료 · 자체 기공실 보유<br/>
-              필요한 치료만 정직하게, 환자를 가족처럼 대합니다.
+            {/* Highlight Description */}
+            <p class="text-white/40 text-lg md:text-xl leading-relaxed max-w-2xl mb-6 reveal" style="transition-delay:0.7s">
+              <span class="text-white/70 font-semibold">서울대 출신 5인 원장</span>이 협력하는 유일한 치과.
             </p>
 
+            {/* Metric Bar */}
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 mb-12 reveal" style="transition-delay:0.85s">
+              {[
+                { label: '365일 진료', icon: 'fa-calendar-check' },
+                { label: '야간 21시', icon: 'fa-moon' },
+                { label: '자체 기공실', icon: 'fa-gear' },
+                { label: '수면진료', icon: 'fa-bed' },
+              ].map(m => (
+                <div class="flex items-center gap-2 text-white/25 text-sm">
+                  <i class={`fa-solid ${m.icon} text-primary/60 text-xs`}></i>
+                  <span class="text-white/50 font-medium">{m.label}</span>
+                </div>
+              ))}
+            </div>
+
             {/* CTA Buttons */}
-            <div class="flex flex-wrap gap-3 mb-12 reveal" style="transition-delay:0.5s">
-              <a href="/reservation" class="btn-premium btn-premium-fill text-[0.9rem] px-8 py-4">
+            <div class="flex flex-wrap gap-4 mb-14 reveal" style="transition-delay:1s">
+              <a href="/reservation" class="btn-premium btn-premium-fill text-[0.95rem] px-10 py-4.5" data-cursor-hover>
                 <i class="fa-solid fa-calendar-check"></i> 상담 예약하기
               </a>
-              <a href="/pricing" class="btn-premium btn-premium-white text-[0.9rem] px-8 py-4">
+              <a href="/pricing" class="btn-premium btn-premium-white text-[0.95rem] px-10 py-4.5" data-cursor-hover>
                 <i class="fa-solid fa-won-sign"></i> 비용 안내
               </a>
             </div>
 
-            {/* Trust Metrics */}
-            <div class="flex flex-wrap gap-4 reveal" style="transition-delay:0.65s">
+            {/* Trust Scores */}
+            <div class="flex flex-wrap gap-5 reveal" style="transition-delay:1.15s">
               {[
                 { label: '네이버', score: '4.85', icon: 'fa-star', color: 'text-amber-400' },
                 { label: '구글', score: '4.9', icon: 'fa-star', color: 'text-amber-400' },
                 { label: '만족도', score: '98%', icon: 'fa-heart', color: 'text-rose-400' },
                 { label: '재방문율', score: '87%', icon: 'fa-rotate', color: 'text-emerald-400' },
               ].map(m => (
-                <div class="flex items-center gap-2 text-white/40 text-sm">
-                  <i class={`fa-solid ${m.icon} ${m.color} text-xs`}></i>
-                  <span class="font-semibold text-white/70">{m.score}</span>
+                <div class="flex items-center gap-2 text-white/35 text-[0.82rem]">
+                  <i class={`fa-solid ${m.icon} ${m.color} text-[0.7rem]`}></i>
+                  <span class="font-bold text-white/80">{m.score}</span>
                   <span>{m.label}</span>
                 </div>
               ))}
@@ -77,75 +93,90 @@ app.get('/', (c) => {
         </div>
 
         {/* Scroll Indicator */}
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/20 text-center reveal" style="transition-delay:0.8s">
-          <div class="w-6 h-10 border-2 border-white/15 rounded-full flex justify-center pt-2 mx-auto mb-2">
-            <div class="w-1 h-2.5 bg-white/30 rounded-full animate-bounce"></div>
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-white/15 text-center reveal" style="transition-delay:1.3s">
+          <div class="w-7 h-11 border-2 border-white/10 rounded-full flex justify-center pt-2 mx-auto mb-2">
+            <div class="w-1 h-3 bg-white/25 rounded-full animate-bounce"></div>
           </div>
-          <span class="text-[0.65rem] tracking-[0.15em] uppercase">Scroll</span>
+          <span class="text-[0.6rem] tracking-[0.2em] uppercase font-medium">Scroll</span>
         </div>
       </section>
 
-      {/* ===== S2: OPERATING HOURS TICKER ===== */}
-      <section class="bg-white border-b border-gray-100/80">
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8 py-5">
-          <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm">
-            {HOURS.map(h => (
-              <div class="flex items-center gap-2.5">
-                <span class="font-bold text-gray-800">{h.day}</span>
-                <span class="text-primary font-semibold tabular-nums">{h.time}</span>
-                {h.note && <span class="text-[0.7rem] bg-primary/8 text-primary px-2 py-0.5 rounded-full font-semibold">{h.note}</span>}
+      {/* ===== S2: MARQUEE TICKER ===== */}
+      <section class="bg-navy-light border-y border-white/[0.03] overflow-hidden">
+        <div class="marquee-wrapper py-5" style="--marquee-bg: #0A1628;">
+          <div class="marquee-track">
+            {[...Array(2)].map(() => (
+              <div class="flex items-center gap-12 px-6">
+                {[
+                  { text: '서울대 출신 5인 전문의', icon: 'fa-user-doctor' },
+                  { text: '365일 연중무휴', icon: 'fa-calendar' },
+                  { text: '야간진료 21시', icon: 'fa-moon' },
+                  { text: '자체 기공실 완비', icon: 'fa-gear' },
+                  { text: '수면임플란트', icon: 'fa-bed' },
+                  { text: '점심시간 없이 연속진료', icon: 'fa-clock' },
+                  { text: '네이버 4.85점', icon: 'fa-star' },
+                  { text: '구글 4.9점', icon: 'fa-star' },
+                ].map(item => (
+                  <div class="flex items-center gap-2.5 text-white/30 text-sm whitespace-nowrap">
+                    <i class={`fa-solid ${item.icon} text-primary/50 text-xs`}></i>
+                    <span class="font-medium">{item.text}</span>
+                  </div>
+                ))}
               </div>
             ))}
-            <div class="flex items-center gap-1.5 text-emerald-600 font-semibold text-[0.78rem]">
-              <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-              점심시간 없이 연속 진료
-            </div>
           </div>
         </div>
       </section>
 
-      {/* ===== S3: STATS COUNTER ===== */}
-      <section class="section-lg bg-white" data-counter-section>
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 stagger-children">
+      {/* ===== S3: STATS — DRAMATIC COUNTER ===== */}
+      <section class="section-lg bg-white relative overflow-hidden" data-counter-section>
+        {/* Background accent */}
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/[0.03] rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative max-w-[1400px] mx-auto px-5 md:px-8">
+          <div class="text-center mb-16 reveal">
+            <span class="section-eyebrow text-primary mb-4 block">BY THE NUMBERS</span>
+            <h2 class="section-headline text-gray-900">숫자가 증명합니다</h2>
+          </div>
+
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10 stagger-children">
             {[
-              { number: '5', suffix: '인', label: '서울대 출신 전문의', icon: 'fa-user-doctor', desc: '각 분야별 전문의 협력 진료' },
-              { number: '365', suffix: '일', label: '연중무휴 진료', icon: 'fa-calendar-check', desc: '일요일·공휴일도 진료' },
+              { number: '5', suffix: '인', label: '서울대 출신 전문의', icon: 'fa-user-doctor', desc: '각 분야 최고 전문의' },
+              { number: '365', suffix: '일', label: '연중무휴 진료', icon: 'fa-calendar-check', desc: '일요일·공휴일 모두 진료' },
               { number: '21', suffix: '시', label: '야간까지 진료', icon: 'fa-moon', desc: '월~목 야간 진료' },
               { number: '4.9', suffix: '', label: '구글 평점', icon: 'fa-star', desc: '네이버 4.85 / 만족도 98%' },
             ].map(s => (
-              <div class="text-center lg:text-left">
-                <div class="flex items-center justify-center lg:justify-start gap-3 mb-3">
-                  <div class="icon-circle icon-circle-sm">
-                    <i class={`fa-solid ${s.icon}`}></i>
-                  </div>
-                  <div class="stat-number gradient-text-premium" data-count={s.number} data-suffix={s.suffix}>
-                    {s.number}{s.suffix}
-                  </div>
+              <div class="text-center group">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/8 to-primary/[0.02] flex items-center justify-center mx-auto mb-5 group-hover:from-primary/15 group-hover:to-primary/5 transition-all duration-500">
+                  <i class={`fa-solid ${s.icon} text-primary text-xl`}></i>
                 </div>
-                <p class="font-bold text-gray-900 text-sm">{s.label}</p>
-                <p class="text-gray-400 text-xs mt-0.5">{s.desc}</p>
+                <div class="stat-number gradient-text-premium mb-2" data-count={s.number} data-suffix={s.suffix}>
+                  {s.number}{s.suffix}
+                </div>
+                <p class="font-bold text-gray-900 text-[0.95rem]">{s.label}</p>
+                <p class="text-gray-400 text-xs mt-1">{s.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* === DIVIDER === */}
       <div class="divider-gradient"></div>
 
-      {/* ===== S4: DIFFERENTIATION ===== */}
+      {/* ===== S4: DIFFERENTIATION — BENTO GRID ===== */}
       <section class="section-lg bg-mesh">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">WHY SEOUL 365</span>
-            <h2 class="section-headline text-gray-900">다른 치과와는<br class="md:hidden" /> 차원이 다릅니다</h2>
-            <p class="section-body text-gray-400 mt-4 max-w-xl mx-auto">서울대학교 치과병원과 동일한 진료 시스템을 인천 구월동에서.</p>
+          <div class="text-center mb-16 reveal">
+            <span class="section-eyebrow text-primary mb-4 block">WHY SEOUL 365</span>
+            <h2 class="section-headline text-gray-900">
+              다른 치과와는<br class="md:hidden" /> <span class="highlight-word">차원이 다릅니다</span>
+            </h2>
+            <p class="section-body text-gray-400 mt-5 max-w-xl mx-auto">서울대학교 치과병원 동일 시스템을 인천 구월동에서.</p>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
-            {DIFF_CARDS.map(card => (
-              <div class="glass-card p-7 group cursor-default">
+          <div class="bento-grid stagger-children">
+            {DIFF_CARDS.map((card, i) => (
+              <div class={`glass-card p-7 group cursor-default tilt-card ${i === 0 ? 'bento-wide' : ''}`}>
                 <div class="icon-circle mb-5">
                   <i class={`fa-solid ${card.icon}`}></i>
                 </div>
@@ -157,54 +188,55 @@ app.get('/', (c) => {
         </div>
       </section>
 
-      {/* ===== S5: TREATMENTS ===== */}
+      {/* ===== S5: TREATMENTS — HORIZONTAL SCROLL ===== */}
       <section class="section-lg bg-white">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">TREATMENTS</span>
-            <h2 class="section-headline text-gray-900">주력 진료 안내</h2>
-            <p class="section-body text-gray-400 mt-4 max-w-xl mx-auto">각 분야 전문의가 최적의 치료를 제안합니다.</p>
+          <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4 reveal">
+            <div>
+              <span class="section-eyebrow text-primary mb-4 block">TREATMENTS</span>
+              <h2 class="section-headline text-gray-900">주력 진료 안내</h2>
+            </div>
+            <a href="/treatments" class="btn-premium btn-premium-outline text-sm" data-cursor-hover>
+              전체 진료 보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
+            </a>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
+          <div class="horizontal-scroll-wrapper flex gap-5 pb-4 reveal-3d">
             {topTreatments.map(t => (
-              <a href={`/treatments/${t.slug}`} class="premium-card p-7 group block">
+              <a href={`/treatments/${t.slug}`} class="premium-card p-7 group block min-w-[300px] md:min-w-[340px] flex-shrink-0" data-cursor-hover>
                 <div class="icon-circle mb-5">
                   <i class={`fa-solid ${t.icon}`}></i>
                 </div>
                 <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-primary transition-colors">{t.name}</h3>
-                <p class="text-gray-500 text-[0.9rem] leading-relaxed mb-4">{t.shortDesc}</p>
-                <span class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold link-underline">
-                  자세히 보기 <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+                <p class="text-gray-500 text-[0.9rem] leading-relaxed mb-5">{t.shortDesc}</p>
+                <span class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold">
+                  자세히 보기 <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1.5"></i>
                 </span>
               </a>
             ))}
           </div>
-
-          <div class="text-center mt-10 reveal">
-            <a href="/treatments" class="btn-premium btn-premium-outline">
-              전체 진료 보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
-            </a>
-          </div>
         </div>
       </section>
 
-      {/* ===== S6: DOCTORS ===== */}
-      <section class="section-lg bg-premium-dark bg-mesh-dark">
+      {/* ===== S6: DOCTORS — CINEMATIC ===== */}
+      <section class="section-lg bg-premium-dark bg-mesh-dark relative overflow-hidden">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">OUR DOCTORS</span>
-            <h2 class="section-headline text-white">서울대 출신 5인 전문의</h2>
-            <p class="section-body text-white/40 mt-4 max-w-xl mx-auto">각 분야별 전문의가 협력하여 최적의 치료를 제공합니다.</p>
+          <div class="text-center mb-16 reveal">
+            <span class="section-eyebrow text-primary mb-4 block">OUR DOCTORS</span>
+            <h2 class="section-headline text-white">
+              서울대 출신<br class="md:hidden" /> <span class="gradient-text-premium">5인 전문의</span>
+            </h2>
+            <p class="section-body text-white/30 mt-5 max-w-xl mx-auto">각 분야별 전문의가 협력하여 최적의 치료를 제공합니다.</p>
           </div>
 
-          {/* Lead Doctor */}
-          <div class="premium-card-dark p-0 overflow-hidden mb-8 reveal-scale">
+          {/* Lead Doctor — Premium Card */}
+          <div class="premium-card-dark p-0 overflow-hidden mb-8 reveal-3d">
             <div class="md:flex">
-              <div class="md:w-2/5 bg-gradient-to-br from-primary/20 to-primary/5 p-10 flex items-center justify-center min-h-[320px]">
-                <div class="text-center">
-                  <div class="w-36 h-36 rounded-full bg-white/[0.06] border border-white/[0.08] mx-auto mb-5 flex items-center justify-center">
-                    <i class="fa-solid fa-user-doctor text-5xl text-white/30"></i>
+              <div class="md:w-2/5 bg-gradient-to-br from-primary/20 via-primary/10 to-transparent p-10 flex items-center justify-center min-h-[340px] relative">
+                <div class="absolute inset-0 bg-gradient-to-t from-navy/80 to-transparent"></div>
+                <div class="text-center relative z-10">
+                  <div class="w-36 h-36 rounded-full bg-white/[0.05] border-2 border-white/[0.08] mx-auto mb-5 flex items-center justify-center pulse-ring">
+                    <i class="fa-solid fa-user-doctor text-5xl text-white/25"></i>
                   </div>
                   <h3 class="text-2xl font-bold text-white">{doctors[0].name}</h3>
                   <p class="text-primary text-sm font-semibold mt-1">{doctors[0].title}</p>
@@ -216,18 +248,18 @@ app.get('/', (c) => {
                 </div>
               </div>
               <div class="md:w-3/5 p-8 md:p-10 flex flex-col justify-center">
-                <blockquote class="text-lg text-white/70 italic border-l-2 border-primary pl-5 mb-6 leading-relaxed">
+                <blockquote class="text-lg text-white/60 italic border-l-2 border-primary/60 pl-5 mb-6 leading-relaxed">
                   "{doctors[0].philosophy.split('.')[0]}."
                 </blockquote>
-                <ul class="space-y-2.5 text-sm text-white/50">
+                <ul class="space-y-2.5 text-sm text-white/40">
                   {doctors[0].education.slice(0,2).map(e => (
-                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-graduation-cap text-primary text-xs mt-1"></i>{e}</li>
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-graduation-cap text-primary/70 text-xs mt-1"></i>{e}</li>
                   ))}
                   {doctors[0].credentials.slice(0,2).map(e => (
-                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-certificate text-primary text-xs mt-1"></i>{e}</li>
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-certificate text-primary/70 text-xs mt-1"></i>{e}</li>
                   ))}
                 </ul>
-                <a href="/doctors/park-junkyu" class="btn-premium btn-premium-white mt-8 self-start text-sm px-6 py-3">
+                <a href="/doctors/park-junkyu" class="btn-premium btn-premium-white mt-8 self-start text-sm px-6 py-3" data-cursor-hover>
                   프로필 보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
                 </a>
               </div>
@@ -237,19 +269,19 @@ app.get('/', (c) => {
           {/* Other Doctors */}
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger-children">
             {doctors.slice(1).map(doc => (
-              <a href={`/doctors/${doc.slug}`} class="premium-card-dark p-6 text-center block group">
-                <div class="w-20 h-20 rounded-full bg-white/[0.04] border border-white/[0.06] mx-auto mb-4 flex items-center justify-center group-hover:border-primary/30 transition-colors">
-                  <i class="fa-solid fa-user-doctor text-2xl text-white/25 group-hover:text-primary/60 transition-colors"></i>
+              <a href={`/doctors/${doc.slug}`} class="premium-card-dark p-6 text-center block group tilt-card" data-cursor-hover>
+                <div class="w-20 h-20 rounded-full bg-white/[0.04] border border-white/[0.06] mx-auto mb-4 flex items-center justify-center group-hover:border-primary/30 group-hover:bg-primary/[0.08] transition-all duration-500">
+                  <i class="fa-solid fa-user-doctor text-2xl text-white/20 group-hover:text-primary/60 transition-colors"></i>
                 </div>
                 <h3 class="font-bold text-white text-[0.95rem]">{doc.name}</h3>
-                <p class="text-white/40 text-xs mt-0.5">{doc.titleShort}</p>
-                <p class="text-white/30 text-[0.7rem] mt-2">{doc.specialties.slice(0,2).join(' · ')}</p>
+                <p class="text-white/35 text-xs mt-0.5">{doc.titleShort}</p>
+                <p class="text-white/25 text-[0.7rem] mt-2">{doc.specialties.slice(0,2).join(' · ')}</p>
               </a>
             ))}
           </div>
 
-          <div class="text-center mt-10 reveal">
-            <a href="/doctors" class="btn-premium btn-premium-white text-sm px-6 py-3">
+          <div class="text-center mt-12 reveal">
+            <a href="/doctors" class="btn-premium btn-premium-white text-sm px-6 py-3" data-cursor-hover>
               의료진 전체 보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
             </a>
           </div>
@@ -259,10 +291,10 @@ app.get('/', (c) => {
       {/* ===== S7: BEFORE/AFTER ===== */}
       <section class="section-lg bg-white">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">BEFORE &amp; AFTER</span>
+          <div class="text-center mb-16 reveal">
+            <span class="section-eyebrow text-primary mb-4 block">BEFORE &amp; AFTER</span>
             <h2 class="section-headline text-gray-900">치료 사례</h2>
-            <p class="section-body text-gray-400 mt-4 max-w-xl mx-auto">실제 치료 사례로 결과를 확인하세요.</p>
+            <p class="section-body text-gray-400 mt-5 max-w-xl mx-auto">실제 치료 사례로 결과를 확인하세요.</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
@@ -271,81 +303,89 @@ app.get('/', (c) => {
               { title: '올온X – 하악 즉시로딩', tag: '올온X', doctor: '박준규 대표원장' },
               { title: '인비절라인 – 성인 투명교정', tag: '교정', doctor: '하누리 원장' },
             ].map(cs => (
-              <div class="premium-card overflow-hidden group">
-                <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative">
+              <div class="premium-card overflow-hidden group tilt-card" data-cursor-hover>
+                <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
                   <div class="absolute inset-0 flex">
-                    <div class="w-1/2 flex items-center justify-center bg-gray-100 border-r border-gray-200">
-                      <span class="text-gray-300 text-sm font-bold tracking-wide uppercase">Before</span>
+                    <div class="w-1/2 flex items-center justify-center bg-gray-100/80 border-r border-gray-200/50 group-hover:bg-gray-50 transition-colors">
+                      <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
                     </div>
-                    <div class="w-1/2 flex items-center justify-center bg-primary/5">
-                      <span class="text-primary/40 text-sm font-bold tracking-wide uppercase">After</span>
+                    <div class="w-1/2 flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/[0.02] group-hover:from-primary/8 transition-all">
+                      <span class="text-primary/30 text-sm font-bold tracking-widest uppercase">After</span>
                     </div>
                   </div>
                 </div>
                 <div class="p-5">
-                  <div class="flex items-center gap-2 mb-2">
+                  <div class="flex items-center gap-2 mb-2.5">
                     <span class="text-[0.7rem] bg-primary/8 text-primary px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
                   </div>
-                  <h3 class="font-bold text-gray-900 text-sm">{cs.title}</h3>
+                  <h3 class="font-bold text-gray-900 text-[0.95rem]">{cs.title}</h3>
                   <p class="text-xs text-gray-400 mt-1">담당: {cs.doctor}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <p class="text-[0.72rem] text-gray-300 text-center mt-8">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
+          <p class="text-[0.72rem] text-gray-300 text-center mt-10">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
           <div class="text-center mt-4 reveal">
-            <a href="/cases/gallery" class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold link-underline">전체 사례 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
+            <a href="/cases/gallery" class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold link-underline" data-cursor-hover>전체 사례 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
           </div>
         </div>
       </section>
 
-      {/* ===== S8: REVIEWS ===== */}
-      <section class="section-lg bg-mesh">
+      {/* ===== S8: REVIEWS — INFINITE SCROLL ===== */}
+      <section class="section-lg bg-mesh relative overflow-hidden">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">REVIEWS</span>
-            <h2 class="section-headline text-gray-900">환자분들의 솔직한 후기</h2>
+          <div class="text-center mb-16 reveal">
+            <span class="section-eyebrow text-primary mb-4 block">REVIEWS</span>
+            <h2 class="section-headline text-gray-900">환자분들의 <span class="highlight-word">솔직한 후기</span></h2>
           </div>
 
           {/* Review Scores */}
-          <div class="flex flex-wrap justify-center gap-6 mb-12 stagger-children">
+          <div class="flex flex-wrap justify-center gap-5 mb-14 stagger-children">
             {[
-              { platform: '네이버', score: '4.85', icon: 'fa-solid fa-n', color: 'bg-green-500', textColor: 'text-green-700' },
-              { platform: '구글', score: '4.9', icon: 'fa-brands fa-google', color: 'bg-blue-500', textColor: 'text-blue-700' },
-              { platform: '만족도', score: '98%', icon: 'fa-solid fa-heart', color: 'bg-rose-500', textColor: 'text-rose-700' },
-              { platform: '재방문율', score: '87%', icon: 'fa-solid fa-rotate', color: 'bg-emerald-500', textColor: 'text-emerald-700' },
+              { platform: '네이버', score: '4.85', icon: 'fa-solid fa-n', color: 'from-green-500 to-green-600' },
+              { platform: '구글', score: '4.9', icon: 'fa-brands fa-google', color: 'from-blue-500 to-blue-600' },
+              { platform: '만족도', score: '98%', icon: 'fa-solid fa-heart', color: 'from-rose-500 to-rose-600' },
+              { platform: '재방문율', score: '87%', icon: 'fa-solid fa-rotate', color: 'from-emerald-500 to-emerald-600' },
             ].map(r => (
-              <div class="glass-card px-8 py-6 text-center min-w-[140px]">
-                <div class={`w-10 h-10 ${r.color} text-white rounded-xl flex items-center justify-center mx-auto mb-3`}>
+              <div class="glass-card px-8 py-6 text-center min-w-[140px] tilt-card">
+                <div class={`w-11 h-11 bg-gradient-to-br ${r.color} text-white rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg`}>
                   <i class={r.icon + ' text-sm'}></i>
                 </div>
-                <p class="text-2xl font-extrabold text-gray-900 tracking-tight">{r.score}</p>
+                <p class="text-2xl font-black text-gray-900 tracking-tight">{r.score}</p>
                 <p class="text-xs text-gray-400 mt-1 font-medium">{r.platform}</p>
               </div>
             ))}
           </div>
 
-          {/* Review Cards */}
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
-            {[
-              { name: '김O영', text: '스케일링부터 임플란트까지, 자세한 설명과 친절한 진료에 늘 감사드립니다. 365일 진료라 바쁜 직장인에게 최고입니다.', tags: ['스케일링', '친절한 설명'], stars: 5 },
-              { name: '이O수', text: '전체임플란트 수술 받았습니다. 수면진료라 전혀 무섭지 않았고, 자체 기공실이 있어서 보철물 맞춤이 정말 빠르고 정확했습니다.', tags: ['전체임플란트', '수면진료'], stars: 5 },
-              { name: '박O현', text: '인비절라인 교정 중인데, 하누리 원장님이 꼼꼼하게 체크해주시고 예상 결과를 3D로 보여주셔서 믿음이 갑니다.', tags: ['인비절라인', '교정 전문의'], stars: 5 },
-            ].map(review => (
-              <div class="glass-card p-6">
-                <div class="flex gap-0.5 mb-3">
-                  {Array(review.stars).fill(0).map(() => <i class="fa-solid fa-star text-amber-400 text-xs"></i>)}
-                </div>
-                <p class="text-gray-600 text-[0.9rem] leading-relaxed mb-4">"{review.text}"</p>
-                <div class="flex items-center justify-between">
-                  <span class="text-gray-300 text-xs font-medium">{review.name}</span>
-                  <div class="flex gap-1.5">
-                    {review.tags.map(tag => <span class="text-[0.65rem] bg-primary/6 text-primary px-2.5 py-0.5 rounded-full font-medium">{tag}</span>)}
-                  </div>
-                </div>
-              </div>
-            ))}
+          {/* Infinite scrolling reviews */}
+          <div class="marquee-wrapper" style="--marquee-bg: #fafbfd;">
+            <div class="reviews-track">
+              {[...Array(2)].map(() => (
+                <>
+                  {[
+                    { name: '김O영', text: '스케일링부터 임플란트까지, 자세한 설명과 친절한 진료에 늘 감사드립니다. 365일 진료라 바쁜 직장인에게 최고입니다.', tags: ['스케일링', '친절한 설명'], stars: 5 },
+                    { name: '이O수', text: '전체임플란트 수술 받았습니다. 수면진료라 전혀 무섭지 않았고, 자체 기공실이 있어서 보철물 맞춤이 정말 빠르고 정확했습니다.', tags: ['전체임플란트', '수면진료'], stars: 5 },
+                    { name: '박O현', text: '인비절라인 교정 중인데, 하누리 원장님이 꼼꼼하게 체크해주시고 예상 결과를 3D로 보여주셔서 믿음이 갑니다.', tags: ['인비절라인', '교정 전문의'], stars: 5 },
+                    { name: '최O진', text: '야간에 갑자기 이가 아파서 방문했는데, 21시까지 진료해주셔서 정말 다행이었습니다. 응급 대응도 빠르고 친절하셨어요.', tags: ['야간진료', '응급처치'], stars: 5 },
+                    { name: '정O미', text: '아이 충치 치료로 방문했는데, 소아 전문 의료진이 계셔서 아이가 전혀 무서워하지 않았어요. 정말 감사합니다.', tags: ['소아치과', '무통마취'], stars: 5 },
+                  ].map(review => (
+                    <div class="review-card-premium flex-shrink-0">
+                      <div class="flex gap-0.5 mb-3">
+                        {Array(review.stars).fill(0).map(() => <i class="fa-solid fa-star text-amber-400 text-xs"></i>)}
+                      </div>
+                      <p class="text-gray-600 text-[0.9rem] leading-relaxed mb-5">"{review.text}"</p>
+                      <div class="flex items-center justify-between">
+                        <span class="text-gray-300 text-xs font-medium">{review.name}</span>
+                        <div class="flex gap-1.5">
+                          {review.tags.map(tag => <span class="text-[0.65rem] bg-primary/6 text-primary px-2.5 py-0.5 rounded-full font-medium">{tag}</span>)}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -354,27 +394,27 @@ app.get('/', (c) => {
       <section class="section-lg bg-white">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="max-w-3xl mx-auto">
-            <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-primary mb-3 block">PRICING</span>
+            <div class="text-center mb-16 reveal">
+              <span class="section-eyebrow text-primary mb-4 block">PRICING</span>
               <h2 class="section-headline text-gray-900">투명한 비용 안내</h2>
               <p class="section-body text-gray-400 mt-4">부담 없이 확인하세요.</p>
             </div>
 
-            <div class="premium-card overflow-hidden reveal-scale">
+            <div class="premium-card overflow-hidden reveal-3d">
               <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                   <thead>
-                    <tr class="bg-navy text-white/90">
-                      <th class="text-left px-6 py-4 font-semibold text-[0.82rem]">치료</th>
-                      <th class="text-right px-6 py-4 font-semibold text-[0.82rem]">가격대</th>
-                      <th class="text-right px-6 py-4 font-semibold text-[0.82rem] hidden sm:table-cell">보험</th>
+                    <tr class="bg-gradient-to-r from-navy to-navy-lighter text-white/90">
+                      <th class="text-left px-6 py-4.5 font-semibold text-[0.82rem]">치료</th>
+                      <th class="text-right px-6 py-4.5 font-semibold text-[0.82rem]">가격대</th>
+                      <th class="text-right px-6 py-4.5 font-semibold text-[0.82rem] hidden sm:table-cell">보험</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-50">
                     {pricingData.slice(0, 7).map((p, i) => (
-                      <tr class={`hover:bg-primary/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+                      <tr class={`hover:bg-primary/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
                         <td class="px-6 py-4 text-gray-800 font-medium">{p.treatment}</td>
-                        <td class="px-6 py-4 text-right text-primary font-bold">{p.price}</td>
+                        <td class="px-6 py-4 text-right font-bold gradient-text-dark" style="background-size:100% 100%">{p.price}</td>
                         <td class="px-6 py-4 text-right text-gray-400 hidden sm:table-cell text-xs">{p.insurance}</td>
                       </tr>
                     ))}
@@ -383,9 +423,9 @@ app.get('/', (c) => {
               </div>
             </div>
 
-            <div class="text-center mt-6 reveal">
-              <p class="text-[0.72rem] text-gray-300 mb-4">※ 정확한 비용은 정밀 진단 후 안내드립니다. 카드 결제 및 분할 옵션 가능.</p>
-              <a href="/pricing" class="btn-premium btn-premium-outline text-sm px-6 py-3">
+            <div class="text-center mt-8 reveal">
+              <p class="text-[0.72rem] text-gray-300 mb-5">※ 정확한 비용은 정밀 진단 후 안내드립니다. 카드 결제 및 분할 옵션 가능.</p>
+              <a href="/pricing" class="btn-premium btn-premium-outline text-sm px-7 py-3" data-cursor-hover>
                 비용 전체 보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
               </a>
             </div>
@@ -396,15 +436,15 @@ app.get('/', (c) => {
       {/* ===== S10: FAQ PREVIEW ===== */}
       <section class="section-lg bg-mesh" itemscope itemtype="https://schema.org/FAQPage">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">FAQ</span>
+          <div class="text-center mb-16 reveal">
+            <span class="section-eyebrow text-primary mb-4 block">FAQ</span>
             <h2 class="section-headline text-gray-900">자주 묻는 질문</h2>
           </div>
 
           <div class="space-y-3 stagger-children">
             {mainFaq.map(faq => (
               <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+                <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
                   <h3 class="font-semibold text-gray-800 text-[0.95rem] pr-4" itemprop="name">{faq.q}</h3>
                   <i class="fa-solid fa-chevron-down text-gray-300 text-sm faq-icon flex-shrink-0"></i>
                 </button>
@@ -415,8 +455,8 @@ app.get('/', (c) => {
             ))}
           </div>
 
-          <div class="text-center mt-8 reveal">
-            <a href="/faq" class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold link-underline">FAQ 전체 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
+          <div class="text-center mt-10 reveal">
+            <a href="/faq" class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold link-underline" data-cursor-hover>FAQ 전체 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
           </div>
         </div>
       </section>
@@ -424,8 +464,8 @@ app.get('/', (c) => {
       {/* ===== S11: CONTENT / COLUMNS ===== */}
       <section class="section-lg bg-white">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-primary mb-3 block">COLUMNS</span>
+          <div class="text-center mb-16 reveal">
+            <span class="section-eyebrow text-primary mb-4 block">COLUMNS</span>
             <h2 class="section-headline text-gray-900">전문 칼럼</h2>
           </div>
 
@@ -435,9 +475,9 @@ app.get('/', (c) => {
               { title: '치아교정 나이 제한? 성인교정 궁금증 해결', tag: '교정', date: '2026.02.10' },
               { title: '수면진료, 정말 안전한가요?', tag: '수면진료', date: '2026.02.05' },
             ].map(article => (
-              <div class="premium-card overflow-hidden group cursor-pointer">
-                <div class="aspect-[16/9] bg-gradient-to-br from-primary/5 to-primary/[0.02] flex items-center justify-center">
-                  <i class="fa-solid fa-newspaper text-4xl text-primary/15 group-hover:text-primary/25 transition-colors"></i>
+              <div class="premium-card overflow-hidden group cursor-pointer tilt-card" data-cursor-hover>
+                <div class="aspect-[16/9] bg-gradient-to-br from-primary/[0.06] to-primary/[0.01] flex items-center justify-center overflow-hidden">
+                  <i class="fa-solid fa-newspaper text-4xl text-primary/10 group-hover:text-primary/20 group-hover:scale-110 transition-all duration-700"></i>
                 </div>
                 <div class="p-5">
                   <div class="flex items-center gap-2 mb-2.5">
@@ -453,30 +493,30 @@ app.get('/', (c) => {
       </section>
 
       {/* ===== S12: FINAL CTA ===== */}
-      <section class="cta-dark section-lg">
+      <section class="cta-dark section-lg relative">
         <div class="relative z-10 max-w-4xl mx-auto px-5 md:px-8 text-center">
-          <div class="reveal">
-            <span class="section-eyebrow text-primary mb-4 block">CONSULTATION</span>
-            <h2 class="section-headline text-white mb-5">
+          <div class="reveal-blur">
+            <span class="section-eyebrow text-primary mb-5 block">CONSULTATION</span>
+            <h2 class="section-headline text-white mb-6">
               지금 바로<br class="md:hidden" /> 상담 받아보세요
             </h2>
-            <p class="text-white/40 section-body mb-10">
+            <p class="text-white/35 section-body mb-12">
               전화, 카카오톡, 온라인 예약 모두 가능합니다.
             </p>
 
-            <div class="flex flex-wrap justify-center gap-3">
-              <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white px-8 py-4 text-[0.9rem]">
+            <div class="flex flex-wrap justify-center gap-4">
+              <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white px-9 py-4 text-[0.95rem]" data-cursor-hover>
                 <i class="fa-solid fa-phone"></i> 전화 상담
               </a>
-              <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium px-8 py-4 text-[0.9rem]" style="background:#FEE500;color:#3C1E1E;border:none;">
+              <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium px-9 py-4 text-[0.95rem]" style="background:#FEE500;color:#3C1E1E;border:none;" data-cursor-hover>
                 <i class="fa-solid fa-comment"></i> 카카오톡
               </a>
-              <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="btn-premium btn-premium-fill px-8 py-4 text-[0.9rem]">
+              <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="btn-premium btn-premium-fill px-9 py-4 text-[0.95rem]" data-cursor-hover>
                 <i class="fa-solid fa-calendar-check"></i> 네이버 예약
               </a>
             </div>
 
-            <p class="text-white/20 text-xs mt-8">{CLINIC.phone} · {CLINIC.address}</p>
+            <p class="text-white/15 text-xs mt-10">{CLINIC.phone} · {CLINIC.address}</p>
           </div>
         </div>
       </section>
@@ -497,21 +537,21 @@ app.get('/treatments', (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-sm text-white/30 mb-6">
+          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
             <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/15"></i>
-            <span class="text-white/70">전체 진료</span>
+            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
+            <span class="text-white/60">전체 진료</span>
           </nav>
-          <h1 class="section-headline text-white mb-4">서울365치과 전체 진료 안내</h1>
-          <p class="hero-sub text-white/40 max-w-xl">각 분야 전문의가 최적의 치료를 제안합니다.</p>
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">서울365치과 전체 진료 안내</h1>
+          <p class="hero-sub text-white/35 max-w-xl reveal" style="transition-delay:0.6s">각 분야 전문의가 최적의 치료를 제안합니다.</p>
         </div>
       </section>
 
       <section class="section-lg bg-mesh">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           {treatmentCategories.map(cat => (
-            <div class="mb-14 last:mb-0">
-              <div class="flex items-center gap-3 mb-6 reveal">
+            <div class="mb-16 last:mb-0">
+              <div class="flex items-center gap-3 mb-7 reveal">
                 <div class="icon-circle icon-circle-sm">
                   <i class={`fa-solid ${cat.icon}`}></i>
                 </div>
@@ -519,7 +559,7 @@ app.get('/treatments', (c) => {
               </div>
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-children">
                 {cat.treatments.map(t => (
-                  <a href={`/treatments/${t.slug}`} class="glass-card p-5 group block">
+                  <a href={`/treatments/${t.slug}`} class="glass-card p-5 group block" data-cursor-hover>
                     <div class="flex items-center gap-3">
                       <div class="icon-circle icon-circle-sm flex-shrink-0">
                         <i class={`fa-solid ${t.icon} text-sm`}></i>
@@ -559,18 +599,18 @@ app.get('/treatments/:slug', (c) => {
       {/* Hero */}
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-sm text-white/30 mb-6">
+          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
             <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/15"></i>
+            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
             <a href="/treatments" class="hover:text-white transition-colors">진료안내</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/15"></i>
-            <span class="text-white/70">{t.name}</span>
+            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
+            <span class="text-white/60">{t.name}</span>
           </nav>
-          <h1 class="hero-display text-white mb-5" style="font-size:clamp(2rem,6vw,4rem)">{t.heroTitle}</h1>
-          <p class="hero-sub text-white/40 max-w-2xl mb-8">{t.heroSub}</p>
-          <div class="flex flex-wrap gap-3">
-            <a href="/reservation" class="btn-premium btn-premium-fill"><i class="fa-solid fa-calendar-check"></i> 상담 예약</a>
-            <a href="/pricing" class="btn-premium btn-premium-white"><i class="fa-solid fa-won-sign"></i> 비용 안내</a>
+          <h1 class="hero-display text-white mb-5 reveal" style="font-size:clamp(2rem,6vw,4.5rem);transition-delay:0.4s">{t.heroTitle}</h1>
+          <p class="hero-sub text-white/35 max-w-2xl mb-8 reveal" style="transition-delay:0.6s">{t.heroSub}</p>
+          <div class="flex flex-wrap gap-3 reveal" style="transition-delay:0.8s">
+            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 상담 예약</a>
+            <a href="/pricing" class="btn-premium btn-premium-white" data-cursor-hover><i class="fa-solid fa-won-sign"></i> 비용 안내</a>
           </div>
         </div>
       </section>
@@ -578,7 +618,7 @@ app.get('/treatments/:slug', (c) => {
       {/* Concerns */}
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <div class="text-center mb-12 reveal">
+          <div class="text-center mb-14 reveal">
             <span class="section-eyebrow text-primary mb-3 block">FOR YOU</span>
             <h2 class="section-sub-headline text-gray-900">{t.name}, 이런 고민 있으신가요?</h2>
           </div>
@@ -598,13 +638,13 @@ app.get('/treatments/:slug', (c) => {
       {/* Types */}
       <section class="section-lg bg-white">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-12 reveal">
+          <div class="text-center mb-14 reveal">
             <span class="section-eyebrow text-primary mb-3 block">TYPES</span>
             <h2 class="section-sub-headline text-gray-900">서울365치과 {t.name} 종류</h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
             {t.types.map(type => (
-              <div class="premium-card p-7">
+              <div class="premium-card p-7 tilt-card">
                 <h3 class="font-bold text-gray-900 text-lg mb-3">{type.name}</h3>
                 <p class="text-gray-500 text-[0.9rem] leading-relaxed">{type.desc}</p>
               </div>
@@ -616,13 +656,13 @@ app.get('/treatments/:slug', (c) => {
       {/* Why Us */}
       <section class="section-lg bg-mesh">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-12 reveal">
+          <div class="text-center mb-14 reveal">
             <span class="section-eyebrow text-primary mb-3 block">WHY US</span>
             <h2 class="section-sub-headline text-gray-900">왜 서울365치과의 {t.name}인가요?</h2>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
             {t.whyUs.map(w => (
-              <div class="glass-card p-7 group">
+              <div class="glass-card p-7 group tilt-card">
                 <div class="icon-circle mb-5">
                   <i class={`fa-solid ${w.icon}`}></i>
                 </div>
@@ -637,7 +677,7 @@ app.get('/treatments/:slug', (c) => {
       {/* Process */}
       <section class="section-lg bg-white">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
-          <div class="text-center mb-12 reveal">
+          <div class="text-center mb-14 reveal">
             <span class="section-eyebrow text-primary mb-3 block">PROCESS</span>
             <h2 class="section-sub-headline text-gray-900">{t.name} 치료 과정</h2>
           </div>
@@ -645,7 +685,7 @@ app.get('/treatments/:slug', (c) => {
             {t.process.map((step, i) => (
               <div class="timeline-line flex gap-5 pb-8">
                 <div class="timeline-dot">{i + 1}</div>
-                <div class="pt-2.5">
+                <div class="pt-3">
                   <h3 class="font-bold text-gray-900">{step.step}</h3>
                   {step.desc && <p class="text-gray-500 text-sm mt-1">{step.desc}</p>}
                 </div>
@@ -659,11 +699,11 @@ app.get('/treatments/:slug', (c) => {
       {doc && (
         <section class="section-lg bg-mesh">
           <div class="max-w-4xl mx-auto px-5 md:px-8">
-            <div class="text-center mb-12 reveal">
+            <div class="text-center mb-14 reveal">
               <span class="section-eyebrow text-primary mb-3 block">DOCTOR</span>
               <h2 class="section-sub-headline text-gray-900">담당 의료진</h2>
             </div>
-            <div class="glass-card p-0 overflow-hidden reveal-scale">
+            <div class="glass-card p-0 overflow-hidden reveal-3d">
               <div class="md:flex items-center">
                 <div class="md:w-1/3 bg-gradient-to-br from-primary/8 to-primary/[0.02] p-8 flex items-center justify-center min-h-[200px]">
                   <div class="text-center">
@@ -679,7 +719,7 @@ app.get('/treatments/:slug', (c) => {
                     "{doc.philosophy.split('.')[0]}."
                   </blockquote>
                   <p class="text-gray-400 text-sm mb-4">{doc.specialties.join(' · ')}</p>
-                  <a href={`/doctors/${doc.slug}`} class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold link-underline">
+                  <a href={`/doctors/${doc.slug}`} class="inline-flex items-center gap-1.5 text-primary text-sm font-semibold link-underline" data-cursor-hover>
                     프로필 보기 <i class="fa-solid fa-arrow-right text-xs"></i>
                   </a>
                 </div>
@@ -692,14 +732,14 @@ app.get('/treatments/:slug', (c) => {
       {/* FAQ */}
       <section class="section-lg bg-white" itemscope itemtype="https://schema.org/FAQPage">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
-          <div class="text-center mb-12 reveal">
+          <div class="text-center mb-14 reveal">
             <span class="section-eyebrow text-primary mb-3 block">FAQ</span>
             <h2 class="section-sub-headline text-gray-900">{t.name} 자주 묻는 질문</h2>
           </div>
           <div class="space-y-3 stagger-children">
             {t.faq.map(faq => (
               <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+                <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
                   <h3 class="font-semibold text-gray-800 text-[0.9rem] pr-4" itemprop="name">{faq.q}</h3>
                   <i class="fa-solid fa-chevron-down text-gray-300 text-sm faq-icon flex-shrink-0"></i>
                 </button>
@@ -714,13 +754,13 @@ app.get('/treatments/:slug', (c) => {
 
       {/* CTA */}
       <section class="cta-dark section-md">
-        <div class="relative z-10 max-w-4xl mx-auto px-5 md:px-8 text-center reveal">
+        <div class="relative z-10 max-w-4xl mx-auto px-5 md:px-8 text-center reveal-blur">
           <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">지금 바로 상담 예약하세요</h2>
-          <p class="text-white/40 mb-8">{t.name}에 대해 자세히 상담받아 보세요.</p>
+          <p class="text-white/35 mb-8">{t.name}에 대해 자세히 상담받아 보세요.</p>
           <div class="flex flex-wrap justify-center gap-3">
-            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white"><i class="fa-solid fa-phone"></i> 전화 상담</a>
-            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium" style="background:#FEE500;color:#3C1E1E;border:none;"><i class="fa-solid fa-comment"></i> 카카오톡</a>
-            <a href="/reservation" class="btn-premium btn-premium-fill"><i class="fa-solid fa-calendar-check"></i> 예약하기</a>
+            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white" data-cursor-hover><i class="fa-solid fa-phone"></i> 전화 상담</a>
+            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium" style="background:#FEE500;color:#3C1E1E;border:none;" data-cursor-hover><i class="fa-solid fa-comment"></i> 카카오톡</a>
+            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 예약하기</a>
           </div>
         </div>
       </section>
@@ -746,20 +786,20 @@ app.get('/doctors', (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-sm text-white/30 mb-6">
+          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
             <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/15"></i>
-            <span class="text-white/70">의료진</span>
+            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
+            <span class="text-white/60">의료진</span>
           </nav>
-          <h1 class="section-headline text-white mb-4">서울365치과 의료진 소개</h1>
-          <p class="hero-sub text-white/40 max-w-xl">서울대 출신 5인 원장이 협력하여 최적의 치료를 제공합니다.</p>
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">서울365치과 의료진 소개</h1>
+          <p class="hero-sub text-white/35 max-w-xl reveal" style="transition-delay:0.6s">서울대 출신 5인 원장이 협력하여 최적의 치료를 제공합니다.</p>
         </div>
       </section>
 
       <section class="section-lg bg-mesh">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           {/* Lead doctor */}
-          <div class="premium-card overflow-hidden mb-10 reveal-scale">
+          <div class="premium-card overflow-hidden mb-10 reveal-3d">
             <div class="md:flex">
               <div class="md:w-2/5 bg-gradient-to-br from-primary/10 to-primary/[0.02] p-10 flex items-center justify-center min-h-[360px]">
                 <div class="text-center">
@@ -787,7 +827,7 @@ app.get('/doctors', (c) => {
                     <ul class="space-y-2">{doctors[0].credentials.slice(0,3).map(e => <li class="text-gray-500 flex items-start gap-2"><span class="w-1 h-1 bg-primary rounded-full mt-2 flex-shrink-0"></span>{e}</li>)}</ul>
                   </div>
                 </div>
-                <a href="/doctors/park-junkyu" class="btn-premium btn-premium-fill mt-8 text-sm px-6 py-3">프로필 상세 보기</a>
+                <a href="/doctors/park-junkyu" class="btn-premium btn-premium-fill mt-8 text-sm px-6 py-3" data-cursor-hover>프로필 상세 보기</a>
               </div>
             </div>
           </div>
@@ -795,7 +835,7 @@ app.get('/doctors', (c) => {
           {/* Other doctors */}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5 stagger-children">
             {doctors.slice(1).map(doc => (
-              <a href={`/doctors/${doc.slug}`} class="glass-card p-6 block md:flex gap-5 items-start group">
+              <a href={`/doctors/${doc.slug}`} class="glass-card p-6 block md:flex gap-5 items-start group" data-cursor-hover>
                 <div class="w-20 h-20 rounded-full bg-primary/8 flex items-center justify-center flex-shrink-0 mx-auto md:mx-0 mb-4 md:mb-0 group-hover:bg-primary/15 transition-colors">
                   <i class="fa-solid fa-user-doctor text-2xl text-primary/40 group-hover:text-primary/60 transition-colors"></i>
                 </div>
@@ -831,16 +871,16 @@ app.get('/doctors/:slug', (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-sm text-white/30 mb-6">
+          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
             <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/15"></i>
+            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
             <a href="/doctors" class="hover:text-white transition-colors">의료진</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/15"></i>
-            <span class="text-white/70">{doc.name}</span>
+            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
+            <span class="text-white/60">{doc.name}</span>
           </nav>
-          <div class="md:flex items-center gap-8">
+          <div class="md:flex items-center gap-8 reveal" style="transition-delay:0.4s">
             <div class="w-32 h-32 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0">
-              <i class="fa-solid fa-user-doctor text-5xl text-white/25"></i>
+              <i class="fa-solid fa-user-doctor text-5xl text-white/20"></i>
             </div>
             <div class="text-center md:text-left">
               <h1 class="text-3xl md:text-4xl font-bold text-white">{doc.h1}</h1>
@@ -854,7 +894,7 @@ app.get('/doctors/:slug', (c) => {
 
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <blockquote class="text-xl text-gray-600 italic border-l-3 border-primary pl-6 mb-12 leading-relaxed reveal" style="border-left-width:3px">
+          <blockquote class="text-xl text-gray-600 italic border-l-3 border-primary pl-6 mb-14 leading-relaxed reveal" style="border-left-width:3px">
             "{doc.philosophy}"
           </blockquote>
 
@@ -885,13 +925,13 @@ app.get('/doctors/:slug', (c) => {
           </div>
 
           {/* Treatment Links */}
-          <div class="mt-10 reveal">
+          <div class="mt-12 reveal">
             <h2 class="font-bold text-gray-900 text-lg mb-5 flex items-center gap-2"><i class="fa-solid fa-stethoscope text-primary"></i> 담당 치료</h2>
             <div class="flex flex-wrap gap-3">
               {doc.treatmentLinks.map(link => {
                 const treat = getTreatmentBySlug(link.split('/').pop()!);
                 return treat ? (
-                  <a href={link} class="btn-premium btn-premium-outline text-sm px-5 py-2.5">
+                  <a href={link} class="btn-premium btn-premium-outline text-sm px-5 py-2.5" data-cursor-hover>
                     <i class={`fa-solid ${treat.icon} text-xs`}></i> {treat.name}
                   </a>
                 ) : null;
@@ -902,11 +942,11 @@ app.get('/doctors/:slug', (c) => {
       </section>
 
       <section class="cta-dark section-md">
-        <div class="relative z-10 max-w-4xl mx-auto px-5 md:px-8 text-center reveal">
+        <div class="relative z-10 max-w-4xl mx-auto px-5 md:px-8 text-center reveal-blur">
           <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">{doc.name} {doc.titleShort}에게 상담받기</h2>
           <div class="flex flex-wrap justify-center gap-3 mt-6">
-            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white"><i class="fa-solid fa-phone"></i> 전화 상담</a>
-            <a href="/reservation" class="btn-premium btn-premium-fill"><i class="fa-solid fa-calendar-check"></i> 예약하기</a>
+            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white" data-cursor-hover><i class="fa-solid fa-phone"></i> 전화 상담</a>
+            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 예약하기</a>
           </div>
         </div>
       </section>
@@ -933,16 +973,16 @@ app.get('/reservation', (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4">상담 예약하기</h1>
-          <p class="hero-sub text-white/40">편하신 방법으로 상담 예약해 주세요.</p>
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">상담 예약하기</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">편하신 방법으로 상담 예약해 주세요.</p>
         </div>
       </section>
 
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           {/* Quick CTAs */}
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-14 stagger-children">
-            <a href={CLINIC.phoneTel} class="glass-card p-8 text-center group block">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16 stagger-children">
+            <a href={CLINIC.phoneTel} class="glass-card p-8 text-center group block" data-cursor-hover>
               <div class="icon-circle mx-auto mb-4">
                 <i class="fa-solid fa-phone"></i>
               </div>
@@ -950,7 +990,7 @@ app.get('/reservation', (c) => {
               <p class="text-primary font-extrabold text-xl">{CLINIC.phone}</p>
               <p class="text-sm text-gray-400 mt-2">가장 빠른 상담 방법</p>
             </a>
-            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="glass-card p-8 text-center group block">
+            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="glass-card p-8 text-center group block" data-cursor-hover>
               <div class="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-100 transition-colors">
                 <i class="fa-solid fa-comment text-yellow-500 text-xl"></i>
               </div>
@@ -958,7 +998,7 @@ app.get('/reservation', (c) => {
               <p class="text-yellow-600 font-bold">채팅으로 편하게</p>
               <p class="text-sm text-gray-400 mt-2">사진/영상 전송 가능</p>
             </a>
-            <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="glass-card p-8 text-center group block">
+            <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="glass-card p-8 text-center group block" data-cursor-hover>
               <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-100 transition-colors">
                 <i class="fa-solid fa-calendar-check text-green-500 text-xl"></i>
               </div>
@@ -969,7 +1009,7 @@ app.get('/reservation', (c) => {
           </div>
 
           {/* Form */}
-          <div class="premium-card p-8 md:p-10 reveal-scale">
+          <div class="premium-card p-8 md:p-10 reveal-3d">
             <h2 class="text-xl font-bold text-gray-900 mb-8">온라인 상담 신청</h2>
             <form class="space-y-5" onsubmit="event.preventDefault(); alert('상담 신청이 완료되었습니다.');">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -1001,7 +1041,7 @@ app.get('/reservation', (c) => {
                   <a href="/privacy" class="text-primary font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
                 </label>
               </div>
-              <button type="submit" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]">상담 신청하기</button>
+              <button type="submit" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>상담 신청하기</button>
             </form>
           </div>
         </div>
@@ -1023,23 +1063,23 @@ app.get('/pricing', (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-sm text-white/30 mb-6">
+          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
             <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/15"></i>
-            <span class="text-white/70">비용안내</span>
+            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
+            <span class="text-white/60">비용안내</span>
           </nav>
-          <h1 class="section-headline text-white mb-4">진료비용 안내</h1>
-          <p class="hero-sub text-white/40">투명하게 안내드립니다.</p>
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">진료비용 안내</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">투명하게 안내드립니다.</p>
         </div>
       </section>
 
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <div class="premium-card overflow-hidden reveal-scale">
+          <div class="premium-card overflow-hidden reveal-3d">
             <div class="overflow-x-auto">
               <table class="w-full text-sm">
                 <thead>
-                  <tr class="bg-navy text-white/90">
+                  <tr class="bg-gradient-to-r from-navy to-navy-lighter text-white/90">
                     <th class="text-left px-6 py-4 font-semibold text-[0.82rem]">치료 항목</th>
                     <th class="text-right px-6 py-4 font-semibold text-[0.82rem]">가격대</th>
                     <th class="text-right px-6 py-4 font-semibold text-[0.82rem] hidden sm:table-cell">보험 적용</th>
@@ -1047,7 +1087,7 @@ app.get('/pricing', (c) => {
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                   {pricingData.map((p, i) => (
-                    <tr class={`hover:bg-primary/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+                    <tr class={`hover:bg-primary/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
                       <td class="px-6 py-4 text-gray-800 font-medium">{p.treatment}</td>
                       <td class="px-6 py-4 text-right text-primary font-bold">{p.price}</td>
                       <td class="px-6 py-4 text-right text-gray-400 hidden sm:table-cell text-xs">{p.insurance}</td>
@@ -1069,7 +1109,7 @@ app.get('/pricing', (c) => {
           </div>
 
           <div class="text-center mt-10 reveal">
-            <a href="/reservation" class="btn-premium btn-premium-fill">비용 상담 예약하기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>
+            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>비용 상담 예약하기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>
           </div>
         </div>
       </section>
@@ -1090,20 +1130,20 @@ app.get('/directions', (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-sm text-white/30 mb-6">
+          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
             <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/15"></i>
-            <span class="text-white/70">오시는길</span>
+            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
+            <span class="text-white/60">오시는길</span>
           </nav>
-          <h1 class="section-headline text-white mb-4">오시는 길</h1>
-          <p class="hero-sub text-white/40">예술회관역 5번 출구에서 250m, 이토타워 2층</p>
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">오시는 길</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">예술회관역 5번 출구에서 250m, 이토타워 2층</p>
         </div>
       </section>
 
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           {/* Map placeholder */}
-          <div class="premium-card overflow-hidden aspect-video flex items-center justify-center mb-10 reveal-scale">
+          <div class="premium-card overflow-hidden aspect-video flex items-center justify-center mb-10 reveal-3d">
             <div class="text-center text-gray-300">
               <i class="fa-solid fa-map-location-dot text-5xl mb-3"></i>
               <p class="font-semibold text-gray-400">지도 영역</p>
@@ -1118,7 +1158,7 @@ app.get('/directions', (c) => {
               { icon: 'fa-car', title: '주차', main: '이토타워 건물 내 주차장 이용', sub: '진료 시 주차 지원 가능' },
               { icon: 'fa-bus', title: '버스', main: '예술회관역 정류장 하차', sub: '다수 시내버스 이용 가능' },
             ].map(info => (
-              <div class="glass-card p-6">
+              <div class="glass-card p-6 tilt-card">
                 <div class="flex items-center gap-3 mb-3">
                   <div class="icon-circle icon-circle-sm">
                     <i class={`fa-solid ${info.icon}`}></i>
@@ -1132,7 +1172,7 @@ app.get('/directions', (c) => {
           </div>
 
           <div class="text-center mt-10 reveal">
-            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-fill"><i class="fa-solid fa-phone"></i> 전화 문의 {CLINIC.phone}</a>
+            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-phone"></i> 전화 문의 {CLINIC.phone}</a>
           </div>
         </div>
       </section>
@@ -1161,8 +1201,8 @@ app.get('/faq', (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4">자주 묻는 질문</h1>
-          <p class="hero-sub text-white/40">궁금하신 점을 먼저 확인해 보세요.</p>
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">자주 묻는 질문</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">궁금하신 점을 먼저 확인해 보세요.</p>
         </div>
       </section>
 
@@ -1171,7 +1211,7 @@ app.get('/faq', (c) => {
           <div class="space-y-3 stagger-children">
             {allFaq.map(faq => (
               <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+                <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
                   <h3 class="font-semibold text-gray-800 text-[0.95rem] pr-4" itemprop="name">{faq.q}</h3>
                   <i class="fa-solid fa-chevron-down text-gray-300 text-sm faq-icon flex-shrink-0"></i>
                 </button>
@@ -1183,7 +1223,7 @@ app.get('/faq', (c) => {
           </div>
           <div class="text-center mt-10 reveal">
             <p class="text-gray-400 mb-4">더 궁금하신 점이 있으신가요?</p>
-            <a href="/reservation" class="btn-premium btn-premium-fill">상담 예약하기</a>
+            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>상담 예약하기</a>
           </div>
         </div>
       </section>
@@ -1204,8 +1244,8 @@ app.get('/cases/gallery', (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4">치료 사례 Before &amp; After</h1>
-          <p class="hero-sub text-white/40">실제 치료 사례로 결과를 확인하세요.</p>
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">치료 사례 Before &amp; After</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">실제 치료 사례로 결과를 확인하세요.</p>
         </div>
       </section>
 
@@ -1216,7 +1256,7 @@ app.get('/cases/gallery', (c) => {
               '전체임플란트 – 상악 전체 수복', '올온X – 하악 즉시로딩', '인비절라인 – 성인 투명교정',
               '크라운 – 올세라믹 수복', '심미보철 – 라미네이트', '임플란트 – 단일 식립',
             ].map(title => (
-              <div class="premium-card overflow-hidden">
+              <div class="premium-card overflow-hidden tilt-card">
                 <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
                   <div class="text-center text-gray-300">
                     <i class="fa-solid fa-image text-3xl mb-2"></i>
@@ -1229,7 +1269,7 @@ app.get('/cases/gallery', (c) => {
               </div>
             ))}
           </div>
-          <p class="text-[0.72rem] text-gray-300 text-center mt-8">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
+          <p class="text-[0.72rem] text-gray-300 text-center mt-10">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
         </div>
       </section>
     </>,
@@ -1292,15 +1332,16 @@ app.get('/terms', (c) => {
 app.notFound((c) => {
   return c.render(
     <section class="hero-premium" style="min-height:80vh">
+      <div class="hero-grid"></div>
       <div class="orb orb-1"></div>
       <div class="orb orb-2"></div>
       <div class="relative z-10 max-w-lg mx-auto px-5 text-center">
-        <div class="text-[8rem] font-extrabold text-white/[0.04] leading-none mb-4">404</div>
+        <div class="text-[8rem] font-black gradient-text-white leading-none mb-4" style="opacity:0.06">404</div>
         <h1 class="text-2xl font-bold text-white mb-3">페이지를 찾을 수 없습니다</h1>
-        <p class="text-white/40 mb-8">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
+        <p class="text-white/35 mb-8">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
         <div class="flex flex-wrap justify-center gap-3">
-          <a href="/" class="btn-premium btn-premium-fill">홈으로 가기</a>
-          <a href="/treatments" class="btn-premium btn-premium-white">진료 안내</a>
+          <a href="/" class="btn-premium btn-premium-fill" data-cursor-hover>홈으로 가기</a>
+          <a href="/treatments" class="btn-premium btn-premium-white" data-cursor-hover>진료 안내</a>
         </div>
       </div>
     </section>,
