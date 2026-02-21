@@ -4,6 +4,7 @@ import { CLINIC, STATS, DIFF_CARDS, HOURS } from './data/clinic'
 import { doctors, getDoctorBySlug } from './data/doctors'
 import { treatments, getTreatmentBySlug, treatmentCategories } from './data/treatments'
 import { mainFaq, pricingData } from './data/faq'
+import { MESSAGING, MISSION, VISION, MAIN_SUMMARY, DIFF_COPY, PERSONAS, TREATMENT_EMPATHY, DOCTOR_STORIES, SLOGANS } from './data/brand'
 
 const app = new Hono()
 app.use(renderer)
@@ -39,14 +40,17 @@ app.get('/', (c) => {
               <span class="text-white/30 text-xs font-medium tracking-wider">인천 구월동 · 예술회관역 5번 출구</span>
             </div>
 
-            {/* H1 — Massive Display with Electric Gradient */}
+            {/* H1 — Brand Tagline */}
             <h1 class="hero-display gradient-text-white mb-8 reveal" style="transition-delay:0.5s">
-              과잉진료 없는<br/><span class="gradient-text-electric">양심치과</span>
+              다른 곳에서 안 된다는 분들이<br/><span class="gradient-text-electric">저희를 찾습니다.</span>
             </h1>
 
-            {/* Highlight Description */}
-            <p class="text-white/45 text-lg md:text-xl leading-relaxed max-w-2xl mb-6 reveal" style="transition-delay:0.7s">
-              <span class="text-[#00E5FF] font-semibold">서울대 출신 5인 원장</span>이 협력하는 유일한 치과.
+            {/* Sub Copy — Philosophy + Summary */}
+            <p class="text-white/50 text-lg md:text-xl leading-relaxed max-w-2xl mb-3 reveal" style="transition-delay:0.65s">
+              {MESSAGING.heroSub.split('\n')[0]}
+            </p>
+            <p class="text-white/35 text-base md:text-lg leading-relaxed max-w-2xl mb-6 reveal" style="transition-delay:0.75s">
+              {MESSAGING.heroSub.split('\n')[1]}
             </p>
 
             {/* Metric Bar — Electric Tags */}
@@ -165,16 +169,16 @@ app.get('/', (c) => {
 
       <div class="divider-gradient"></div>
 
-      {/* ===== S4: DIFFERENTIATION — ELECTRIC BENTO GRID ===== */}
+      {/* ===== S4: DIFFERENTIATION — PATIENT-FOCUSED BENTO GRID ===== */}
       <section class="section-lg bg-mesh relative overflow-hidden">
         <div class="absolute top-20 right-10 w-[300px] h-[300px] bg-[#0066FF]/[0.04] rounded-full blur-[100px] pointer-events-none morph-blob"></div>
         <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
           <div class="text-center mb-16 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">WHY SEOUL 365</span>
             <h2 class="section-headline text-gray-900">
-              다른 치과와는<br class="md:hidden" /> <span class="highlight-word">차원이 다릅니다</span>
+              치과를 미뤄왔던 이유,<br class="md:hidden" /> <span class="highlight-word">저희가 해결합니다.</span>
             </h2>
-            <p class="section-body text-gray-400 mt-5 max-w-xl mx-auto">서울대학교 치과병원 동일 시스템을 인천 구월동에서.</p>
+            <p class="section-body text-gray-400 mt-5 max-w-xl mx-auto">{MISSION}</p>
           </div>
 
           <div class="bento-grid stagger-children">
@@ -183,8 +187,10 @@ app.get('/', (c) => {
                 <div class="icon-circle mb-5">
                   <i class={`fa-solid ${card.icon}`}></i>
                 </div>
-                <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-[#0066FF] transition-colors">{card.title}</h3>
-                <p class="text-gray-500 text-[0.9rem] leading-relaxed">{card.desc}</p>
+                <h3 class="font-bold text-[#0066FF] text-[0.82rem] tracking-wide mb-1">{card.title}</h3>
+                <p class="font-bold text-gray-900 text-lg mb-2 leading-snug">{card.headline}</p>
+                <p class="text-gray-500 text-[0.9rem] leading-relaxed mb-4">{card.desc}</p>
+                <p class="text-[0.82rem] text-gray-400 italic border-l-2 border-[#0066FF]/20 pl-3">{card.voice}</p>
               </div>
             ))}
           </div>
@@ -499,7 +505,43 @@ app.get('/', (c) => {
         </div>
       </section>
 
-      {/* ===== S12: FINAL CTA — ELECTRIC ===== */}
+      {/* ===== VISION — 3 PROMISES ===== */}
+      <section class="section-lg bg-premium-dark bg-mesh-dark relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0066FF]/20 to-transparent"></div>
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+          <div class="text-center mb-16 reveal">
+            <span class="section-eyebrow text-[#0066FF] mb-4 block">OUR PROMISE</span>
+            <h2 class="section-headline text-white">{VISION.headline}</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
+            {VISION.promises.map((p, i) => (
+              <div class="premium-card-dark p-8 text-center tilt-card">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0066FF]/20 to-[#00E5FF]/10 flex items-center justify-center mx-auto mb-6">
+                  <i class={`fa-solid ${p.icon} text-[#00E5FF] text-2xl`}></i>
+                </div>
+                <div class="text-[#0066FF] text-[0.72rem] font-bold tracking-widest mb-2">PROMISE 0{i + 1}</div>
+                <h3 class="text-xl font-bold text-white mb-3">{p.title}</h3>
+                <p class="text-white/40 text-[0.9rem] leading-relaxed">{p.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 3-LINE SUMMARY ===== */}
+      <section class="bg-white py-16 md:py-20 relative overflow-hidden">
+        <div class="max-w-3xl mx-auto px-5 md:px-8 text-center">
+          <div class="space-y-4 reveal">
+            {MAIN_SUMMARY.map((line, i) => (
+              <p class={`text-lg md:text-xl font-semibold leading-relaxed ${i === 0 ? 'text-[#0066FF]' : 'text-gray-700'}`}>
+                {line}
+              </p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== S12: FINAL CTA — BRAND CTA ===== */}
       <section class="cta-dark section-lg relative">
         {/* Extra electric accents */}
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full morph-blob pointer-events-none" style="background:radial-gradient(circle,rgba(0,102,255,0.15),transparent 60%);animation-delay:-3s"></div>
@@ -508,10 +550,10 @@ app.get('/', (c) => {
           <div class="reveal-blur">
             <span class="section-eyebrow text-[#0066FF] mb-5 block">CONSULTATION</span>
             <h2 class="section-headline text-white mb-6">
-              지금 바로<br class="md:hidden" /> <span class="gradient-text-electric">상담 받아보세요</span>
+              {MESSAGING.ctaMain.split('.')[0]}.<br class="md:hidden" /> <span class="gradient-text-electric">{MESSAGING.ctaMain.split('.')[1]?.trim() || '지금 상담 받으세요.'}</span>
             </h2>
             <p class="text-white/35 section-body mb-12">
-              전화, 카카오톡, 온라인 예약 모두 가능합니다.
+              {MESSAGING.ctaSub}
             </p>
 
             <div class="flex flex-wrap justify-center gap-4">
@@ -532,8 +574,8 @@ app.get('/', (c) => {
       </section>
     </>,
     {
-      title: '서울365치과 | 인천 구월동 치과 - 서울대 5인 전문의, 365일 진료',
-      description: '인천 구월동 서울365치과. 서울대 출신 5인 원장, 365일 진료, 자체 기공실 보유. 임플란트·교정·수면진료. 032-432-0365',
+      title: '서울365치과 | 다른 곳에서 안 된다는 분들이 저희를 찾습니다 - 인천 구월동',
+      description: '다른 곳에서 안 된다는 분들이 찾는 인천 구월동 서울365치과. 서울대 출신 5인 원장, 마취가 안 되면 절대 시작하지 않습니다. 365일 진료. 032-432-0365',
       canonical: 'https://seoul365dental.com',
     }
   )
@@ -603,10 +645,11 @@ app.get('/treatments/:slug', (c) => {
   const t = getTreatmentBySlug(slug);
   if (!t) return c.notFound();
   const doc = getDoctorBySlug(t.doctorSlug);
+  const empathy = TREATMENT_EMPATHY[slug];
 
   return c.render(
     <>
-      {/* Hero */}
+      {/* Hero — Persona-based Empathy */}
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
           <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
@@ -616,8 +659,17 @@ app.get('/treatments/:slug', (c) => {
             <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
             <span class="text-white/60">{t.name}</span>
           </nav>
-          <h1 class="hero-display text-white mb-5 reveal" style="font-size:clamp(2rem,6vw,4.5rem);transition-delay:0.4s">{t.heroTitle}</h1>
-          <p class="hero-sub text-white/35 max-w-2xl mb-8 reveal" style="transition-delay:0.6s">{t.heroSub}</p>
+          {empathy ? (
+            <>
+              <h1 class="hero-display text-white mb-5 reveal" style="font-size:clamp(2rem,6vw,4.5rem);transition-delay:0.4s;white-space:pre-line">{empathy.heroTagline}</h1>
+              <p class="hero-sub text-white/40 max-w-2xl mb-8 reveal" style="transition-delay:0.6s">{empathy.heroSub}</p>
+            </>
+          ) : (
+            <>
+              <h1 class="hero-display text-white mb-5 reveal" style="font-size:clamp(2rem,6vw,4.5rem);transition-delay:0.4s">{t.heroTitle}</h1>
+              <p class="hero-sub text-white/35 max-w-2xl mb-8 reveal" style="transition-delay:0.6s">{t.heroSub}</p>
+            </>
+          )}
           <div class="flex flex-wrap gap-3 reveal" style="transition-delay:0.8s">
             <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 상담 예약</a>
             <a href="/pricing" class="btn-premium btn-premium-white" data-cursor-hover><i class="fa-solid fa-won-sign"></i> 비용 안내</a>
@@ -802,7 +854,7 @@ app.get('/doctors', (c) => {
             <span class="text-white/60">의료진</span>
           </nav>
           <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">서울365치과 의료진 소개</h1>
-          <p class="hero-sub text-white/35 max-w-xl reveal" style="transition-delay:0.6s">서울대 출신 5인 원장이 협력하여 최적의 치료를 제공합니다.</p>
+          <p class="hero-sub text-white/35 max-w-xl reveal" style="transition-delay:0.6s">서울대 출신 5인 원장이 하나의 케이스를 함께 봅니다.</p>
         </div>
       </section>
 
@@ -876,6 +928,7 @@ app.get('/doctors/:slug', (c) => {
   const slug = c.req.param('slug');
   const doc = getDoctorBySlug(slug);
   if (!doc) return c.notFound();
+  const story = DOCTOR_STORIES[slug];
 
   return c.render(
     <>
@@ -894,6 +947,9 @@ app.get('/doctors/:slug', (c) => {
             </div>
             <div class="text-center md:text-left">
               <h1 class="text-3xl md:text-4xl font-bold text-white">{doc.h1}</h1>
+              {story && (
+                <p class="text-[#00E5FF] text-sm font-semibold mt-2 italic">"{story.principle}"</p>
+              )}
               <div class="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
                 {doc.specialties.map(s => <span class="text-[0.75rem] bg-white/[0.06] text-white/60 px-3 py-1.5 rounded-full border border-white/[0.06]">{s}</span>)}
               </div>
@@ -904,9 +960,36 @@ app.get('/doctors/:slug', (c) => {
 
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <blockquote class="text-xl text-gray-600 italic border-l-3 border-[#0066FF] pl-6 mb-14 leading-relaxed reveal" style="border-left-width:3px">
-            "{doc.philosophy}"
-          </blockquote>
+          {/* Story-type Introduction */}
+          {story ? (
+            <div class="mb-14 reveal">
+              <div class="premium-card p-8 md:p-10">
+                <h2 class="font-bold text-gray-900 text-lg mb-6 flex items-center gap-2">
+                  <i class="fa-solid fa-book-open text-[#0066FF]"></i> 소개
+                </h2>
+                <div class="text-gray-600 text-[0.95rem] leading-[1.9] space-y-4">
+                  {story.storyIntro.split('\n\n').map(paragraph => (
+                    <p>{paragraph}</p>
+                  ))}
+                </div>
+                {/* 3-line profile summary */}
+                <div class="mt-8 pt-6 border-t border-gray-100">
+                  <div class="flex flex-wrap gap-3">
+                    {story.profileSummary.map(line => (
+                      <div class="flex items-start gap-2 text-sm text-gray-500">
+                        <i class="fa-solid fa-check text-[#0066FF] text-xs mt-1 flex-shrink-0"></i>
+                        <span>{line}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <blockquote class="text-xl text-gray-600 italic border-l-3 border-[#0066FF] pl-6 mb-14 leading-relaxed reveal" style="border-left-width:3px">
+              "{doc.philosophy}"
+            </blockquote>
+          )}
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 stagger-children">
             <div class="glass-card p-7">

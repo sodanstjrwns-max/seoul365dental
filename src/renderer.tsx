@@ -1,5 +1,6 @@
 import { jsxRenderer } from 'hono/jsx-renderer'
 import { CLINIC, HOURS } from './data/clinic'
+import { MESSAGING } from './data/brand'
 
 export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd }) => {
   const pageTitle = title || `서울365치과 | 인천 구월동 치과 - 서울대 5인 전문의, 365일 진료`;
@@ -183,9 +184,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                   </div>
                 </a>
                 <p class="text-sm leading-relaxed text-white/35 max-w-xs">
-                  과잉진료 없는 양심치과.<br/>
-                  서울대 출신 5인 원장이 협력하여<br/>
-                  365일 최적의 치료를 제공합니다.
+                  {MESSAGING.brandSlogan}<br/>
+                  서울대 출신 5인 원장 · 365일 진료 · 자체 기공실.
                 </p>
                 <div class="flex gap-2.5 mt-6">
                   {[
