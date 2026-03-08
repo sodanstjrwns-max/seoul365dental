@@ -285,6 +285,35 @@ body {
   pointer-events: none;
 }
 
+/* === HERO PORTRAIT (대표원장 사진) === */
+.hero-portrait-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.2rem;
+  will-change: transform;
+  animation: portraitFloat 6s ease-in-out infinite;
+}
+
+.hero-portrait {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: center 15%;
+  aspect-ratio: 3 / 4;
+  filter: brightness(0.9) contrast(1.08) saturate(0.95);
+  transition: filter 0.6s ease;
+}
+
+.hero-portrait-wrap:hover .hero-portrait {
+  filter: brightness(1) contrast(1.05) saturate(1);
+}
+
+@keyframes portraitFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
 /* Orbs — VIVID ELECTRIC BLUE */
 .orb {
   position: absolute;

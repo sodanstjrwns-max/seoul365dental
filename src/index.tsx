@@ -22,7 +22,7 @@ app.get('/', (c) => {
 
   return c.render(
     <>
-      {/* ===== S1: CINEMATIC HERO — EMOTIONAL IMPACT v6 ===== */}
+      {/* ===== S1: CINEMATIC HERO — EMOTIONAL IMPACT v7 + DR PORTRAIT ===== */}
       <section class="hero-premium">
         {/* Background layers */}
         <div class="hero-grid"></div>
@@ -32,111 +32,172 @@ app.get('/', (c) => {
         <div class="orb orb-3"></div>
 
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 w-full">
-          <div class="max-w-5xl pt-28 pb-16 md:pt-0 md:pb-0">
+          {/* 2-Column Layout: Copy Left + Photo Right */}
+          <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 pt-28 pb-16 md:pt-0 md:pb-0">
 
-            {/* Top Bar — Status + Location */}
-            <div class="flex items-center gap-3 mb-12 reveal" style="transition-delay:0.2s">
-              <div class="glass trust-badge text-white/90" data-status>
-                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                <span class="font-semibold">진료중</span>
+            {/* LEFT COLUMN — Copy */}
+            <div class="flex-1 min-w-0 lg:max-w-[58%]">
+
+              {/* Top Bar — Status + Location */}
+              <div class="flex items-center gap-3 mb-10 reveal" style="transition-delay:0.2s">
+                <div class="glass trust-badge text-white/90" data-status>
+                  <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                  <span class="font-semibold">진료중</span>
+                </div>
+                <span class="text-[#0066FF]/25 text-xs">|</span>
+                <span class="text-white/25 text-xs font-medium tracking-wider">인천 구월동 · 예술회관역 5번 출구 250m</span>
               </div>
-              <span class="text-[#0066FF]/25 text-xs">|</span>
-              <span class="text-white/25 text-xs font-medium tracking-wider">인천 구월동 · 예술회관역 5번 출구 250m</span>
+
+              {/* Philosophy Badge */}
+              <div class="reveal mb-7" style="transition-delay:0.35s">
+                <span class="inline-flex items-center gap-2 text-[0.68rem] tracking-[0.25em] uppercase font-bold text-[#00E5FF]/70 px-4 py-2 rounded-full border border-[#00E5FF]/15 bg-[#00E5FF]/[0.04]">
+                  <span class="w-1.5 h-1.5 bg-[#00E5FF] rounded-full"></span>
+                  {MESSAGING.heroPhilosophy}
+                </span>
+              </div>
+
+              {/* H1 — 3-Line Emotional Headline */}
+              <h1 class="reveal" style="transition-delay:0.5s">
+                <span class="block text-white/40 mb-1" style="font-size:clamp(2rem,5.5vw,4.2rem);line-height:1.08;letter-spacing:-0.04em;font-weight:800">
+                  {MESSAGING.heroLine1}
+                </span>
+                <span class="block text-white/60 mb-2" style="font-size:clamp(2rem,5.5vw,4.2rem);line-height:1.08;letter-spacing:-0.04em;font-weight:800">
+                  {MESSAGING.heroLine2}
+                </span>
+                <span class="block gradient-text-electric" style="font-size:clamp(2.3rem,6.5vw,5rem);line-height:1.02;letter-spacing:-0.05em;font-weight:900">
+                  {MESSAGING.heroAccent}
+                </span>
+              </h1>
+
+              {/* Divider */}
+              <div class="reveal mt-8 mb-6" style="transition-delay:0.65s">
+                <div class="w-14 h-[2px] bg-gradient-to-r from-[#0066FF] to-[#00E5FF] rounded-full"></div>
+              </div>
+
+              {/* Sub Copy — 원장 직접 인용 */}
+              <div class="space-y-2 mb-5 reveal" style="transition-delay:0.75s">
+                <p class="text-white/60 text-base md:text-lg font-medium leading-relaxed max-w-xl">
+                  <span class="text-[#0066FF] mr-1 font-bold">"</span>{MESSAGING.heroSub1}<span class="text-[#0066FF] ml-0.5 font-bold">"</span>
+                </p>
+                <p class="text-white/35 text-sm md:text-base leading-relaxed max-w-xl pl-4" style="border-left:2px solid rgba(0,102,255,0.15)">
+                  {MESSAGING.heroSub2}
+                </p>
+              </div>
+
+              {/* Patient Testimonial */}
+              <div class="reveal mb-8" style="transition-delay:0.85s">
+                <p class="text-white/20 text-sm italic max-w-lg">
+                  <i class="fa-solid fa-quote-left text-[#0066FF]/25 text-xs mr-2"></i>
+                  {MESSAGING.heroTestimonial.replace(/"/g, '')}
+                  <i class="fa-solid fa-quote-right text-[#0066FF]/25 text-xs ml-2"></i>
+                </p>
+              </div>
+
+              {/* Metric Tags */}
+              <div class="flex flex-wrap items-center gap-2 mb-8 reveal" style="transition-delay:0.95s">
+                {[
+                  { label: '서울대 5인 협진', icon: 'fa-user-doctor' },
+                  { label: '365일 진료', icon: 'fa-calendar-check' },
+                  { label: '야간 21시', icon: 'fa-moon' },
+                  { label: '자체 기공실', icon: 'fa-gear' },
+                  { label: '수면진료', icon: 'fa-bed' },
+                  { label: '무통마취', icon: 'fa-syringe' },
+                ].map(m => (
+                  <div class="flex items-center gap-1.5 text-[0.72rem] px-3 py-1.5 rounded-full border border-[#0066FF]/10 bg-[#0066FF]/[0.03]">
+                    <i class={`fa-solid ${m.icon} text-[#0066FF]/60 text-[0.6rem]`}></i>
+                    <span class="text-white/45 font-medium">{m.label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA Buttons */}
+              <div class="flex flex-wrap gap-3 mb-10 reveal" style="transition-delay:1.05s">
+                <a href="/reservation" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic text-[0.9rem] px-8 py-4 group" data-cursor-hover>
+                  <i class="fa-solid fa-calendar-check group-hover:scale-110 transition-transform"></i>
+                  <span>지금 상담 예약하기</span>
+                </a>
+                <a href="tel:032-432-0365" class="btn-premium btn-premium-white btn-magnetic text-[0.9rem] px-8 py-4 group" data-cursor-hover>
+                  <i class="fa-solid fa-phone group-hover:animate-bounce"></i>
+                  <span>032-432-0365</span>
+                </a>
+              </div>
+
+              {/* Trust Scores */}
+              <div class="flex flex-wrap gap-5 reveal" style="transition-delay:1.15s">
+                {[
+                  { label: '네이버', score: '4.85', icon: 'fa-star', color: 'text-amber-400' },
+                  { label: '구글', score: '4.9', icon: 'fa-star', color: 'text-amber-400' },
+                  { label: '만족도', score: '98%', icon: 'fa-heart', color: 'text-rose-400' },
+                  { label: '재방문율', score: '87%', icon: 'fa-rotate', color: 'text-[#00E5FF]' },
+                ].map(m => (
+                  <div class="flex items-center gap-1.5 text-white/30 text-[0.75rem]">
+                    <i class={`fa-solid ${m.icon} ${m.color} text-[0.6rem]`}></i>
+                    <span class="font-bold text-white/80">{m.score}</span>
+                    <span>{m.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Philosophy Badge — 원장 철학 */}
-            <div class="reveal mb-8" style="transition-delay:0.35s">
-              <span class="inline-flex items-center gap-2 text-[0.7rem] tracking-[0.25em] uppercase font-bold text-[#00E5FF]/70 px-4 py-2 rounded-full border border-[#00E5FF]/15 bg-[#00E5FF]/[0.04]">
-                <span class="w-1.5 h-1.5 bg-[#00E5FF] rounded-full"></span>
-                {MESSAGING.heroPhilosophy}
-              </span>
-            </div>
+            {/* RIGHT COLUMN — Doctor Portrait */}
+            <div class="hidden lg:flex flex-shrink-0 items-end justify-center relative reveal" style="transition-delay:0.6s;width:clamp(320px,35vw,480px)">
+              {/* Glow backdrop behind photo */}
+              <div class="absolute -inset-8 rounded-full pointer-events-none" style="background:radial-gradient(ellipse at 50% 60%, rgba(0,102,255,0.2) 0%, rgba(0,229,255,0.08) 40%, transparent 70%);filter:blur(40px)"></div>
 
-            {/* H1 — 3-Line Emotional Headline */}
-            <h1 class="reveal" style="transition-delay:0.5s">
-              <span class="block hero-display text-white/40 mb-2" style="font-size:clamp(2.2rem,7vw,5.5rem);line-height:1.05;letter-spacing:-0.04em;font-weight:800">
-                {MESSAGING.heroLine1}
-              </span>
-              <span class="block hero-display text-white/60 mb-3" style="font-size:clamp(2.2rem,7vw,5.5rem);line-height:1.05;letter-spacing:-0.04em;font-weight:800">
-                {MESSAGING.heroLine2}
-              </span>
-              <span class="block gradient-text-electric" style="font-size:clamp(2.6rem,8vw,6.5rem);line-height:1;letter-spacing:-0.05em;font-weight:900">
-                {MESSAGING.heroAccent}
-              </span>
-            </h1>
+              {/* Photo container with cinematic mask */}
+              <div class="relative hero-portrait-wrap">
+                <img
+                  src="/static/dr-park.jpg"
+                  alt="박준규 대표원장 — 서울대 출신 통합치의학과 전문의"
+                  class="hero-portrait"
+                  loading="eager"
+                  width="1024"
+                  height="683"
+                />
+                {/* Bottom gradient fade into dark bg */}
+                <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(to top, #020814 0%, #020814 2%, transparent 35%)"></div>
+                {/* Side gradients for seamless blend */}
+                <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(to right, #020814 0%, transparent 15%)"></div>
+                <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(to left, rgba(2,8,20,0.6) 0%, transparent 20%)"></div>
 
-            {/* Horizontal Divider */}
-            <div class="reveal mt-10 mb-8" style="transition-delay:0.65s">
-              <div class="w-16 h-[2px] bg-gradient-to-r from-[#0066FF] to-[#00E5FF] rounded-full"></div>
-            </div>
-
-            {/* Sub Copy — 원장 직접 인용 (두 줄) */}
-            <div class="space-y-2 mb-6 reveal" style="transition-delay:0.75s">
-              <p class="text-white/60 text-lg md:text-xl font-medium leading-relaxed max-w-2xl">
-                <span class="text-[#0066FF] mr-1.5 font-bold">"</span>{MESSAGING.heroSub1}<span class="text-[#0066FF] ml-0.5 font-bold">"</span>
-              </p>
-              <p class="text-white/35 text-base md:text-lg leading-relaxed max-w-2xl pl-4" style="border-left:2px solid rgba(0,102,255,0.15)">
-                {MESSAGING.heroSub2}
-              </p>
-            </div>
-
-            {/* Patient Testimonial — Social Proof */}
-            <div class="reveal mb-10" style="transition-delay:0.85s">
-              <p class="text-white/20 text-sm md:text-base italic max-w-xl">
-                <i class="fa-solid fa-quote-left text-[#0066FF]/25 text-xs mr-2"></i>
-                {MESSAGING.heroTestimonial.replace(/"/g, '')}
-                <i class="fa-solid fa-quote-right text-[#0066FF]/25 text-xs ml-2"></i>
-              </p>
-            </div>
-
-            {/* Metric Tags — 키워드 배지 */}
-            <div class="flex flex-wrap items-center gap-2.5 mb-10 reveal" style="transition-delay:0.95s">
-              {[
-                { label: '서울대 5인 협진', icon: 'fa-user-doctor' },
-                { label: '365일 진료', icon: 'fa-calendar-check' },
-                { label: '야간 21시', icon: 'fa-moon' },
-                { label: '자체 기공실', icon: 'fa-gear' },
-                { label: '수면진료', icon: 'fa-bed' },
-                { label: '무통마취', icon: 'fa-syringe' },
-              ].map(m => (
-                <div class="flex items-center gap-2 text-[0.78rem] px-3.5 py-1.5 rounded-full border border-[#0066FF]/10 bg-[#0066FF]/[0.03] hover:border-[#0066FF]/25 hover:bg-[#0066FF]/[0.06] transition-all duration-300">
-                  <i class={`fa-solid ${m.icon} text-[#0066FF]/60 text-[0.65rem]`}></i>
-                  <span class="text-white/45 font-medium">{m.label}</span>
+                {/* Name Badge overlay */}
+                <div class="absolute bottom-8 left-0 right-0 text-center z-10">
+                  <div class="inline-flex flex-col items-center gap-1 reveal" style="transition-delay:1s">
+                    <span class="text-white/80 text-sm md:text-base font-bold tracking-wide">박준규 <span class="text-white/40 font-normal">대표원장</span></span>
+                    <span class="text-[#0066FF]/50 text-[0.65rem] font-medium tracking-wider">서울대 통합치의학과 전문의</span>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
 
-            {/* CTA Buttons — Emotional */}
-            <div class="flex flex-wrap gap-4 mb-12 reveal" style="transition-delay:1.05s">
-              <a href="/reservation" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic text-[0.95rem] px-10 py-4.5 group" data-cursor-hover>
-                <i class="fa-solid fa-calendar-check group-hover:scale-110 transition-transform"></i>
-                <span>지금 상담 예약하기</span>
-              </a>
-              <a href="tel:032-432-0365" class="btn-premium btn-premium-white btn-magnetic text-[0.95rem] px-10 py-4.5 group" data-cursor-hover>
-                <i class="fa-solid fa-phone group-hover:animate-bounce"></i>
-                <span>032-432-0365</span>
-              </a>
-            </div>
-
-            {/* Trust Scores — Compact */}
-            <div class="flex flex-wrap gap-6 reveal" style="transition-delay:1.2s">
-              {[
-                { label: '네이버', score: '4.85', icon: 'fa-star', color: 'text-amber-400' },
-                { label: '구글', score: '4.9', icon: 'fa-star', color: 'text-amber-400' },
-                { label: '만족도', score: '98%', icon: 'fa-heart', color: 'text-rose-400' },
-                { label: '재방문율', score: '87%', icon: 'fa-rotate', color: 'text-[#00E5FF]' },
-              ].map(m => (
-                <div class="flex items-center gap-1.5 text-white/30 text-[0.78rem]">
-                  <i class={`fa-solid ${m.icon} ${m.color} text-[0.65rem]`}></i>
-                  <span class="font-bold text-white/80">{m.score}</span>
-                  <span>{m.label}</span>
+            {/* MOBILE — Doctor portrait (smaller, inline) */}
+            <div class="lg:hidden w-full flex justify-center mt-4 mb-2 reveal" style="transition-delay:0.6s">
+              <div class="relative" style="width:min(280px, 70vw)">
+                <div class="absolute -inset-6 rounded-full pointer-events-none" style="background:radial-gradient(ellipse at 50% 60%, rgba(0,102,255,0.15) 0%, transparent 70%);filter:blur(30px)"></div>
+                <div class="relative overflow-hidden rounded-2xl border border-[#0066FF]/10">
+                  <img
+                    src="/static/dr-park.jpg"
+                    alt="박준규 대표원장"
+                    class="w-full h-auto object-cover"
+                    style="aspect-ratio:3/2"
+                    loading="eager"
+                    width="1024"
+                    height="683"
+                  />
+                  <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(to top, rgba(2,8,20,0.9) 0%, transparent 50%)"></div>
+                  <div class="absolute bottom-3 left-0 right-0 text-center">
+                    <span class="text-white/80 text-sm font-bold">박준규 <span class="text-white/40 font-normal">대표원장</span></span>
+                    <br/>
+                    <span class="text-[#0066FF]/50 text-[0.6rem] font-medium">서울대 통합치의학과 전문의</span>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
+
           </div>
         </div>
 
-        {/* Scroll Indicator — Electric */}
+        {/* Scroll Indicator */}
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/15 text-center reveal" style="transition-delay:1.3s">
           <div class="w-7 h-11 border-2 border-[#0066FF]/20 rounded-full flex justify-center pt-2 mx-auto mb-2">
             <div class="w-1 h-3 bg-[#0066FF]/40 rounded-full animate-bounce"></div>
