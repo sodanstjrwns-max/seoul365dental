@@ -645,10 +645,11 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               iframe.id = 'yt-iframe';
               iframe.allow = 'autoplay; encrypted-media';
               iframe.setAttribute('allowfullscreen', 'false');
+              iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
               iframe.title = '서울365치과 소개 영상';
               iframe.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;pointer-events:none;border:0;';
 
-              // Use actual window.origin to prevent Error 153
+              // youtube-nocookie.com + no origin param = fix Error 153
               var params = [
                 'autoplay=1',
                 'mute=1',
@@ -663,11 +664,10 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 'disablekb=1',
                 'fs=0',
                 'cc_load_policy=0',
-                'enablejsapi=1',
-                'origin=' + encodeURIComponent(window.location.origin)
+                'enablejsapi=1'
               ].join('&');
 
-              iframe.src = 'https://www.youtube.com/embed/gB_yiatcwAc?' + params;
+              iframe.src = 'https://www.youtube-nocookie.com/embed/gB_yiatcwAc?' + params;
 
               iframe.addEventListener('load', function() {
                 if (poster) {
