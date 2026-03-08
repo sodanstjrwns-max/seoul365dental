@@ -19,11 +19,22 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": "https://seoul365dental.com/#website",
     "name": "서울365치과의원",
     "alternateName": ["Seoul 365 Dental", "서울365치과", "서울삼육오치과"],
     "url": "https://seoul365dental.com",
     "inLanguage": "ko-KR",
-    "publisher": { "@type": "Dentist", "name": "서울365치과의원" },
+    "publisher": { "@id": "https://seoul365dental.com/#dentist" },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://seoul365dental.com/treatments?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    },
+    "copyrightHolder": { "@id": "https://seoul365dental.com/#dentist" },
+    "copyrightYear": "2019",
   };
 
   // Dentist + MedicalOrganization combined schema
@@ -120,6 +131,258 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       "@type": "SpeakableSpecification",
       "cssSelector": ["h1", ".hero-sub", ".section-headline", "[itemprop='name']", "[itemprop='text']"],
     },
+    // ContactPoint — multiple channels
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "telephone": "+82-32-432-0365",
+        "contactType": "reservations",
+        "availableLanguage": ["Korean", "English"],
+        "areaServed": "KR",
+        "hoursAvailable": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+          "opens": "10:00",
+          "closes": "21:00"
+        }
+      },
+      {
+        "@type": "ContactPoint",
+        "url": "https://pf.kakao.com/_dMsCT",
+        "contactType": "customer service",
+        "availableLanguage": "Korean",
+        "contactOption": "TollFree"
+      },
+      {
+        "@type": "ContactPoint",
+        "url": "https://booking.naver.com/booking/13/bizes/426166",
+        "contactType": "reservations",
+        "availableLanguage": "Korean"
+      }
+    ],
+    // Member doctors
+    "employee": [
+      { "@type": "Physician", "@id": "https://seoul365dental.com/doctors/park-junkyu#physician", "name": "박준규", "jobTitle": "대표원장" },
+      { "@type": "Physician", "@id": "https://seoul365dental.com/doctors/choi-dabin#physician", "name": "최다빈", "jobTitle": "원장" },
+      { "@type": "Physician", "@id": "https://seoul365dental.com/doctors/jung-moonhee#physician", "name": "정문희", "jobTitle": "원장" },
+      { "@type": "Physician", "@id": "https://seoul365dental.com/doctors/sang-sehoon#physician", "name": "상세훈", "jobTitle": "원장" },
+      { "@type": "Physician", "@id": "https://seoul365dental.com/doctors/ha-nuri#physician", "name": "하누리", "jobTitle": "원장" },
+    ],
+    // Potential reservation action
+    "potentialAction": [
+      {
+        "@type": "ReserveAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://seoul365dental.com/reservation",
+          "inLanguage": "ko",
+          "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"]
+        },
+        "result": { "@type": "Reservation", "name": "치과 상담 예약" }
+      },
+      {
+        "@type": "CommunicateAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "tel:032-432-0365"
+        }
+      }
+    ],
+    // Accessibility & amenity
+    "amenityFeature": [
+      { "@type": "LocationFeatureSpecification", "name": "주차장", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "엘리베이터", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "무료 Wi-Fi", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "카드결제", "value": true },
+      { "@type": "LocationFeatureSpecification", "name": "분할결제", "value": true },
+    ],
+    "isAcceptingNewPatients": true,
+    "hasCredential": [
+      { "@type": "EducationalOccupationalCredential", "credentialCategory": "의료기관 개설 허가", "recognizedBy": { "@type": "Organization", "name": "보건복지부" } }
+    ],
+    "parentOrganization": { "@type": "Organization", "name": "서울365치과의원" },
+  };
+
+  // Organization schema (supplementary corporate identity)
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://seoul365dental.com/#organization",
+    "name": "서울365치과의원",
+    "url": "https://seoul365dental.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://seoul365dental.com/static/logo.png",
+      "width": 512,
+      "height": 512
+    },
+    "image": ogImage,
+    "sameAs": [
+      CLINIC.instagram,
+      CLINIC.naverBlog,
+      CLINIC.kakao,
+      CLINIC.naverBooking,
+    ],
+    "founder": { "@type": "Person", "name": "박준규" },
+    "foundingDate": "2019",
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+82-32-432-0365",
+      "contactType": "customer service",
+      "availableLanguage": ["Korean", "English"]
+    }
+  };
+
+  // SiteNavigationElement — helps search engines understand site structure
+  const navigationSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": "https://seoul365dental.com/#navigation",
+    "name": "서울365치과 사이트 메뉴",
+    "itemListElement": [
+      { "@type": "SiteNavigationElement", "position": 1, "name": "홈", "url": "https://seoul365dental.com" },
+      { "@type": "SiteNavigationElement", "position": 2, "name": "진료안내", "url": "https://seoul365dental.com/treatments" },
+      { "@type": "SiteNavigationElement", "position": 3, "name": "의료진", "url": "https://seoul365dental.com/doctors" },
+      { "@type": "SiteNavigationElement", "position": 4, "name": "비용안내", "url": "https://seoul365dental.com/pricing" },
+      { "@type": "SiteNavigationElement", "position": 5, "name": "치료사례", "url": "https://seoul365dental.com/cases/gallery" },
+      { "@type": "SiteNavigationElement", "position": 6, "name": "오시는길", "url": "https://seoul365dental.com/directions" },
+      { "@type": "SiteNavigationElement", "position": 7, "name": "FAQ", "url": "https://seoul365dental.com/faq" },
+      { "@type": "SiteNavigationElement", "position": 8, "name": "상담예약", "url": "https://seoul365dental.com/reservation" },
+    ]
+  };
+
+  // MedicalBusiness schema — supplementary medical-specific markup
+  const medicalBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "MedicalBusiness",
+    "@id": "https://seoul365dental.com/#medical-business",
+    "name": "서울365치과의원",
+    "url": "https://seoul365dental.com",
+    "telephone": "+82-32-432-0365",
+    "isAcceptingNewPatients": true,
+    "medicalSpecialty": [
+      { "@type": "MedicalSpecialty", "name": "Dentistry" },
+      { "@type": "MedicalSpecialty", "name": "Implantology" },
+      { "@type": "MedicalSpecialty", "name": "Orthodontics" },
+      { "@type": "MedicalSpecialty", "name": "Prosthodontics" },
+      { "@type": "MedicalSpecialty", "name": "Endodontics" },
+      { "@type": "MedicalSpecialty", "name": "Pediatric Dentistry" },
+      { "@type": "MedicalSpecialty", "name": "Cosmetic Dentistry" },
+    ],
+    "availableService": [
+      { "@type": "MedicalTherapy", "name": "임플란트", "medicineSystem": "WesternConventional" },
+      { "@type": "MedicalTherapy", "name": "치아교정", "medicineSystem": "WesternConventional" },
+      { "@type": "MedicalTherapy", "name": "수면진료", "medicineSystem": "WesternConventional" },
+      { "@type": "MedicalTherapy", "name": "신경치료", "medicineSystem": "WesternConventional" },
+      { "@type": "MedicalTherapy", "name": "심미치료", "medicineSystem": "WesternConventional" },
+      { "@type": "MedicalTherapy", "name": "소아치과", "medicineSystem": "WesternConventional" },
+      { "@type": "MedicalTherapy", "name": "무통마취", "medicineSystem": "WesternConventional" },
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "서울365치과 진료 서비스",
+      "itemListElement": [
+        { "@type": "OfferCatalog", "name": "임플란트 센터", "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" } },
+          { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "올온X 임플란트" } },
+          { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "일반 임플란트" } },
+        ] },
+        { "@type": "OfferCatalog", "name": "교정 센터", "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "인비절라인" } },
+          { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "성인교정" } },
+          { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "소아교정" } },
+        ] },
+      ]
+    },
+  };
+
+  // Brand schema — brand identity
+  const brandSchema = {
+    "@context": "https://schema.org",
+    "@type": "Brand",
+    "@id": "https://seoul365dental.com/#brand",
+    "name": "서울365치과",
+    "alternateName": ["Seoul 365 Dental", "서울삼육오치과"],
+    "logo": "https://seoul365dental.com/static/logo.png",
+    "slogan": MESSAGING.brandSlogan,
+    "description": "치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원.",
+    "url": "https://seoul365dental.com",
+  };
+
+  // Event schema — special promotions/ongoing service
+  const eventSchema = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "@id": "https://seoul365dental.com/#free-ct-event",
+    "name": "서울365치과 무료 CT 정밀진단 이벤트",
+    "description": "첫 내원 시 무료 CT 촬영으로 정밀 진단을 받아보세요. 서울대 출신 5인 전문의가 직접 진단합니다.",
+    "startDate": "2026-01-01",
+    "endDate": "2026-12-31",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "location": {
+      "@type": "Place",
+      "name": "서울365치과의원",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "예술로 138 이토타워 2층 212호",
+        "addressLocality": "인천광역시 남동구",
+        "addressCountry": "KR",
+      }
+    },
+    "organizer": { "@id": "https://seoul365dental.com/#dentist" },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "KRW",
+      "availability": "https://schema.org/InStock",
+      "url": "https://seoul365dental.com/reservation",
+      "validFrom": "2026-01-01",
+    },
+    "isAccessibleForFree": true,
+  };
+
+  // MedicalClinic schema — emphasizes clinical facility info
+  const medicalClinicSchema = {
+    "@context": "https://schema.org",
+    "@type": "MedicalClinic",
+    "@id": "https://seoul365dental.com/#clinic",
+    "name": "서울365치과의원",
+    "url": "https://seoul365dental.com",
+    "telephone": "+82-32-432-0365",
+    "medicalSpecialty": ["Dentistry", "Implantology", "Orthodontics"],
+    "availableService": [
+      { "@type": "MedicalTest", "name": "CT 정밀진단", "usesDevice": { "@type": "MedicalDevice", "name": "Cone Beam CT" } },
+      { "@type": "MedicalTest", "name": "디지털 구강스캔", "usesDevice": { "@type": "MedicalDevice", "name": "3Shape TRIOS 구강스캐너" } },
+      { "@type": "MedicalTest", "name": "파노라마 촬영", "usesDevice": { "@type": "MedicalDevice", "name": "디지털 파노라마" } },
+    ],
+    "department": [
+      { "@type": "MedicalClinic", "name": "임플란트 센터", "medicalSpecialty": "Implantology" },
+      { "@type": "MedicalClinic", "name": "교정 센터", "medicalSpecialty": "Orthodontics" },
+      { "@type": "MedicalClinic", "name": "심미치료 센터", "medicalSpecialty": "Cosmetic Dentistry" },
+      { "@type": "MedicalClinic", "name": "소아치과", "medicalSpecialty": "Pediatric Dentistry" },
+      { "@type": "MedicalClinic", "name": "수면진료센터" },
+      { "@type": "MedicalClinic", "name": "자체 기공실" },
+    ],
+    "smokingAllowed": false,
+    "isAcceptingNewPatients": true,
+  };
+
+  // HealthTopicContent — AEO important
+  const healthTopicSchema = {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    "@id": "https://seoul365dental.com/#health-topics",
+    "about": [
+      { "@type": "MedicalCondition", "name": "치아 상실", "possibleTreatment": { "@type": "MedicalProcedure", "name": "임플란트" } },
+      { "@type": "MedicalCondition", "name": "부정교합", "possibleTreatment": { "@type": "MedicalProcedure", "name": "치아교정" } },
+      { "@type": "MedicalCondition", "name": "치과 공포증", "possibleTreatment": { "@type": "MedicalProcedure", "name": "수면진료" } },
+      { "@type": "MedicalCondition", "name": "충치", "possibleTreatment": { "@type": "MedicalProcedure", "name": "보존치료" } },
+      { "@type": "MedicalCondition", "name": "치수염", "possibleTreatment": { "@type": "MedicalProcedure", "name": "신경치료" } },
+      { "@type": "MedicalCondition", "name": "치아 변색", "possibleTreatment": { "@type": "MedicalProcedure", "name": "심미치료" } },
+    ],
+    "specialty": "Dentistry",
+    "inLanguage": "ko-KR",
   };
 
   return (
@@ -206,6 +469,13 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* === STRUCTURED DATA (JSON-LD) === */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(websiteSchema)}} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(dentistSchema)}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(organizationSchema)}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(navigationSchema)}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(medicalBusinessSchema)}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(brandSchema)}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(eventSchema)}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(medicalClinicSchema)}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(healthTopicSchema)}} />
         {jsonLd && (Array.isArray(jsonLd)
           ? jsonLd.map((ld: any) => <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(ld)}} />)
           : <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}} />

@@ -730,16 +730,171 @@ app.get('/', (c) => {
       title: '서울365치과 | 치과가 무서워서 미뤄온 당신에게 - 인천 구월동 임플란트·교정·수면진료',
       description: '치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원. 서울대 출신 5인 원장 협진, 마취가 안 되면 절대 시작하지 않습니다. 365일 진료, 야간 21시, 자체 기공실, 수면진료. 인천 구월동 예술회관역. 032-432-0365',
       canonical: 'https://seoul365dental.com',
-      jsonLd: {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [{
-          "@type": "ListItem",
-          "position": 1,
-          "name": "서울365치과",
-          "item": "https://seoul365dental.com"
-        }]
-      }
+      jsonLd: [
+        // BreadcrumbList
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "서울365치과", "item": "https://seoul365dental.com" }]
+        },
+        // WebPage — homepage
+        {
+          "@context": "https://schema.org",
+          "@type": ["WebPage", "MedicalWebPage"],
+          "@id": "https://seoul365dental.com/#webpage",
+          "url": "https://seoul365dental.com",
+          "name": "서울365치과 | 인천 구월동 서울대 5인 전문의 치과",
+          "description": "치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원.",
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "inLanguage": "ko-KR",
+          "datePublished": "2024-01-01",
+          "dateModified": "2026-03-08",
+          "primaryImageOfPage": {
+            "@type": "ImageObject",
+            "url": "https://seoul365dental.com/static/og-image.jpg",
+            "width": 1200,
+            "height": 630,
+            "caption": "서울365치과 인천 구월동 - 서울대 출신 5인 전문의 치과"
+          },
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", ".hero-sub", ".section-headline"]
+          },
+          "specialty": "Dentistry"
+        },
+        // VideoObject — clinic tour
+        {
+          "@context": "https://schema.org",
+          "@type": "VideoObject",
+          "name": "서울365치과 소개 영상 - 진료 환경 클리닉 투어",
+          "description": "서울365치과의 진료 환경을 영상으로 먼저 확인하세요. 400평 규모, 6개 독립 수술실, 에어샤워 시스템, 자체 기공실.",
+          "thumbnailUrl": "https://img.youtube.com/vi/gB_yiatcwAc/maxresdefault.jpg",
+          "uploadDate": "2024-01-01",
+          "contentUrl": "https://www.youtube.com/watch?v=gB_yiatcwAc",
+          "embedUrl": "https://www.youtube-nocookie.com/embed/gB_yiatcwAc",
+          "publisher": { "@id": "https://seoul365dental.com/#dentist" },
+          "inLanguage": "ko",
+          "isFamilyFriendly": true
+        },
+        // ItemList — featured treatments
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "서울365치과 주요 진료",
+          "description": "서울365치과에서 제공하는 주요 치과 진료 안내",
+          "numberOfItems": 6,
+          "itemListElement": topTreatments.map((t: any, i: number) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": t.name,
+            "url": `https://seoul365dental.com/treatments/${t.slug}`,
+            "item": {
+              "@type": "MedicalProcedure",
+              "name": t.name,
+              "description": t.shortDesc,
+              "url": `https://seoul365dental.com/treatments/${t.slug}`
+            }
+          }))
+        },
+        // ItemList — reviews for AEO
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "서울365치과 환자 후기",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "item": { "@type": "Review", "reviewBody": "스케일링부터 임플란트까지, 자세한 설명과 친절한 진료에 늘 감사드립니다.", "author": { "@type": "Person", "name": "김O영" }, "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
+            { "@type": "ListItem", "position": 2, "item": { "@type": "Review", "reviewBody": "전체임플란트 수술 받았습니다. 수면진료라 전혀 무섭지 않았고, 자체 기공실이 있어서 보철물 맞춤이 정말 빠르고 정확했습니다.", "author": { "@type": "Person", "name": "이O수" }, "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
+            { "@type": "ListItem", "position": 3, "item": { "@type": "Review", "reviewBody": "인비절라인 교정 중인데, 하누리 원장님이 꼼꼼하게 체크해주시고 예상 결과를 3D로 보여주셔서 믿음이 갑니다.", "author": { "@type": "Person", "name": "박O현" }, "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
+            { "@type": "ListItem", "position": 4, "item": { "@type": "Review", "reviewBody": "야간에 갑자기 이가 아파서 방문했는데, 21시까지 진료해주셔서 정말 다행이었습니다.", "author": { "@type": "Person", "name": "최O진" }, "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
+            { "@type": "ListItem", "position": 5, "item": { "@type": "Review", "reviewBody": "아이 충치 치료로 방문했는데, 소아 전문 의료진이 계셔서 아이가 전혀 무서워하지 않았어요.", "author": { "@type": "Person", "name": "정O미" }, "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
+          ]
+        },
+        // FAQPage — homepage preview FAQ
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": mainFaq.map((f: any) => ({
+            "@type": "Question", "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        },
+        // OfferCatalog — key services with pricing hints
+        {
+          "@context": "https://schema.org",
+          "@type": "OfferCatalog",
+          "name": "서울365치과 진료 서비스",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" }, "priceCurrency": "KRW", "description": "자체 기공실 MUA 즉시로딩", "url": "https://seoul365dental.com/treatments/full-implant" },
+            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "올온X 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dental.com/treatments/all-on-x" },
+            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "수면진료" }, "priceCurrency": "KRW", "description": "잠깐 잠들었다 깨면 치료 완료", "url": "https://seoul365dental.com/treatments/sedation" },
+            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "치아교정" }, "priceCurrency": "KRW", "description": "인비절라인 투명교정", "url": "https://seoul365dental.com/treatments/orthodontics" },
+          ]
+        },
+        // Article — clinic columns (AEO: rich snippet for blog-like content)
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "서울365치과 전문 칼럼",
+          "itemListElement": [
+            {
+              "@type": "ListItem", "position": 1,
+              "item": { "@type": "Article", "headline": "전체임플란트, 틀니보다 좋은 이유 5가지", "datePublished": "2026-02-15", "author": { "@type": "Physician", "name": "박준규" }, "publisher": { "@id": "https://seoul365dental.com/#dentist" }, "articleSection": "임플란트", "inLanguage": "ko-KR" }
+            },
+            {
+              "@type": "ListItem", "position": 2,
+              "item": { "@type": "Article", "headline": "치아교정 나이 제한? 성인교정 궁금증 해결", "datePublished": "2026-02-10", "author": { "@type": "Physician", "name": "하누리" }, "publisher": { "@id": "https://seoul365dental.com/#dentist" }, "articleSection": "교정", "inLanguage": "ko-KR" }
+            },
+            {
+              "@type": "ListItem", "position": 3,
+              "item": { "@type": "Article", "headline": "수면진료, 정말 안전한가요?", "datePublished": "2026-02-05", "author": { "@type": "Physician", "name": "박준규" }, "publisher": { "@id": "https://seoul365dental.com/#dentist" }, "articleSection": "수면진료", "inLanguage": "ko-KR" }
+            },
+          ]
+        },
+        // HealthTopicContent — dental conditions addressed (AEO critical)
+        {
+          "@context": "https://schema.org",
+          "@type": "MedicalWebPage",
+          "name": "서울365치과 치과 질환 및 치료 안내",
+          "url": "https://seoul365dental.com",
+          "about": [
+            { "@type": "MedicalCondition", "name": "무치악(치아 상실)", "associatedAnatomy": { "@type": "AnatomicalStructure", "name": "구강" }, "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "전체임플란트" }, { "@type": "MedicalProcedure", "name": "올온X" }] },
+            { "@type": "MedicalCondition", "name": "부정교합", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "인비절라인" }, { "@type": "MedicalProcedure", "name": "교정치료" }] },
+            { "@type": "MedicalCondition", "name": "치과 공포증(치과 불안)", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "수면진료" }, { "@type": "MedicalProcedure", "name": "무통마취" }] },
+            { "@type": "MedicalCondition", "name": "치수염(충치)", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "신경치료" }, { "@type": "MedicalProcedure", "name": "보존치료" }] },
+          ],
+          "specialty": "Dentistry",
+          "inLanguage": "ko-KR",
+        },
+        // LocalBusiness with action — triggers rich results
+        {
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "서울365치과의원",
+          "image": "https://seoul365dental.com/static/og-image.jpg",
+          "telephone": "+82-32-432-0365",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "예술로 138 이토타워 2층 212호",
+            "addressLocality": "인천광역시 남동구",
+            "postalCode": "21556",
+            "addressCountry": "KR"
+          },
+          "geo": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
+          "openingHoursSpecification": [
+            { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "10:00", "closes": "21:00" },
+            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "10:00", "closes": "19:00" },
+            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "10:00", "closes": "14:00" },
+            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "14:00", "closes": "18:00" },
+          ],
+          "priceRange": "₩₩~₩₩₩",
+          "potentialAction": {
+            "@type": "OrderAction",
+            "target": { "@type": "EntryPoint", "urlTemplate": "https://seoul365dental.com/reservation", "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"] },
+            "deliveryMethod": "http://purl.org/goodrelations/v1#DeliveryModeOwnFleet",
+          },
+          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "bestRating": "5", "ratingCount": "2150", "reviewCount": "1840" },
+        },
+      ]
     }
   )
 })
@@ -796,14 +951,83 @@ app.get('/treatments', (c) => {
       title: '전체 진료 안내 | 서울365치과 인천 구월동 - 임플란트·교정·수면진료·심미치료',
       description: '서울365치과 전체 진료 안내. 전체임플란트, 올온X, 치아교정, 인비절라인, 수면진료, 심미치료, 충치·신경치료, 소아치과 등. 서울대 출신 5인 전문의 협진. 032-432-0365',
       canonical: 'https://seoul365dental.com/treatments',
-      jsonLd: {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-          { "@type": "ListItem", "position": 2, "name": "전체 진료", "item": "https://seoul365dental.com/treatments" }
-        ]
-      }
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "전체 진료", "item": "https://seoul365dental.com/treatments" }
+          ]
+        },
+        // CollectionPage — treatment listing
+        {
+          "@context": "https://schema.org",
+          "@type": ["CollectionPage", "MedicalWebPage"],
+          "name": "서울365치과 전체 진료 안내",
+          "description": "서울365치과에서 제공하는 모든 치과 진료 안내. 임플란트, 교정, 수면진료, 심미치료, 소아치과 등.",
+          "url": "https://seoul365dental.com/treatments",
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "specialty": "Dentistry",
+          "inLanguage": "ko-KR"
+        },
+        // ItemList — all treatments
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "서울365치과 전체 진료 목록",
+          "numberOfItems": treatments.length,
+          "itemListElement": treatments.map((t: any, i: number) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "name": t.name,
+            "url": `https://seoul365dental.com/treatments/${t.slug}`,
+            "item": {
+              "@type": "MedicalProcedure",
+              "name": t.name,
+              "description": t.metaDesc,
+              "procedureType": t.slug.includes('orthodontic') || t.slug.includes('invisalign') ? "NonSurgicalProcedure" : "SurgicalProcedure",
+              "bodyLocation": "Oral cavity"
+            }
+          }))
+        },
+        // MedicalWebPage — treatment listing specifics
+        {
+          "@context": "https://schema.org",
+          "@type": "MedicalWebPage",
+          "name": "서울365치과 전체 진료 안내",
+          "url": "https://seoul365dental.com/treatments",
+          "lastReviewed": "2026-03-08",
+          "reviewedBy": { "@type": "Physician", "name": "박준규", "worksFor": { "@id": "https://seoul365dental.com/#dentist" } },
+          "specialty": "Dentistry",
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h2", ".section-headline"]
+          },
+        },
+        // Service — dental service listing
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "서울365치과 종합 치과 진료",
+          "description": "서울365치과에서 제공하는 전체 치과 진료 안내. 임플란트, 교정, 수면진료, 심미치료, 소아치과 등.",
+          "provider": { "@id": "https://seoul365dental.com/#dentist" },
+          "serviceType": "치과 진료",
+          "areaServed": { "@type": "City", "name": "인천광역시" },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "진료 카테고리",
+            "itemListElement": treatmentCategories.map((cat: any) => ({
+              "@type": "OfferCatalog",
+              "name": cat.name,
+              "itemListElement": cat.treatments.map((t: any) => ({
+                "@type": "Offer",
+                "itemOffered": { "@type": "MedicalProcedure", "name": t.name, "url": `https://seoul365dental.com/treatments/${t.slug}` }
+              }))
+            }))
+          }
+        },
+      ]
     }
   )
 })
@@ -972,8 +1196,24 @@ app.get('/treatments/:slug', (c) => {
       description: t.metaDesc,
       canonical: `https://seoul365dental.com/treatments/${t.slug}`,
       jsonLd: [
+        // MedicalWebPage
+        {
+          "@context": "https://schema.org",
+          "@type": "MedicalWebPage",
+          "name": t.metaTitle,
+          "description": t.metaDesc,
+          "url": `https://seoul365dental.com/treatments/${t.slug}`,
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "about": { "@type": "MedicalProcedure", "name": t.name },
+          "specialty": "Dentistry",
+          "lastReviewed": "2026-03-08",
+          "reviewedBy": { "@type": "Physician", "name": "박준규", "worksFor": { "@id": "https://seoul365dental.com/#dentist" } },
+          "inLanguage": "ko-KR"
+        },
+        // MedicalProcedure (detailed)
         {
           "@context": "https://schema.org", "@type": "MedicalProcedure",
+          "@id": `https://seoul365dental.com/treatments/${t.slug}#procedure`,
           "name": t.name,
           "procedureType": t.slug.includes('orthodontic') || t.slug.includes('invisalign') ? "NonSurgicalProcedure" : "SurgicalProcedure",
           "bodyLocation": "Oral cavity",
@@ -982,7 +1222,64 @@ app.get('/treatments/:slug', (c) => {
           "preparation": "정밀 CT 촬영 및 디지털 스캔 진단",
           "followup": "정기 검진 및 유지 관리",
           "status": "EventScheduled",
+          "recognizingAuthority": { "@type": "Organization", "name": "대한치과의사협회" },
+          "relevantSpecialty": { "@type": "MedicalSpecialty", "name": "Dentistry" },
+          "study": { "@type": "MedicalStudy", "studySubject": { "@type": "MedicalEntity", "name": t.name } },
         },
+        // MedicalCondition (what this treatment addresses)
+        {
+          "@context": "https://schema.org",
+          "@type": "MedicalCondition",
+          "name": `${t.name} 적응증`,
+          "description": t.concerns?.join('. '),
+          "possibleTreatment": {
+            "@type": "MedicalProcedure",
+            "name": t.name,
+            "url": `https://seoul365dental.com/treatments/${t.slug}`
+          },
+          "signOrSymptom": t.concerns?.map((c: string) => ({
+            "@type": "MedicalSignOrSymptom",
+            "name": c
+          })),
+        },
+        // Service + Offer
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": `${t.name} - 서울365치과`,
+          "description": t.metaDesc,
+          "provider": { "@id": "https://seoul365dental.com/#dentist" },
+          "serviceType": "치과 진료",
+          "areaServed": { "@type": "City", "name": "인천광역시" },
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": `${t.name} 종류`,
+            "itemListElement": t.types?.map((type: any) => ({
+              "@type": "Offer",
+              "itemOffered": { "@type": "Service", "name": type.name, "description": type.desc }
+            }))
+          }
+        },
+        // HowTo (treatment process)
+        {
+          "@context": "https://schema.org", "@type": "HowTo",
+          "name": `${t.name} 치료 과정`,
+          "description": `서울365치과의 ${t.name} 치료는 다음 단계로 진행됩니다.`,
+          "totalTime": "PT1H",
+          "tool": [
+            { "@type": "HowToTool", "name": "CT 촬영기" },
+            { "@type": "HowToTool", "name": "디지털 스캐너" },
+            { "@type": "HowToTool", "name": "네비게이션 가이드" }
+          ],
+          "step": t.process?.map((step: any, i: number) => ({
+            "@type": "HowToStep",
+            "position": i + 1,
+            "name": step.step,
+            "text": step.desc || step.step,
+            "url": `https://seoul365dental.com/treatments/${t.slug}#step-${i + 1}`
+          }))
+        },
+        // BreadcrumbList
         {
           "@context": "https://schema.org", "@type": "BreadcrumbList",
           "itemListElement": [
@@ -991,13 +1288,68 @@ app.get('/treatments/:slug', (c) => {
             { "@type": "ListItem", "position": 3, "name": t.name, "item": `https://seoul365dental.com/treatments/${t.slug}` }
           ]
         },
+        // FAQPage (treatment-specific)
         ...(t.faq ? [{
           "@context": "https://schema.org", "@type": "FAQPage",
           "mainEntity": t.faq.map((f: any) => ({
             "@type": "Question", "name": f.q,
             "acceptedAnswer": { "@type": "Answer", "text": f.a }
           }))
-        }] : [])
+        }] : []),
+        // MedicalDevice — equipment used for this treatment
+        {
+          "@context": "https://schema.org",
+          "@type": "MedicalDevice",
+          "name": `${t.name} 진료 장비`,
+          "description": `서울365치과 ${t.name} 진료에 사용되는 의료 장비`,
+          "manufacturer": [
+            { "@type": "Organization", "name": "오스템 임플란트" },
+            { "@type": "Organization", "name": "3Shape" },
+          ],
+          "purpose": `${t.name} 치료를 위한 정밀 진단 및 수술`,
+        },
+        // MedicalIndication — who should get this treatment
+        {
+          "@context": "https://schema.org",
+          "@type": "ApprovedIndication",
+          "name": `${t.name} 적응증`,
+          "description": t.concerns?.join('; '),
+          "recognizingAuthority": { "@type": "Organization", "name": "대한치과의사협회" },
+        },
+        // TherapeuticProcedure — detailed treatment info for AEO
+        {
+          "@context": "https://schema.org",
+          "@type": "TherapeuticProcedure",
+          "name": t.name,
+          "description": t.metaDesc,
+          "procedureType": t.slug.includes('orthodontic') || t.slug.includes('invisalign') ? "NonSurgicalProcedure" : "SurgicalProcedure",
+          "bodyLocation": "Oral cavity",
+          "howPerformed": t.process?.map((s: any) => s.step).join(' → '),
+          "preparation": "정밀 CT 촬영 및 디지털 스캔 진단 → 치료 계획 수립 → 마취 확인",
+          "followup": "정기 검진 및 유지 관리 프로그램",
+          "status": "https://schema.org/ActiveActionStatus",
+          "doseSchedule": {
+            "@type": "ReportedDoseSchedule",
+            "doseUnit": "회",
+            "frequency": t.process?.length ? `${t.process.length}단계 치료` : "개별 상담 후 결정",
+          },
+          "drug": [
+            { "@type": "Drug", "name": "리도카인 (국소마취제)", "drugClass": { "@type": "DrugClass", "name": "Local anesthetic" } },
+          ],
+          "legalStatus": "의료기관에서만 시행 가능한 의료 행위",
+          "recognizingAuthority": { "@type": "Organization", "name": "보건복지부" },
+        },
+        // Speakable for this treatment page (AEO)
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": t.metaTitle,
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", ".hero-sub", "h2", "[itemprop='name']", "[itemprop='text']"]
+          },
+          "url": `https://seoul365dental.com/treatments/${t.slug}`,
+        },
       ]
     }
   )
@@ -1088,14 +1440,88 @@ app.get('/doctors', (c) => {
       title: '의료진 소개 | 서울365치과 - 서울대 출신 5인 전문의 인천 구월동',
       description: '서울365치과 의료진 소개. 서울대학교 치과대학 출신 5인 원장이 한 팀으로 협진합니다. 통합치의학, 보존과, 교정과 전문의. 박준규·최다빈·정문희·상세훈·하누리 원장. 032-432-0365',
       canonical: 'https://seoul365dental.com/doctors',
-      jsonLd: {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-          { "@type": "ListItem", "position": 2, "name": "의료진", "item": "https://seoul365dental.com/doctors" }
-        ]
-      }
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "의료진", "item": "https://seoul365dental.com/doctors" }
+          ]
+        },
+        // AboutPage — doctors listing
+        {
+          "@context": "https://schema.org",
+          "@type": ["AboutPage", "MedicalWebPage"],
+          "name": "서울365치과 의료진 소개",
+          "description": "서울365치과 의료진. 서울대학교 치과대학 출신 5인 원장이 한 팀으로 협진합니다.",
+          "url": "https://seoul365dental.com/doctors",
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "inLanguage": "ko-KR"
+        },
+        // ItemList — all doctors
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "서울365치과 의료진 목록",
+          "description": "서울대 출신 5인 원장이 하나의 케이스를 함께 봅니다",
+          "numberOfItems": doctors.length,
+          "itemListElement": doctors.map((doc: any, i: number) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "url": `https://seoul365dental.com/doctors/${doc.slug}`,
+            "item": {
+              "@type": "Physician",
+              "name": doc.name,
+              "jobTitle": doc.title,
+              "medicalSpecialty": doc.specialties,
+              "description": doc.philosophy.split('.')[0] + '.',
+              "worksFor": { "@id": "https://seoul365dental.com/#dentist" },
+              "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" }
+            }
+          }))
+        },
+        // MedicalOrganization — team image
+        {
+          "@context": "https://schema.org",
+          "@type": "ImageObject",
+          "name": "서울365치과 의료진 단체사진",
+          "url": "https://seoul365dental.com/static/team-photo.jpg",
+          "description": "서울365치과 의료진 단체사진 - 서울대 출신 5인 원장",
+          "representativeOfPage": true
+        },
+        // MedicalOrganization — team composition
+        {
+          "@context": "https://schema.org",
+          "@type": "MedicalOrganization",
+          "name": "서울365치과 의료진",
+          "description": "서울대학교 치과대학 출신 5인 원장이 한 팀으로 협진하는 인천 구월동 치과",
+          "url": "https://seoul365dental.com/doctors",
+          "medicalSpecialty": ["Dentistry", "Implantology", "Orthodontics", "Endodontics", "Prosthodontics"],
+          "employee": doctors.map((doc: any) => ({
+            "@type": "Physician",
+            "name": doc.name,
+            "jobTitle": doc.title,
+            "medicalSpecialty": doc.specialties,
+            "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" },
+            "url": `https://seoul365dental.com/doctors/${doc.slug}`,
+          })),
+          "numberOfEmployees": { "@type": "QuantitativeValue", "value": 5, "unitText": "원장" },
+        },
+        // EducationalOrganization — alma mater emphasis (AEO)
+        {
+          "@context": "https://schema.org",
+          "@type": "CollegeOrUniversity",
+          "name": "서울대학교 치과대학",
+          "alternateName": "Seoul National University School of Dentistry",
+          "alumni": doctors.map((doc: any) => ({
+            "@type": "Person",
+            "name": doc.name,
+            "jobTitle": doc.title,
+            "worksFor": { "@id": "https://seoul365dental.com/#dentist" }
+          })),
+        },
+      ]
     }
   )
 })
@@ -1234,6 +1660,7 @@ app.get('/doctors/:slug', (c) => {
       description: doc.metaDesc,
       canonical: `https://seoul365dental.com/doctors/${doc.slug}`,
       jsonLd: [
+        // Physician (detailed)
         {
           "@context": "https://schema.org", "@type": "Physician",
           "@id": `https://seoul365dental.com/doctors/${doc.slug}#physician`,
@@ -1241,10 +1668,44 @@ app.get('/doctors/:slug', (c) => {
           "description": doc.philosophy,
           "image": doc.slug === 'park-junkyu' ? 'https://seoul365dental.com/static/dr-park-profile.jpg' : undefined,
           "medicalSpecialty": doc.specialties,
-          "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" },
-          "worksFor": { "@type": "Dentist", "name": "서울365치과의원", "url": "https://seoul365dental.com" },
+          "alumniOf": doc.education.map((edu: string) => ({
+            "@type": "EducationalOrganization",
+            "name": edu
+          })),
+          "worksFor": { "@type": "Dentist", "@id": "https://seoul365dental.com/#dentist", "name": "서울365치과의원", "url": "https://seoul365dental.com" },
           "knowsAbout": doc.specialties,
+          "hasCredential": doc.credentials.map((cred: string) => ({
+            "@type": "EducationalOccupationalCredential",
+            "credentialCategory": cred,
+          })),
+          "memberOf": doc.societies.map((soc: string) => ({
+            "@type": "Organization",
+            "name": soc
+          })),
+          "hasOccupation": {
+            "@type": "Occupation",
+            "name": "치과의사",
+            "occupationalCategory": "29-1021",
+            "qualifications": doc.credentials.join(', '),
+            "skills": doc.specialties.join(', '),
+          },
+          "availableService": doc.specialties.map((s: string) => ({
+            "@type": "MedicalProcedure", "name": s
+          })),
+          "url": `https://seoul365dental.com/doctors/${doc.slug}`,
         },
+        // ProfilePage
+        {
+          "@context": "https://schema.org",
+          "@type": "ProfilePage",
+          "name": `${doc.name} ${doc.title} 프로필`,
+          "url": `https://seoul365dental.com/doctors/${doc.slug}`,
+          "mainEntity": { "@id": `https://seoul365dental.com/doctors/${doc.slug}#physician` },
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "inLanguage": "ko-KR",
+          "dateModified": "2026-03-08"
+        },
+        // BreadcrumbList
         {
           "@context": "https://schema.org", "@type": "BreadcrumbList",
           "itemListElement": [
@@ -1252,7 +1713,55 @@ app.get('/doctors/:slug', (c) => {
             { "@type": "ListItem", "position": 2, "name": "의료진", "item": "https://seoul365dental.com/doctors" },
             { "@type": "ListItem", "position": 3, "name": doc.name, "item": `https://seoul365dental.com/doctors/${doc.slug}` }
           ]
-        }
+        },
+        // Person schema (supplementary)
+        {
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": doc.name,
+          "jobTitle": doc.title,
+          "worksFor": { "@id": "https://seoul365dental.com/#dentist" },
+          "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" },
+          "nationality": { "@type": "Country", "name": "KR" },
+          "knowsLanguage": ["ko", "en"],
+        },
+        // EducationalOccupationalCredential — detailed credentials
+        ...(doc.credentials.length > 0 ? [{
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": `${doc.name} 자격 및 인증`,
+          "itemListElement": doc.credentials.map((cred: string, i: number) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "item": {
+              "@type": "EducationalOccupationalCredential",
+              "credentialCategory": cred,
+              "recognizedBy": { "@type": "Organization", "name": "보건복지부" },
+            }
+          }))
+        }] : []),
+        // MedicalScholarlyArticle — doctor's expertise signal (AEO)
+        {
+          "@context": "https://schema.org",
+          "@type": "MedicalScholarlyArticle",
+          "name": `${doc.name} ${doc.title} — 진료 철학과 전문 분야`,
+          "author": { "@type": "Physician", "name": doc.name, "@id": `https://seoul365dental.com/doctors/${doc.slug}#physician` },
+          "about": doc.specialties.map((s: string) => ({ "@type": "MedicalEntity", "name": s })),
+          "publisher": { "@id": "https://seoul365dental.com/#dentist" },
+          "inLanguage": "ko-KR",
+          "datePublished": "2024-01-01",
+        },
+        // Occupation schema — structured job data
+        {
+          "@context": "https://schema.org",
+          "@type": "Occupation",
+          "name": "치과의사",
+          "occupationalCategory": "29-1021.00",
+          "qualifications": doc.credentials.join(', ') || '서울대학교 치과대학 졸업',
+          "skills": doc.specialties.join(', '),
+          "estimatedSalary": { "@type": "MonetaryAmountDistribution", "currency": "KRW" },
+          "occupationLocation": { "@type": "City", "name": "인천광역시" },
+        },
       ]
     }
   )
@@ -1344,14 +1853,95 @@ app.get('/reservation', (c) => {
       title: '상담 예약 | 서울365치과 - 전화·카카오톡·온라인 예약',
       description: '서울365치과 상담 예약. 전화(032-432-0365), 카카오톡, 네이버 예약, 온라인 상담 신청. 365일 진료, 야간 21시까지. 인천 구월동 예술회관역.',
       canonical: 'https://seoul365dental.com/reservation',
-      jsonLd: {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-          { "@type": "ListItem", "position": 2, "name": "상담 예약", "item": "https://seoul365dental.com/reservation" }
-        ]
-      }
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "상담 예약", "item": "https://seoul365dental.com/reservation" }
+          ]
+        },
+        // ContactPage
+        {
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "name": "서울365치과 상담 예약",
+          "description": "서울365치과 상담 예약. 전화, 카카오톡, 네이버 예약, 온라인 상담 신청.",
+          "url": "https://seoul365dental.com/reservation",
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "inLanguage": "ko-KR"
+        },
+        // ReserveAction
+        {
+          "@context": "https://schema.org",
+          "@type": "ReserveAction",
+          "name": "서울365치과 상담 예약하기",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://seoul365dental.com/reservation",
+            "inLanguage": "ko",
+            "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"]
+          },
+          "result": {
+            "@type": "Reservation",
+            "name": "치과 상담 예약",
+            "reservationFor": { "@id": "https://seoul365dental.com/#dentist" }
+          },
+          "agent": { "@id": "https://seoul365dental.com/#dentist" },
+          "object": { "@type": "MedicalClinic", "name": "서울365치과의원" }
+        },
+        // CommunicateAction — multiple communication channels
+        {
+          "@context": "https://schema.org",
+          "@type": "CommunicateAction",
+          "name": "서울365치과 전화 상담",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "tel:032-432-0365",
+            "actionPlatform": ["http://schema.org/MobileWebPlatform"]
+          },
+          "about": { "@type": "Thing", "name": "치과 상담" }
+        },
+        // ScheduleAction — Naver booking
+        {
+          "@context": "https://schema.org",
+          "@type": "ScheduleAction",
+          "name": "네이버 예약으로 서울365치과 상담 신청",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://booking.naver.com/booking/13/bizes/426166",
+          },
+          "agent": { "@type": "Person", "name": "환자" },
+          "object": { "@type": "MedicalClinic", "name": "서울365치과의원" },
+        },
+        // Service — consultation service details
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "서울365치과 상담 서비스",
+          "serviceType": "치과 상담",
+          "provider": { "@id": "https://seoul365dental.com/#dentist" },
+          "areaServed": { "@type": "City", "name": "인천광역시" },
+          "serviceOutput": {
+            "@type": "Thing",
+            "name": "맞춤 치료 계획",
+            "description": "정밀 CT 촬영 후 개인별 최적 치료 계획 수립"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW",
+            "description": "초진 상담 무료",
+          },
+          "termsOfService": "https://seoul365dental.com/terms",
+          "availableChannel": [
+            { "@type": "ServiceChannel", "serviceUrl": "https://seoul365dental.com/reservation", "serviceSmsNumber": "+82-32-432-0365", "name": "온라인 예약" },
+            { "@type": "ServiceChannel", "servicePhone": { "@type": "ContactPoint", "telephone": "+82-32-432-0365" }, "name": "전화 예약" },
+            { "@type": "ServiceChannel", "serviceUrl": "https://pf.kakao.com/_dMsCT", "name": "카카오톡 상담" },
+          ]
+        }
+      ]
     }
   )
 })
@@ -1419,14 +2009,89 @@ app.get('/pricing', (c) => {
       title: '진료비용 안내 | 서울365치과 - 임플란트·교정·심미치료 가격',
       description: '서울365치과 비급여 진료비용 안내. 임플란트, 전체임플란트, 올온X, 인비절라인, 교정, 심미치료, 수면진료 비용. 카드 결제·분할 결제 가능. 정확한 비용은 정밀 진단 후 안내.',
       canonical: 'https://seoul365dental.com/pricing',
-      jsonLd: {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-          { "@type": "ListItem", "position": 2, "name": "비용안내", "item": "https://seoul365dental.com/pricing" }
-        ]
-      }
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "비용안내", "item": "https://seoul365dental.com/pricing" }
+          ]
+        },
+        // WebPage for pricing
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "서울365치과 진료비용 안내",
+          "description": "서울365치과 비급여 진료비용 안내. 임플란트, 교정, 심미치료 비용.",
+          "url": "https://seoul365dental.com/pricing",
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "lastReviewed": "2026-03-08",
+          "inLanguage": "ko-KR"
+        },
+        // OfferCatalog — pricing table
+        {
+          "@context": "https://schema.org",
+          "@type": "OfferCatalog",
+          "name": "서울365치과 진료비용표",
+          "description": "서울365치과 비급여 항목 진료비용",
+          "itemListElement": pricingData.map((p: any) => ({
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "MedicalProcedure",
+              "name": p.treatment,
+            },
+            "priceCurrency": "KRW",
+            "price": p.price,
+            "description": `보험: ${p.insurance}`,
+            "seller": { "@id": "https://seoul365dental.com/#dentist" },
+            "availability": "https://schema.org/InStock"
+          }))
+        },
+        // Table schema
+        {
+          "@context": "https://schema.org",
+          "@type": "Table",
+          "name": "서울365치과 진료비용표",
+          "about": "치과 진료 비용 안내"
+        },
+        // PaymentMethod — accepted payments
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "서울365치과 진료비용 안내",
+          "url": "https://seoul365dental.com/pricing",
+          "mainEntity": {
+            "@type": "OfferCatalog",
+            "name": "서울365치과 비급여 진료비",
+            "description": "정확한 비용은 정밀 진단 후 안내됩니다. 카드 결제 및 분할 결제 가능.",
+          },
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h2", "td"]
+          },
+        },
+        // PriceSpecification for highlighted items
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "서울365치과 주요 진료비",
+          "itemListElement": pricingData.slice(0, 5).map((p: any, i: number) => ({
+            "@type": "ListItem",
+            "position": i + 1,
+            "item": {
+              "@type": "Offer",
+              "name": p.treatment,
+              "price": p.price,
+              "priceCurrency": "KRW",
+              "itemOffered": { "@type": "Service", "name": p.treatment, "provider": { "@id": "https://seoul365dental.com/#dentist" } },
+              "eligibleCustomerType": "http://purl.org/goodrelations/v1#Enduser",
+              "acceptedPaymentMethod": ["http://purl.org/goodrelations/v1#ByBankTransferInAdvance", "http://purl.org/goodrelations/v1#Cash", "http://purl.org/goodrelations/v1#PaymentMethodCreditCard"],
+              "description": `보험: ${p.insurance}`,
+            }
+          }))
+        },
+      ]
     }
   )
 })
@@ -1510,14 +2175,101 @@ app.get('/directions', (c) => {
       title: '오시는 길 | 서울365치과 - 인천 남동구 예술회관역 5번 출구 250m',
       description: '서울365치과 오시는 길. 인천 남동구 예술로 138 이토타워 2층. 인천2호선 예술회관역 5번 출구 도보 3분(250m). 건물 내 주차장. 032-432-0365',
       canonical: 'https://seoul365dental.com/directions',
-      jsonLd: {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-          { "@type": "ListItem", "position": 2, "name": "오시는길", "item": "https://seoul365dental.com/directions" }
-        ]
-      }
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "오시는길", "item": "https://seoul365dental.com/directions" }
+          ]
+        },
+        // Place — detailed location
+        {
+          "@context": "https://schema.org",
+          "@type": "Place",
+          "name": "서울365치과의원",
+          "description": "인천 남동구 예술로 138 이토타워 2층. 인천2호선 예술회관역 5번 출구 도보 3분(250m).",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "예술로 138 이토타워 2층 212호",
+            "addressLocality": "인천광역시 남동구",
+            "addressRegion": "인천",
+            "postalCode": "21556",
+            "addressCountry": "KR"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "37.4482",
+            "longitude": "126.7042"
+          },
+          "hasMap": `https://www.google.com/maps?q=37.4482,126.7042`,
+          "publicAccess": true,
+          "isAccessibleForFree": true,
+          "amenityFeature": [
+            { "@type": "LocationFeatureSpecification", "name": "주차장", "value": true },
+            { "@type": "LocationFeatureSpecification", "name": "엘리베이터", "value": true },
+            { "@type": "LocationFeatureSpecification", "name": "지하철 접근성", "value": true },
+          ],
+          "containedInPlace": {
+            "@type": "Building",
+            "name": "이토타워",
+            "address": "인천 남동구 예술로 138"
+          }
+        },
+        // Map page type
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "서울365치과 오시는 길",
+          "description": "서울365치과 오시는 길 안내. 예술회관역 5번 출구 도보 3분.",
+          "url": "https://seoul365dental.com/directions",
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "mainEntity": {
+            "@type": "Place",
+            "name": "서울365치과의원",
+            "geo": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" }
+          },
+          "inLanguage": "ko-KR"
+        },
+        // LocalBusiness transit info via HowTo
+        {
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          "name": "서울365치과 찾아오는 방법",
+          "step": [
+            { "@type": "HowToStep", "position": 1, "name": "지하철", "text": "인천 2호선 예술회관역 5번 출구로 나오세요." },
+            { "@type": "HowToStep", "position": 2, "name": "도보 이동", "text": "5번 출구에서 직진 약 250m (도보 3분)." },
+            { "@type": "HowToStep", "position": 3, "name": "도착", "text": "이토타워 건물 2층 서울365치과의원입니다." },
+          ]
+        },
+        // Map schema — explicit map resource
+        {
+          "@context": "https://schema.org",
+          "@type": "Map",
+          "name": "서울365치과 위치 지도",
+          "mapType": "TransitMap",
+          "url": `https://www.google.com/maps?q=37.4482,126.7042`,
+        },
+        // TouristAttraction/Landmark — nearby landmarks for context
+        {
+          "@context": "https://schema.org",
+          "@type": "ItemList",
+          "name": "서울365치과 인근 랜드마크",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "item": { "@type": "LandmarksOrHistoricalBuildings", "name": "예술회관역", "description": "인천 2호선 예술회관역 5번 출구에서 도보 3분" } },
+            { "@type": "ListItem", "position": 2, "item": { "@type": "CivicStructure", "name": "이토타워", "description": "서울365치과가 위치한 건물 (2층)" } },
+            { "@type": "ListItem", "position": 3, "item": { "@type": "CivicStructure", "name": "인천예술회관", "description": "인근 문화시설" } },
+          ]
+        },
+        // BusStation — transit access info
+        {
+          "@context": "https://schema.org",
+          "@type": "BusStation",
+          "name": "예술회관역 버스정류장",
+          "description": "서울365치과 인근 버스정류장. 다수 시내버스 이용 가능.",
+          "geo": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
+        },
+      ]
     }
   )
 })
@@ -1586,7 +2338,36 @@ app.get('/faq', (c) => {
             "name": f.q,
             "acceptedAnswer": { "@type": "Answer", "text": f.a }
           }))
-        }
+        },
+        // QAPage — alternative for AEO engines
+        {
+          "@context": "https://schema.org",
+          "@type": "QAPage",
+          "name": "서울365치과 자주 묻는 질문",
+          "mainEntity": allFaq.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "answerCount": 1,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": f.a,
+              "author": { "@type": "Organization", "name": "서울365치과의원" },
+              "dateCreated": "2026-01-01",
+              "upvoteCount": 10,
+            }
+          }))
+        },
+        // Speakable for FAQ page
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "자주 묻는 질문 FAQ | 서울365치과",
+          "url": "https://seoul365dental.com/faq",
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h3[itemprop='name']", "p[itemprop='text']"]
+          },
+        },
       ]
     }
   )
@@ -1694,6 +2475,34 @@ app.get('/cases/gallery', async (c) => {
       title: '치료 사례 Before & After | 서울365치과',
       description: '서울365치과 치료 사례. 임플란트, 교정, 심미치료 Before & After.',
       canonical: 'https://seoul365dental.com/cases/gallery',
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "치료사례", "item": "https://seoul365dental.com/cases/gallery" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "ImageGallery",
+          "name": "서울365치과 치료 사례 갤러리",
+          "description": "서울365치과 임플란트, 교정, 심미치료 Before & After 갤러리. 실제 치료 전후 사진.",
+          "url": "https://seoul365dental.com/cases/gallery",
+          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "accessMode": "visual",
+          "isAccessibleForFree": false,
+          "conditionsOfAccess": "회원 로그인 필요",
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "서울365치과 치료 사례",
+          "url": "https://seoul365dental.com/cases/gallery",
+          "inLanguage": "ko-KR",
+        },
+      ]
     }
   )
 })
@@ -2027,9 +2836,15 @@ app.get('/sitemap.xml', (c) => {
   const now = new Date().toISOString().split('T')[0];
 
   const staticPages = [
-    { loc: '', priority: '1.0', changefreq: 'daily' },
+    { loc: '', priority: '1.0', changefreq: 'daily', images: [
+      { url: `${base}/static/og-image.jpg`, title: '서울365치과 메인 이미지', caption: '인천 구월동 서울대 출신 5인 전문의 치과' },
+      { url: `${base}/static/dr-park.jpg`, title: '박준규 대표원장', caption: '서울대 통합치의학과 전문의' },
+    ], video: { url: 'https://www.youtube.com/watch?v=gB_yiatcwAc', title: '서울365치과 소개 영상', thumbnail: 'https://img.youtube.com/vi/gB_yiatcwAc/maxresdefault.jpg', description: '서울365치과 진료 환경 클리닉 투어' } },
     { loc: '/treatments', priority: '0.9', changefreq: 'weekly' },
-    { loc: '/doctors', priority: '0.9', changefreq: 'monthly' },
+    { loc: '/doctors', priority: '0.9', changefreq: 'monthly', images: [
+      { url: `${base}/static/team-photo.jpg`, title: '서울365치과 의료진 단체사진', caption: '서울대 출신 5인 원장' },
+      { url: `${base}/static/dr-park-profile.jpg`, title: '박준규 대표원장 프로필', caption: '서울대 통합치의학과 전문의' },
+    ] },
     { loc: '/pricing', priority: '0.8', changefreq: 'weekly' },
     { loc: '/reservation', priority: '0.8', changefreq: 'monthly' },
     { loc: '/directions', priority: '0.7', changefreq: 'monthly' },
@@ -2045,6 +2860,7 @@ app.get('/sitemap.xml', (c) => {
 
   const doctorPages = doctors.map(d => ({
     loc: `/doctors/${d.slug}`, priority: '0.7', changefreq: 'monthly' as const,
+    images: d.slug === 'park-junkyu' ? [{ url: `${base}/static/dr-park-profile.jpg`, title: `${d.name} ${d.title}`, caption: d.metaDesc }] : undefined,
   }));
 
   const allPages = [...staticPages, ...treatmentPages, ...doctorPages];
@@ -2052,13 +2868,28 @@ app.get('/sitemap.xml', (c) => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-${allPages.map(p => `  <url>
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+${allPages.map((p: any) => `  <url>
     <loc>${base}${p.loc}</loc>
     <lastmod>${now}</lastmod>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
     <xhtml:link rel="alternate" hreflang="ko-KR" href="${base}${p.loc}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${base}${p.loc}" />${p.images ? p.images.map((img: any) => `
+    <image:image>
+      <image:loc>${img.url}</image:loc>
+      <image:title>${img.title}</image:title>
+      <image:caption>${img.caption}</image:caption>
+    </image:image>`).join('') : ''}${p.video ? `
+    <video:video>
+      <video:thumbnail_loc>${p.video.thumbnail}</video:thumbnail_loc>
+      <video:title>${p.video.title}</video:title>
+      <video:description>${p.video.description}</video:description>
+      <video:content_loc>${p.video.url}</video:content_loc>
+      <video:family_friendly>yes</video:family_friendly>
+    </video:video>` : ''}
   </url>`).join('\n')}
 </urlset>`;
 
@@ -2066,6 +2897,7 @@ ${allPages.map(p => `  <url>
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
       'Cache-Control': 'public, max-age=3600',
+      'X-Robots-Tag': 'noindex',
     },
   });
 })
@@ -2074,21 +2906,16 @@ ${allPages.map(p => `  <url>
 // ROBOTS.TXT
 // ============================================================
 app.get('/robots.txt', (c) => {
-  const robots = `User-agent: *
+  const robots = `# ====================================================
+# 서울365치과의원 (Seoul 365 Dental Clinic)
+# https://seoul365dental.com
+# robots.txt — SEO/AEO Optimized v2.0
+# Last updated: 2026-03-08
+# ====================================================
+
+# === GENERAL RULES (all crawlers) ===
+User-agent: *
 Allow: /
-
-# Sitemap
-Sitemap: https://seoul365dental.com/sitemap.xml
-
-# Crawl-delay (polite crawling)
-Crawl-delay: 1
-
-# Disallow admin/auth API endpoints
-Disallow: /api/auth/
-Disallow: /login
-Disallow: /register
-
-# Allow all content pages
 Allow: /treatments/
 Allow: /doctors/
 Allow: /pricing
@@ -2096,12 +2923,196 @@ Allow: /directions
 Allow: /faq
 Allow: /reservation
 Allow: /cases/gallery
+Allow: /sitemap.xml
+
+# Disallow non-content pages
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+Disallow: /privacy
+Disallow: /terms
+
+# === GOOGLE ===
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Googlebot-Image
+Allow: /static/
+Allow: /*.jpg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.svg$
+
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Storebot-Google
+Allow: /
+
+User-agent: Google-InspectionTool
+Allow: /
+
+# === NAVER ===
+User-agent: Yeti
+Allow: /
+Crawl-delay: 1
+
+User-agent: Naverbot
+Allow: /
+Crawl-delay: 1
+
+# === BING ===
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: BingPreview
+Allow: /
+
+# === DAUM/KAKAO ===
+User-agent: Daumoa
+Allow: /
+Crawl-delay: 1
+
+# === YAHOO ===
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# === YANDEX ===
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 2
+
+# === APPLE ===
+User-agent: Applebot
+Allow: /
+
+# === TWITTER/X ===
+User-agent: Twitterbot
+Allow: /
+
+# === FACEBOOK ===
+User-agent: facebookexternalhit
+Allow: /
+
+# === LINKEDIN ===
+User-agent: LinkedInBot
+Allow: /
+
+# === TELEGRAM ===
+User-agent: TelegramBot
+Allow: /
+
+# === KAKAOTALK CRAWLER ===
+User-agent: kakaotalk-scrap
+Allow: /
+
+# === AI/AEO CRAWLERS (critical for AI answer optimization) ===
+User-agent: GPTBot
+Allow: /
+Allow: /treatments/
+Allow: /doctors/
+Allow: /faq
+Allow: /pricing
+Allow: /directions
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+User-agent: AI2Bot
+Allow: /
+
+User-agent: Timpibot
+Allow: /
+
+User-agent: omgili
+Allow: /
+
+User-agent: PetalBot
+Allow: /
+
+# === STRUCTURED DATA VALIDATORS ===
+User-agent: Google-Structured-Data-Testing-Tool
+Allow: /
+
+User-agent: W3C_Validator
+Allow: /
+
+# === BLOCK BAD/AGGRESSIVE BOTS ===
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Crawl-delay: 30
+
+# === SITEMAPS ===
+Sitemap: https://seoul365dental.com/sitemap.xml
+
+# === HOST ===
+Host: https://seoul365dental.com
 `;
 
   return new Response(robots, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': 'public, max-age=86400',
+      'X-Robots-Tag': 'all',
     },
   });
 })
