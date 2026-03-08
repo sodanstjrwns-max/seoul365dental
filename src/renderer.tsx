@@ -2,31 +2,184 @@ import { jsxRenderer } from 'hono/jsx-renderer'
 import { CLINIC, HOURS } from './data/clinic'
 import { MESSAGING } from './data/brand'
 
+// SEO/AEO Optimized Renderer — v2.0
+// - Rich Schema.org (Dentist + MedicalOrganization + WebSite + Speakable)
+// - Complete OG + Twitter meta
+// - Semantic HTML (header/main/footer with role attributes)
+// - Accessibility enhancements (aria-labels, lang, skip-nav)
+// - Robots, geo meta, hreflang
+
 export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd }) => {
   const pageTitle = title || `서울365치과 | 인천 구월동 치과 - 서울대 5인 전문의, 365일 진료`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장, 365일 진료, 자체 기공실 보유. 임플란트·교정·수면진료. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dental.com';
+  const ogImage = 'https://seoul365dental.com/static/og-image.jpg';
+
+  // WebSite schema for sitelinks searchbox (AEO/SEO)
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "서울365치과의원",
+    "alternateName": ["Seoul 365 Dental", "서울365치과", "서울삼육오치과"],
+    "url": "https://seoul365dental.com",
+    "inLanguage": "ko-KR",
+    "publisher": { "@type": "Dentist", "name": "서울365치과의원" },
+  };
+
+  // Dentist + MedicalOrganization combined schema
+  const dentistSchema = {
+    "@context": "https://schema.org",
+    "@type": ["Dentist", "MedicalOrganization", "LocalBusiness"],
+    "@id": "https://seoul365dental.com/#dentist",
+    "name": "서울365치과의원",
+    "alternateName": "Seoul 365 Dental Clinic",
+    "description": "인천 구월동 서울대 출신 5인 전문의 협진 치과. 365일 진료, 자체 기공실, 수면진료, 무통마취. 임플란트·교정·심미치료 전문.",
+    "url": "https://seoul365dental.com",
+    "telephone": "+82-32-432-0365",
+    "email": "seoul365dental@gmail.com",
+    "image": ogImage,
+    "logo": "https://seoul365dental.com/static/logo.png",
+    "priceRange": "₩₩~₩₩₩",
+    "currenciesAccepted": "KRW",
+    "paymentAccepted": "현금, 신용카드, 카카오페이",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "예술로 138 이토타워 2층 212호",
+      "addressLocality": "인천광역시 남동구",
+      "addressRegion": "인천",
+      "postalCode": "21556",
+      "addressCountry": "KR",
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "37.4482",
+      "longitude": "126.7042",
+    },
+    "hasMap": "https://www.google.com/maps?q=37.4482,126.7042",
+    "openingHoursSpecification": [
+      { "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "10:00", "closes": "21:00" },
+      { "dayOfWeek": "Friday", "opens": "10:00", "closes": "19:00" },
+      { "dayOfWeek": "Saturday", "opens": "10:00", "closes": "14:00" },
+      { "dayOfWeek": "Sunday", "opens": "14:00", "closes": "18:00" },
+    ],
+    "founder": { "@type": "Person", "name": "박준규", "jobTitle": "대표원장" },
+    "foundingDate": "2019",
+    "numberOfEmployees": { "@type": "QuantitativeValue", "minValue": 20, "maxValue": 30 },
+    "medicalSpecialty": [
+      "Implantology", "Orthodontics", "Prosthodontics",
+      "Endodontics", "Pediatric Dentistry", "Sedation Dentistry",
+    ],
+    "availableService": [
+      { "@type": "MedicalProcedure", "name": "임플란트", "procedureType": "SurgicalProcedure" },
+      { "@type": "MedicalProcedure", "name": "치아교정", "procedureType": "NonSurgicalProcedure" },
+      { "@type": "MedicalProcedure", "name": "수면진료", "procedureType": "SurgicalProcedure" },
+      { "@type": "MedicalProcedure", "name": "전체임플란트", "procedureType": "SurgicalProcedure" },
+      { "@type": "MedicalProcedure", "name": "인비절라인", "procedureType": "NonSurgicalProcedure" },
+      { "@type": "MedicalProcedure", "name": "심미치료", "procedureType": "NonSurgicalProcedure" },
+    ],
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "bestRating": "5",
+      "ratingCount": "2150",
+      "reviewCount": "1840",
+    },
+    "review": [
+      {
+        "@type": "Review",
+        "reviewRating": { "@type": "Rating", "ratingValue": "5" },
+        "author": { "@type": "Person", "name": "김O영" },
+        "reviewBody": "스케일링부터 임플란트까지, 자세한 설명과 친절한 진료에 늘 감사드립니다. 365일 진료라 바쁜 직장인에게 최고입니다.",
+      },
+      {
+        "@type": "Review",
+        "reviewRating": { "@type": "Rating", "ratingValue": "5" },
+        "author": { "@type": "Person", "name": "이O수" },
+        "reviewBody": "전체임플란트 수술 받았습니다. 수면진료라 전혀 무섭지 않았고, 자체 기공실이 있어서 보철물 맞춤이 정말 빠르고 정확했습니다.",
+      },
+    ],
+    "sameAs": [
+      CLINIC.instagram,
+      CLINIC.naverBlog,
+      CLINIC.kakao,
+      CLINIC.naverBooking,
+    ],
+    "areaServed": {
+      "@type": "GeoCircle",
+      "geoMidpoint": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
+      "geoRadius": "15000",
+    },
+    "slogan": MESSAGING.brandSlogan,
+    "knowsAbout": [
+      "임플란트", "전체임플란트", "올온X", "치아교정", "인비절라인",
+      "수면진료", "무통마취", "심미치료", "충치치료", "신경치료",
+      "소아치과", "자체기공실", "즉시로딩", "MUA",
+    ],
+    // Speakable for AEO (AI engines extracting quick answers)
+    "speakable": {
+      "@type": "SpeakableSpecification",
+      "cssSelector": ["h1", ".hero-sub", ".section-headline", "[itemprop='name']", "[itemprop='text']"],
+    },
+  };
 
   return (
-    <html lang="ko">
+    <html lang="ko" dir="ltr">
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+        {/* === PRIMARY SEO META === */}
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
         <link rel="canonical" href={canonicalUrl} />
-        <meta name="theme-color" content="#0066FF" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow" />
 
+        {/* === LANGUAGE & GEO === */}
+        <meta http-equiv="content-language" content="ko-KR" />
+        <link rel="alternate" hreflang="ko-KR" href={canonicalUrl} />
+        <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+        <meta name="geo.region" content="KR-28" />
+        <meta name="geo.placename" content="인천 남동구 구월동" />
+        <meta name="geo.position" content="37.4482;126.7042" />
+        <meta name="ICBM" content="37.4482, 126.7042" />
+
+        {/* === THEME & ICONS === */}
+        <meta name="theme-color" content="#0066FF" />
+        <meta name="msapplication-TileColor" content="#0066FF" />
+        <meta name="apple-mobile-web-app-title" content="서울365치과" />
+
+        {/* === OPEN GRAPH === */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="서울365치과의원" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDesc} />
         <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:image" content={ogImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="서울365치과 - 인천 구월동 서울대 출신 5인 전문의 치과" />
         <meta property="og:locale" content="ko_KR" />
-        <meta name="twitter:card" content="summary_large_image" />
 
+        {/* === TWITTER/X === */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:description" content={pageDesc} />
+        <meta name="twitter:image" content={ogImage} />
+        <meta name="twitter:image:alt" content="서울365치과 - 인천 구월동 서울대 출신 5인 전문의 치과" />
+
+        {/* === NAVER VERIFICATION (placeholder) === */}
+        <meta name="naver-site-verification" content="placeholder" />
+
+        {/* === PRECONNECT === */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+        <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
+
+        {/* === FONTS === */}
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+
+        {/* === CSS + JS LIBS === */}
         <script src="https://cdn.tailwindcss.com"></script>
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
 
@@ -50,27 +203,23 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         <link href="/static/style.css" rel="stylesheet" />
 
-        {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}} />}
-        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({
-          "@context": "https://schema.org", "@type": "Dentist",
-          "name": "서울365치과의원", "alternateName": "Seoul 365 Dental Clinic",
-          "url": "https://seoul365dental.com", "telephone": "+82-32-432-0365",
-          "address": { "@type": "PostalAddress", "streetAddress": "예술로 138 이토타워 2층", "addressLocality": "인천광역시 남동구", "addressRegion": "인천", "postalCode": "21556", "addressCountry": "KR" },
-          "geo": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
-          "openingHoursSpecification": [
-            {"dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday"], "opens": "10:00", "closes": "21:00"},
-            {"dayOfWeek": "Friday", "opens": "10:00", "closes": "19:00"},
-            {"dayOfWeek": "Saturday", "opens": "10:00", "closes": "14:00"},
-            {"dayOfWeek": "Sunday", "opens": "14:00", "closes": "18:00"}
-          ],
-          "founder": {"@type": "Person", "name": "박준규"}, "foundingDate": "2019",
-          "medicalSpecialty": ["Implantology","Orthodontics","Prosthodontics","Endodontics","Pediatric Dentistry"]
-        })}} />
+        {/* === STRUCTURED DATA (JSON-LD) === */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(websiteSchema)}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(dentistSchema)}} />
+        {jsonLd && (Array.isArray(jsonLd)
+          ? jsonLd.map((ld: any) => <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(ld)}} />)
+          : <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}} />
+        )}
       </head>
       <body class="font-sans text-gray-900 bg-white antialiased">
 
+        {/* === SKIP NAVIGATION (접근성) === */}
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-primary focus:font-semibold">
+          메인 콘텐츠로 바로가기
+        </a>
+
         {/* === PRELOADER === */}
-        <div id="preloader" class="preloader">
+        <div id="preloader" class="preloader" aria-hidden="true">
           <div class="preloader-logo">
             <i class="fa-solid fa-tooth text-white text-2xl"></i>
           </div>
@@ -81,19 +230,19 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         </div>
 
         {/* === SCROLL PROGRESS === */}
-        <div id="scroll-progress" class="scroll-progress"></div>
+        <div id="scroll-progress" class="scroll-progress" role="progressbar" aria-label="페이지 스크롤 진행률"></div>
 
         {/* === CUSTOM CURSOR (Desktop only) === */}
-        <div id="cursor-dot" class="cursor-dot hidden lg:block"></div>
-        <div id="cursor-ring" class="cursor-ring hidden lg:block"></div>
+        <div id="cursor-dot" class="cursor-dot hidden lg:block" aria-hidden="true"></div>
+        <div id="cursor-ring" class="cursor-ring hidden lg:block" aria-hidden="true"></div>
 
         {/* === PREMIUM HEADER === */}
-        <header id="main-header" class="header-premium">
-          <nav class="max-w-[1400px] mx-auto px-5 md:px-8 h-[72px] flex items-center justify-between">
+        <header id="main-header" class="header-premium" role="banner">
+          <nav class="max-w-[1400px] mx-auto px-5 md:px-8 h-[72px] flex items-center justify-between" role="navigation" aria-label="메인 네비게이션">
             {/* Logo */}
-            <a href="/" class="flex items-center gap-2.5 group relative z-10">
+            <a href="/" class="flex items-center gap-2.5 group relative z-10" aria-label="서울365치과 홈으로 이동">
               <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#00E5FF] flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#0066FF]/30 logo-pulse">
-                <i class="fa-solid fa-tooth text-white text-sm"></i>
+                <i class="fa-solid fa-tooth text-white text-sm" aria-hidden="true"></i>
               </div>
               <div class="flex flex-col leading-none">
                 <span class="logo-text text-[1.05rem] font-extrabold tracking-tight text-gray-900">서울365치과</span>
@@ -117,37 +266,37 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
             {/* Desktop CTA */}
             <div class="hidden lg:flex items-center gap-3">
-              <a href={CLINIC.phoneTel} class="nav-link flex items-center gap-1.5 text-[0.82rem] font-medium text-gray-500 hover:text-primary transition-colors" data-cursor-hover>
-                <i class="fa-solid fa-phone text-[0.7rem]"></i> {CLINIC.phone}
+              <a href={CLINIC.phoneTel} class="nav-link flex items-center gap-1.5 text-[0.82rem] font-medium text-gray-500 hover:text-primary transition-colors" data-cursor-hover aria-label="전화 상담 032-432-0365">
+                <i class="fa-solid fa-phone text-[0.7rem]" aria-hidden="true"></i> {CLINIC.phone}
               </a>
               {/* Auth buttons — dynamically updated by JS */}
               <div id="auth-nav" class="flex items-center gap-2">
                 <a href="/login" id="auth-login-btn" class="nav-link flex items-center gap-1.5 text-[0.82rem] font-medium text-gray-500 hover:text-primary transition-colors" data-cursor-hover>
-                  <i class="fa-solid fa-right-to-bracket text-[0.7rem]"></i> 로그인
+                  <i class="fa-solid fa-right-to-bracket text-[0.7rem]" aria-hidden="true"></i> 로그인
                 </a>
                 <a href="/register" id="auth-register-btn" class="btn-premium btn-premium-outline text-[0.82rem] px-4 py-2" data-cursor-hover>
-                  <i class="fa-solid fa-user-plus text-[0.7rem]"></i> 회원가입
+                  <i class="fa-solid fa-user-plus text-[0.7rem]" aria-hidden="true"></i> 회원가입
                 </a>
               </div>
               <div id="auth-user" class="hidden flex items-center gap-2">
                 <span id="auth-user-name" class="text-[0.82rem] font-medium text-gray-600"></span>
-                <button id="auth-logout-btn" class="nav-link text-[0.82rem] font-medium text-gray-400 hover:text-red-500 transition-colors" data-cursor-hover>
-                  <i class="fa-solid fa-right-from-bracket text-[0.7rem]"></i>
+                <button id="auth-logout-btn" class="nav-link text-[0.82rem] font-medium text-gray-400 hover:text-red-500 transition-colors" data-cursor-hover aria-label="로그아웃">
+                  <i class="fa-solid fa-right-from-bracket text-[0.7rem]" aria-hidden="true"></i>
                 </button>
               </div>
               <a href="/reservation" class="btn-premium btn-premium-fill text-[0.82rem] px-5 py-2.5" data-cursor-hover>
-                <i class="fa-solid fa-calendar-check text-[0.75rem]"></i> 예약하기
+                <i class="fa-solid fa-calendar-check text-[0.75rem]" aria-hidden="true"></i> 예약하기
               </a>
             </div>
 
             {/* Mobile Menu Btn */}
-            <button id="mobile-menu-btn" class="lg:hidden mobile-menu-icon p-2 text-gray-700 relative z-10" aria-label="메뉴 열기">
-              <i class="fa-solid fa-bars text-xl"></i>
+            <button id="mobile-menu-btn" class="lg:hidden mobile-menu-icon p-2 text-gray-700 relative z-10" aria-label="모바일 메뉴 열기" aria-expanded="false" aria-controls="mobile-menu">
+              <i class="fa-solid fa-bars text-xl" aria-hidden="true"></i>
             </button>
           </nav>
 
           {/* Mobile Menu */}
-          <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 right-0 glass-white border-t border-gray-100/50">
+          <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 right-0 glass-white border-t border-gray-100/50" role="navigation" aria-label="모바일 네비게이션">
             <div class="max-w-[1400px] mx-auto px-5 py-4 space-y-0.5">
               {[
                 { href: '/', label: '홈', icon: 'fa-house' },
@@ -159,17 +308,17 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 { href: '/faq', label: 'FAQ', icon: 'fa-circle-question' },
               ].map(item => (
                 <a href={item.href} class="flex items-center gap-3 py-3.5 px-4 text-gray-700 font-medium text-[0.95rem] rounded-2xl hover:bg-primary/5 transition-colors">
-                  <i class={`fa-solid ${item.icon} text-primary/60 w-5 text-center text-sm`}></i>
+                  <i class={`fa-solid ${item.icon} text-primary/60 w-5 text-center text-sm`} aria-hidden="true"></i>
                   {item.label}
                 </a>
               ))}
               <div class="pt-3 pb-1 space-y-2">
                 <div id="mobile-auth-nav" class="grid grid-cols-2 gap-2">
                   <a href="/login" class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center">
-                    <i class="fa-solid fa-right-to-bracket text-[0.7rem]"></i> 로그인
+                    <i class="fa-solid fa-right-to-bracket text-[0.7rem]" aria-hidden="true"></i> 로그인
                   </a>
                   <a href="/register" class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center">
-                    <i class="fa-solid fa-user-plus text-[0.7rem]"></i> 회원가입
+                    <i class="fa-solid fa-user-plus text-[0.7rem]" aria-hidden="true"></i> 회원가입
                   </a>
                 </div>
                 <div id="mobile-auth-user" class="hidden text-center py-2">
@@ -178,10 +327,10 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 </div>
                 <div class="grid grid-cols-2 gap-2">
                   <a href={CLINIC.phoneTel} class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center">
-                    <i class="fa-solid fa-phone text-[0.7rem]"></i> 전화상담
+                    <i class="fa-solid fa-phone text-[0.7rem]" aria-hidden="true"></i> 전화상담
                   </a>
                   <a href="/reservation" class="btn-premium btn-premium-fill text-[0.82rem] py-3 justify-center">
-                    <i class="fa-solid fa-calendar-check text-[0.7rem]"></i> 예약하기
+                    <i class="fa-solid fa-calendar-check text-[0.7rem]" aria-hidden="true"></i> 예약하기
                   </a>
                 </div>
               </div>
@@ -189,23 +338,23 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           </div>
         </header>
 
-        {/* === MAIN === */}
-        <main>{children}</main>
+        {/* === MAIN CONTENT === */}
+        <main id="main-content" role="main">{children}</main>
 
         {/* === PREMIUM FOOTER === */}
-        <footer class="bg-navy pb-28 md:pb-0 relative overflow-hidden">
+        <footer class="bg-navy pb-28 md:pb-0 relative overflow-hidden" role="contentinfo">
           {/* Aurora footer accent */}
-          <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0066FF]/30 to-transparent"></div>
-          <div class="absolute top-0 left-1/4 w-1/2 h-64 bg-[#0066FF]/[0.03] blur-[100px] pointer-events-none"></div>
+          <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0066FF]/30 to-transparent" aria-hidden="true"></div>
+          <div class="absolute top-0 left-1/4 w-1/2 h-64 bg-[#0066FF]/[0.03] blur-[100px] pointer-events-none" aria-hidden="true"></div>
 
           <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
             {/* Top */}
             <div class="py-16 md:py-20 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
               {/* Brand */}
               <div class="md:col-span-4">
-                <a href="/" class="flex items-center gap-2.5 mb-6">
+                <a href="/" class="flex items-center gap-2.5 mb-6" aria-label="서울365치과 홈">
                   <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#00E5FF] flex items-center justify-center">
-                    <i class="fa-solid fa-tooth text-white text-sm"></i>
+                    <i class="fa-solid fa-tooth text-white text-sm" aria-hidden="true"></i>
                   </div>
                   <div class="flex flex-col leading-none">
                     <span class="text-[1.05rem] font-extrabold text-white tracking-tight">서울365치과</span>
@@ -218,20 +367,20 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 </p>
                 <div class="flex gap-2.5 mt-6">
                   {[
-                    { href: CLINIC.instagram, icon: 'fa-brands fa-instagram', label: 'Instagram' },
-                    { href: CLINIC.naverBlog, icon: 'fa-solid fa-n', label: 'Blog' },
-                    { href: CLINIC.kakao, icon: 'fa-solid fa-comment', label: 'KakaoTalk' },
+                    { href: CLINIC.instagram, icon: 'fa-brands fa-instagram', label: 'Instagram에서 서울365치과 보기' },
+                    { href: CLINIC.naverBlog, icon: 'fa-solid fa-n', label: '네이버 블로그에서 서울365치과 보기' },
+                    { href: CLINIC.kakao, icon: 'fa-solid fa-comment', label: '카카오톡으로 서울365치과 상담하기' },
                   ].map(s => (
-                    <a href={s.href} target="_blank" rel="noopener" class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-[#00E5FF] hover:bg-[#0066FF]/10 hover:border-[#0066FF]/20 transition-all text-sm" aria-label={s.label} data-cursor-hover>
-                      <i class={s.icon}></i>
+                    <a href={s.href} target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-[#00E5FF] hover:bg-[#0066FF]/10 hover:border-[#0066FF]/20 transition-all text-sm" aria-label={s.label} data-cursor-hover>
+                      <i class={s.icon} aria-hidden="true"></i>
                     </a>
                   ))}
                 </div>
               </div>
 
               {/* Navigation */}
-              <div class="md:col-span-2">
-                <h4 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">진료</h4>
+              <nav class="md:col-span-2" aria-label="진료 메뉴">
+                <h2 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">진료</h2>
                 <ul class="space-y-3 text-[0.85rem]">
                   {[
                     { name: '전체임플란트', slug: 'full-implant' },
@@ -242,21 +391,21 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                     <li><a href={`/treatments/${t.slug}`} class="text-white/35 hover:text-[#00E5FF] transition-colors">{t.name}</a></li>
                   ))}
                 </ul>
-              </div>
+              </nav>
 
-              <div class="md:col-span-2">
-                <h4 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">안내</h4>
+              <nav class="md:col-span-2" aria-label="안내 메뉴">
+                <h2 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">안내</h2>
                 <ul class="space-y-3 text-[0.85rem]">
                   <li><a href="/doctors" class="text-white/35 hover:text-[#00E5FF] transition-colors">의료진</a></li>
                   <li><a href="/pricing" class="text-white/35 hover:text-[#00E5FF] transition-colors">비용안내</a></li>
                   <li><a href="/directions" class="text-white/35 hover:text-[#00E5FF] transition-colors">오시는길</a></li>
                   <li><a href="/faq" class="text-white/35 hover:text-[#00E5FF] transition-colors">FAQ</a></li>
                 </ul>
-              </div>
+              </nav>
 
               {/* Hours */}
               <div class="md:col-span-4">
-                <h4 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">진료시간</h4>
+                <h2 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">진료시간</h2>
                 <div class="space-y-0 text-[0.85rem]">
                   {HOURS.map(h => (
                     <div class="flex justify-between items-center py-2.5 border-b border-white/[0.04]">
@@ -265,7 +414,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                     </div>
                   ))}
                   <div class="pt-3 flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 bg-[#0066FF] rounded-full animate-pulse"></span>
+                    <span class="w-1.5 h-1.5 bg-[#0066FF] rounded-full animate-pulse" aria-hidden="true"></span>
                     <span class="text-[#00E5FF] text-[0.78rem] font-semibold">점심시간 없이 연속 진료</span>
                   </div>
                 </div>
@@ -277,12 +426,14 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               <div class="flex flex-wrap gap-x-4 gap-y-1">
                 <span>서울365치과의원</span>
                 <span>대표 박준규</span>
+                <span>사업자등록번호: 문의</span>
                 <span>{CLINIC.address}</span>
                 <span>{CLINIC.phone}</span>
               </div>
               <div class="flex gap-4">
                 <a href="/privacy" class="hover:text-white/50 transition-colors">개인정보처리방침</a>
                 <a href="/terms" class="hover:text-white/50 transition-colors">이용약관</a>
+                <a href="/sitemap.xml" class="hover:text-white/50 transition-colors">사이트맵</a>
                 <span>&copy; 2026 Seoul 365 Dental</span>
               </div>
             </div>
@@ -290,39 +441,39 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         </footer>
 
         {/* === MOBILE BOTTOM CTA === */}
-        <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 mobile-cta-bar safe-bottom">
+        <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 mobile-cta-bar safe-bottom" role="complementary" aria-label="빠른 연락">
           <div class="grid grid-cols-4">
-            <a href={CLINIC.phoneTel} class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors">
-              <i class="fa-solid fa-phone text-[1.1rem]"></i>
+            <a href={CLINIC.phoneTel} class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="전화 상담">
+              <i class="fa-solid fa-phone text-[1.1rem]" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-medium">전화</span>
             </a>
-            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors">
-              <i class="fa-solid fa-comment text-[1.1rem]"></i>
+            <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="카카오톡 상담">
+              <i class="fa-solid fa-comment text-[1.1rem]" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-medium">카카오톡</span>
             </a>
-            <a href="/reservation" class="flex flex-col items-center justify-center py-3 bg-gradient-to-r from-[#0066FF] to-[#2979FF] text-white relative overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-r from-[#00E5FF]/0 via-white/10 to-[#00E5FF]/0 animate-shimmer-slow"></div>
-              <i class="fa-solid fa-calendar-check text-[1.1rem] relative z-10"></i>
+            <a href="/reservation" class="flex flex-col items-center justify-center py-3 bg-gradient-to-r from-[#0066FF] to-[#2979FF] text-white relative overflow-hidden" aria-label="상담 예약하기">
+              <div class="absolute inset-0 bg-gradient-to-r from-[#00E5FF]/0 via-white/10 to-[#00E5FF]/0 animate-shimmer-slow" aria-hidden="true"></div>
+              <i class="fa-solid fa-calendar-check text-[1.1rem] relative z-10" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-bold relative z-10">예약</span>
             </a>
-            <a href="/directions" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors">
-              <i class="fa-solid fa-location-dot text-[1.1rem]"></i>
+            <a href="/directions" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="오시는 길 안내">
+              <i class="fa-solid fa-location-dot text-[1.1rem]" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-medium">길찾기</span>
             </a>
           </div>
         </div>
 
         {/* === DESKTOP FLOATING CTA === */}
-        <div class="hidden md:flex fixed bottom-8 right-8 z-40 flex-col gap-3">
-          <a href={CLINIC.kakao} target="_blank" rel="noopener" class="floating-btn bg-[#FEE500] text-[#3C1E1E] rounded-2xl flex items-center justify-center" aria-label="카카오톡" style="width:52px;height:52px;" data-cursor-hover>
-            <i class="fa-solid fa-comment text-lg"></i>
+        <div class="hidden md:flex fixed bottom-8 right-8 z-40 flex-col gap-3" aria-label="빠른 연락 버튼">
+          <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer" class="floating-btn bg-[#FEE500] text-[#3C1E1E] rounded-2xl flex items-center justify-center" aria-label="카카오톡 상담" style="width:52px;height:52px;" data-cursor-hover>
+            <i class="fa-solid fa-comment text-lg" aria-hidden="true"></i>
           </a>
-          <a href={CLINIC.phoneTel} class="floating-btn bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white rounded-2xl flex items-center justify-center relative overflow-hidden" aria-label="전화" style="width:52px;height:52px;" data-cursor-hover>
-            <i class="fa-solid fa-phone text-lg relative z-10"></i>
-            <div class="absolute inset-0 rounded-2xl electric-border-glow"></div>
+          <a href={CLINIC.phoneTel} class="floating-btn bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white rounded-2xl flex items-center justify-center relative overflow-hidden" aria-label="전화 상담 032-432-0365" style="width:52px;height:52px;" data-cursor-hover>
+            <i class="fa-solid fa-phone text-lg relative z-10" aria-hidden="true"></i>
+            <div class="absolute inset-0 rounded-2xl electric-border-glow" aria-hidden="true"></div>
           </a>
-          <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="floating-btn bg-gray-900/90 text-white rounded-2xl flex items-center justify-center backdrop-blur-sm" aria-label="맨 위로" style="width:52px;height:52px;" data-cursor-hover>
-            <i class="fa-solid fa-arrow-up"></i>
+          <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="floating-btn bg-gray-900/90 text-white rounded-2xl flex items-center justify-center backdrop-blur-sm" aria-label="페이지 맨 위로 이동" style="width:52px;height:52px;" data-cursor-hover>
+            <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
           </button>
         </div>
 
@@ -373,7 +524,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           document.getElementById('mobile-menu-btn')?.addEventListener('click', function() {
             const menu = document.getElementById('mobile-menu');
             const icon = this.querySelector('i');
+            const expanded = !menu.classList.contains('hidden');
             menu.classList.toggle('hidden');
+            this.setAttribute('aria-expanded', !expanded);
             if (menu.classList.contains('hidden')) {
               icon.className = 'fa-solid fa-bars text-xl';
             } else {
@@ -406,14 +559,17 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             btn.addEventListener('click', function() {
               const content = this.nextElementSibling;
               const icon = this.querySelector('.faq-icon');
+              const expanded = !content.classList.contains('hidden');
               document.querySelectorAll('.faq-toggle').forEach(other => {
                 if (other !== this) {
                   other.nextElementSibling.classList.add('hidden');
                   other.querySelector('.faq-icon')?.classList.remove('rotate-180');
+                  other.setAttribute('aria-expanded', 'false');
                 }
               });
               content.classList.toggle('hidden');
               icon?.classList.toggle('rotate-180');
+              this.setAttribute('aria-expanded', !expanded);
             });
           });
 
@@ -490,7 +646,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
                 if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
 
-                // Mouse repulsion
                 const dmx = p.x - mouseX;
                 const dmy = p.y - mouseY;
                 const dm = Math.sqrt(dmx*dmx + dmy*dmy);
@@ -504,7 +659,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 ctx.fillStyle = 'rgba(' + p.c + ',' + p.o + ')';
                 ctx.fill();
 
-                // Glow effect
                 if (p.r > 1.2) {
                   ctx.beginPath();
                   ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2);
@@ -512,7 +666,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                   ctx.fill();
                 }
               });
-              // Connect nearby
               for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
                   const dx = particles[i].x - particles[j].x;
@@ -587,13 +740,12 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             });
           }
 
-          // Auth state — check /api/auth/me and toggle UI
+          // Auth state
           (async function checkAuth() {
             try {
               const res = await fetch('/api/auth/me');
               const data = await res.json();
               if (data.ok && data.user) {
-                // Desktop
                 const nav = document.getElementById('auth-nav');
                 const userEl = document.getElementById('auth-user');
                 const nameEl = document.getElementById('auth-user-name');
@@ -601,7 +753,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 if (userEl) { userEl.classList.remove('hidden'); userEl.classList.add('flex'); }
                 if (nameEl) nameEl.textContent = data.user.name + '님';
 
-                // Mobile
                 const mobileNav = document.getElementById('mobile-auth-nav');
                 const mobileUser = document.getElementById('mobile-auth-user');
                 const mobileName = document.getElementById('mobile-user-name');
@@ -622,11 +773,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             window.location.reload();
           });
 
-          // =============================================
           // YouTube Background Video — Lazy iframe inject
-          // Creates iframe ONLY when section scrolls into view
-          // Fixes Error 153 by using correct window.origin
-          // =============================================
           (function initYTPlayer() {
             var wrap = document.getElementById('yt-player-wrap');
             var poster = document.getElementById('yt-poster');
@@ -649,22 +796,11 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               iframe.title = '서울365치과 소개 영상';
               iframe.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;pointer-events:none;border:0;';
 
-              // youtube-nocookie.com + no origin param = fix Error 153
               var params = [
-                'autoplay=1',
-                'mute=1',
-                'controls=0',
-                'showinfo=0',
-                'rel=0',
-                'loop=1',
-                'playlist=gB_yiatcwAc',
-                'playsinline=1',
-                'modestbranding=1',
-                'iv_load_policy=3',
-                'disablekb=1',
-                'fs=0',
-                'cc_load_policy=0',
-                'enablejsapi=1'
+                'autoplay=1','mute=1','controls=0','showinfo=0','rel=0',
+                'loop=1','playlist=gB_yiatcwAc','playsinline=1',
+                'modestbranding=1','iv_load_policy=3','disablekb=1',
+                'fs=0','cc_load_policy=0','enablejsapi=1'
               ].join('&');
 
               iframe.src = 'https://www.youtube-nocookie.com/embed/gB_yiatcwAc?' + params;
@@ -681,7 +817,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               wrap.appendChild(iframe);
             }
 
-            // Lazy inject: only when section is near viewport
             var lazyObs = new IntersectionObserver(function(entries) {
               entries.forEach(function(entry) {
                 if (entry.isIntersecting) {
@@ -692,7 +827,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             }, { rootMargin: '200px 0px' });
             lazyObs.observe(videoSection);
 
-            // postMessage helper
             function postCmd(cmd, args) {
               if (!iframe || !iframe.contentWindow) return;
               try {
@@ -702,7 +836,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               } catch(e) {}
             }
 
-            // Sound toggle
             var toggleBtn = document.getElementById('yt-sound-toggle');
             var soundIcon = document.getElementById('yt-sound-icon');
             var soundLabel = document.getElementById('yt-sound-label');
@@ -724,7 +857,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               });
             }
 
-            // Pause/play on scroll visibility
             var vidObs = new IntersectionObserver(function(entries) {
               entries.forEach(function(entry) {
                 if (!iframe) return;

@@ -23,10 +23,10 @@ app.get('/', (c) => {
   return c.render(
     <>
       {/* ===== S1: CINEMATIC HERO — EMOTIONAL IMPACT v7 + DR PORTRAIT ===== */}
-      <section class="hero-premium">
+      <section class="hero-premium" aria-label="서울365치과 메인 히어로">
         {/* Background layers */}
         <div class="hero-grid"></div>
-        <canvas id="hero-particles"></canvas>
+        <canvas id="hero-particles" aria-hidden="true"></canvas>
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="orb orb-3"></div>
@@ -207,7 +207,7 @@ app.get('/', (c) => {
       </section>
 
       {/* ===== S2: MARQUEE TICKER — ELECTRIC ===== */}
-      <section class="bg-navy-light border-y border-[#0066FF]/[0.06] overflow-hidden relative">
+      <section class="bg-navy-light border-y border-[#0066FF]/[0.06] overflow-hidden relative" aria-label="주요 키워드" role="marquee">
         <div class="absolute inset-0 bg-gradient-to-r from-[#0066FF]/[0.02] via-transparent to-[#00E5FF]/[0.02]"></div>
         <div class="marquee-wrapper py-5 relative" style="--marquee-bg: #0A1628;">
           <div class="marquee-track">
@@ -235,7 +235,7 @@ app.get('/', (c) => {
       </section>
 
       {/* ===== S2.5: CINEMATIC VIDEO — FULL BLEED ===== */}
-      <section class="relative w-full overflow-hidden bg-black" style="height:100vh;max-height:900px;min-height:500px" id="video-section">
+      <section class="relative w-full overflow-hidden bg-black" style="height:100vh;max-height:900px;min-height:500px" id="video-section" aria-label="서울365치과 소개 영상">
         {/* YouTube iframe will be injected by JS when section enters viewport */}
         <div id="yt-player-wrap" class="absolute inset-0 z-0" style="pointer-events:none"></div>
 
@@ -284,7 +284,7 @@ app.get('/', (c) => {
       </section>
 
       {/* ===== S3: STATS — ELECTRIC COUNTER ===== */}
-      <section class="section-lg bg-white relative overflow-hidden" data-counter-section>
+      <section class="section-lg bg-white relative overflow-hidden" data-counter-section aria-label="서울365치과 주요 지표">
         {/* Background accent — Electric */}
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#0066FF]/[0.04] rounded-full blur-3xl pointer-events-none morph-blob"></div>
         <div class="absolute bottom-0 right-0 w-[400px] h-[300px] bg-[#00E5FF]/[0.03] rounded-full blur-3xl pointer-events-none morph-blob" style="animation-delay:-4s"></div>
@@ -320,7 +320,7 @@ app.get('/', (c) => {
       <div class="divider-gradient"></div>
 
       {/* ===== S4: DIFFERENTIATION — PATIENT-FOCUSED BENTO GRID ===== */}
-      <section class="section-lg bg-mesh relative overflow-hidden">
+      <section class="section-lg bg-mesh relative overflow-hidden" aria-label="서울365치과 차별점">
         <div class="absolute top-20 right-10 w-[300px] h-[300px] bg-[#0066FF]/[0.04] rounded-full blur-[100px] pointer-events-none morph-blob"></div>
         <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
           <div class="text-center mb-16 reveal">
@@ -453,7 +453,7 @@ app.get('/', (c) => {
       </section>
 
       {/* ===== S7: BEFORE/AFTER — ELECTRIC ===== */}
-      <section class="section-lg bg-white relative overflow-hidden">
+      <section class="section-lg bg-white relative overflow-hidden" aria-label="치료 전후 사례">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">BEFORE &amp; AFTER</span>
@@ -497,7 +497,7 @@ app.get('/', (c) => {
       </section>
 
       {/* ===== S8: REVIEWS — ELECTRIC INFINITE SCROLL ===== */}
-      <section class="section-lg bg-mesh relative overflow-hidden">
+      <section class="section-lg bg-mesh relative overflow-hidden" aria-label="환자 후기">
         <div class="absolute top-20 left-10 w-[400px] h-[400px] bg-[#0066FF]/[0.03] rounded-full blur-[120px] pointer-events-none morph-blob" style="animation-delay:-6s"></div>
         <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
           <div class="text-center mb-16 reveal">
@@ -599,7 +599,7 @@ app.get('/', (c) => {
       </section>
 
       {/* ===== S10: FAQ PREVIEW ===== */}
-      <section class="section-lg bg-mesh relative overflow-hidden" itemscope itemtype="https://schema.org/FAQPage">
+      <section class="section-lg bg-mesh relative overflow-hidden" itemscope itemtype="https://schema.org/FAQPage" aria-label="자주 묻는 질문">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">FAQ</span>
@@ -727,9 +727,19 @@ app.get('/', (c) => {
       </section>
     </>,
     {
-      title: '서울365치과 | 치과가 무서워서 미뤄온 당신에게 - 인천 구월동',
-      description: '치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원. 마취가 안 되면 절대 시작하지 않습니다. 서울대 출신 5인 원장 협진, 자체 기공실, 365일 진료. 032-432-0365',
+      title: '서울365치과 | 치과가 무서워서 미뤄온 당신에게 - 인천 구월동 임플란트·교정·수면진료',
+      description: '치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원. 서울대 출신 5인 원장 협진, 마취가 안 되면 절대 시작하지 않습니다. 365일 진료, 야간 21시, 자체 기공실, 수면진료. 인천 구월동 예술회관역. 032-432-0365',
       canonical: 'https://seoul365dental.com',
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{
+          "@type": "ListItem",
+          "position": 1,
+          "name": "서울365치과",
+          "item": "https://seoul365dental.com"
+        }]
+      }
     }
   )
 })
@@ -783,9 +793,17 @@ app.get('/treatments', (c) => {
       </section>
     </>,
     {
-      title: '전체 진료 안내 | 서울365치과',
-      description: '서울365치과 전체 진료 안내. 임플란트, 교정, 심미치료, 수면진료 등 24개 진료 항목.',
+      title: '전체 진료 안내 | 서울365치과 인천 구월동 - 임플란트·교정·수면진료·심미치료',
+      description: '서울365치과 전체 진료 안내. 전체임플란트, 올온X, 치아교정, 인비절라인, 수면진료, 심미치료, 충치·신경치료, 소아치과 등. 서울대 출신 5인 전문의 협진. 032-432-0365',
       canonical: 'https://seoul365dental.com/treatments',
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+          { "@type": "ListItem", "position": 2, "name": "전체 진료", "item": "https://seoul365dental.com/treatments" }
+        ]
+      }
     }
   )
 })
@@ -889,7 +907,10 @@ app.get('/treatments/:slug', (c) => {
       </section>
 
       {/* Process */}
-      <section class="section-lg bg-white">
+      <section class="section-lg bg-white" itemscope itemtype="https://schema.org/HowTo">
+        <meta itemprop="name" content={`${t.name} 치료 과정`} />
+        <meta itemprop="description" content={`서울365치과의 ${t.name} 치료는 다음 단계로 진행됩니다.`} />
+        <meta itemprop="totalTime" content="PT1H" />
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-3 block">PROCESS</span>
@@ -897,11 +918,12 @@ app.get('/treatments/:slug', (c) => {
           </div>
           <div class="space-y-0 stagger-children">
             {t.process.map((step, i) => (
-              <div class="timeline-line flex gap-5 pb-8">
-                <div class="timeline-dot">{i + 1}</div>
+              <div class="timeline-line flex gap-5 pb-8" itemprop="step" itemscope itemtype="https://schema.org/HowToStep">
+                <meta itemprop="position" content={String(i + 1)} />
+                <div class="timeline-dot" aria-label={`${i + 1}단계`}>{i + 1}</div>
                 <div class="pt-3">
-                  <h3 class="font-bold text-gray-900">{step.step}</h3>
-                  {step.desc && <p class="text-gray-500 text-sm mt-1">{step.desc}</p>}
+                  <h3 class="font-bold text-gray-900" itemprop="name">{step.step}</h3>
+                  {step.desc && <p class="text-gray-500 text-sm mt-1" itemprop="text">{step.desc}</p>}
                 </div>
               </div>
             ))}
@@ -949,11 +971,34 @@ app.get('/treatments/:slug', (c) => {
       title: t.metaTitle,
       description: t.metaDesc,
       canonical: `https://seoul365dental.com/treatments/${t.slug}`,
-      jsonLd: {
-        "@context": "https://schema.org", "@type": "MedicalProcedure",
-        "name": t.name, "procedureType": "http://schema.org/SurgicalProcedure",
-        "bodyLocation": "Jaw", "description": t.metaDesc,
-      }
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "MedicalProcedure",
+          "name": t.name,
+          "procedureType": t.slug.includes('orthodontic') || t.slug.includes('invisalign') ? "NonSurgicalProcedure" : "SurgicalProcedure",
+          "bodyLocation": "Oral cavity",
+          "description": t.metaDesc,
+          "howPerformed": t.process?.map((s: any) => s.step).join(' → '),
+          "preparation": "정밀 CT 촬영 및 디지털 스캔 진단",
+          "followup": "정기 검진 및 유지 관리",
+          "status": "EventScheduled",
+        },
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "진료안내", "item": "https://seoul365dental.com/treatments" },
+            { "@type": "ListItem", "position": 3, "name": t.name, "item": `https://seoul365dental.com/treatments/${t.slug}` }
+          ]
+        },
+        ...(t.faq ? [{
+          "@context": "https://schema.org", "@type": "FAQPage",
+          "mainEntity": t.faq.map((f: any) => ({
+            "@type": "Question", "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }] : [])
+      ]
     }
   )
 })
@@ -1040,9 +1085,17 @@ app.get('/doctors', (c) => {
       </section>
     </>,
     {
-      title: '의료진 소개 | 서울365치과 - 서울대 출신 5인 전문의',
-      description: '서울365치과 의료진. 서울대 출신 5인 원장 협력 진료.',
+      title: '의료진 소개 | 서울365치과 - 서울대 출신 5인 전문의 인천 구월동',
+      description: '서울365치과 의료진 소개. 서울대학교 치과대학 출신 5인 원장이 한 팀으로 협진합니다. 통합치의학, 보존과, 교정과 전문의. 박준규·최다빈·정문희·상세훈·하누리 원장. 032-432-0365',
       canonical: 'https://seoul365dental.com/doctors',
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+          { "@type": "ListItem", "position": 2, "name": "의료진", "item": "https://seoul365dental.com/doctors" }
+        ]
+      }
     }
   )
 })
@@ -1180,12 +1233,27 @@ app.get('/doctors/:slug', (c) => {
       title: doc.metaTitle,
       description: doc.metaDesc,
       canonical: `https://seoul365dental.com/doctors/${doc.slug}`,
-      jsonLd: {
-        "@context": "https://schema.org", "@type": "Physician",
-        "name": doc.name, "jobTitle": doc.title,
-        "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" },
-        "worksFor": { "@type": "Dentist", "name": "서울365치과의원" },
-      }
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "Physician",
+          "@id": `https://seoul365dental.com/doctors/${doc.slug}#physician`,
+          "name": doc.name, "jobTitle": doc.title,
+          "description": doc.philosophy,
+          "image": doc.slug === 'park-junkyu' ? 'https://seoul365dental.com/static/dr-park-profile.jpg' : undefined,
+          "medicalSpecialty": doc.specialties,
+          "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" },
+          "worksFor": { "@type": "Dentist", "name": "서울365치과의원", "url": "https://seoul365dental.com" },
+          "knowsAbout": doc.specialties,
+        },
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "의료진", "item": "https://seoul365dental.com/doctors" },
+            { "@type": "ListItem", "position": 3, "name": doc.name, "item": `https://seoul365dental.com/doctors/${doc.slug}` }
+          ]
+        }
+      ]
     }
   )
 })
@@ -1273,9 +1341,17 @@ app.get('/reservation', (c) => {
       </section>
     </>,
     {
-      title: '상담 예약 | 서울365치과',
-      description: '서울365치과 상담 예약. 전화, 카카오톡, 온라인 예약 가능. 032-432-0365',
+      title: '상담 예약 | 서울365치과 - 전화·카카오톡·온라인 예약',
+      description: '서울365치과 상담 예약. 전화(032-432-0365), 카카오톡, 네이버 예약, 온라인 상담 신청. 365일 진료, 야간 21시까지. 인천 구월동 예술회관역.',
       canonical: 'https://seoul365dental.com/reservation',
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+          { "@type": "ListItem", "position": 2, "name": "상담 예약", "item": "https://seoul365dental.com/reservation" }
+        ]
+      }
     }
   )
 })
@@ -1340,9 +1416,17 @@ app.get('/pricing', (c) => {
       </section>
     </>,
     {
-      title: '진료비용 안내 | 서울365치과',
-      description: '서울365치과 비급여 진료비 안내. 임플란트, 교정, 심미치료 비용 확인.',
+      title: '진료비용 안내 | 서울365치과 - 임플란트·교정·심미치료 가격',
+      description: '서울365치과 비급여 진료비용 안내. 임플란트, 전체임플란트, 올온X, 인비절라인, 교정, 심미치료, 수면진료 비용. 카드 결제·분할 결제 가능. 정확한 비용은 정밀 진단 후 안내.',
       canonical: 'https://seoul365dental.com/pricing',
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+          { "@type": "ListItem", "position": 2, "name": "비용안내", "item": "https://seoul365dental.com/pricing" }
+        ]
+      }
     }
   )
 })
@@ -1423,9 +1507,17 @@ app.get('/directions', (c) => {
       </section>
     </>,
     {
-      title: '오시는 길 | 서울365치과 - 예술회관역 5번 출구',
-      description: '예술회관역 5번 출구에서 250m. 이토타워 2층. 주차 안내 및 교통편 정보.',
+      title: '오시는 길 | 서울365치과 - 인천 남동구 예술회관역 5번 출구 250m',
+      description: '서울365치과 오시는 길. 인천 남동구 예술로 138 이토타워 2층. 인천2호선 예술회관역 5번 출구 도보 3분(250m). 건물 내 주차장. 032-432-0365',
       canonical: 'https://seoul365dental.com/directions',
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+          { "@type": "ListItem", "position": 2, "name": "오시는길", "item": "https://seoul365dental.com/directions" }
+        ]
+      }
     }
   )
 })
@@ -1474,9 +1566,28 @@ app.get('/faq', (c) => {
       </section>
     </>,
     {
-      title: '자주 묻는 질문 | 서울365치과',
-      description: '서울365치과 FAQ. 임플란트 비용, 치료 기간, 수면진료 안전성 등.',
+      title: '자주 묻는 질문 FAQ | 서울365치과 - 임플란트·교정·수면진료 궁금증 해결',
+      description: '서울365치과 자주 묻는 질문. 임플란트 비용과 기간, 수면진료 안전성, 치아교정 나이제한, 예약 방법, 365일 진료 안내 등 궁금한 점을 확인하세요.',
       canonical: 'https://seoul365dental.com/faq',
+      jsonLd: [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "FAQ", "item": "https://seoul365dental.com/faq" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": allFaq.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        }
+      ]
     }
   )
 })
@@ -1906,6 +2017,93 @@ app.get('/terms', (c) => {
     </section>,
     { title: '이용약관 | 서울365치과', canonical: 'https://seoul365dental.com/terms' }
   )
+})
+
+// ============================================================
+// SITEMAP.XML — Dynamic SEO Sitemap
+// ============================================================
+app.get('/sitemap.xml', (c) => {
+  const base = 'https://seoul365dental.com';
+  const now = new Date().toISOString().split('T')[0];
+
+  const staticPages = [
+    { loc: '', priority: '1.0', changefreq: 'daily' },
+    { loc: '/treatments', priority: '0.9', changefreq: 'weekly' },
+    { loc: '/doctors', priority: '0.9', changefreq: 'monthly' },
+    { loc: '/pricing', priority: '0.8', changefreq: 'weekly' },
+    { loc: '/reservation', priority: '0.8', changefreq: 'monthly' },
+    { loc: '/directions', priority: '0.7', changefreq: 'monthly' },
+    { loc: '/faq', priority: '0.7', changefreq: 'weekly' },
+    { loc: '/cases/gallery', priority: '0.6', changefreq: 'weekly' },
+    { loc: '/privacy', priority: '0.3', changefreq: 'yearly' },
+    { loc: '/terms', priority: '0.3', changefreq: 'yearly' },
+  ];
+
+  const treatmentPages = treatments.map(t => ({
+    loc: `/treatments/${t.slug}`, priority: '0.8', changefreq: 'weekly' as const,
+  }));
+
+  const doctorPages = doctors.map(d => ({
+    loc: `/doctors/${d.slug}`, priority: '0.7', changefreq: 'monthly' as const,
+  }));
+
+  const allPages = [...staticPages, ...treatmentPages, ...doctorPages];
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${allPages.map(p => `  <url>
+    <loc>${base}${p.loc}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>${p.changefreq}</changefreq>
+    <priority>${p.priority}</priority>
+    <xhtml:link rel="alternate" hreflang="ko-KR" href="${base}${p.loc}" />
+  </url>`).join('\n')}
+</urlset>`;
+
+  return new Response(xml, {
+    headers: {
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
+})
+
+// ============================================================
+// ROBOTS.TXT
+// ============================================================
+app.get('/robots.txt', (c) => {
+  const robots = `User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://seoul365dental.com/sitemap.xml
+
+# Crawl-delay (polite crawling)
+Crawl-delay: 1
+
+# Disallow admin/auth API endpoints
+Disallow: /api/auth/
+Disallow: /login
+Disallow: /register
+
+# Allow all content pages
+Allow: /treatments/
+Allow: /doctors/
+Allow: /pricing
+Allow: /directions
+Allow: /faq
+Allow: /reservation
+Allow: /cases/gallery
+`;
+
+  return new Response(robots, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'public, max-age=86400',
+    },
+  });
 })
 
 // ============================================================
