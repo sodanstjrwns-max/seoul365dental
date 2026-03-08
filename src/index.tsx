@@ -5,8 +5,11 @@ import { doctors, getDoctorBySlug } from './data/doctors'
 import { treatments, getTreatmentBySlug, treatmentCategories } from './data/treatments'
 import { mainFaq, pricingData } from './data/faq'
 import { MESSAGING, MISSION, VISION, MAIN_SUMMARY, DIFF_COPY, PERSONAS, TREATMENT_EMPATHY, DOCTOR_STORIES, SLOGANS } from './data/brand'
+import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clearSessionCookie, getCurrentUser } from './lib/auth'
 
-const app = new Hono()
+type Bindings = { DB: D1Database }
+
+const app = new Hono<{ Bindings: Bindings }>()
 app.use(renderer)
 
 // ============================================================
@@ -1235,13 +1238,33 @@ app.get('/directions', (c) => {
 
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
-          {/* Map placeholder */}
-          <div class="premium-card overflow-hidden aspect-video flex items-center justify-center mb-10 reveal-3d">
-            <div class="text-center text-gray-300">
-              <i class="fa-solid fa-map-location-dot text-5xl mb-3"></i>
-              <p class="font-semibold text-gray-400">지도 영역</p>
-              <p class="text-sm text-gray-300">Naver/Kakao Map API 연동 예정</p>
-            </div>
+          {/* Google Maps Embed */}
+          <div class="premium-card overflow-hidden mb-10 reveal-3d" style="aspect-ratio:16/9">
+            <iframe
+              src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent('서울365치과의원 인천 남동구 예술로 138 이토타워')}&center=${CLINIC.geo.lat},${CLINIC.geo.lng}&zoom=16&language=ko`}
+              width="100%" height="100%" style="border:0;min-height:350px" allowfullscreen loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="서울365치과 위치 - 인천 남동구 예술로 138 이토타워 2층">
+            </iframe>
+          </div>
+
+          {/* Google Maps Link Buttons */}
+          <div class="flex flex-wrap justify-center gap-3 mb-10 reveal">
+            <a href={`https://www.google.com/maps/search/?api=1&query=${CLINIC.geo.lat},${CLINIC.geo.lng}`}
+               target="_blank" rel="noopener"
+               class="btn-premium btn-premium-outline text-sm px-6 py-3" data-cursor-hover>
+              <i class="fa-brands fa-google text-xs"></i> Google Maps에서 열기
+            </a>
+            <a href={`https://map.naver.com/p/search/${encodeURIComponent(CLINIC.address)}`}
+               target="_blank" rel="noopener"
+               class="btn-premium btn-premium-outline text-sm px-6 py-3" style="border-color:#03cf5d40;color:#03cf5d" data-cursor-hover>
+              <i class="fa-solid fa-map text-xs"></i> 네이버 지도에서 열기
+            </a>
+            <a href={`https://map.kakao.com/link/search/${encodeURIComponent(CLINIC.address)}`}
+               target="_blank" rel="noopener"
+               class="btn-premium btn-premium-outline text-sm px-6 py-3" style="border-color:#FEE50040;color:#3C1E1E" data-cursor-hover>
+              <i class="fa-solid fa-location-dot text-xs"></i> 카카오맵에서 열기
+            </a>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 stagger-children">
@@ -1330,9 +1353,55 @@ app.get('/faq', (c) => {
 })
 
 // ============================================================
-// CASES GALLERY
+// CASES GALLERY — LOGIN REQUIRED
 // ============================================================
-app.get('/cases/gallery', (c) => {
+app.get('/cases/gallery', async (c) => {
+  const user = await getCurrentUser(c.env.DB, c.req.header('cookie'));
+
+  // Not logged in → show login prompt
+  if (!user) {
+    return c.render(
+      <>
+        <section class="treatment-hero">
+          <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+            <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">치료 사례 Before &amp; After</h1>
+            <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">실제 치료 사례를 확인하시려면 로그인이 필요합니다.</p>
+          </div>
+        </section>
+
+        <section class="section-lg bg-mesh">
+          <div class="max-w-lg mx-auto px-5 md:px-8 text-center">
+            <div class="premium-card p-10 reveal-3d">
+              <div class="w-20 h-20 rounded-full bg-[#0066FF]/10 mx-auto mb-6 flex items-center justify-center">
+                <i class="fa-solid fa-lock text-3xl text-[#0066FF]/50"></i>
+              </div>
+              <h2 class="text-xl font-bold text-gray-900 mb-3">회원 전용 콘텐츠</h2>
+              <p class="text-gray-500 text-[0.9rem] leading-relaxed mb-8">
+                실제 치료 Before &amp; After 사례는<br/>
+                회원 로그인 후 열람하실 수 있습니다.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <a href="/login" class="btn-premium btn-premium-fill px-8 py-3.5" data-cursor-hover>
+                  <i class="fa-solid fa-right-to-bracket"></i> 로그인
+                </a>
+                <a href="/register" class="btn-premium btn-premium-outline px-8 py-3.5" data-cursor-hover>
+                  <i class="fa-solid fa-user-plus"></i> 회원가입
+                </a>
+              </div>
+              <p class="text-xs text-gray-300 mt-6">가입은 30초면 충분합니다.</p>
+            </div>
+          </div>
+        </section>
+      </>,
+      {
+        title: '치료 사례 | 서울365치과 - 로그인 필요',
+        description: '서울365치과 치료 사례. 회원 로그인 후 열람 가능.',
+        canonical: 'https://seoul365dental.com/cases/gallery',
+      }
+    )
+  }
+
+  // Logged in → show gallery
   return c.render(
     <>
       <section class="treatment-hero">
@@ -1344,20 +1413,35 @@ app.get('/cases/gallery', (c) => {
 
       <section class="section-lg bg-mesh">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+          <div class="flex items-center justify-between mb-8 reveal">
+            <p class="text-sm text-gray-400"><i class="fa-solid fa-user-check text-[#0066FF] mr-1.5"></i> <span class="font-medium text-gray-600">{user.name}</span>님, 환영합니다.</p>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
             {[
-              '전체임플란트 – 상악 전체 수복', '올온X – 하악 즉시로딩', '인비절라인 – 성인 투명교정',
-              '크라운 – 올세라믹 수복', '심미보철 – 라미네이트', '임플란트 – 단일 식립',
-            ].map(title => (
-              <div class="premium-card overflow-hidden tilt-card">
-                <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-                  <div class="text-center text-gray-300">
-                    <i class="fa-solid fa-image text-3xl mb-2"></i>
-                    <p class="text-xs">사진 준비 중</p>
+              { title: '전체임플란트 – 상악 전체 수복', tag: '전체임플란트', doctor: '박준규 대표원장' },
+              { title: '올온X – 하악 즉시로딩', tag: '올온X', doctor: '박준규 대표원장' },
+              { title: '인비절라인 – 성인 투명교정', tag: '교정', doctor: '하누리 원장' },
+              { title: '크라운 – 올세라믹 수복', tag: '심미', doctor: '최다빈 원장' },
+              { title: '심미보철 – 라미네이트', tag: '심미', doctor: '최다빈 원장' },
+              { title: '임플란트 – 단일 식립', tag: '임플란트', doctor: '상세훈 원장' },
+            ].map(cs => (
+              <div class="premium-card overflow-hidden tilt-card electric-card-border">
+                <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
+                  <div class="absolute inset-0 flex">
+                    <div class="w-1/2 flex items-center justify-center bg-gray-100/80 border-r border-gray-200/50">
+                      <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
+                    </div>
+                    <div class="w-1/2 flex items-center justify-center bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.02]">
+                      <span class="text-[#0066FF]/30 text-sm font-bold tracking-widest uppercase">After</span>
+                    </div>
                   </div>
                 </div>
                 <div class="p-5">
-                  <h3 class="font-bold text-gray-900 text-sm">{title}</h3>
+                  <div class="flex items-center gap-2 mb-2">
+                    <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
+                  </div>
+                  <h3 class="font-bold text-gray-900 text-sm">{cs.title}</h3>
+                  <p class="text-xs text-gray-400 mt-1">담당: {cs.doctor}</p>
                 </div>
               </div>
             ))}
@@ -1372,6 +1456,282 @@ app.get('/cases/gallery', (c) => {
       canonical: 'https://seoul365dental.com/cases/gallery',
     }
   )
+})
+
+// ============================================================
+// AUTH: REGISTER
+// ============================================================
+app.get('/register', (c) => {
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">회원가입</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">30초면 가입이 완료됩니다.</p>
+        </div>
+      </section>
+
+      <section class="section-lg bg-mesh">
+        <div class="max-w-md mx-auto px-5 md:px-8">
+          <div class="premium-card p-8 md:p-10 reveal-3d">
+            <div id="register-error" class="hidden mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium"></div>
+            <form id="register-form" class="space-y-5">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">이름 *</label>
+                <input type="text" name="name" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="홍길동" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">휴대폰 번호 *</label>
+                <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-1234-5678" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 *</label>
+                <input type="password" name="password" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="4자리 이상" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 확인 *</label>
+                <input type="password" name="password2" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="비밀번호 재입력" />
+              </div>
+              <div class="flex items-start gap-2.5">
+                <input type="checkbox" required class="mt-1 accent-[#0066FF]" id="agree" />
+                <label for="agree" class="text-sm text-gray-500">
+                  <a href="/privacy" class="text-[#0066FF] font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
+                </label>
+              </div>
+              <button type="submit" id="register-btn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>
+                회원가입
+              </button>
+            </form>
+            <p class="text-center text-sm text-gray-400 mt-6">
+              이미 계정이 있으신가요? <a href="/login" class="text-[#0066FF] font-semibold link-underline">로그인</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('register-btn');
+          const err = document.getElementById('register-error');
+          btn.disabled = true; btn.textContent = '처리중...';
+          err.classList.add('hidden');
+
+          const fd = new FormData(this);
+          const data = Object.fromEntries(fd);
+
+          if (data.password !== data.password2) {
+            err.textContent = '비밀번호가 일치하지 않습니다.';
+            err.classList.remove('hidden');
+            btn.disabled = false; btn.textContent = '회원가입';
+            return;
+          }
+
+          try {
+            const res = await fetch('/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: data.name, phone: data.phone, password: data.password })
+            });
+            const json = await res.json();
+            if (json.ok) {
+              window.location.href = '/cases/gallery';
+            } else {
+              err.textContent = json.error || '가입에 실패했습니다.';
+              err.classList.remove('hidden');
+            }
+          } catch(e) {
+            err.textContent = '서버 오류가 발생했습니다.';
+            err.classList.remove('hidden');
+          }
+          btn.disabled = false; btn.textContent = '회원가입';
+        });
+      `}} />
+    </>,
+    {
+      title: '회원가입 | 서울365치과',
+      description: '서울365치과 회원가입.',
+      canonical: 'https://seoul365dental.com/register',
+    }
+  )
+})
+
+// ============================================================
+// AUTH: LOGIN
+// ============================================================
+app.get('/login', (c) => {
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">로그인</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">회원 전용 콘텐츠를 열람하세요.</p>
+        </div>
+      </section>
+
+      <section class="section-lg bg-mesh">
+        <div class="max-w-md mx-auto px-5 md:px-8">
+          <div class="premium-card p-8 md:p-10 reveal-3d">
+            <div id="login-error" class="hidden mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium"></div>
+            <form id="login-form" class="space-y-5">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">휴대폰 번호</label>
+                <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-1234-5678" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호</label>
+                <input type="password" name="password" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="비밀번호 입력" />
+              </div>
+              <button type="submit" id="login-btn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>
+                로그인
+              </button>
+            </form>
+            <p class="text-center text-sm text-gray-400 mt-6">
+              계정이 없으신가요? <a href="/register" class="text-[#0066FF] font-semibold link-underline">회원가입</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('login-btn');
+          const err = document.getElementById('login-error');
+          btn.disabled = true; btn.textContent = '로그인 중...';
+          err.classList.add('hidden');
+
+          const fd = new FormData(this);
+          const data = Object.fromEntries(fd);
+
+          try {
+            const res = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ phone: data.phone, password: data.password })
+            });
+            const json = await res.json();
+            if (json.ok) {
+              window.location.href = '/cases/gallery';
+            } else {
+              err.textContent = json.error || '로그인에 실패했습니다.';
+              err.classList.remove('hidden');
+            }
+          } catch(e) {
+            err.textContent = '서버 오류가 발생했습니다.';
+            err.classList.remove('hidden');
+          }
+          btn.disabled = false; btn.textContent = '로그인';
+        });
+      `}} />
+    </>,
+    {
+      title: '로그인 | 서울365치과',
+      description: '서울365치과 회원 로그인.',
+      canonical: 'https://seoul365dental.com/login',
+    }
+  )
+})
+
+// ============================================================
+// AUTH API ENDPOINTS
+// ============================================================
+app.post('/api/auth/register', async (c) => {
+  try {
+    const { name, phone, password } = await c.req.json();
+    if (!name || !phone || !password) {
+      return c.json({ ok: false, error: '모든 항목을 입력해주세요.' }, 400);
+    }
+    if (password.length < 4) {
+      return c.json({ ok: false, error: '비밀번호는 4자리 이상이어야 합니다.' }, 400);
+    }
+
+    // Init tables if needed
+    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`).run();
+    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`).run();
+
+    // Check existing
+    const existing = await c.env.DB.prepare('SELECT id FROM users WHERE phone = ?').bind(phone).first();
+    if (existing) {
+      return c.json({ ok: false, error: '이미 가입된 번호입니다. 로그인해 주세요.' }, 409);
+    }
+
+    const passwordHash = await hashPassword(password);
+    const result = await c.env.DB.prepare('INSERT INTO users (name, phone, password_hash) VALUES (?, ?, ?)').bind(name, phone, passwordHash).run();
+
+    const userId = (result.meta as any).last_row_id;
+    const sessionId = generateSessionId();
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    await c.env.DB.prepare('INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)').bind(sessionId, userId, expiresAt).run();
+
+    return new Response(JSON.stringify({ ok: true }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Set-Cookie': getSessionCookie(sessionId),
+      },
+    });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '서버 오류' }, 500);
+  }
+})
+
+app.post('/api/auth/login', async (c) => {
+  try {
+    const { phone, password } = await c.req.json();
+    if (!phone || !password) {
+      return c.json({ ok: false, error: '휴대폰 번호와 비밀번호를 입력해주세요.' }, 400);
+    }
+
+    // Init tables if needed
+    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`).run();
+    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`).run();
+
+    const user = await c.env.DB.prepare('SELECT id, name, phone, password_hash FROM users WHERE phone = ?').bind(phone).first<{ id: number; name: string; phone: string; password_hash: string }>();
+    if (!user) {
+      return c.json({ ok: false, error: '가입되지 않은 번호입니다.' }, 401);
+    }
+
+    const valid = await verifyPassword(password, user.password_hash);
+    if (!valid) {
+      return c.json({ ok: false, error: '비밀번호가 올바르지 않습니다.' }, 401);
+    }
+
+    const sessionId = generateSessionId();
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    await c.env.DB.prepare('INSERT INTO sessions (id, user_id, expires_at) VALUES (?, ?, ?)').bind(sessionId, user.id, expiresAt).run();
+
+    return new Response(JSON.stringify({ ok: true, user: { name: user.name } }), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Set-Cookie': getSessionCookie(sessionId),
+      },
+    });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '서버 오류' }, 500);
+  }
+})
+
+app.get('/api/auth/me', async (c) => {
+  const user = await getCurrentUser(c.env.DB, c.req.header('cookie'));
+  if (!user) return c.json({ ok: false, user: null });
+  return c.json({ ok: true, user });
+})
+
+app.post('/api/auth/logout', async (c) => {
+  const { getSessionIdFromCookie } = await import('./lib/auth');
+  const sessionId = getSessionIdFromCookie(c.req.header('cookie'));
+  if (sessionId) {
+    await c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(sessionId).run();
+  }
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Set-Cookie': clearSessionCookie(),
+    },
+  });
 })
 
 // ============================================================

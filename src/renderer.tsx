@@ -120,6 +120,21 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               <a href={CLINIC.phoneTel} class="nav-link flex items-center gap-1.5 text-[0.82rem] font-medium text-gray-500 hover:text-primary transition-colors" data-cursor-hover>
                 <i class="fa-solid fa-phone text-[0.7rem]"></i> {CLINIC.phone}
               </a>
+              {/* Auth buttons — dynamically updated by JS */}
+              <div id="auth-nav" class="flex items-center gap-2">
+                <a href="/login" id="auth-login-btn" class="nav-link flex items-center gap-1.5 text-[0.82rem] font-medium text-gray-500 hover:text-primary transition-colors" data-cursor-hover>
+                  <i class="fa-solid fa-right-to-bracket text-[0.7rem]"></i> 로그인
+                </a>
+                <a href="/register" id="auth-register-btn" class="btn-premium btn-premium-outline text-[0.82rem] px-4 py-2" data-cursor-hover>
+                  <i class="fa-solid fa-user-plus text-[0.7rem]"></i> 회원가입
+                </a>
+              </div>
+              <div id="auth-user" class="hidden flex items-center gap-2">
+                <span id="auth-user-name" class="text-[0.82rem] font-medium text-gray-600"></span>
+                <button id="auth-logout-btn" class="nav-link text-[0.82rem] font-medium text-gray-400 hover:text-red-500 transition-colors" data-cursor-hover>
+                  <i class="fa-solid fa-right-from-bracket text-[0.7rem]"></i>
+                </button>
+              </div>
               <a href="/reservation" class="btn-premium btn-premium-fill text-[0.82rem] px-5 py-2.5" data-cursor-hover>
                 <i class="fa-solid fa-calendar-check text-[0.75rem]"></i> 예약하기
               </a>
@@ -148,13 +163,27 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                   {item.label}
                 </a>
               ))}
-              <div class="pt-3 pb-1 grid grid-cols-2 gap-2">
-                <a href={CLINIC.phoneTel} class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center">
-                  <i class="fa-solid fa-phone text-[0.7rem]"></i> 전화상담
-                </a>
-                <a href="/reservation" class="btn-premium btn-premium-fill text-[0.82rem] py-3 justify-center">
-                  <i class="fa-solid fa-calendar-check text-[0.7rem]"></i> 예약하기
-                </a>
+              <div class="pt-3 pb-1 space-y-2">
+                <div id="mobile-auth-nav" class="grid grid-cols-2 gap-2">
+                  <a href="/login" class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center">
+                    <i class="fa-solid fa-right-to-bracket text-[0.7rem]"></i> 로그인
+                  </a>
+                  <a href="/register" class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center">
+                    <i class="fa-solid fa-user-plus text-[0.7rem]"></i> 회원가입
+                  </a>
+                </div>
+                <div id="mobile-auth-user" class="hidden text-center py-2">
+                  <span id="mobile-user-name" class="text-sm font-medium text-gray-600"></span>
+                  <button id="mobile-logout-btn" class="ml-2 text-sm text-gray-400 hover:text-red-500">로그아웃</button>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                  <a href={CLINIC.phoneTel} class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center">
+                    <i class="fa-solid fa-phone text-[0.7rem]"></i> 전화상담
+                  </a>
+                  <a href="/reservation" class="btn-premium btn-premium-fill text-[0.82rem] py-3 justify-center">
+                    <i class="fa-solid fa-calendar-check text-[0.7rem]"></i> 예약하기
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -557,6 +586,41 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               });
             });
           }
+
+          // Auth state — check /api/auth/me and toggle UI
+          (async function checkAuth() {
+            try {
+              const res = await fetch('/api/auth/me');
+              const data = await res.json();
+              if (data.ok && data.user) {
+                // Desktop
+                const nav = document.getElementById('auth-nav');
+                const userEl = document.getElementById('auth-user');
+                const nameEl = document.getElementById('auth-user-name');
+                if (nav) nav.classList.add('hidden');
+                if (userEl) { userEl.classList.remove('hidden'); userEl.classList.add('flex'); }
+                if (nameEl) nameEl.textContent = data.user.name + '님';
+
+                // Mobile
+                const mobileNav = document.getElementById('mobile-auth-nav');
+                const mobileUser = document.getElementById('mobile-auth-user');
+                const mobileName = document.getElementById('mobile-user-name');
+                if (mobileNav) mobileNav.classList.add('hidden');
+                if (mobileUser) { mobileUser.classList.remove('hidden'); }
+                if (mobileName) mobileName.textContent = data.user.name + '님';
+              }
+            } catch {}
+          })();
+
+          // Logout handlers
+          document.getElementById('auth-logout-btn')?.addEventListener('click', async function() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.reload();
+          });
+          document.getElementById('mobile-logout-btn')?.addEventListener('click', async function() {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            window.location.reload();
+          });
 
           // Parallax on scroll
           let ticking = false;
