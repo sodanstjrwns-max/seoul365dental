@@ -278,10 +278,12 @@ app.get('/', (c) => {
       </section>
 
       {/* ===== S6: DOCTORS — ELECTRIC CINEMATIC ===== */}
-      <section class="section-lg bg-premium-dark bg-mesh-dark relative overflow-hidden">
+      <section class="section-lg relative overflow-hidden" style="background:#020814;color:white">
+        {/* Mesh dark gradient overlay */}
+        <div class="absolute inset-0" style="background:radial-gradient(at 20% 30%, rgba(0,102,255,0.15) 0, transparent 50%),radial-gradient(at 80% 70%, rgba(0,229,255,0.08) 0, transparent 50%)"></div>
         {/* Extra electric accent */}
         <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0066FF]/20 to-transparent"></div>
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative z-10">
           <div class="text-center mb-16 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">OUR DOCTORS</span>
             <h2 class="section-headline text-white">
@@ -291,10 +293,10 @@ app.get('/', (c) => {
           </div>
 
           {/* Lead Doctor — Electric Card */}
-          <div class="premium-card-dark p-0 overflow-hidden mb-8 reveal-3d">
+          <div class="p-0 overflow-hidden mb-8 reveal-3d" style="background:rgba(0,102,255,0.06);border-radius:1.75rem;border:1px solid rgba(0,102,255,0.12)">
             <div class="md:flex">
-              <div class="md:w-2/5 bg-gradient-to-br from-[#0066FF]/20 via-[#0066FF]/10 to-transparent p-10 flex items-center justify-center min-h-[340px] relative">
-                <div class="absolute inset-0 bg-gradient-to-t from-navy/80 to-transparent"></div>
+              <div class="md:w-2/5 p-10 flex items-center justify-center min-h-[340px] relative" style="background:linear-gradient(135deg,rgba(0,102,255,0.2),rgba(0,102,255,0.05),transparent)">
+                <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(4,11,24,0.8),transparent)"></div>
                 <div class="text-center relative z-10">
                   <div class="w-36 h-36 rounded-full bg-white/[0.05] border-2 border-white/[0.08] mx-auto mb-5 flex items-center justify-center pulse-ring">
                     <i class="fa-solid fa-user-doctor text-5xl text-white/25"></i>
@@ -308,7 +310,7 @@ app.get('/', (c) => {
                   </div>
                 </div>
               </div>
-              <div class="md:w-3/5 p-8 md:p-10 flex flex-col justify-center">
+              <div class="md:w-3/5 p-8 md:p-10 flex flex-col justify-center" style="background:rgba(4,11,24,0.5)">
                 <blockquote class="text-lg text-white/60 italic border-l-2 border-[#0066FF]/60 pl-5 mb-6 leading-relaxed">
                   "{doctors[0].philosophy.split('.')[0]}."
                 </blockquote>
@@ -330,7 +332,7 @@ app.get('/', (c) => {
           {/* Other Doctors */}
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger-children">
             {doctors.slice(1).map(doc => (
-              <a href={`/doctors/${doc.slug}`} class="premium-card-dark p-6 text-center block group tilt-card" data-cursor-hover>
+              <a href={`/doctors/${doc.slug}`} class="p-6 text-center block group tilt-card" style="background:rgba(0,102,255,0.04);border-radius:1.75rem;border:1px solid rgba(0,102,255,0.1);transition:all 0.5s" data-cursor-hover>
                 <div class="w-20 h-20 rounded-full bg-white/[0.04] border border-white/[0.06] mx-auto mb-4 flex items-center justify-center group-hover:border-[#0066FF]/30 group-hover:bg-[#0066FF]/[0.08] transition-all duration-500">
                   <i class="fa-solid fa-user-doctor text-2xl text-white/20 group-hover:text-[#0066FF]/60 transition-colors"></i>
                 </div>
@@ -555,16 +557,17 @@ app.get('/', (c) => {
       </section>
 
       {/* ===== VISION — 3 PROMISES ===== */}
-      <section class="section-lg bg-premium-dark bg-mesh-dark relative overflow-hidden">
+      <section class="section-lg relative overflow-hidden" style="background:#020814;color:white">
+        <div class="absolute inset-0" style="background:radial-gradient(at 20% 30%, rgba(0,102,255,0.15) 0, transparent 50%),radial-gradient(at 80% 70%, rgba(0,229,255,0.08) 0, transparent 50%)"></div>
         <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0066FF]/20 to-transparent"></div>
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative z-10">
           <div class="text-center mb-16 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">OUR PROMISE</span>
             <h2 class="section-headline text-white">{VISION.headline}</h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
             {VISION.promises.map((p, i) => (
-              <div class="premium-card-dark p-8 text-center tilt-card">
+              <div class="p-8 text-center tilt-card" style="background:rgba(0,102,255,0.06);border-radius:1.75rem;border:1px solid rgba(0,102,255,0.1)">
                 <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0066FF]/20 to-[#00E5FF]/10 flex items-center justify-center mx-auto mb-6">
                   <i class={`fa-solid ${p.icon} text-[#00E5FF] text-2xl`}></i>
                 </div>
