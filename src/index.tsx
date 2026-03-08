@@ -22,7 +22,7 @@ app.get('/', (c) => {
 
   return c.render(
     <>
-      {/* ===== S1: CINEMATIC HERO — ELECTRIC SHOCK v5 ===== */}
+      {/* ===== S1: CINEMATIC HERO — EMOTIONAL IMPACT v6 ===== */}
       <section class="hero-premium">
         {/* Background layers */}
         <div class="hero-grid"></div>
@@ -32,66 +32,103 @@ app.get('/', (c) => {
         <div class="orb orb-3"></div>
 
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 w-full">
-          <div class="max-w-4xl pt-28 pb-16 md:pt-0 md:pb-0">
-            {/* Status Badge — Electric */}
-            <div class="flex items-center gap-3 mb-10 reveal" style="transition-delay:0.3s">
+          <div class="max-w-5xl pt-28 pb-16 md:pt-0 md:pb-0">
+
+            {/* Top Bar — Status + Location */}
+            <div class="flex items-center gap-3 mb-12 reveal" style="transition-delay:0.2s">
               <div class="glass trust-badge text-white/90" data-status>
                 <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
                 <span class="font-semibold">진료중</span>
               </div>
-              <span class="text-[#0066FF]/30 text-xs">|</span>
-              <span class="text-white/30 text-xs font-medium tracking-wider">인천 구월동 · 예술회관역 5번 출구</span>
+              <span class="text-[#0066FF]/25 text-xs">|</span>
+              <span class="text-white/25 text-xs font-medium tracking-wider">인천 구월동 · 예술회관역 5번 출구 250m</span>
             </div>
 
-            {/* H1 — Brand Tagline */}
-            <h1 class="hero-display gradient-text-white mb-8 reveal" style="transition-delay:0.5s">
-              다른 곳에서 안 된다는 분들이<br/><span class="gradient-text-electric">저희를 찾습니다.</span>
+            {/* Philosophy Badge — 원장 철학 */}
+            <div class="reveal mb-8" style="transition-delay:0.35s">
+              <span class="inline-flex items-center gap-2 text-[0.7rem] tracking-[0.25em] uppercase font-bold text-[#00E5FF]/70 px-4 py-2 rounded-full border border-[#00E5FF]/15 bg-[#00E5FF]/[0.04]">
+                <span class="w-1.5 h-1.5 bg-[#00E5FF] rounded-full"></span>
+                {MESSAGING.heroPhilosophy}
+              </span>
+            </div>
+
+            {/* H1 — 3-Line Emotional Headline */}
+            <h1 class="reveal" style="transition-delay:0.5s">
+              <span class="block hero-display text-white/40 mb-2" style="font-size:clamp(2.2rem,7vw,5.5rem);line-height:1.05;letter-spacing:-0.04em;font-weight:800">
+                {MESSAGING.heroLine1}
+              </span>
+              <span class="block hero-display text-white/60 mb-3" style="font-size:clamp(2.2rem,7vw,5.5rem);line-height:1.05;letter-spacing:-0.04em;font-weight:800">
+                {MESSAGING.heroLine2}
+              </span>
+              <span class="block gradient-text-electric" style="font-size:clamp(2.6rem,8vw,6.5rem);line-height:1;letter-spacing:-0.05em;font-weight:900">
+                {MESSAGING.heroAccent}
+              </span>
             </h1>
 
-            {/* Sub Copy — Philosophy + Summary */}
-            <p class="text-white/50 text-lg md:text-xl leading-relaxed max-w-2xl mb-3 reveal" style="transition-delay:0.65s">
-              {MESSAGING.heroSub.split('\n')[0]}
-            </p>
-            <p class="text-white/35 text-base md:text-lg leading-relaxed max-w-2xl mb-6 reveal" style="transition-delay:0.75s">
-              {MESSAGING.heroSub.split('\n')[1]}
-            </p>
+            {/* Horizontal Divider */}
+            <div class="reveal mt-10 mb-8" style="transition-delay:0.65s">
+              <div class="w-16 h-[2px] bg-gradient-to-r from-[#0066FF] to-[#00E5FF] rounded-full"></div>
+            </div>
 
-            {/* Metric Bar — Electric Tags */}
-            <div class="flex flex-wrap items-center gap-3 mb-12 reveal" style="transition-delay:0.85s">
+            {/* Sub Copy — 원장 직접 인용 (두 줄) */}
+            <div class="space-y-2 mb-6 reveal" style="transition-delay:0.75s">
+              <p class="text-white/60 text-lg md:text-xl font-medium leading-relaxed max-w-2xl">
+                <span class="text-[#0066FF] mr-1.5 font-bold">"</span>{MESSAGING.heroSub1}<span class="text-[#0066FF] ml-0.5 font-bold">"</span>
+              </p>
+              <p class="text-white/35 text-base md:text-lg leading-relaxed max-w-2xl pl-4" style="border-left:2px solid rgba(0,102,255,0.15)">
+                {MESSAGING.heroSub2}
+              </p>
+            </div>
+
+            {/* Patient Testimonial — Social Proof */}
+            <div class="reveal mb-10" style="transition-delay:0.85s">
+              <p class="text-white/20 text-sm md:text-base italic max-w-xl">
+                <i class="fa-solid fa-quote-left text-[#0066FF]/25 text-xs mr-2"></i>
+                {MESSAGING.heroTestimonial.replace(/"/g, '')}
+                <i class="fa-solid fa-quote-right text-[#0066FF]/25 text-xs ml-2"></i>
+              </p>
+            </div>
+
+            {/* Metric Tags — 키워드 배지 */}
+            <div class="flex flex-wrap items-center gap-2.5 mb-10 reveal" style="transition-delay:0.95s">
               {[
+                { label: '서울대 5인 협진', icon: 'fa-user-doctor' },
                 { label: '365일 진료', icon: 'fa-calendar-check' },
                 { label: '야간 21시', icon: 'fa-moon' },
                 { label: '자체 기공실', icon: 'fa-gear' },
                 { label: '수면진료', icon: 'fa-bed' },
+                { label: '무통마취', icon: 'fa-syringe' },
               ].map(m => (
-                <div class="flex items-center gap-2 text-sm px-3 py-1.5 rounded-full border border-[#0066FF]/15 bg-[#0066FF]/[0.04]">
-                  <i class={`fa-solid ${m.icon} text-[#0066FF]/70 text-xs`}></i>
-                  <span class="text-white/55 font-medium">{m.label}</span>
+                <div class="flex items-center gap-2 text-[0.78rem] px-3.5 py-1.5 rounded-full border border-[#0066FF]/10 bg-[#0066FF]/[0.03] hover:border-[#0066FF]/25 hover:bg-[#0066FF]/[0.06] transition-all duration-300">
+                  <i class={`fa-solid ${m.icon} text-[#0066FF]/60 text-[0.65rem]`}></i>
+                  <span class="text-white/45 font-medium">{m.label}</span>
                 </div>
               ))}
             </div>
 
-            {/* CTA Buttons — Electric Glow */}
-            <div class="flex flex-wrap gap-4 mb-14 reveal" style="transition-delay:1s">
-              <a href="/reservation" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic text-[0.95rem] px-10 py-4.5" data-cursor-hover>
-                <i class="fa-solid fa-calendar-check"></i> 상담 예약하기
+            {/* CTA Buttons — Emotional */}
+            <div class="flex flex-wrap gap-4 mb-12 reveal" style="transition-delay:1.05s">
+              <a href="/reservation" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic text-[0.95rem] px-10 py-4.5 group" data-cursor-hover>
+                <i class="fa-solid fa-calendar-check group-hover:scale-110 transition-transform"></i>
+                <span>지금 상담 예약하기</span>
               </a>
-              <a href="/pricing" class="btn-premium btn-premium-white btn-magnetic text-[0.95rem] px-10 py-4.5" data-cursor-hover>
-                <i class="fa-solid fa-won-sign"></i> 비용 안내
+              <a href="tel:032-432-0365" class="btn-premium btn-premium-white btn-magnetic text-[0.95rem] px-10 py-4.5 group" data-cursor-hover>
+                <i class="fa-solid fa-phone group-hover:animate-bounce"></i>
+                <span>032-432-0365</span>
               </a>
             </div>
 
-            {/* Trust Scores — Electric Style */}
-            <div class="flex flex-wrap gap-5 reveal" style="transition-delay:1.15s">
+            {/* Trust Scores — Compact */}
+            <div class="flex flex-wrap gap-6 reveal" style="transition-delay:1.2s">
               {[
                 { label: '네이버', score: '4.85', icon: 'fa-star', color: 'text-amber-400' },
                 { label: '구글', score: '4.9', icon: 'fa-star', color: 'text-amber-400' },
                 { label: '만족도', score: '98%', icon: 'fa-heart', color: 'text-rose-400' },
                 { label: '재방문율', score: '87%', icon: 'fa-rotate', color: 'text-[#00E5FF]' },
               ].map(m => (
-                <div class="flex items-center gap-2 text-white/35 text-[0.82rem]">
-                  <i class={`fa-solid ${m.icon} ${m.color} text-[0.7rem]`}></i>
-                  <span class="font-bold text-white/85">{m.score}</span>
+                <div class="flex items-center gap-1.5 text-white/30 text-[0.78rem]">
+                  <i class={`fa-solid ${m.icon} ${m.color} text-[0.65rem]`}></i>
+                  <span class="font-bold text-white/80">{m.score}</span>
                   <span>{m.label}</span>
                 </div>
               ))}
@@ -100,7 +137,7 @@ app.get('/', (c) => {
         </div>
 
         {/* Scroll Indicator — Electric */}
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-white/15 text-center reveal" style="transition-delay:1.3s">
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/15 text-center reveal" style="transition-delay:1.3s">
           <div class="w-7 h-11 border-2 border-[#0066FF]/20 rounded-full flex justify-center pt-2 mx-auto mb-2">
             <div class="w-1 h-3 bg-[#0066FF]/40 rounded-full animate-bounce"></div>
           </div>
@@ -602,7 +639,7 @@ app.get('/', (c) => {
           <div class="reveal-blur">
             <span class="section-eyebrow text-[#0066FF] mb-5 block">CONSULTATION</span>
             <h2 class="section-headline text-white mb-6">
-              {MESSAGING.ctaMain.split('.')[0]}.<br class="md:hidden" /> <span class="gradient-text-electric">{MESSAGING.ctaMain.split('.')[1]?.trim() || '지금 상담 받으세요.'}</span>
+              {MESSAGING.ctaMain.split(',')[0]},<br class="md:hidden" /> <span class="gradient-text-electric">{MESSAGING.ctaMain.split(',').slice(1).join(',').trim()}</span>
             </h2>
             <p class="text-white/35 section-body mb-12">
               {MESSAGING.ctaSub}
@@ -626,8 +663,8 @@ app.get('/', (c) => {
       </section>
     </>,
     {
-      title: '서울365치과 | 다른 곳에서 안 된다는 분들이 저희를 찾습니다 - 인천 구월동',
-      description: '다른 곳에서 안 된다는 분들이 찾는 인천 구월동 서울365치과. 서울대 출신 5인 원장, 마취가 안 되면 절대 시작하지 않습니다. 365일 진료. 032-432-0365',
+      title: '서울365치과 | 치과가 무서워서 미뤄온 당신에게 - 인천 구월동',
+      description: '치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원. 마취가 안 되면 절대 시작하지 않습니다. 서울대 출신 5인 원장 협진, 자체 기공실, 365일 진료. 032-432-0365',
       canonical: 'https://seoul365dental.com',
     }
   )

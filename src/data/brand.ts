@@ -32,11 +32,17 @@ export const MESSAGING = {
   // Tier 1: Brand Slogan (모든 페이지 하단, OG 태그)
   brandSlogan: '다른 곳에서 안 된다는 분들이 저희를 찾습니다.',
 
-  // Tier 2: Hero Main Copy (메인 히어로 H1)
-  heroMain: '다른 곳에서 안 된다는 분들이\n저희를 찾습니다.',
+  // Tier 2: Hero Main Copy (메인 히어로 H1) — 2줄 분리 구조
+  heroLine1: '치과가 무서워서',
+  heroLine2: '미뤄온 당신에게.',
+  heroAccent: '다시는, 미루지 않아도 됩니다.',
 
-  // Tier 3: Hero Sub Copy (메인 히어로 서브)
-  heroSub: '마취가 안 되면, 절대 시작하지 않습니다.\n서울대 출신 5인 원장 · 자체 기공실 · 365일 진료.',
+  // Tier 3: Hero Sub Copy (메인 히어로 서브) — 원장 철학 직접 인용
+  heroSub1: '마취가 안 되면, 절대 시작하지 않습니다.',
+  heroSub2: '서울대 출신 5인 원장이 한 분의 환자를 함께 봅니다.',
+
+  // Tier 3.5: 환자 한줄 증언 (Social Proof)
+  heroTestimonial: '"다른 곳에서 안 된다고 했는데, 여기서 됐습니다."',
 
   // Tier 4: Hero Philosophy One-liner
   heroPhilosophy: '필요한 진료를 못 받는 사람이 없도록.',
@@ -45,7 +51,7 @@ export const MESSAGING = {
   diffHeadline: '왜 서울365치과를 찾게 되는지,\n환자분들이 직접 말씀하십니다.',
 
   // Tier 6: CTA Copy
-  ctaMain: '미루지 마세요. 지금 상담 받으세요.',
+  ctaMain: '더 미루면, 더 아프고, 더 오래 걸립니다.',
   ctaSub: '무통마취부터 시작하는, 두렵지 않은 첫 진료.',
 
   // Tier 7: Lab Emphasis
