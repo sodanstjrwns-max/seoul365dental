@@ -399,8 +399,8 @@ app.get('/', (c) => {
               <div class="md:w-2/5 p-10 flex items-center justify-center min-h-[340px] relative" style="background:linear-gradient(135deg,rgba(0,102,255,0.2),rgba(0,102,255,0.05),transparent)">
                 <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(4,11,24,0.8),transparent)"></div>
                 <div class="text-center relative z-10">
-                  <div class="w-36 h-36 rounded-full bg-white/[0.05] border-2 border-white/[0.08] mx-auto mb-5 flex items-center justify-center pulse-ring">
-                    <i class="fa-solid fa-user-doctor text-5xl text-white/25"></i>
+                  <div class="w-36 h-36 rounded-full mx-auto mb-5 overflow-hidden border-2 border-[#0066FF]/20 pulse-ring" style="box-shadow:0 0 40px rgba(0,102,255,0.2)">
+                    <img src="/static/dr-park-profile.jpg" alt={doctors[0].name} class="w-full h-full object-cover object-[center_20%]" loading="lazy" />
                   </div>
                   <h3 class="text-2xl font-bold text-white">{doctors[0].name}</h3>
                   <p class="text-[#00E5FF] text-sm font-semibold mt-1">{doctors[0].title}</p>
@@ -1018,8 +1018,8 @@ app.get('/doctors', (c) => {
             <div class="md:flex">
               <div class="md:w-2/5 bg-gradient-to-br from-[#0066FF]/10 to-[#00E5FF]/[0.02] p-10 flex items-center justify-center min-h-[360px]">
                 <div class="text-center">
-                  <div class="w-40 h-40 rounded-full bg-[#0066FF]/10 mx-auto mb-5 flex items-center justify-center border-2 border-[#0066FF]/15">
-                    <i class="fa-solid fa-user-doctor text-6xl text-[#0066FF]/30"></i>
+                  <div class="w-40 h-40 rounded-full mx-auto mb-5 overflow-hidden border-2 border-[#0066FF]/15" style="box-shadow:0 0 30px rgba(0,102,255,0.1)">
+                    <img src="/static/dr-park-profile.jpg" alt="박준규 대표원장" class="w-full h-full object-cover object-[center_20%]" loading="lazy" />
                   </div>
                   <h2 class="text-2xl font-bold text-gray-900">박준규 대표원장</h2>
                   <p class="text-[#0066FF] font-semibold text-sm mt-1">통합치의학과 전문의</p>
@@ -1095,9 +1095,15 @@ app.get('/doctors/:slug', (c) => {
             <span class="text-white/60">{doc.name}</span>
           </nav>
           <div class="md:flex items-center gap-8 reveal" style="transition-delay:0.4s">
-            <div class="w-32 h-32 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0">
-              <i class="fa-solid fa-user-doctor text-5xl text-white/20"></i>
-            </div>
+            {slug === 'park-junkyu' ? (
+              <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#0066FF]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(0,102,255,0.15)">
+                <img src="/static/dr-park-profile.jpg" alt={doc.name} class="w-full h-full object-cover object-[center_20%]" loading="lazy" />
+              </div>
+            ) : (
+              <div class="w-32 h-32 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0">
+                <i class="fa-solid fa-user-doctor text-5xl text-white/20"></i>
+              </div>
+            )}
             <div class="text-center md:text-left">
               <h1 class="text-3xl md:text-4xl font-bold text-white">{doc.h1}</h1>
               {story && (

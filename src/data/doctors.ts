@@ -22,7 +22,7 @@ export const doctors: Doctor[] = [
     name: '박준규',
     title: '대표원장',
     titleShort: '대표원장',
-    photo: '/static/doctor-park.svg',
+    photo: '/static/dr-park-profile.jpg',
     philosophy: '환자가 알아들을 수 있는 쉬운 단어로 설명합니다. 마취가 되지 않은 상태에서 치료를 절대 강행하지 않습니다. 다른 곳에서는 치료를 못 받는다는 환자분들도, 저희에게는 치료를 받으실 수 있습니다.',
     education: [
       '서울대학교 치과대학 졸업',
