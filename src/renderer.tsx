@@ -623,28 +623,78 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           });
 
           // =============================================
-          // YouTube Background Video — iframe postMessage
-          // No IFrame API dependency = no Error 153
+          // YouTube Background Video — Lazy iframe inject
+          // Creates iframe ONLY when section scrolls into view
+          // Fixes Error 153 by using correct window.origin
           // =============================================
           (function initYTPlayer() {
-            var iframe = document.getElementById('yt-iframe');
+            var wrap = document.getElementById('yt-player-wrap');
             var poster = document.getElementById('yt-poster');
-            if (!iframe) return;
+            var videoSection = document.getElementById('video-section');
+            if (!wrap || !videoSection) return;
 
             var isMuted = true;
+            var iframe = null;
+            var injected = false;
 
-            // Hide poster once iframe loads
-            iframe.addEventListener('load', function() {
-              if (poster) {
-                setTimeout(function() {
-                  poster.style.opacity = '0';
-                  setTimeout(function() { poster.style.display = 'none'; }, 1000);
-                }, 800);
-              }
-            });
+            function injectIframe() {
+              if (injected) return;
+              injected = true;
+
+              iframe = document.createElement('iframe');
+              iframe.id = 'yt-iframe';
+              iframe.allow = 'autoplay; encrypted-media';
+              iframe.setAttribute('allowfullscreen', 'false');
+              iframe.title = '서울365치과 소개 영상';
+              iframe.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;pointer-events:none;border:0;';
+
+              // Use actual window.origin to prevent Error 153
+              var params = [
+                'autoplay=1',
+                'mute=1',
+                'controls=0',
+                'showinfo=0',
+                'rel=0',
+                'loop=1',
+                'playlist=gB_yiatcwAc',
+                'playsinline=1',
+                'modestbranding=1',
+                'iv_load_policy=3',
+                'disablekb=1',
+                'fs=0',
+                'cc_load_policy=0',
+                'enablejsapi=1',
+                'origin=' + encodeURIComponent(window.location.origin)
+              ].join('&');
+
+              iframe.src = 'https://www.youtube.com/embed/gB_yiatcwAc?' + params;
+
+              iframe.addEventListener('load', function() {
+                if (poster) {
+                  setTimeout(function() {
+                    poster.style.opacity = '0';
+                    setTimeout(function() { poster.style.display = 'none'; }, 1000);
+                  }, 600);
+                }
+              });
+
+              wrap.appendChild(iframe);
+            }
+
+            // Lazy inject: only when section is near viewport
+            var lazyObs = new IntersectionObserver(function(entries) {
+              entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                  injectIframe();
+                  lazyObs.disconnect();
+                }
+              });
+            }, { rootMargin: '200px 0px' });
+            lazyObs.observe(videoSection);
 
             // postMessage helper
             function postCmd(cmd, args) {
+              if (!iframe || !iframe.contentWindow) return;
               try {
                 iframe.contentWindow.postMessage(JSON.stringify({
                   event: 'command', func: cmd, args: args || []
@@ -652,7 +702,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               } catch(e) {}
             }
 
-            // Sound toggle via postMessage (no YT API needed)
+            // Sound toggle
             var toggleBtn = document.getElementById('yt-sound-toggle');
             var soundIcon = document.getElementById('yt-sound-icon');
             var soundLabel = document.getElementById('yt-sound-label');
@@ -675,19 +725,17 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             }
 
             // Pause/play on scroll visibility
-            var videoSection = document.getElementById('video-section');
-            if (videoSection && 'IntersectionObserver' in window) {
-              var vidObs = new IntersectionObserver(function(entries) {
-                entries.forEach(function(entry) {
-                  if (entry.isIntersecting) {
-                    postCmd('playVideo');
-                  } else {
-                    postCmd('pauseVideo');
-                  }
-                });
-              }, { threshold: 0.1 });
-              vidObs.observe(videoSection);
-            }
+            var vidObs = new IntersectionObserver(function(entries) {
+              entries.forEach(function(entry) {
+                if (!iframe) return;
+                if (entry.isIntersecting) {
+                  postCmd('playVideo');
+                } else {
+                  postCmd('pauseVideo');
+                }
+              });
+            }, { threshold: 0.1 });
+            vidObs.observe(videoSection);
           })();
 
           // Parallax on scroll

@@ -236,22 +236,10 @@ app.get('/', (c) => {
 
       {/* ===== S2.5: CINEMATIC VIDEO — FULL BLEED ===== */}
       <section class="relative w-full overflow-hidden bg-black" style="height:100vh;max-height:900px;min-height:500px" id="video-section">
-        {/* YouTube Background Video — Lite Embed (no API dependency) */}
-        <div id="yt-player-wrap" class="absolute inset-0 z-0" style="pointer-events:none">
-          <iframe
-            id="yt-iframe"
-            src="https://www.youtube.com/embed/gB_yiatcwAc?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=gB_yiatcwAc&playsinline=1&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&cc_load_policy=0&enablejsapi=1&origin=${encodeURIComponent('https://seoul365dental.com')}"
-            allow="autoplay; encrypted-media"
-            allowFullScreen={false}
-            referrerpolicy="no-referrer"
-            loading="eager"
-            class="absolute border-0"
-            style="top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh;pointer-events:none"
-            title="서울365치과 소개 영상"
-          ></iframe>
-        </div>
+        {/* YouTube iframe will be injected by JS when section enters viewport */}
+        <div id="yt-player-wrap" class="absolute inset-0 z-0" style="pointer-events:none"></div>
 
-        {/* Poster fallback while loading */}
+        {/* Poster fallback — always visible until video plays */}
         <div id="yt-poster" class="absolute inset-0 z-0 bg-cover bg-center transition-opacity duration-1000" style={`background-image:url(https://img.youtube.com/vi/gB_yiatcwAc/maxresdefault.jpg)`}>
           <div class="absolute inset-0 bg-black/40"></div>
         </div>
