@@ -797,7 +797,6 @@ app.get('/treatments/:slug', (c) => {
   const slug = c.req.param('slug');
   const t = getTreatmentBySlug(slug);
   if (!t) return c.notFound();
-  const doc = getDoctorBySlug(t.doctorSlug);
   const empathy = TREATMENT_EMPATHY[slug];
 
   return c.render(
@@ -910,40 +909,6 @@ app.get('/treatments/:slug', (c) => {
         </div>
       </section>
 
-      {/* Doctor */}
-      {doc && (
-        <section class="section-lg bg-mesh">
-          <div class="max-w-4xl mx-auto px-5 md:px-8">
-            <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#0066FF] mb-3 block">DOCTOR</span>
-              <h2 class="section-sub-headline text-gray-900">담당 의료진</h2>
-            </div>
-            <div class="glass-card p-0 overflow-hidden reveal-3d">
-              <div class="md:flex items-center">
-                <div class="md:w-1/3 bg-gradient-to-br from-[#0066FF]/8 to-[#00E5FF]/[0.02] p-8 flex items-center justify-center min-h-[200px]">
-                  <div class="text-center">
-                    <div class="w-24 h-24 rounded-full bg-[#0066FF]/10 mx-auto mb-3 flex items-center justify-center">
-                      <i class="fa-solid fa-user-doctor text-3xl text-[#0066FF]/40"></i>
-                    </div>
-                    <h3 class="font-bold text-gray-900 text-lg">{doc.name}</h3>
-                    <p class="text-[#0066FF] text-sm font-semibold">{doc.titleShort}</p>
-                  </div>
-                </div>
-                <div class="md:w-2/3 p-6 md:p-8">
-                  <blockquote class="text-gray-600 italic border-l-2 border-[#0066FF] pl-4 mb-4 text-[0.9rem] leading-relaxed">
-                    "{doc.philosophy.split('.')[0]}."
-                  </blockquote>
-                  <p class="text-gray-400 text-sm mb-4">{doc.specialties.join(' · ')}</p>
-                  <a href={`/doctors/${doc.slug}`} class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-semibold link-underline" data-cursor-hover>
-                    프로필 보기 <i class="fa-solid fa-arrow-right text-xs"></i>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* FAQ */}
       <section class="section-lg bg-white" itemscope itemtype="https://schema.org/FAQPage">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
@@ -999,21 +964,21 @@ app.get('/treatments/:slug', (c) => {
 app.get('/doctors', (c) => {
   return c.render(
     <>
-      <section class="treatment-hero relative overflow-hidden" style="min-height:420px">
-        {/* Team Photo Background */}
+      <section class="relative overflow-hidden" style="min-height:clamp(480px,60vw,700px)">
+        {/* Team Photo Background — full visible */}
         <div class="absolute inset-0 z-0">
-          <img src="/static/team-photo.jpg" alt="서울365치과 의료진 단체사진" class="w-full h-full object-cover object-[center_30%]" loading="eager" />
-          <div class="absolute inset-0" style="background:linear-gradient(to top, #040B18 0%, rgba(4,11,24,0.85) 40%, rgba(4,11,24,0.6) 100%)"></div>
+          <img src="/static/team-photo.jpg" alt="서울365치과 의료진 단체사진" class="w-full h-full object-cover object-center" loading="eager" />
+          <div class="absolute inset-0" style="background:linear-gradient(to top, #040B18 0%, rgba(4,11,24,0.7) 30%, rgba(4,11,24,0.35) 60%, rgba(4,11,24,0.5) 100%)"></div>
         </div>
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 pt-28 md:pt-36 pb-12">
           <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
             <a href="/" class="hover:text-white transition-colors">홈</a>
             <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
             <span class="text-white/60">의료진</span>
           </nav>
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">서울365치과 의료진 소개</h1>
-          <p class="hero-sub text-white/50 max-w-xl reveal" style="transition-delay:0.6s">서울대 출신 5인 원장이 하나의 케이스를 함께 봅니다.</p>
-          <p class="text-white/25 text-sm mt-4 reveal" style="transition-delay:0.75s">
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s;text-shadow:0 2px 20px rgba(0,0,0,0.5)">서울365치과 의료진 소개</h1>
+          <p class="hero-sub text-white/60 max-w-xl reveal" style="transition-delay:0.6s;text-shadow:0 1px 10px rgba(0,0,0,0.5)">서울대 출신 5인 원장이 하나의 케이스를 함께 봅니다.</p>
+          <p class="text-white/30 text-sm mt-4 reveal" style="transition-delay:0.75s">
             <i class="fa-solid fa-users text-[#0066FF]/50 mr-2"></i>원장 5인 · 전문 스태프 20여 명이 함께합니다.
           </p>
         </div>
