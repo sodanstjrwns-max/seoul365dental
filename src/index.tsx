@@ -136,6 +136,52 @@ app.get('/', (c) => {
         </div>
       </section>
 
+      {/* ===== S2.5: CINEMATIC VIDEO — FULL BLEED ===== */}
+      <section class="relative w-full overflow-hidden bg-black" style="height:100vh;max-height:900px;min-height:500px" id="video-section">
+        {/* YouTube Background Video — covers full section */}
+        <div id="yt-player-wrap" class="absolute inset-0 z-0" style="pointer-events:none">
+          <div id="yt-player" class="absolute" style="top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:56.25vw;min-height:100vh;min-width:177.78vh"></div>
+        </div>
+
+        {/* Gradient overlays for readability */}
+        <div class="absolute inset-0 z-[1] bg-gradient-to-b from-black/60 via-black/20 to-black/70 pointer-events-none"></div>
+        <div class="absolute inset-0 z-[1] bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none"></div>
+
+        {/* Content overlay */}
+        <div class="relative z-[2] h-full flex flex-col justify-end items-start max-w-[1400px] mx-auto px-5 md:px-8 pb-16 md:pb-20">
+          {/* Brand copy on video */}
+          <div class="reveal" style="transition-delay:0.3s">
+            <span class="inline-flex items-center gap-2 text-[#00E5FF] text-[0.72rem] font-bold tracking-[0.25em] uppercase mb-4">
+              <span class="w-8 h-px bg-[#00E5FF]"></span> CLINIC TOUR
+            </span>
+            <h2 class="text-white text-2xl md:text-4xl lg:text-5xl font-bold leading-tight mb-3" style="text-shadow:0 2px 20px rgba(0,0,0,0.5)">
+              직접 보시면<br class="md:hidden" /> <span class="gradient-text-electric">더 안심됩니다.</span>
+            </h2>
+            <p class="text-white/40 text-sm md:text-base max-w-lg mb-6" style="text-shadow:0 1px 10px rgba(0,0,0,0.5)">
+              서울365치과의 진료 환경을 영상으로 먼저 확인하세요.
+            </p>
+          </div>
+
+          {/* Sound toggle + CTA */}
+          <div class="flex items-center gap-4 reveal" style="transition-delay:0.5s">
+            <button id="yt-sound-toggle" class="group flex items-center gap-2.5 text-white/50 hover:text-white transition-all text-sm" style="pointer-events:all" data-cursor-hover>
+              <div class="w-11 h-11 rounded-full border border-white/20 bg-white/[0.06] backdrop-blur-sm flex items-center justify-center group-hover:border-[#0066FF]/50 group-hover:bg-[#0066FF]/10 transition-all">
+                <i id="yt-sound-icon" class="fa-solid fa-volume-xmark text-sm"></i>
+              </div>
+              <span id="yt-sound-label" class="hidden md:inline font-medium">소리 켜기</span>
+            </button>
+            <a href="/reservation" class="btn-premium btn-premium-fill text-sm px-7 py-3" style="pointer-events:all" data-cursor-hover>
+              <i class="fa-solid fa-calendar-check text-xs"></i> 상담 예약하기
+            </a>
+          </div>
+        </div>
+
+        {/* Scroll hint at bottom */}
+        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-[2] text-white/10">
+          <i class="fa-solid fa-chevron-down text-xs animate-bounce"></i>
+        </div>
+      </section>
+
       {/* ===== S3: STATS — ELECTRIC COUNTER ===== */}
       <section class="section-lg bg-white relative overflow-hidden" data-counter-section>
         {/* Background accent — Electric */}

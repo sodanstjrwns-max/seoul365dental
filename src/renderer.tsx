@@ -622,6 +622,95 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             window.location.reload();
           });
 
+          // =============================================
+          // YouTube Background Video — Autoplay Muted
+          // =============================================
+          (function initYTPlayer() {
+            if (!document.getElementById('yt-player')) return;
+
+            var ytReady = false, player = null, isMuted = true;
+
+            // Load YouTube IFrame API
+            var tag = document.createElement('script');
+            tag.src = 'https://www.youtube.com/iframe_api';
+            document.head.appendChild(tag);
+
+            window.onYouTubeIframeAPIReady = function() {
+              player = new YT.Player('yt-player', {
+                videoId: 'gB_yiatcwAc',
+                playerVars: {
+                  autoplay: 1,
+                  mute: 1,
+                  controls: 0,
+                  showinfo: 0,
+                  rel: 0,
+                  loop: 1,
+                  playlist: 'gB_yiatcwAc',
+                  playsinline: 1,
+                  modestbranding: 1,
+                  iv_load_policy: 3,
+                  disablekb: 1,
+                  fs: 0,
+                  cc_load_policy: 0,
+                  origin: window.location.origin
+                },
+                events: {
+                  onReady: function(e) {
+                    ytReady = true;
+                    e.target.setPlaybackQuality('hd1080');
+                    e.target.playVideo();
+                  },
+                  onStateChange: function(e) {
+                    // Loop: restart when ended
+                    if (e.data === YT.PlayerState.ENDED) {
+                      e.target.seekTo(0);
+                      e.target.playVideo();
+                    }
+                  }
+                }
+              });
+            };
+
+            // Sound toggle
+            var toggleBtn = document.getElementById('yt-sound-toggle');
+            var soundIcon = document.getElementById('yt-sound-icon');
+            var soundLabel = document.getElementById('yt-sound-label');
+
+            if (toggleBtn) {
+              toggleBtn.addEventListener('click', function() {
+                if (!player || !ytReady) return;
+                if (isMuted) {
+                  player.unMute();
+                  player.setVolume(80);
+                  isMuted = false;
+                  if (soundIcon) soundIcon.className = 'fa-solid fa-volume-high text-sm';
+                  if (soundLabel) soundLabel.textContent = '소리 끄기';
+                } else {
+                  player.mute();
+                  isMuted = true;
+                  if (soundIcon) soundIcon.className = 'fa-solid fa-volume-xmark text-sm';
+                  if (soundLabel) soundLabel.textContent = '소리 켜기';
+                }
+              });
+            }
+
+            // Pause video when out of viewport for performance
+            var videoSection = document.getElementById('video-section');
+            if (videoSection && 'IntersectionObserver' in window) {
+              var vidObs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                  if (!player || !ytReady) return;
+                  if (entry.isIntersecting) {
+                    player.playVideo();
+                  } else {
+                    player.pauseVideo();
+                  }
+                });
+              }, { threshold: 0.1 });
+              vidObs.observe(videoSection);
+            }
+          })();
+
           // Parallax on scroll
           let ticking = false;
           window.addEventListener('scroll', () => {
