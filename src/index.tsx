@@ -748,7 +748,7 @@ app.get('/', (c) => {
           "about": { "@id": "https://seoul365dental.com/#dentist" },
           "inLanguage": "ko-KR",
           "datePublished": "2024-01-01",
-          "dateModified": "2026-03-08",
+          "dateModified": new Date().toISOString().split('T')[0],
           "primaryImageOfPage": {
             "@type": "ImageObject",
             "url": "https://seoul365dental.com/static/og-image.jpg",
@@ -997,7 +997,7 @@ app.get('/treatments', (c) => {
           "@type": "MedicalWebPage",
           "name": "서울365치과 전체 진료 안내",
           "url": "https://seoul365dental.com/treatments",
-          "lastReviewed": "2026-03-08",
+          "lastReviewed": new Date().toISOString().split('T')[0],
           "reviewedBy": { "@type": "Physician", "name": "박준규", "worksFor": { "@id": "https://seoul365dental.com/#dentist" } },
           "specialty": "Dentistry",
           "speakable": {
@@ -1206,7 +1206,7 @@ app.get('/treatments/:slug', (c) => {
           "isPartOf": { "@id": "https://seoul365dental.com/#website" },
           "about": { "@type": "MedicalProcedure", "name": t.name },
           "specialty": "Dentistry",
-          "lastReviewed": "2026-03-08",
+          "lastReviewed": new Date().toISOString().split('T')[0],
           "reviewedBy": { "@type": "Physician", "name": "박준규", "worksFor": { "@id": "https://seoul365dental.com/#dentist" } },
           "inLanguage": "ko-KR"
         },
@@ -1703,7 +1703,7 @@ app.get('/doctors/:slug', (c) => {
           "mainEntity": { "@id": `https://seoul365dental.com/doctors/${doc.slug}#physician` },
           "isPartOf": { "@id": "https://seoul365dental.com/#website" },
           "inLanguage": "ko-KR",
-          "dateModified": "2026-03-08"
+          "dateModified": new Date().toISOString().split('T')[0]
         },
         // BreadcrumbList
         {
@@ -2026,7 +2026,7 @@ app.get('/pricing', (c) => {
           "url": "https://seoul365dental.com/pricing",
           "isPartOf": { "@id": "https://seoul365dental.com/#website" },
           "about": { "@id": "https://seoul365dental.com/#dentist" },
-          "lastReviewed": "2026-03-08",
+          "lastReviewed": new Date().toISOString().split('T')[0],
           "inLanguage": "ko-KR"
         },
         // OfferCatalog — pricing table
@@ -2910,7 +2910,7 @@ app.get('/robots.txt', (c) => {
 # 서울365치과의원 (Seoul 365 Dental Clinic)
 # https://seoul365dental.com
 # robots.txt — SEO/AEO Optimized v2.0
-# Last updated: 2026-03-08
+# Last updated: ${new Date().toISOString().split('T')[0]}
 # ====================================================
 
 # === GENERAL RULES (all crawlers) ===
