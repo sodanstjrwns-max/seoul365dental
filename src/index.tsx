@@ -1109,6 +1109,35 @@ app.get('/treatments/:slug', (c) => {
         </div>
       </section>
 
+      {/* Detail Sections — 상세 정보 */}
+      {t.detailSections && t.detailSections.length > 0 && (
+        <section class="section-lg bg-mesh">
+          <div class="max-w-4xl mx-auto px-5 md:px-8">
+            <div class="text-center mb-14 reveal">
+              <span class="section-eyebrow text-[#0066FF] mb-3 block">DETAILS</span>
+              <h2 class="section-sub-headline text-gray-900">{t.name} 상세 정보</h2>
+            </div>
+            <div class="space-y-5 stagger-children">
+              {t.detailSections.map(section => (
+                <div class="glass-card p-7">
+                  <div class="flex items-start gap-4">
+                    {section.icon && (
+                      <div class="icon-circle flex-shrink-0">
+                        <i class={`fa-solid ${section.icon}`}></i>
+                      </div>
+                    )}
+                    <div>
+                      <h3 class="font-bold text-gray-900 text-lg mb-3">{section.title}</h3>
+                      <p class="text-gray-600 text-[0.9rem] leading-[1.85]">{section.content}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Why Us */}
       <section class="section-lg bg-mesh">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
@@ -1129,6 +1158,41 @@ app.get('/treatments/:slug', (c) => {
           </div>
         </div>
       </section>
+
+      {/* Comparison Table */}
+      {t.comparisonTable && t.comparisonTable.length > 0 && t.comparisonHeaders && (
+        <section class="section-lg bg-white">
+          <div class="max-w-4xl mx-auto px-5 md:px-8">
+            <div class="text-center mb-14 reveal">
+              <span class="section-eyebrow text-[#0066FF] mb-3 block">COMPARE</span>
+              <h2 class="section-sub-headline text-gray-900">{t.name} 비교</h2>
+            </div>
+            <div class="glass-card overflow-hidden reveal">
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="bg-gradient-to-r from-[#0066FF]/5 to-[#0066FF]/10">
+                      {t.comparisonHeaders.map((h: string) => (
+                        <th class="px-4 py-4 text-left font-bold text-gray-800 whitespace-nowrap">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {t.comparisonTable.map((row, i) => (
+                      <tr class={i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}>
+                        <td class="px-4 py-3.5 font-semibold text-gray-800 whitespace-nowrap">{row.item}</td>
+                        {row.values.map((v: string) => (
+                          <td class="px-4 py-3.5 text-gray-600">{v}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Process */}
       <section class="section-lg bg-white" itemscope itemtype="https://schema.org/HowTo">
@@ -1154,6 +1218,98 @@ app.get('/treatments/:slug', (c) => {
           </div>
         </div>
       </section>
+
+      {/* Warnings & Aftercare */}
+      {(t.warnings && t.warnings.length > 0) || (t.aftercare && t.aftercare.length > 0) ? (
+        <section class="section-lg bg-mesh">
+          <div class="max-w-4xl mx-auto px-5 md:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-children">
+              {/* Warnings */}
+              {t.warnings && t.warnings.length > 0 && (
+                <div class="glass-card p-7">
+                  <div class="flex items-center gap-3 mb-5">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                      <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-lg">주의사항</h3>
+                  </div>
+                  <ul class="space-y-3">
+                    {t.warnings.map(w => (
+                      <li class="flex items-start gap-2.5 text-[0.9rem] text-gray-600 leading-relaxed">
+                        <i class="fa-solid fa-circle-exclamation text-amber-400 text-xs mt-1.5 flex-shrink-0"></i>
+                        {w}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {/* Aftercare */}
+              {t.aftercare && t.aftercare.length > 0 && (
+                <div class="glass-card p-7">
+                  <div class="flex items-center gap-3 mb-5">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                      <i class="fa-solid fa-heart-pulse text-emerald-500"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-lg">치료 후 관리</h3>
+                  </div>
+                  <ul class="space-y-3">
+                    {t.aftercare.map(a => (
+                      <li class="flex items-start gap-2.5 text-[0.9rem] text-gray-600 leading-relaxed">
+                        <i class="fa-solid fa-check-circle text-emerald-400 text-xs mt-1.5 flex-shrink-0"></i>
+                        {a}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* Patient Cases */}
+      {t.patientCases && t.patientCases.length > 0 && (
+        <section class="section-lg bg-white">
+          <div class="max-w-4xl mx-auto px-5 md:px-8">
+            <div class="text-center mb-14 reveal">
+              <span class="section-eyebrow text-[#0066FF] mb-3 block">CASES</span>
+              <h2 class="section-sub-headline text-gray-900">{t.name} 치료 사례</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 stagger-children">
+              {t.patientCases.map(pc => (
+                <div class="glass-card p-7 group hover:border-[#0066FF]/20 transition-all">
+                  <div class="flex items-center gap-3 mb-3">
+                    <span class="px-3 py-1 bg-[#0066FF]/8 text-[#0066FF] text-xs font-semibold rounded-full">{pc.tag}</span>
+                  </div>
+                  <h3 class="font-bold text-gray-900 mb-2 group-hover:text-[#0066FF] transition-colors">{pc.title}</h3>
+                  <p class="text-gray-500 text-[0.9rem] leading-relaxed">{pc.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Materials */}
+      {t.materials && t.materials.length > 0 && (
+        <section class="section-lg bg-mesh">
+          <div class="max-w-4xl mx-auto px-5 md:px-8">
+            <div class="text-center mb-14 reveal">
+              <span class="section-eyebrow text-[#0066FF] mb-3 block">MATERIALS</span>
+              <h2 class="section-sub-headline text-gray-900">사용 재료 및 장비</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
+              {t.materials.map(m => (
+                <div class="glass-card p-5 flex flex-col">
+                  {m.grade && <span class="text-[0.7rem] font-semibold text-[#0066FF] uppercase tracking-wider mb-2">{m.grade}</span>}
+                  <h3 class="font-bold text-gray-900 text-[0.95rem] mb-1.5">{m.name}</h3>
+                  <p class="text-gray-500 text-[0.85rem] leading-relaxed">{m.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* FAQ */}
       <section class="section-lg bg-white" itemscope itemtype="https://schema.org/FAQPage">
@@ -1190,6 +1346,30 @@ app.get('/treatments/:slug', (c) => {
           </div>
         </div>
       </section>
+
+      {/* Related Treatments */}
+      {t.relatedSlugs && t.relatedSlugs.length > 0 && (
+        <section class="section-md bg-mesh">
+          <div class="max-w-4xl mx-auto px-5 md:px-8">
+            <div class="text-center mb-10 reveal">
+              <span class="section-eyebrow text-[#0066FF] mb-3 block">RELATED</span>
+              <h2 class="text-xl font-bold text-gray-900">관련 진료 안내</h2>
+            </div>
+            <div class="flex flex-wrap justify-center gap-3 stagger-children">
+              {t.relatedSlugs.map(rs => {
+                const related = getTreatmentBySlug(rs);
+                return related ? (
+                  <a href={`/treatments/${related.slug}`} class="glass-card px-5 py-3 flex items-center gap-2.5 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
+                    <i class={`fa-solid ${related.icon} text-[#0066FF] text-sm`}></i>
+                    <span class="font-medium text-gray-700 group-hover:text-[#0066FF] transition-colors text-[0.9rem]">{related.name}</span>
+                    <i class="fa-solid fa-arrow-right text-xs text-gray-300 group-hover:text-[#0066FF] transition-colors"></i>
+                  </a>
+                ) : null;
+              })}
+            </div>
+          </div>
+        </section>
+      )}
     </>,
     {
       title: t.metaTitle,
