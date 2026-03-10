@@ -2143,10 +2143,10 @@ app.get('/info', (c) => {
           <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
             <a href="/" class="hover:text-white transition-colors">홈</a>
             <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
-            <span class="text-white/60">비용·오시는길</span>
+            <span class="text-white/60">내원안내</span>
           </nav>
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">비용 안내 · 오시는 길</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">투명한 진료 비용과 찾아오시는 방법을 안내합니다.</p>
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">내원 안내</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">진료 비용과 찾아오시는 방법을 안내드립니다.</p>
         </div>
       </section>
 
@@ -2311,15 +2311,15 @@ app.get('/info', (c) => {
       `}} />
     </>,
     {
-      title: '비용안내 · 오시는길 | 서울365치과 - 임플란트·교정 비용, 예술회관역 5번 출구',
-      description: '서울365치과 진료비용 안내 및 오시는 길. 임플란트, 교정, 심미치료 비용. 인천 남동구 예술로 138 이토타워 2층. 예술회관역 5번 출구 도보 3분.',
+      title: '내원안내 | 서울365치과 - 진료비용·오시는길·진료시간',
+      description: '서울365치과 내원 안내. 임플란트, 교정, 심미치료 비용. 인천 남동구 예술로 138 이토타워 2층. 예술회관역 5번 출구 도보 3분.',
       canonical: 'https://seoul365dental.com/info',
       jsonLd: [
         {
           "@context": "https://schema.org", "@type": "BreadcrumbList",
           "itemListElement": [
             { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-            { "@type": "ListItem", "position": 2, "name": "비용·오시는길", "item": "https://seoul365dental.com/info" }
+            { "@type": "ListItem", "position": 2, "name": "내원안내", "item": "https://seoul365dental.com/info" }
           ]
         },
         {
