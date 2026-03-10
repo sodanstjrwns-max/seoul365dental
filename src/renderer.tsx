@@ -650,7 +650,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
               {/* Navigation */}
               <nav class="md:col-span-2" aria-label="진료 메뉴">
-                <h2 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">진료</h2>
+                <span class="block text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5" role="heading" aria-level="3">진료</span>
                 <ul class="space-y-3 text-[0.85rem]">
                   {[
                     { name: '전체임플란트', slug: 'full-implant' },
@@ -664,7 +664,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               </nav>
 
               <nav class="md:col-span-2" aria-label="안내 메뉴">
-                <h2 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">안내</h2>
+                <span class="block text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5" role="heading" aria-level="3">안내</span>
                 <ul class="space-y-3 text-[0.85rem]">
                   <li><a href="/doctors" class="text-white/35 hover:text-[#00E5FF] transition-colors">의료진</a></li>
                   <li><a href="/info" class="text-white/35 hover:text-[#00E5FF] transition-colors">내원안내</a></li>
@@ -675,7 +675,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
               {/* Hours */}
               <div class="md:col-span-4">
-                <h2 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">진료시간</h2>
+                <span class="block text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5" role="heading" aria-level="3">진료시간</span>
                 <div class="space-y-0 text-[0.85rem]">
                   {HOURS.map(h => (
                     <div class="flex justify-between items-center py-2.5 border-b border-white/[0.04]">

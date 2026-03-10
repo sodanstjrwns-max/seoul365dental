@@ -1582,7 +1582,7 @@ app.get('/doctors', (c) => {
                   <div class="w-40 h-40 rounded-full mx-auto mb-5 overflow-hidden border-2 border-[#0066FF]/15" style="box-shadow:0 0 30px rgba(0,102,255,0.1)">
                     <img src="/static/dr-park-profile.jpg" alt="박준규 대표원장" class="w-full h-full object-cover object-[center_20%]" loading="lazy" />
                   </div>
-                  <h2 class="text-2xl font-bold text-gray-900">박준규 대표원장</h2>
+                  <h2 class="text-2xl font-bold text-gray-900">서울365치과 의료진</h2>
                   <p class="text-[#0066FF] font-semibold text-sm mt-1">통합치의학과 전문의</p>
                   <div class="flex flex-wrap justify-center gap-2 mt-4">
                     {doctors[0].specialties.map(s => <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-3 py-1 rounded-full font-medium">{s}</span>)}
@@ -2175,9 +2175,10 @@ app.get('/info', (c) => {
         </div>
       </section>
 
-      {/* === DIRECTIONS TAB === */}
-      <section id="panel-directions" class="section-lg bg-mesh">
+      {/* === PRICING TAB === */}
+      <section id="panel-pricing" class="section-lg bg-mesh" style="display:none">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
+          <h2 class="sr-only">서울365치과 진료비용 안내</h2>
           {/* Category Quick Nav */}
           <div class="flex flex-wrap gap-2 justify-center mb-12 reveal">
             {pricingCategories.map(cat => (
@@ -2198,7 +2199,7 @@ app.get('/info', (c) => {
                   <div class="w-8 h-8 rounded-lg bg-[#0066FF]/10 flex items-center justify-center">
                     <i class={`fa-solid ${cat.icon} text-[#0066FF] text-sm`}></i>
                   </div>
-                  <h2 class="text-lg font-bold text-gray-800">{cat.label}</h2>
+                  <h3 class="text-lg font-bold text-gray-800">{cat.label}</h3>
                   <span class="text-xs text-gray-400 ml-1">{items.length}항목</span>
                 </div>
                 <div class="premium-card overflow-hidden">
@@ -2246,9 +2247,10 @@ app.get('/info', (c) => {
         </div>
       </section>
 
-      {/* === PRICING TAB === */}
-      <section id="panel-pricing" class="section-lg bg-mesh" style="display:none">
+      {/* === DIRECTIONS TAB (default visible) === */}
+      <section id="panel-directions" class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
+          <h2 class="sr-only">서울365치과 오시는 길</h2>
           {/* Google Maps Embed */}
           <div class="premium-card overflow-hidden mb-10 reveal-3d" style="aspect-ratio:16/9">
             <iframe
@@ -2290,7 +2292,7 @@ app.get('/info', (c) => {
                   <div class="icon-circle icon-circle-sm">
                     <i class={`fa-solid ${info.icon}`}></i>
                   </div>
-                  <h2 class="font-bold text-gray-900">{info.title}</h2>
+                  <h3 class="font-bold text-gray-900">{info.title}</h3>
                 </div>
                 <p class="text-gray-700 text-[0.9rem]">{info.main}</p>
                 <p class="text-gray-400 text-xs mt-1">{info.sub}</p>
@@ -4000,7 +4002,7 @@ app.get('/blog', async (c) => {
                       <span class="text-[0.65rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{post.category}</span>
                       <span class="text-[0.6rem] text-gray-300">{post.created_at?.split('T')[0] || post.created_at?.split(' ')[0]}</span>
                     </div>
-                    <h2 class="font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors line-clamp-2">{post.title}</h2>
+                    <h3 class="font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors line-clamp-2">{post.title}</h3>
                     {post.excerpt && <p class="text-gray-500 text-[0.82rem] mt-2 line-clamp-2">{post.excerpt}</p>}
                     {post.tags && (
                       <div class="flex flex-wrap gap-1 mt-3">
