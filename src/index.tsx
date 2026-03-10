@@ -2132,8 +2132,8 @@ app.get('/reservation', (c) => {
 // ============================================================
 // INFO: Pricing + Directions (Tab page)
 // ============================================================
-app.get('/pricing', (c) => c.redirect('/info', 301))
-app.get('/directions', (c) => c.redirect('/info#directions', 301))
+app.get('/pricing', (c) => c.redirect('/info#pricing', 301))
+app.get('/directions', (c) => c.redirect('/info', 301))
 
 app.get('/info', (c) => {
   return c.render(
@@ -2154,18 +2154,18 @@ app.get('/info', (c) => {
       <section class="sticky top-[72px] z-30 bg-white/90 backdrop-blur border-b border-gray-100">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="flex gap-0" id="infoTabs">
-            <button onclick="switchInfoTab('pricing')" id="tab-pricing" class="info-tab active flex-1 py-4 text-center text-sm font-bold text-[#0066FF] border-b-2 border-[#0066FF] transition-all">
-              <i class="fa-solid fa-won-sign mr-1.5"></i>비용 안내
-            </button>
-            <button onclick="switchInfoTab('directions')" id="tab-directions" class="info-tab flex-1 py-4 text-center text-sm font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-all">
+            <button onclick="switchInfoTab('directions')" id="tab-directions" class="info-tab active flex-1 py-4 text-center text-sm font-bold text-[#0066FF] border-b-2 border-[#0066FF] transition-all">
               <i class="fa-solid fa-location-dot mr-1.5"></i>오시는 길
+            </button>
+            <button onclick="switchInfoTab('pricing')" id="tab-pricing" class="info-tab flex-1 py-4 text-center text-sm font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-all">
+              <i class="fa-solid fa-won-sign mr-1.5"></i>비용 안내
             </button>
           </div>
         </div>
       </section>
 
-      {/* === PRICING TAB === */}
-      <section id="panel-pricing" class="section-lg bg-mesh">
+      {/* === DIRECTIONS TAB === */}
+      <section id="panel-directions" class="section-lg bg-mesh">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           {/* Category Quick Nav */}
           <div class="flex flex-wrap gap-2 justify-center mb-12 reveal">
@@ -2235,8 +2235,8 @@ app.get('/info', (c) => {
         </div>
       </section>
 
-      {/* === DIRECTIONS TAB === */}
-      <section id="panel-directions" class="section-lg bg-mesh" style="display:none">
+      {/* === PRICING TAB === */}
+      <section id="panel-pricing" class="section-lg bg-mesh" style="display:none">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           {/* Google Maps Embed */}
           <div class="premium-card overflow-hidden mb-10 reveal-3d" style="aspect-ratio:16/9">
@@ -2302,12 +2302,12 @@ app.get('/info', (c) => {
           });
           const active = document.getElementById('tab-' + tab);
           if (active) { active.classList.add('active','text-[#0066FF]','border-[#0066FF]'); active.classList.remove('text-gray-400','border-transparent'); }
-          document.getElementById('panel-pricing').style.display = tab === 'pricing' ? '' : 'none';
           document.getElementById('panel-directions').style.display = tab === 'directions' ? '' : 'none';
-          history.replaceState(null, '', tab === 'directions' ? '/info#directions' : '/info');
+          document.getElementById('panel-pricing').style.display = tab === 'pricing' ? '' : 'none';
+          history.replaceState(null, '', tab === 'pricing' ? '/info#pricing' : '/info');
         }
         // Auto-switch on hash
-        if (window.location.hash === '#directions') switchInfoTab('directions');
+        if (window.location.hash === '#pricing') switchInfoTab('pricing');
       `}} />
     </>,
     {
