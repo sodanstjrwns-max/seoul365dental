@@ -3,7 +3,7 @@ import { renderer } from './renderer'
 import { CLINIC, STATS, DIFF_CARDS, HOURS } from './data/clinic'
 import { doctors, getDoctorBySlug } from './data/doctors'
 import { treatments, getTreatmentBySlug, treatmentCategories } from './data/treatments'
-import { mainFaq, pricingData } from './data/faq'
+import { mainFaq, pricingData, pricingSummary, pricingCategories } from './data/faq'
 import { MESSAGING, MISSION, VISION, MAIN_SUMMARY, DIFF_COPY, PERSONAS, TREATMENT_EMPATHY, DOCTOR_STORIES, SLOGANS } from './data/brand'
 import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clearSessionCookie, getCurrentUser } from './lib/auth'
 
@@ -576,7 +576,7 @@ app.get('/', (c) => {
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-50">
-                    {pricingData.slice(0, 7).map((p, i) => (
+                    {pricingSummary.slice(0, 8).map((p, i) => (
                       <tr class={`hover:bg-[#0066FF]/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
                         <td class="px-6 py-4 text-gray-800 font-medium">{p.treatment}</td>
                         <td class="px-6 py-4 text-right font-bold gradient-text-dark" style="background-size:100% 100%">{p.price}</td>
@@ -2145,36 +2145,66 @@ app.get('/pricing', (c) => {
       </section>
 
       <section class="section-lg bg-mesh">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <div class="premium-card overflow-hidden reveal-3d">
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm">
-                <thead>
-                  <tr class="bg-gradient-to-r from-navy to-navy-lighter text-white/90">
-                    <th class="text-left px-6 py-4 font-semibold text-[0.82rem]">치료 항목</th>
-                    <th class="text-right px-6 py-4 font-semibold text-[0.82rem]">가격대</th>
-                    <th class="text-right px-6 py-4 font-semibold text-[0.82rem] hidden sm:table-cell">보험 적용</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50">
-                  {pricingData.map((p, i) => (
-                    <tr class={`hover:bg-[#0066FF]/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                      <td class="px-6 py-4 text-gray-800 font-medium">{p.treatment}</td>
-                      <td class="px-6 py-4 text-right text-[#0066FF] font-bold">{p.price}</td>
-                      <td class="px-6 py-4 text-right text-gray-400 hidden sm:table-cell text-xs">{p.insurance}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <div class="max-w-5xl mx-auto px-5 md:px-8">
+
+          {/* Category Quick Nav */}
+          <div class="flex flex-wrap gap-2 justify-center mb-12 reveal">
+            {pricingCategories.map(cat => (
+              <a href={`#pricing-${cat.key}`} class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-gray-200 bg-white text-gray-600 text-[0.78rem] font-medium hover:border-[#0066FF]/40 hover:text-[#0066FF] transition-all">
+                <i class={`fa-solid ${cat.icon} text-[0.65rem]`}></i>
+                {cat.label}
+              </a>
+            ))}
           </div>
+
+          {/* Category Tables */}
+          {pricingCategories.map(cat => {
+            const items = pricingData.filter(p => p.category === cat.key);
+            if (items.length === 0) return null;
+            return (
+              <div id={`pricing-${cat.key}`} class="mb-12 reveal-3d">
+                <div class="flex items-center gap-2 mb-4">
+                  <div class="w-8 h-8 rounded-lg bg-[#0066FF]/10 flex items-center justify-center">
+                    <i class={`fa-solid ${cat.icon} text-[#0066FF] text-sm`}></i>
+                  </div>
+                  <h2 class="text-lg font-bold text-gray-800">{cat.label}</h2>
+                  <span class="text-xs text-gray-400 ml-1">{items.length}항목</span>
+                </div>
+                <div class="premium-card overflow-hidden">
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                      <thead>
+                        <tr class="bg-gradient-to-r from-navy to-navy-lighter text-white/90">
+                          <th class="text-left px-5 py-3 font-semibold text-[0.78rem]">치료 항목</th>
+                          <th class="text-right px-5 py-3 font-semibold text-[0.78rem]">비용</th>
+                          <th class="text-right px-5 py-3 font-semibold text-[0.78rem] hidden sm:table-cell">보험</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-gray-50">
+                        {items.map((p, i) => (
+                          <tr class={`hover:bg-[#0066FF]/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                            <td class="px-5 py-3 text-gray-800 font-medium">
+                              {p.treatment}
+                              {p.note && <span class="text-[0.65rem] text-gray-400 ml-1.5">({p.note})</span>}
+                            </td>
+                            <td class="px-5 py-3 text-right text-[#0066FF] font-bold whitespace-nowrap">{p.price}</td>
+                            <td class="px-5 py-3 text-right text-gray-400 hidden sm:table-cell text-xs">{p.insurance}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
 
           <div class="mt-8 glass-card p-5 reveal">
             <div class="flex items-start gap-3">
               <i class="fa-solid fa-circle-info text-amber-500 mt-0.5"></i>
               <div>
-                <p class="text-sm text-gray-600 font-medium">위 가격은 참고용이며, 정확한 비용은 정밀 진단 후 안내드립니다.</p>
-                <p class="text-xs text-gray-400 mt-1">카드 결제 및 분할 결제가 가능합니다.</p>
+                <p class="text-sm text-gray-600 font-medium">위 가격은 참고용이며, 환자 상태에 따라 달라질 수 있습니다. 정확한 비용은 정밀 진단 후 안내드립니다.</p>
+                <p class="text-xs text-gray-400 mt-1">카드 결제 및 분할 결제가 가능합니다. · '사용안함' 표시 항목은 현재 적용되지 않는 수가입니다.</p>
               </div>
             </div>
           </div>
@@ -2215,7 +2245,7 @@ app.get('/pricing', (c) => {
           "@type": "OfferCatalog",
           "name": "서울365치과 진료비용표",
           "description": "서울365치과 비급여 항목 진료비용",
-          "itemListElement": pricingData.map((p: any) => ({
+          "itemListElement": pricingSummary.map((p: any) => ({
             "@type": "Offer",
             "itemOffered": {
               "@type": "MedicalProcedure",
@@ -2256,7 +2286,7 @@ app.get('/pricing', (c) => {
           "@context": "https://schema.org",
           "@type": "ItemList",
           "name": "서울365치과 주요 진료비",
-          "itemListElement": pricingData.slice(0, 5).map((p: any, i: number) => ({
+          "itemListElement": pricingSummary.slice(0, 8).map((p: any, i: number) => ({
             "@type": "ListItem",
             "position": i + 1,
             "item": {
