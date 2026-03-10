@@ -243,9 +243,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       { "@type": "SiteNavigationElement", "position": 1, "name": "홈", "url": "https://seoul365dental.com" },
       { "@type": "SiteNavigationElement", "position": 2, "name": "진료안내", "url": "https://seoul365dental.com/treatments" },
       { "@type": "SiteNavigationElement", "position": 3, "name": "의료진", "url": "https://seoul365dental.com/doctors" },
-      { "@type": "SiteNavigationElement", "position": 4, "name": "비용안내", "url": "https://seoul365dental.com/pricing" },
+      { "@type": "SiteNavigationElement", "position": 4, "name": "비용·오시는길", "url": "https://seoul365dental.com/info" },
       { "@type": "SiteNavigationElement", "position": 5, "name": "치료사례", "url": "https://seoul365dental.com/cases/gallery" },
-      { "@type": "SiteNavigationElement", "position": 6, "name": "오시는길", "url": "https://seoul365dental.com/directions" },
+      { "@type": "SiteNavigationElement", "position": 6, "name": "블로그", "url": "https://seoul365dental.com/blog" },
       { "@type": "SiteNavigationElement", "position": 7, "name": "FAQ", "url": "https://seoul365dental.com/faq" },
       { "@type": "SiteNavigationElement", "position": 8, "name": "상담예약", "url": "https://seoul365dental.com/reservation" },
     ]
@@ -525,9 +525,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               {[
                 { href: '/treatments', label: '진료안내' },
                 { href: '/doctors', label: '의료진' },
-                { href: '/pricing', label: '비용안내' },
+                { href: '/info', label: '비용·오시는길' },
                 { href: '/cases/gallery', label: '치료사례' },
-                { href: '/directions', label: '오시는길' },
+                { href: '/blog', label: '블로그' },
                 { href: '/faq', label: 'FAQ' },
               ].map(item => (
                 <a href={item.href} class="nav-link link-underline text-[0.88rem] font-medium text-gray-600 hover:text-primary transition-colors" data-cursor-hover>{item.label}</a>
@@ -572,9 +572,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 { href: '/', label: '홈', icon: 'fa-house' },
                 { href: '/treatments', label: '진료안내', icon: 'fa-teeth' },
                 { href: '/doctors', label: '의료진', icon: 'fa-user-doctor' },
-                { href: '/pricing', label: '비용안내', icon: 'fa-won-sign' },
+                { href: '/info', label: '비용·오시는길', icon: 'fa-won-sign' },
                 { href: '/cases/gallery', label: '치료사례', icon: 'fa-images' },
-                { href: '/directions', label: '오시는길', icon: 'fa-location-dot' },
+                { href: '/blog', label: '블로그', icon: 'fa-pen-nib' },
                 { href: '/faq', label: 'FAQ', icon: 'fa-circle-question' },
               ].map(item => (
                 <a href={item.href} class="flex items-center gap-3 py-3.5 px-4 text-gray-700 font-medium text-[0.95rem] rounded-2xl hover:bg-primary/5 transition-colors">
@@ -667,8 +667,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 <h2 class="text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5">안내</h2>
                 <ul class="space-y-3 text-[0.85rem]">
                   <li><a href="/doctors" class="text-white/35 hover:text-[#00E5FF] transition-colors">의료진</a></li>
-                  <li><a href="/pricing" class="text-white/35 hover:text-[#00E5FF] transition-colors">비용안내</a></li>
-                  <li><a href="/directions" class="text-white/35 hover:text-[#00E5FF] transition-colors">오시는길</a></li>
+                  <li><a href="/info" class="text-white/35 hover:text-[#00E5FF] transition-colors">비용·오시는길</a></li>
+                  <li><a href="/blog" class="text-white/35 hover:text-[#00E5FF] transition-colors">블로그</a></li>
                   <li><a href="/faq" class="text-white/35 hover:text-[#00E5FF] transition-colors">FAQ</a></li>
                 </ul>
               </nav>
@@ -726,7 +726,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               <i class="fa-solid fa-calendar-check text-[1.1rem] relative z-10" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-bold relative z-10">예약</span>
             </a>
-            <a href="/directions" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="오시는 길 안내">
+            <a href="/info#directions" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="오시는 길 안내">
               <i class="fa-solid fa-location-dot text-[1.1rem]" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-medium">길찾기</span>
             </a>
