@@ -10,6 +10,17 @@ import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clea
 type Bindings = { DB: D1Database }
 
 const app = new Hono<{ Bindings: Bindings }>()
+
+// Security & Performance middleware
+app.use('*', async (c, next) => {
+  await next();
+  // Security headers
+  c.header('X-Content-Type-Options', 'nosniff');
+  c.header('X-Frame-Options', 'SAMEORIGIN');
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  c.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
+})
+
 app.use(renderer)
 
 // ============================================================
@@ -2939,11 +2950,14 @@ async function getAdminUser(db: D1Database, cookieHeader?: string | null): Promi
   } catch { return null; }
 }
 
-// Helper: Init admin tables
+// Helper: Init admin tables (idempotent, with flag to skip redundant calls)
+let _adminTablesReady = false;
 async function initAdminTables(db: D1Database) {
+  if (_adminTablesReady) return;
   await db.prepare(`CREATE TABLE IF NOT EXISTS admin_users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, name TEXT NOT NULL, role TEXT DEFAULT 'admin', created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`).run();
   await db.prepare(`CREATE TABLE IF NOT EXISTS admin_sessions (id TEXT PRIMARY KEY, admin_id INTEGER NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (admin_id) REFERENCES admin_users(id) ON DELETE CASCADE)`).run();
   await db.prepare(`CREATE TABLE IF NOT EXISTS before_after_cases (id INTEGER PRIMARY KEY AUTOINCREMENT, treatment_slug TEXT NOT NULL, title TEXT NOT NULL, patient_age TEXT, patient_gender TEXT, tag TEXT NOT NULL, doctor_name TEXT NOT NULL, description TEXT, duration TEXT, before_image TEXT, after_image TEXT, is_published INTEGER DEFAULT 1, sort_order INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`).run();
+  _adminTablesReady = true;
 }
 
 // --- Admin Login Page ---
@@ -3421,7 +3435,8 @@ app.get('/admin/dashboard', async (c) => {
 })
 
 // --- Admin Logout ---
-app.get('/api/admin/logout', async (c) => {
+// Logout: support both GET (link) and POST (form)
+async function handleAdminLogout(c: any) {
   const cookie = c.req.header('cookie');
   const match = cookie?.match(/(?:^|;\s*)admin_session=([^;]+)/);
   if (match) {
@@ -3434,7 +3449,9 @@ app.get('/api/admin/logout', async (c) => {
       'Set-Cookie': 'admin_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0',
     },
   });
-})
+}
+app.get('/api/admin/logout', async (c) => handleAdminLogout(c))
+app.post('/api/admin/logout', async (c) => handleAdminLogout(c))
 
 // --- CRUD API: Cases ---
 app.post('/api/admin/cases', async (c) => {
@@ -3512,8 +3529,10 @@ app.get('/api/cases', async (c) => {
 // BLOG SYSTEM
 // ============================================================
 
-// Helper: Init blog tables
+// Helper: Init blog tables (idempotent, with flag)
+let _blogTablesReady = false;
 async function initBlogTables(db: D1Database) {
+  if (_blogTablesReady) return;
   await db.prepare(`CREATE TABLE IF NOT EXISTS blog_posts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     slug TEXT NOT NULL UNIQUE,
@@ -3530,11 +3549,16 @@ async function initBlogTables(db: D1Database) {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`).run();
+  _blogTablesReady = true;
 }
 
 // Simple markdown-like renderer (lightweight, no deps)
 function renderContent(md: string): string {
-  let html = md
+  // Sanitize: strip <script> and event handlers for safety
+  let safe = md
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/\bon\w+\s*=/gi, 'data-blocked=');
+  let html = safe
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     // Headers
     .replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-gray-900 mt-8 mb-3">$1</h3>')
@@ -4227,7 +4251,7 @@ app.get('/terms', (c) => {
 // ============================================================
 // SITEMAP.XML — Dynamic SEO Sitemap
 // ============================================================
-app.get('/sitemap.xml', (c) => {
+app.get('/sitemap.xml', async (c) => {
   const base = 'https://seoul365dental.com';
   const now = new Date().toISOString().split('T')[0];
 
@@ -4259,7 +4283,17 @@ app.get('/sitemap.xml', (c) => {
     images: d.slug === 'park-junkyu' ? [{ url: `${base}/static/dr-park-profile.jpg`, title: `${d.name} ${d.title}`, caption: d.metaDesc }] : undefined,
   }));
 
-  const allPages = [...staticPages, ...treatmentPages, ...doctorPages];
+  // Dynamic blog posts for sitemap
+  let blogPages: { loc: string; priority: string; changefreq: string }[] = [];
+  try {
+    await initBlogTables(c.env.DB);
+    const blogResult = await c.env.DB.prepare('SELECT slug, updated_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 100').all();
+    blogPages = (blogResult.results || []).map((p: any) => ({
+      loc: `/blog/${p.slug}`, priority: '0.7', changefreq: 'weekly',
+    }));
+  } catch {}
+
+  const allPages = [...staticPages, ...treatmentPages, ...doctorPages, ...blogPages];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -4293,7 +4327,6 @@ ${allPages.map((p: any) => `  <url>
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
       'Cache-Control': 'public, max-age=3600',
-      'X-Robots-Tag': 'noindex',
     },
   });
 })
