@@ -1,0 +1,884 @@
+import { Hono } from 'hono'
+import type { Bindings } from '../lib/types'
+import { CLINIC, HOURS } from '../data/clinic'
+import { treatments } from '../data/treatments'
+import { mainFaq, pricingData, pricingSummary, pricingCategories } from '../data/faq'
+import { MESSAGING } from '../data/brand'
+import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clearSessionCookie, getCurrentUser } from '../lib/auth'
+import { initAdminTables } from '../lib/db'
+
+const pageRoutes = new Hono<{ Bindings: Bindings }>()
+
+pageRoutes.get('/reservation', (c) => {
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">상담 예약하기</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">편하신 방법으로 상담 예약해 주세요.</p>
+        </div>
+      </section>
+
+      <section class="section-lg bg-mesh">
+        <div class="max-w-4xl mx-auto px-5 md:px-8">
+          {/* Quick CTAs */}
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16 stagger-children">
+            <a href={CLINIC.phoneTel} class="glass-card p-8 text-center group block" data-cursor-hover>
+              <div class="icon-circle mx-auto mb-4">
+                <i class="fa-solid fa-phone"></i>
+              </div>
+              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#0066FF] transition-colors">전화 상담</h2>
+              <p class="text-[#0066FF] font-extrabold text-xl">{CLINIC.phone}</p>
+              <p class="text-sm text-gray-400 mt-2">가장 빠른 상담 방법</p>
+            </a>
+            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="glass-card p-8 text-center group block" data-cursor-hover>
+              <div class="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-100 transition-colors">
+                <i class="fa-solid fa-comment text-yellow-500 text-xl"></i>
+              </div>
+              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#0066FF] transition-colors">카카오톡 상담</h2>
+              <p class="text-yellow-600 font-bold">채팅으로 편하게</p>
+              <p class="text-sm text-gray-400 mt-2">사진/영상 전송 가능</p>
+            </a>
+            <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="glass-card p-8 text-center group block" data-cursor-hover>
+              <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-100 transition-colors">
+                <i class="fa-solid fa-calendar-check text-green-500 text-xl"></i>
+              </div>
+              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#0066FF] transition-colors">네이버 예약</h2>
+              <p class="text-green-600 font-bold">온라인 간편 예약</p>
+              <p class="text-sm text-gray-400 mt-2">원하는 시간 선택</p>
+            </a>
+          </div>
+
+          {/* Form */}
+          <div class="premium-card p-8 md:p-10 reveal-3d">
+            <h2 class="text-xl font-bold text-gray-900 mb-8">온라인 상담 신청</h2>
+            <form class="space-y-5" onsubmit="event.preventDefault(); alert('상담 신청이 완료되었습니다.');">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">이름 *</label>
+                  <input type="text" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="이름을 입력해주세요" />
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">연락처 *</label>
+                  <input type="tel" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-0000-0000" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">관심 치료</label>
+                <select class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm text-gray-600">
+                  <option value="">선택해주세요</option>
+                  <option>전체임플란트</option><option>올온X 임플란트</option><option>일반 임플란트</option>
+                  <option>치아교정</option><option>인비절라인</option><option>수면진료</option>
+                  <option>심미치료</option><option>충치/신경치료</option><option>기타</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">상담 내용</label>
+                <textarea rows={4} class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm resize-none" placeholder="궁금하신 내용을 자유롭게 적어주세요"></textarea>
+              </div>
+              <div class="flex items-start gap-2.5">
+                <input type="checkbox" required class="mt-1 accent-[#0066FF]" id="privacy-agree" />
+                <label for="privacy-agree" class="text-sm text-gray-500">
+                  <a href="/privacy" class="text-[#0066FF] font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
+                </label>
+              </div>
+              <button type="submit" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>상담 신청하기</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </>,
+    {
+      title: '상담 예약 | 서울365치과 - 전화·카카오톡·온라인 예약',
+      description: '서울365치과 상담 예약. 전화(032-432-0365), 카카오톡, 네이버 예약, 온라인 상담 신청. 365일 진료, 야간 21시까지. 인천 구월동 예술회관역.',
+      canonical: 'https://seoul365dental.com/reservation',
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "상담 예약", "item": "https://seoul365dental.com/reservation" }
+          ]
+        },
+        // ContactPage
+        {
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "name": "서울365치과 상담 예약",
+          "description": "서울365치과 상담 예약. 전화, 카카오톡, 네이버 예약, 온라인 상담 신청.",
+          "url": "https://seoul365dental.com/reservation",
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "inLanguage": "ko-KR"
+        },
+        // ReserveAction
+        {
+          "@context": "https://schema.org",
+          "@type": "ReserveAction",
+          "name": "서울365치과 상담 예약하기",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://seoul365dental.com/reservation",
+            "inLanguage": "ko",
+            "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"]
+          },
+          "result": {
+            "@type": "Reservation",
+            "name": "치과 상담 예약",
+            "reservationFor": { "@id": "https://seoul365dental.com/#dentist" }
+          },
+          "agent": { "@id": "https://seoul365dental.com/#dentist" },
+          "object": { "@type": "MedicalClinic", "name": "서울365치과의원" }
+        },
+        // CommunicateAction — multiple communication channels
+        {
+          "@context": "https://schema.org",
+          "@type": "CommunicateAction",
+          "name": "서울365치과 전화 상담",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "tel:032-432-0365",
+            "actionPlatform": ["http://schema.org/MobileWebPlatform"]
+          },
+          "about": { "@type": "Thing", "name": "치과 상담" }
+        },
+        // ScheduleAction — Naver booking
+        {
+          "@context": "https://schema.org",
+          "@type": "ScheduleAction",
+          "name": "네이버 예약으로 서울365치과 상담 신청",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://booking.naver.com/booking/13/bizes/426166",
+          },
+          "agent": { "@type": "Person", "name": "환자" },
+          "object": { "@type": "MedicalClinic", "name": "서울365치과의원" },
+        },
+        // Service — consultation service details
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "서울365치과 상담 서비스",
+          "serviceType": "치과 상담",
+          "provider": { "@id": "https://seoul365dental.com/#dentist" },
+          "areaServed": { "@type": "City", "name": "인천광역시" },
+          "serviceOutput": {
+            "@type": "Thing",
+            "name": "맞춤 치료 계획",
+            "description": "정밀 CT 촬영 후 개인별 최적 치료 계획 수립"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "KRW",
+            "description": "초진 상담 무료",
+          },
+          "termsOfService": "https://seoul365dental.com/terms",
+          "availableChannel": [
+            { "@type": "ServiceChannel", "serviceUrl": "https://seoul365dental.com/reservation", "serviceSmsNumber": "+82-32-432-0365", "name": "온라인 예약" },
+            { "@type": "ServiceChannel", "servicePhone": { "@type": "ContactPoint", "telephone": "+82-32-432-0365" }, "name": "전화 예약" },
+            { "@type": "ServiceChannel", "serviceUrl": "https://pf.kakao.com/_dMsCT", "name": "카카오톡 상담" },
+          ]
+        }
+      ]
+    }
+  )
+})
+
+// ============================================================
+// PRICING
+// ============================================================
+// ============================================================
+// INFO: Pricing + Directions (Tab page)
+// ============================================================
+pageRoutes.get('/pricing', (c) => c.redirect('/info#pricing', 301))
+pageRoutes.get('/directions', (c) => c.redirect('/info', 301))
+
+pageRoutes.get('/info', (c) => {
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
+            <a href="/" class="hover:text-white transition-colors">홈</a>
+            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
+            <span class="text-white/60">내원안내</span>
+          </nav>
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">내원 안내</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">진료 비용과 찾아오시는 방법을 안내드립니다.</p>
+        </div>
+      </section>
+
+      {/* Tab Switcher */}
+      <section class="sticky top-[72px] z-30 bg-white/90 backdrop-blur border-b border-gray-100">
+        <div class="max-w-5xl mx-auto px-5 md:px-8">
+          <div class="flex gap-0" id="infoTabs">
+            <button onclick="switchInfoTab('directions')" id="tab-directions" class="info-tab active flex-1 py-4 text-center text-sm font-bold text-[#0066FF] border-b-2 border-[#0066FF] transition-all">
+              <i class="fa-solid fa-location-dot mr-1.5"></i>오시는 길
+            </button>
+            <button onclick="switchInfoTab('pricing')" id="tab-pricing" class="info-tab flex-1 py-4 text-center text-sm font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-all">
+              <i class="fa-solid fa-won-sign mr-1.5"></i>비용 안내
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* === PRICING TAB === */}
+      <section id="panel-pricing" class="section-lg bg-mesh" style="display:none">
+        <div class="max-w-5xl mx-auto px-5 md:px-8">
+          <h2 class="sr-only">서울365치과 진료비용 안내</h2>
+          {/* Category Quick Nav */}
+          <div class="flex flex-wrap gap-2 justify-center mb-12 reveal">
+            {pricingCategories.map(cat => (
+              <a href={`#pricing-${cat.key}`} class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-gray-200 bg-white text-gray-600 text-[0.78rem] font-medium hover:border-[#0066FF]/40 hover:text-[#0066FF] transition-all">
+                <i class={`fa-solid ${cat.icon} text-[0.65rem]`}></i>
+                {cat.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Category Tables */}
+          {pricingCategories.map(cat => {
+            const items = pricingData.filter(p => p.category === cat.key);
+            if (items.length === 0) return null;
+            return (
+              <div id={`pricing-${cat.key}`} class="mb-12 reveal-3d">
+                <div class="flex items-center gap-2 mb-4">
+                  <div class="w-8 h-8 rounded-lg bg-[#0066FF]/10 flex items-center justify-center">
+                    <i class={`fa-solid ${cat.icon} text-[#0066FF] text-sm`}></i>
+                  </div>
+                  <h3 class="text-lg font-bold text-gray-800">{cat.label}</h3>
+                  <span class="text-xs text-gray-400 ml-1">{items.length}항목</span>
+                </div>
+                <div class="premium-card overflow-hidden">
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                      <thead>
+                        <tr class="bg-gradient-to-r from-navy to-navy-lighter text-white/90">
+                          <th class="text-left px-5 py-3 font-semibold text-[0.78rem]">치료 항목</th>
+                          <th class="text-right px-5 py-3 font-semibold text-[0.78rem]">비용</th>
+                          <th class="text-right px-5 py-3 font-semibold text-[0.78rem] hidden sm:table-cell">보험</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-gray-50">
+                        {items.map((p, i) => (
+                          <tr class={`hover:bg-[#0066FF]/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                            <td class="px-5 py-3 text-gray-800 font-medium">
+                              {p.treatment}
+                              {p.note && <span class="text-[0.65rem] text-gray-400 ml-1.5">({p.note})</span>}
+                            </td>
+                            <td class="px-5 py-3 text-right text-[#0066FF] font-bold whitespace-nowrap">{p.price}</td>
+                            <td class="px-5 py-3 text-right text-gray-400 hidden sm:table-cell text-xs">{p.insurance}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          <div class="mt-8 glass-card p-5 reveal">
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-circle-info text-amber-500 mt-0.5"></i>
+              <div>
+                <p class="text-sm text-gray-600 font-medium">위 가격은 참고용이며, 환자 상태에 따라 달라질 수 있습니다. 정확한 비용은 정밀 진단 후 안내드립니다.</p>
+                <p class="text-xs text-gray-400 mt-1">카드 결제 및 분할 결제가 가능합니다.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-10 reveal">
+            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>비용 상담 예약하기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>
+          </div>
+        </div>
+      </section>
+
+      {/* === DIRECTIONS TAB (default visible) === */}
+      <section id="panel-directions" class="section-lg bg-mesh">
+        <div class="max-w-4xl mx-auto px-5 md:px-8">
+          <h2 class="sr-only">서울365치과 오시는 길</h2>
+          {/* Google Maps Embed */}
+          <div class="premium-card overflow-hidden mb-10 reveal-3d" style="aspect-ratio:16/9">
+            <iframe
+              src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent('서울365치과의원 인천 남동구 예술로 138 이토타워')}&center=${CLINIC.geo.lat},${CLINIC.geo.lng}&zoom=16&language=ko`}
+              width="100%" height="100%" style="border:0;min-height:350px" allowfullscreen loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="서울365치과 위치 - 인천 남동구 예술로 138 이토타워 2층">
+            </iframe>
+          </div>
+
+          {/* Google Maps Link Buttons */}
+          <div class="flex flex-wrap justify-center gap-3 mb-10 reveal">
+            <a href={`https://www.google.com/maps/search/?api=1&query=${CLINIC.geo.lat},${CLINIC.geo.lng}`}
+               target="_blank" rel="noopener"
+               class="btn-premium btn-premium-outline text-sm px-6 py-3" data-cursor-hover>
+              <i class="fa-brands fa-google text-xs"></i> Google Maps
+            </a>
+            <a href={`https://map.naver.com/p/search/${encodeURIComponent(CLINIC.address)}`}
+               target="_blank" rel="noopener"
+               class="btn-premium btn-premium-outline text-sm px-6 py-3" style="border-color:#03cf5d40;color:#03cf5d" data-cursor-hover>
+              <i class="fa-solid fa-map text-xs"></i> 네이버 지도
+            </a>
+            <a href={`https://map.kakao.com/link/search/${encodeURIComponent(CLINIC.address)}`}
+               target="_blank" rel="noopener"
+               class="btn-premium btn-premium-outline text-sm px-6 py-3" style="border-color:#FEE50040;color:#3C1E1E" data-cursor-hover>
+              <i class="fa-solid fa-location-dot text-xs"></i> 카카오맵
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 stagger-children">
+            {[
+              { icon: 'fa-location-dot', title: '주소', main: CLINIC.address, sub: '(우) 21556' },
+              { icon: 'fa-train-subway', title: '지하철', main: '인천 2호선 예술회관역 5번 출구', sub: '도보 약 3분 (250m)' },
+              { icon: 'fa-car', title: '주차', main: '이토타워 건물 내 주차장 이용', sub: '진료 시 주차 지원 가능' },
+              { icon: 'fa-bus', title: '버스', main: '예술회관역 정류장 하차', sub: '다수 시내버스 이용 가능' },
+            ].map(info => (
+              <div class="glass-card p-6 tilt-card">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="icon-circle icon-circle-sm">
+                    <i class={`fa-solid ${info.icon}`}></i>
+                  </div>
+                  <h3 class="font-bold text-gray-900">{info.title}</h3>
+                </div>
+                <p class="text-gray-700 text-[0.9rem]">{info.main}</p>
+                <p class="text-gray-400 text-xs mt-1">{info.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          <div class="text-center mt-10 reveal">
+            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-phone"></i> 전화 문의 {CLINIC.phone}</a>
+          </div>
+        </div>
+      </section>
+
+      {/* Tab Switching Script */}
+      <script dangerouslySetInnerHTML={{__html: `
+        function switchInfoTab(tab) {
+          document.querySelectorAll('.info-tab').forEach(b => {
+            b.classList.remove('active','text-[#0066FF]','border-[#0066FF]');
+            b.classList.add('text-gray-400','border-transparent');
+          });
+          const active = document.getElementById('tab-' + tab);
+          if (active) { active.classList.add('active','text-[#0066FF]','border-[#0066FF]'); active.classList.remove('text-gray-400','border-transparent'); }
+          document.getElementById('panel-directions').style.display = tab === 'directions' ? '' : 'none';
+          document.getElementById('panel-pricing').style.display = tab === 'pricing' ? '' : 'none';
+          history.replaceState(null, '', tab === 'pricing' ? '/info#pricing' : '/info');
+        }
+        // Auto-switch on hash
+        if (window.location.hash === '#pricing') switchInfoTab('pricing');
+      `}} />
+    </>,
+    {
+      title: '내원안내 | 서울365치과 - 진료비용·오시는길·진료시간',
+      description: '서울365치과 내원 안내. 임플란트, 교정, 심미치료 비용. 인천 남동구 예술로 138 이토타워 2층. 예술회관역 5번 출구 도보 3분.',
+      canonical: 'https://seoul365dental.com/info',
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "내원안내", "item": "https://seoul365dental.com/info" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "OfferCatalog",
+          "name": "서울365치과 진료비용표",
+          "description": "서울365치과 비급여 항목 진료비용",
+          "itemListElement": pricingSummary.map((p: any) => ({
+            "@type": "Offer",
+            "itemOffered": { "@type": "MedicalProcedure", "name": p.treatment },
+            "priceCurrency": "KRW", "price": p.price,
+            "description": `보험: ${p.insurance}`,
+            "seller": { "@id": "https://seoul365dental.com/#dentist" },
+            "availability": "https://schema.org/InStock"
+          }))
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "Place",
+          "name": "서울365치과의원",
+          "address": { "@type": "PostalAddress", "streetAddress": "예술로 138 이토타워 2층 212호", "addressLocality": "인천광역시 남동구", "addressRegion": "인천", "postalCode": "21556", "addressCountry": "KR" },
+          "geo": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
+          "hasMap": "https://www.google.com/maps?q=37.4482,126.7042",
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          "name": "서울365치과 찾아오는 방법",
+          "step": [
+            { "@type": "HowToStep", "position": 1, "name": "지하철", "text": "인천 2호선 예술회관역 5번 출구로 나오세요." },
+            { "@type": "HowToStep", "position": 2, "name": "도보 이동", "text": "5번 출구에서 직진 약 250m (도보 3분)." },
+            { "@type": "HowToStep", "position": 3, "name": "도착", "text": "이토타워 건물 2층 서울365치과의원입니다." },
+          ]
+        },
+      ]
+    }
+  )
+})
+
+// ============================================================
+// FAQ
+// ============================================================
+pageRoutes.get('/faq', (c) => {
+  const allFaq = [
+    ...mainFaq,
+    { q: '예약은 어떻게 하나요?', a: '전화(032-432-0365), 카카오톡, 네이버 예약 모두 가능합니다.' },
+    { q: '응급 상황에 방문해도 되나요?', a: '네, 365일 진료하므로 갑작스러운 치통이나 외상 시 바로 내원하세요.' },
+    { q: '분할 결제가 가능한가요?', a: '네, 카드 분할 결제가 가능합니다.' },
+    { q: '첫 방문 시 무엇을 준비해야 하나요?', a: '신분증과 건강보험증을 지참해 주세요.' },
+  ];
+
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">자주 묻는 질문</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">궁금하신 점을 먼저 확인해 보세요.</p>
+        </div>
+      </section>
+
+      <section class="section-lg bg-mesh" itemscope itemtype="https://schema.org/FAQPage">
+        <div class="max-w-3xl mx-auto px-5 md:px-8">
+          <div class="space-y-3 stagger-children">
+            {allFaq.map(faq => (
+              <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
+                  <h3 class="font-semibold text-gray-800 text-[0.95rem] pr-4" itemprop="name">{faq.q}</h3>
+                  <i class="fa-solid fa-chevron-down text-gray-300 text-sm faq-icon flex-shrink-0"></i>
+                </button>
+                <div class="hidden px-6 pb-5" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                  <p class="text-gray-500 text-[0.9rem] leading-relaxed" itemprop="text">{faq.a}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div class="text-center mt-10 reveal">
+            <p class="text-gray-400 mb-4">더 궁금하신 점이 있으신가요?</p>
+            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>상담 예약하기</a>
+          </div>
+        </div>
+      </section>
+    </>,
+    {
+      title: '자주 묻는 질문 FAQ | 서울365치과 - 임플란트·교정·수면진료 궁금증 해결',
+      description: '서울365치과 자주 묻는 질문. 임플란트 비용과 기간, 수면진료 안전성, 치아교정 나이제한, 예약 방법, 365일 진료 안내 등 궁금한 점을 확인하세요.',
+      canonical: 'https://seoul365dental.com/faq',
+      jsonLd: [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "FAQ", "item": "https://seoul365dental.com/faq" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": allFaq.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a }
+          }))
+        },
+        // QAPage — alternative for AEO engines
+        {
+          "@context": "https://schema.org",
+          "@type": "QAPage",
+          "name": "서울365치과 자주 묻는 질문",
+          "mainEntity": allFaq.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "answerCount": 1,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": f.a,
+              "author": { "@type": "Organization", "name": "서울365치과의원" },
+              "dateCreated": "2026-01-01",
+              "upvoteCount": 10,
+            }
+          }))
+        },
+        // Speakable for FAQ page
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "자주 묻는 질문 FAQ | 서울365치과",
+          "url": "https://seoul365dental.com/faq",
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h3[itemprop='name']", "p[itemprop='text']"]
+          },
+        },
+      ]
+    }
+  )
+})
+
+// ============================================================
+// CASES GALLERY — LOGIN REQUIRED
+// ============================================================
+pageRoutes.get('/cases/gallery', async (c) => {
+  const user = await getCurrentUser(c.env.DB, c.req.header('cookie'));
+
+  // Not logged in → show login prompt
+  if (!user) {
+    return c.render(
+      <>
+        <section class="treatment-hero">
+          <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+            <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">치료 사례 Before &amp; After</h1>
+            <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">실제 치료 사례를 확인하시려면 로그인이 필요합니다.</p>
+          </div>
+        </section>
+
+        <section class="section-lg bg-mesh">
+          <div class="max-w-lg mx-auto px-5 md:px-8 text-center">
+            <div class="premium-card p-10 reveal-3d">
+              <div class="w-20 h-20 rounded-full bg-[#0066FF]/10 mx-auto mb-6 flex items-center justify-center">
+                <i class="fa-solid fa-lock text-3xl text-[#0066FF]/50"></i>
+              </div>
+              <h2 class="text-xl font-bold text-gray-900 mb-3">회원 전용 콘텐츠</h2>
+              <p class="text-gray-500 text-[0.9rem] leading-relaxed mb-8">
+                실제 치료 Before &amp; After 사례는<br/>
+                회원 로그인 후 열람하실 수 있습니다.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <a href="/login" class="btn-premium btn-premium-fill px-8 py-3.5" data-cursor-hover>
+                  <i class="fa-solid fa-right-to-bracket"></i> 로그인
+                </a>
+                <a href="/register" class="btn-premium btn-premium-outline px-8 py-3.5" data-cursor-hover>
+                  <i class="fa-solid fa-user-plus"></i> 회원가입
+                </a>
+              </div>
+              <p class="text-xs text-gray-300 mt-6">가입은 30초면 충분합니다.</p>
+            </div>
+          </div>
+        </section>
+      </>,
+      {
+        title: '치료 사례 | 서울365치과 - 로그인 필요',
+        description: '서울365치과 치료 사례. 회원 로그인 후 열람 가능.',
+        canonical: 'https://seoul365dental.com/cases/gallery',
+      }
+    )
+  }
+
+  // Fetch published cases from DB
+  let dbCases: any[] = [];
+  try {
+    await initAdminTables(c.env.DB);
+    const result = await c.env.DB.prepare('SELECT * FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC').all();
+    dbCases = result.results || [];
+  } catch {}
+
+  // Logged in → show gallery
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">치료 사례 Before &amp; After</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">실제 치료 사례로 결과를 확인하세요.</p>
+        </div>
+      </section>
+
+      <section class="section-lg bg-mesh">
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+          <div class="flex items-center justify-between mb-8 reveal">
+            <p class="text-sm text-gray-400"><i class="fa-solid fa-user-check text-[#0066FF] mr-1.5"></i> <span class="font-medium text-gray-600">{user.name}</span>님, 환영합니다.</p>
+          </div>
+
+          {dbCases.length === 0 ? (
+            <div class="text-center py-20">
+              <div class="w-20 h-20 rounded-full bg-[#0066FF]/5 mx-auto mb-6 flex items-center justify-center">
+                <i class="fa-solid fa-images text-3xl text-[#0066FF]/20"></i>
+              </div>
+              <h2 class="text-lg font-bold text-gray-900 mb-2">아직 등록된 사례가 없습니다</h2>
+              <p class="text-gray-400 text-sm">곧 실제 치료 사례를 업로드할 예정입니다.</p>
+            </div>
+          ) : (
+            <>
+              {/* Filter Tabs */}
+              <div class="flex flex-wrap gap-2 mb-8 reveal" id="caseFilters">
+                <button onclick="filterCases('all')" class="case-filter-btn active px-4 py-2 rounded-full text-xs font-semibold bg-[#0066FF] text-white transition" data-filter="all">전체 ({dbCases.length})</button>
+                {Array.from(new Set(dbCases.map((cs: any) => cs.tag))).map((tag: any) => (
+                  <button onclick={`filterCases('${tag}')`} data-filter={tag} class="case-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-gray-100 text-gray-500 hover:bg-gray-200 transition">{tag} ({dbCases.filter((cs: any) => cs.tag === tag).length})</button>
+                ))}
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children" id="casesGrid">
+                {dbCases.map((cs: any) => (
+                  <div class="premium-card overflow-hidden tilt-card electric-card-border case-card" data-tag={cs.tag}>
+                    <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
+                      {cs.before_image && cs.after_image ? (
+                        <div class="absolute inset-0 flex ba-slider" data-id={cs.id}>
+                          <div class="w-1/2 overflow-hidden border-r-2 border-white relative">
+                            <img src={cs.before_image} alt="Before" class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%" />
+                            <span class="absolute top-3 left-3 text-[0.6rem] font-bold tracking-widest uppercase text-white bg-black/40 px-2 py-0.5 rounded">Before</span>
+                          </div>
+                          <div class="w-1/2 overflow-hidden relative">
+                            <img src={cs.after_image} alt="After" class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%;margin-left:-100%" />
+                            <span class="absolute top-3 right-3 text-[0.6rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/70 px-2 py-0.5 rounded">After</span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div class="absolute inset-0 flex">
+                          <div class="w-1/2 flex items-center justify-center bg-gray-100/80 border-r border-gray-200/50">
+                            {cs.before_image ? <img src={cs.before_image} alt="Before" class="w-full h-full object-cover" /> : <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>}
+                          </div>
+                          <div class="w-1/2 flex items-center justify-center bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.02]">
+                            {cs.after_image ? <img src={cs.after_image} alt="After" class="w-full h-full object-cover" /> : <span class="text-[#0066FF]/30 text-sm font-bold tracking-widest uppercase">After</span>}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div class="p-5">
+                      <div class="flex items-center gap-2 mb-2">
+                        <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
+                        {cs.duration && <span class="text-[0.65rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
+                      </div>
+                      <h3 class="font-bold text-gray-900 text-sm">{cs.title}</h3>
+                      {cs.description && <p class="text-gray-500 text-xs mt-1.5 line-clamp-2">{cs.description}</p>}
+                      <p class="text-xs text-gray-400 mt-2">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          <p class="text-[0.72rem] text-gray-300 text-center mt-10">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
+        </div>
+      </section>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        function filterCases(tag) {
+          document.querySelectorAll('.case-filter-btn').forEach(b => {
+            b.classList.remove('bg-[#0066FF]', 'text-white', 'active');
+            b.classList.add('bg-gray-100', 'text-gray-500');
+          });
+          const activeBtn = document.querySelector('[data-filter="'+tag+'"]');
+          if (activeBtn) { activeBtn.classList.add('bg-[#0066FF]', 'text-white', 'active'); activeBtn.classList.remove('bg-gray-100', 'text-gray-500'); }
+          document.querySelectorAll('.case-card').forEach(card => {
+            if (tag === 'all' || card.dataset.tag === tag) { card.style.display = ''; } else { card.style.display = 'none'; }
+          });
+        }
+      `}} />
+    </>,
+    {
+      title: '치료 사례 Before & After | 서울365치과',
+      description: '서울365치과 치료 사례. 임플란트, 교정, 심미치료 Before & After.',
+      canonical: 'https://seoul365dental.com/cases/gallery',
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
+            { "@type": "ListItem", "position": 2, "name": "치료사례", "item": "https://seoul365dental.com/cases/gallery" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "ImageGallery",
+          "name": "서울365치과 치료 사례 갤러리",
+          "description": "서울365치과 임플란트, 교정, 심미치료 Before & After 갤러리. 실제 치료 전후 사진.",
+          "url": "https://seoul365dental.com/cases/gallery",
+          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "accessMode": "visual",
+          "isAccessibleForFree": false,
+          "conditionsOfAccess": "회원 로그인 필요",
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "서울365치과 치료 사례",
+          "url": "https://seoul365dental.com/cases/gallery",
+          "inLanguage": "ko-KR",
+        },
+      ]
+    }
+  )
+})
+
+// ============================================================
+// AUTH: REGISTER
+// ============================================================
+pageRoutes.get('/register', (c) => {
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">회원가입</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">30초면 가입이 완료됩니다.</p>
+        </div>
+      </section>
+
+      <section class="section-lg bg-mesh">
+        <div class="max-w-md mx-auto px-5 md:px-8">
+          <div class="premium-card p-8 md:p-10 reveal-3d">
+            <div id="register-error" class="hidden mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium"></div>
+            <form id="register-form" class="space-y-5">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">이름 *</label>
+                <input type="text" name="name" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="홍길동" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">휴대폰 번호 *</label>
+                <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-1234-5678" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 *</label>
+                <input type="password" name="password" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="4자리 이상" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 확인 *</label>
+                <input type="password" name="password2" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="비밀번호 재입력" />
+              </div>
+              <div class="flex items-start gap-2.5">
+                <input type="checkbox" required class="mt-1 accent-[#0066FF]" id="agree" />
+                <label for="agree" class="text-sm text-gray-500">
+                  <a href="/privacy" class="text-[#0066FF] font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
+                </label>
+              </div>
+              <button type="submit" id="register-btn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>
+                회원가입
+              </button>
+            </form>
+            <p class="text-center text-sm text-gray-400 mt-6">
+              이미 계정이 있으신가요? <a href="/login" class="text-[#0066FF] font-semibold link-underline">로그인</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('register-btn');
+          const err = document.getElementById('register-error');
+          btn.disabled = true; btn.textContent = '처리중...';
+          err.classList.add('hidden');
+
+          const fd = new FormData(this);
+          const data = Object.fromEntries(fd);
+
+          if (data.password !== data.password2) {
+            err.textContent = '비밀번호가 일치하지 않습니다.';
+            err.classList.remove('hidden');
+            btn.disabled = false; btn.textContent = '회원가입';
+            return;
+          }
+
+          try {
+            const res = await fetch('/api/auth/register', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: data.name, phone: data.phone, password: data.password })
+            });
+            const json = await res.json();
+            if (json.ok) {
+              window.location.href = '/cases/gallery';
+            } else {
+              err.textContent = json.error || '가입에 실패했습니다.';
+              err.classList.remove('hidden');
+            }
+          } catch(e) {
+            err.textContent = '서버 오류가 발생했습니다.';
+            err.classList.remove('hidden');
+          }
+          btn.disabled = false; btn.textContent = '회원가입';
+        });
+      `}} />
+    </>,
+    {
+      title: '회원가입 | 서울365치과',
+      description: '서울365치과 회원가입.',
+      canonical: 'https://seoul365dental.com/register',
+    }
+  )
+})
+
+// ============================================================
+// AUTH: LOGIN
+// ============================================================
+pageRoutes.get('/login', (c) => {
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">로그인</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">회원 전용 콘텐츠를 열람하세요.</p>
+        </div>
+      </section>
+
+      <section class="section-lg bg-mesh">
+        <div class="max-w-md mx-auto px-5 md:px-8">
+          <div class="premium-card p-8 md:p-10 reveal-3d">
+            <div id="login-error" class="hidden mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium"></div>
+            <form id="login-form" class="space-y-5">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">휴대폰 번호</label>
+                <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-1234-5678" />
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호</label>
+                <input type="password" name="password" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="비밀번호 입력" />
+              </div>
+              <button type="submit" id="login-btn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>
+                로그인
+              </button>
+            </form>
+            <p class="text-center text-sm text-gray-400 mt-6">
+              계정이 없으신가요? <a href="/register" class="text-[#0066FF] font-semibold link-underline">회원가입</a>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('login-btn');
+          const err = document.getElementById('login-error');
+          btn.disabled = true; btn.textContent = '로그인 중...';
+          err.classList.add('hidden');
+
+          const fd = new FormData(this);
+          const data = Object.fromEntries(fd);
+
+          try {
+            const res = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ phone: data.phone, password: data.password })
+            });
+            const json = await res.json();
+            if (json.ok) {
+              window.location.href = '/cases/gallery';
+            } else {
+              err.textContent = json.error || '로그인에 실패했습니다.';
+              err.classList.remove('hidden');
+            }
+          } catch(e) {
+            err.textContent = '서버 오류가 발생했습니다.';
+            err.classList.remove('hidden');
+          }
+          btn.disabled = false; btn.textContent = '로그인';
+        });
+      `}} />
+    </>,
+    {
+      title: '로그인 | 서울365치과',
+      description: '서울365치과 회원 로그인.',
+      canonical: 'https://seoul365dental.com/login',
+    }
+  )
+})
+
+
+export default pageRoutes
