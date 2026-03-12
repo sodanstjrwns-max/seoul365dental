@@ -31,11 +31,6 @@ home.get('/', (c) => {
             {/* LEFT COLUMN — Copy */}
             <div class="flex-1 min-w-0 lg:max-w-[58%]">
 
-              {/* Top Bar — Location */}
-              <div class="flex items-center gap-3 mb-10 reveal" style="transition-delay:0.2s">
-                <span class="text-white/30 text-xs font-medium tracking-wider"><i class="fa-solid fa-location-dot text-[#0066FF]/40 mr-1.5"></i>인천 구월동 · 예술회관역 5번 출구 250m</span>
-              </div>
-
               {/* Philosophy Badge */}
               <div class="reveal mb-7" style="transition-delay:0.35s">
                 <span class="inline-flex items-center gap-2 text-[0.68rem] tracking-[0.25em] uppercase font-bold text-[#00E5FF]/70 px-4 py-2 rounded-full border border-[#00E5FF]/15 bg-[#00E5FF]/[0.04]">
