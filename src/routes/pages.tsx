@@ -611,8 +611,8 @@ pageRoutes.get('/cases/gallery', async (c) => {
               </div>
 
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children" id="casesGrid">
-                {dbCases.map((cs: any) => (
-                  <div class="premium-card overflow-hidden tilt-card electric-card-border case-card" data-tag={cs.tag}>
+                {dbCases.map((cs: any, idx: number) => (
+                  <div class="premium-card overflow-hidden tilt-card electric-card-border case-card cursor-pointer group" data-tag={cs.tag} onclick={`openCaseModal(${idx})`}>
                     <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
                       {cs.before_image && cs.after_image ? (
                         <div class="absolute inset-0 flex ba-slider" data-id={cs.id}>
@@ -635,13 +635,19 @@ pageRoutes.get('/cases/gallery', async (c) => {
                           </div>
                         </div>
                       )}
+                      {/* Hover overlay */}
+                      <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
+                          <i class="fa-solid fa-expand text-[#0066FF] text-lg"></i>
+                        </div>
+                      </div>
                     </div>
                     <div class="p-5">
                       <div class="flex items-center gap-2 mb-2">
                         <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
                         {cs.duration && <span class="text-[0.65rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
                       </div>
-                      <h3 class="font-bold text-gray-900 text-sm">{cs.title}</h3>
+                      <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#0066FF] transition-colors">{cs.title}</h3>
                       {cs.description && <p class="text-gray-500 text-xs mt-1.5 line-clamp-2">{cs.description}</p>}
                       <p class="text-xs text-gray-400 mt-2">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</p>
                     </div>
@@ -655,7 +661,120 @@ pageRoutes.get('/cases/gallery', async (c) => {
         </div>
       </section>
 
+      {/* Case Detail Modal */}
+      <div id="caseModal" class="fixed inset-0 z-[100] hidden" onclick="closeCaseModal(event)">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+        <div class="relative z-10 flex items-center justify-center min-h-screen p-4 md:p-8">
+          <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+            {/* Modal Header */}
+            <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 flex items-center justify-between px-6 py-4 border-b border-gray-100">
+              <div class="flex items-center gap-2">
+                <span id="modalTag" class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold"></span>
+                <span id="modalDuration" class="text-[0.65rem] text-gray-400"></span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="navCase(-1)" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition" title="이전 사례">
+                  <i class="fa-solid fa-chevron-left text-gray-500 text-sm"></i>
+                </button>
+                <button onclick="navCase(1)" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition" title="다음 사례">
+                  <i class="fa-solid fa-chevron-right text-gray-500 text-sm"></i>
+                </button>
+                <button onclick="closeCaseModal()" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-red-100 hover:text-red-500 flex items-center justify-center transition ml-1" title="닫기">
+                  <i class="fa-solid fa-xmark text-gray-500 text-sm"></i>
+                </button>
+              </div>
+            </div>
+            {/* Before/After Comparison */}
+            <div class="p-6">
+              <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
+                  <img id="modalBefore" src="" alt="Before" class="w-full h-full object-cover" />
+                  <span class="absolute top-3 left-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded-lg">Before</span>
+                </div>
+                <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
+                  <img id="modalAfter" src="" alt="After" class="w-full h-full object-cover" />
+                  <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/80 backdrop-blur-sm px-3 py-1 rounded-lg">After</span>
+                </div>
+              </div>
+              {/* Info */}
+              <h2 id="modalTitle" class="text-xl font-bold text-gray-900 mb-3"></h2>
+              <p id="modalDesc" class="text-gray-600 text-sm leading-relaxed mb-4"></p>
+              <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500 bg-gray-50 rounded-xl px-5 py-4">
+                <span id="modalDoctor"><i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i></span>
+                <span id="modalPatient"><i class="fa-solid fa-user text-[#0066FF]/60 mr-1.5"></i></span>
+                <span id="modalDur"><i class="fa-regular fa-clock text-[#0066FF]/60 mr-1.5"></i></span>
+              </div>
+              {/* CTA */}
+              <div class="mt-6 text-center">
+                <p class="text-gray-400 text-xs mb-3">비슷한 고민을 가지고 계신가요?</p>
+                <a href="/reservation" class="inline-flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052cc] text-white font-bold text-sm px-6 py-3 rounded-xl transition">
+                  <i class="fa-solid fa-calendar-check text-xs"></i> 무료 상담 예약
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <script dangerouslySetInnerHTML={{__html: `
+        var cases = ${JSON.stringify(dbCases.map((cs: any) => ({
+          title: cs.title, tag: cs.tag, duration: cs.duration || '',
+          description: cs.description || '', doctor_name: cs.doctor_name || '',
+          patient_age: cs.patient_age || '', patient_gender: cs.patient_gender || '',
+          before_image: cs.before_image || '', after_image: cs.after_image || '',
+        })))};
+        var currentIdx = 0;
+
+        function openCaseModal(idx) {
+          currentIdx = idx;
+          renderModal();
+          document.getElementById('caseModal').classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeCaseModal(e) {
+          if (e && e.target && e.target.closest && e.target.closest('[onclick="event.stopPropagation()"]')) return;
+          document.getElementById('caseModal').classList.add('hidden');
+          document.body.style.overflow = '';
+        }
+
+        function navCase(dir) {
+          // Filter visible cases
+          var visibleIdxs = [];
+          document.querySelectorAll('.case-card').forEach(function(card, i) {
+            if (card.style.display !== 'none') visibleIdxs.push(i);
+          });
+          var pos = visibleIdxs.indexOf(currentIdx);
+          if (pos === -1) pos = 0;
+          pos = (pos + dir + visibleIdxs.length) % visibleIdxs.length;
+          currentIdx = visibleIdxs[pos];
+          renderModal();
+        }
+
+        function renderModal() {
+          var c = cases[currentIdx];
+          if (!c) return;
+          document.getElementById('modalTag').textContent = c.tag;
+          document.getElementById('modalDuration').textContent = c.duration ? c.duration : '';
+          document.getElementById('modalBefore').src = c.before_image || '';
+          document.getElementById('modalAfter').src = c.after_image || '';
+          document.getElementById('modalTitle').textContent = c.title;
+          document.getElementById('modalDesc').textContent = c.description || '상세 설명이 없습니다.';
+          document.getElementById('modalDoctor').innerHTML = '<i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i>담당: ' + c.doctor_name;
+          document.getElementById('modalPatient').innerHTML = '<i class="fa-solid fa-user text-[#0066FF]/60 mr-1.5"></i>' + (c.patient_age || '') + ' ' + (c.patient_gender || '');
+          document.getElementById('modalDur').innerHTML = '<i class="fa-regular fa-clock text-[#0066FF]/60 mr-1.5"></i>' + (c.duration || '-');
+          document.getElementById('modalDur').style.display = c.duration ? '' : 'none';
+          document.getElementById('modalPatient').style.display = (c.patient_age || c.patient_gender) ? '' : 'none';
+        }
+
+        // Keyboard nav
+        document.addEventListener('keydown', function(e) {
+          if (document.getElementById('caseModal').classList.contains('hidden')) return;
+          if (e.key === 'Escape') closeCaseModal();
+          if (e.key === 'ArrowLeft') navCase(-1);
+          if (e.key === 'ArrowRight') navCase(1);
+        });
+
         function filterCases(tag) {
           document.querySelectorAll('.case-filter-btn').forEach(b => {
             b.classList.remove('bg-[#0066FF]', 'text-white', 'active');
