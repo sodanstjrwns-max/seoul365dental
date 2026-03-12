@@ -59,7 +59,11 @@ adminRoutes.post('/api/admin/login', async (c) => {
     username = body.username as string; password = body.password as string;
   }
 
-  if (!username || !password) return c.redirect('/admin?error=' + encodeURIComponent('아이디와 비밀번호를 입력하세요'));
+  const isJson = ct.includes('application/json');
+  if (!username || !password) {
+    if (isJson) return c.json({ ok: false, error: '아이디와 비밀번호를 입력하세요' }, 400);
+    return c.redirect('/admin?error=' + encodeURIComponent('아이디와 비밀번호를 입력하세요'));
+  }
 
   // Auto-create default admin if none exists
   const adminCount = await c.env.DB.prepare('SELECT COUNT(*) as cnt FROM admin_users').first<{ cnt: number }>();
@@ -69,21 +73,31 @@ adminRoutes.post('/api/admin/login', async (c) => {
   }
 
   const admin = await c.env.DB.prepare('SELECT id, username, name, password_hash FROM admin_users WHERE username = ?').bind(username).first<{ id: number; username: string; name: string; password_hash: string }>();
-  if (!admin) return c.redirect('/admin?error=' + encodeURIComponent('존재하지 않는 계정입니다'));
+  if (!admin) {
+    if (isJson) return c.json({ ok: false, error: '존재하지 않는 계정입니다' }, 401);
+    return c.redirect('/admin?error=' + encodeURIComponent('존재하지 않는 계정입니다'));
+  }
 
   const valid = await verifyPassword(password, admin.password_hash);
-  if (!valid) return c.redirect('/admin?error=' + encodeURIComponent('비밀번호가 올바르지 않습니다'));
+  if (!valid) {
+    if (isJson) return c.json({ ok: false, error: '비밀번호가 올바르지 않습니다' }, 401);
+    return c.redirect('/admin?error=' + encodeURIComponent('비밀번호가 올바르지 않습니다'));
+  }
 
   const sessionId = generateSessionId();
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(); // 24h
   await c.env.DB.prepare('INSERT INTO admin_sessions (id, admin_id, expires_at) VALUES (?, ?, ?)').bind(sessionId, admin.id, expiresAt).run();
 
+  const sessionCookie = `admin_session=${sessionId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`;
+  if (isJson) {
+    return new Response(JSON.stringify({ ok: true, admin: { name: admin.name } }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'Set-Cookie': sessionCookie },
+    });
+  }
   return new Response(null, {
     status: 302,
-    headers: {
-      'Location': '/admin/dashboard',
-      'Set-Cookie': `admin_session=${sessionId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`,
-    },
+    headers: { 'Location': '/admin/dashboard', 'Set-Cookie': sessionCookie },
   });
 })
 

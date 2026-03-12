@@ -87,11 +87,12 @@ apiRoutes.get('/api/auth/me', async (c) => {
   return c.json({ ok: true, user });
 })
 
-apiRoutes.post('/api/auth/logout', async (c) => {
+// Support both GET and POST for logout
+const handleLogout = async (c: any) => {
   const { getSessionIdFromCookie } = await import('../lib/auth');
   const sessionId = getSessionIdFromCookie(c.req.header('cookie'));
   if (sessionId) {
-    await c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(sessionId).run();
+    try { await c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(sessionId).run(); } catch {}
   }
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,
@@ -100,6 +101,8 @@ apiRoutes.post('/api/auth/logout', async (c) => {
       'Set-Cookie': clearSessionCookie(),
     },
   });
-})
+};
+apiRoutes.post('/api/auth/logout', handleLogout)
+apiRoutes.get('/api/auth/logout', handleLogout)
 
 export default apiRoutes
