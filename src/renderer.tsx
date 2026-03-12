@@ -536,6 +536,10 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
             {/* Desktop CTA */}
             <div class="hidden lg:flex items-center gap-3">
+              <div class="flex items-center gap-1.5 text-[0.75rem] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full" id="clinic-status-badge">
+                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span>진료중</span>
+              </div>
               <a href={CLINIC.phoneTel} class="nav-link flex items-center gap-1.5 text-[0.82rem] font-medium text-gray-500 hover:text-primary transition-colors" data-cursor-hover aria-label="전화 상담 032-432-0365">
                 <i class="fa-solid fa-phone text-[0.7rem]" aria-hidden="true"></i> {CLINIC.phone}
               </a>
@@ -568,6 +572,16 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           {/* Mobile Menu */}
           <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 right-0 glass-white border-t border-gray-100/50" role="navigation" aria-label="모바일 네비게이션">
             <div class="max-w-[1400px] mx-auto px-5 py-4 space-y-0.5">
+              {/* Mobile Status Badge */}
+              <div class="flex items-center gap-2 px-4 py-2 mb-2">
+                <div class="flex items-center gap-1.5 text-[0.75rem] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full" id="mobile-clinic-status">
+                  <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                  <span>진료중</span>
+                </div>
+                <a href={CLINIC.phoneTel} class="text-[0.8rem] font-medium text-gray-500">
+                  <i class="fa-solid fa-phone text-[0.65rem] mr-1" aria-hidden="true"></i>{CLINIC.phone}
+                </a>
+              </div>
               {[
                 { href: '/', label: '홈', icon: 'fa-house' },
                 { href: '/treatments', label: '진료안내', icon: 'fa-teeth' },
@@ -749,6 +763,47 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === SCRIPTS === */}
         <script dangerouslySetInnerHTML={{__html: `
+          // Clinic Open/Close Status — Dynamic
+          (function() {
+            const hours = {
+              0: { open: 14, close: 18 }, // 일
+              1: { open: 10, close: 21 }, // 월
+              2: { open: 10, close: 21 }, // 화
+              3: { open: 10, close: 21 }, // 수
+              4: { open: 10, close: 21 }, // 목
+              5: { open: 10, close: 19 }, // 금
+              6: { open: 10, close: 14 }, // 토
+            };
+            function updateStatus() {
+              const now = new Date();
+              const kst = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+              const day = kst.getDay();
+              const h = kst.getHours();
+              const m = kst.getMinutes();
+              const t = h + m / 60;
+              const s = hours[day];
+              const isOpen = s && t >= s.open && t < s.close;
+              
+              document.querySelectorAll('#clinic-status-badge, #mobile-clinic-status').forEach(el => {
+                const dot = el.querySelector('span:first-child');
+                const txt = el.querySelector('span:last-child');
+                if (isOpen) {
+                  el.className = el.className.replace(/text-gray-\\S+|bg-gray-\\S+/g, '').replace(/text-emerald-\\S+|bg-emerald-\\S+/g, '');
+                  el.classList.add('text-emerald-600', 'bg-emerald-50');
+                  if (dot) { dot.className = 'w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse'; }
+                  if (txt) txt.textContent = '진료중';
+                } else {
+                  el.className = el.className.replace(/text-emerald-\\S+|bg-emerald-\\S+/g, '');
+                  el.classList.add('text-gray-500', 'bg-gray-100');
+                  if (dot) { dot.className = 'w-1.5 h-1.5 bg-gray-400 rounded-full'; }
+                  if (txt) txt.textContent = '진료종료';
+                }
+              });
+            }
+            updateStatus();
+            setInterval(updateStatus, 60000);
+          })();
+
           // Preloader
           window.addEventListener('load', () => {
             setTimeout(() => {

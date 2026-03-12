@@ -31,14 +31,9 @@ home.get('/', (c) => {
             {/* LEFT COLUMN — Copy */}
             <div class="flex-1 min-w-0 lg:max-w-[58%]">
 
-              {/* Top Bar — Status + Location */}
+              {/* Top Bar — Location */}
               <div class="flex items-center gap-3 mb-10 reveal" style="transition-delay:0.2s">
-                <div class="glass trust-badge text-white/90" data-status>
-                  <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                  <span class="font-semibold">진료중</span>
-                </div>
-                <span class="text-[#0066FF]/25 text-xs">|</span>
-                <span class="text-white/25 text-xs font-medium tracking-wider">인천 구월동 · 예술회관역 5번 출구 250m</span>
+                <span class="text-white/30 text-xs font-medium tracking-wider"><i class="fa-solid fa-location-dot text-[#0066FF]/40 mr-1.5"></i>인천 구월동 · 예술회관역 5번 출구 250m</span>
               </div>
 
               {/* Philosophy Badge */}
