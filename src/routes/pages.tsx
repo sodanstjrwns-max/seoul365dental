@@ -52,20 +52,20 @@ pageRoutes.get('/reservation', (c) => {
           {/* Form */}
           <div class="premium-card p-8 md:p-10 reveal-3d">
             <h2 class="text-xl font-bold text-gray-900 mb-8">온라인 상담 신청</h2>
-            <form class="space-y-5" onsubmit="event.preventDefault(); alert('상담 신청이 완료되었습니다.');">
+            <form id="consultForm" class="space-y-5">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label class="block text-sm font-semibold text-gray-700 mb-2">이름 *</label>
-                  <input type="text" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="이름을 입력해주세요" />
+                  <input type="text" name="name" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="이름을 입력해주세요" />
                 </div>
                 <div>
                   <label class="block text-sm font-semibold text-gray-700 mb-2">연락처 *</label>
-                  <input type="tel" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-0000-0000" />
+                  <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-0000-0000" />
                 </div>
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">관심 치료</label>
-                <select class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm text-gray-600">
+                <select name="treatment" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm text-gray-600">
                   <option value="">선택해주세요</option>
                   <option>전체임플란트</option><option>올온X 임플란트</option><option>일반 임플란트</option>
                   <option>치아교정</option><option>인비절라인</option><option>수면진료</option>
@@ -74,7 +74,7 @@ pageRoutes.get('/reservation', (c) => {
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">상담 내용</label>
-                <textarea rows={4} class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm resize-none" placeholder="궁금하신 내용을 자유롭게 적어주세요"></textarea>
+                <textarea name="message" rows={4} class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm resize-none" placeholder="궁금하신 내용을 자유롭게 적어주세요"></textarea>
               </div>
               <div class="flex items-start gap-2.5">
                 <input type="checkbox" required class="mt-1 accent-[#0066FF]" id="privacy-agree" />
@@ -82,9 +82,49 @@ pageRoutes.get('/reservation', (c) => {
                   <a href="/privacy" class="text-[#0066FF] font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
                 </label>
               </div>
-              <button type="submit" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>상담 신청하기</button>
+              <button type="submit" id="consultSubmitBtn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>상담 신청하기</button>
+              <div id="consultResult" class="hidden text-center text-sm py-3 rounded-xl"></div>
             </form>
           </div>
+          <script dangerouslySetInnerHTML={{__html: `
+            document.getElementById('consultForm').addEventListener('submit', async function(e) {
+              e.preventDefault();
+              const btn = document.getElementById('consultSubmitBtn');
+              const result = document.getElementById('consultResult');
+              btn.disabled = true;
+              btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>전송 중...';
+              result.classList.add('hidden');
+              try {
+                const fd = new FormData(this);
+                const res = await fetch('/api/consultations', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    name: fd.get('name'),
+                    phone: fd.get('phone'),
+                    treatment: fd.get('treatment'),
+                    message: fd.get('message')
+                  })
+                });
+                const data = await res.json();
+                if (data.ok) {
+                  result.className = 'text-center text-sm py-3 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200';
+                  result.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i>상담 신청이 완료되었습니다. 빠른 시일 내에 연락드리겠습니다!';
+                  result.classList.remove('hidden');
+                  this.reset();
+                } else {
+                  throw new Error(data.error || '오류 발생');
+                }
+              } catch(err) {
+                result.className = 'text-center text-sm py-3 rounded-xl bg-red-50 text-red-600 border border-red-200';
+                result.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-1.5"></i>' + err.message;
+                result.classList.remove('hidden');
+              } finally {
+                btn.disabled = false;
+                btn.innerHTML = '상담 신청하기';
+              }
+            });
+          `}} />
         </div>
       </section>
     </>,
@@ -997,5 +1037,149 @@ pageRoutes.get('/login', (c) => {
   )
 })
 
+
+// ============================================================
+// NOTICES (공지사항)
+// ============================================================
+pageRoutes.get('/notices', async (c) => {
+  await initAdminTables(c.env.DB);
+  let notices: any[] = [];
+  try {
+    const result = await c.env.DB.prepare(
+      'SELECT id, title, content, category, is_pinned, view_count, created_at FROM notices WHERE is_published = 1 ORDER BY is_pinned DESC, created_at DESC'
+    ).all();
+    notices = result.results || [];
+  } catch {}
+
+  const categoryColors: Record<string, string> = {
+    '공지': 'bg-[#0066FF]/8 text-[#0066FF]',
+    '이벤트': 'bg-pink-50 text-pink-600',
+    '안내': 'bg-emerald-50 text-emerald-600',
+    '휴무': 'bg-amber-50 text-amber-700',
+  };
+
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">공지사항</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">서울365치과의 소식과 안내사항을 확인하세요.</p>
+        </div>
+      </section>
+
+      <section class="section-lg bg-mesh">
+        <div class="max-w-4xl mx-auto px-5 md:px-8">
+          {notices.length === 0 ? (
+            <div class="text-center py-20 reveal">
+              <div class="w-16 h-16 rounded-full bg-gray-100 mx-auto mb-4 flex items-center justify-center">
+                <i class="fa-solid fa-bullhorn text-2xl text-gray-300"></i>
+              </div>
+              <p class="text-gray-400">아직 공지사항이 없습니다.</p>
+            </div>
+          ) : (
+            <div class="space-y-3 stagger-children">
+              {notices.map((n: any) => (
+                <a href={`/notices/${n.id}`} class="glass-card p-5 md:p-6 block group hover:border-[#0066FF]/20 transition-all" data-cursor-hover>
+                  <div class="flex items-start gap-4">
+                    {n.is_pinned ? (
+                      <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center mt-0.5">
+                        <i class="fa-solid fa-thumbtack text-amber-500 text-xs"></i>
+                      </div>
+                    ) : (
+                      <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center mt-0.5">
+                        <i class="fa-solid fa-file-lines text-gray-300 text-xs"></i>
+                      </div>
+                    )}
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center gap-2 mb-1.5">
+                        <span class={`text-[0.65rem] font-bold px-2 py-0.5 rounded-full ${categoryColors[n.category] || categoryColors['공지']}`}>{n.category}</span>
+                        {n.is_pinned ? <span class="text-[0.6rem] text-amber-500 font-bold">고정</span> : null}
+                      </div>
+                      <h3 class="text-base font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors truncate">{n.title}</h3>
+                      <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                        <span><i class="fa-regular fa-calendar mr-1"></i>{n.created_at?.slice(0, 10)}</span>
+                        <span><i class="fa-regular fa-eye mr-1"></i>{n.view_count}</span>
+                      </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-gray-200 group-hover:text-[#0066FF]/50 transition-colors mt-3 text-sm"></i>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </>,
+    {
+      title: '공지사항 | 서울365치과',
+      description: '서울365치과 공지사항. 진료 안내, 이벤트, 휴무일 공지 등 병원 소식을 확인하세요.',
+      canonical: 'https://seoul365dental.com/notices',
+    }
+  )
+})
+
+pageRoutes.get('/notices/:id', async (c) => {
+  await initAdminTables(c.env.DB);
+  const id = c.req.param('id');
+  let notice: any = null;
+  try {
+    await c.env.DB.prepare('UPDATE notices SET view_count = view_count + 1 WHERE id = ? AND is_published = 1').bind(id).run();
+    notice = await c.env.DB.prepare(
+      'SELECT id, title, content, category, is_pinned, view_count, created_at FROM notices WHERE id = ? AND is_published = 1'
+    ).bind(id).first();
+  } catch {}
+
+  if (!notice) {
+    return c.render(
+      <section class="section-lg bg-mesh text-center">
+        <div class="max-w-2xl mx-auto px-5 py-20">
+          <i class="fa-solid fa-circle-exclamation text-4xl text-gray-300 mb-4"></i>
+          <h1 class="text-xl font-bold text-gray-900 mb-2">공지사항을 찾을 수 없습니다</h1>
+          <p class="text-gray-400 mb-6">삭제되었거나 비공개 처리된 공지입니다.</p>
+          <a href="/notices" class="btn-premium btn-premium-fill">목록으로 돌아가기</a>
+        </div>
+      </section>,
+      { title: '공지사항 | 서울365치과' }
+    )
+  }
+
+  // Simple content rendering: preserve line breaks
+  const contentHtml = notice.content
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br/>');
+
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <h1 class="text-2xl md:text-3xl font-bold text-white mb-4 reveal" style="transition-delay:0.3s">{notice.title}</h1>
+          <div class="flex items-center gap-3 text-white/35 text-sm reveal" style="transition-delay:0.5s">
+            <span class="bg-white/10 px-2.5 py-0.5 rounded-full text-xs font-bold">{notice.category}</span>
+            <span><i class="fa-regular fa-calendar mr-1"></i>{notice.created_at?.slice(0, 10)}</span>
+            <span><i class="fa-regular fa-eye mr-1"></i>{notice.view_count}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-lg bg-mesh">
+        <div class="max-w-3xl mx-auto px-5 md:px-8">
+          <div class="premium-card p-8 md:p-10">
+            <div class="text-gray-600 leading-relaxed text-[0.95rem]" dangerouslySetInnerHTML={{__html: contentHtml}}></div>
+          </div>
+          <div class="text-center mt-10">
+            <a href="/notices" class="btn-premium btn-premium-outline" data-cursor-hover>
+              <i class="fa-solid fa-list mr-1.5"></i>목록으로 돌아가기
+            </a>
+          </div>
+        </div>
+      </section>
+    </>,
+    {
+      title: `${notice.title} | 서울365치과 공지사항`,
+      description: `서울365치과 공지: ${notice.title}`,
+      canonical: `https://seoul365dental.com/notices/${notice.id}`,
+    }
+  )
+})
 
 export default pageRoutes

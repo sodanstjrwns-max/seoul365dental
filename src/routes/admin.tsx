@@ -161,48 +161,70 @@ adminRoutes.get('/admin/dashboard', async (c) => {
           </div>
 
           {/* Quick Links */}
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+            <a href="/admin/consultations" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-red-400/20 transition-all group">
+              <div class="flex flex-col items-center gap-2 text-center">
+                <div class="w-10 h-10 rounded-xl bg-red-400/10 flex items-center justify-center">
+                  <i class="fa-solid fa-headset text-red-400"></i>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-sm group-hover:text-red-400 transition">상담문의</div>
+                  <div class="text-white/25 text-xs">고객 상담 조회</div>
+                </div>
+              </div>
+            </a>
+            <a href="/admin/notices" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-purple-400/20 transition-all group">
+              <div class="flex flex-col items-center gap-2 text-center">
+                <div class="w-10 h-10 rounded-xl bg-purple-400/10 flex items-center justify-center">
+                  <i class="fa-solid fa-bullhorn text-purple-400"></i>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-sm group-hover:text-purple-400 transition">공지사항</div>
+                  <div class="text-white/25 text-xs">공지 작성·관리</div>
+                </div>
+              </div>
+            </a>
             <a href="/admin/blog" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-[#0066FF]/20 transition-all group">
-              <div class="flex items-center gap-3">
+              <div class="flex flex-col items-center gap-2 text-center">
                 <div class="w-10 h-10 rounded-xl bg-[#0066FF]/10 flex items-center justify-center">
                   <i class="fa-solid fa-pen-nib text-[#0066FF]"></i>
                 </div>
                 <div>
-                  <div class="text-white font-bold text-sm group-hover:text-[#0066FF] transition">블로그 관리</div>
-                  <div class="text-white/25 text-xs">글 작성·수정·삭제</div>
+                  <div class="text-white font-bold text-sm group-hover:text-[#0066FF] transition">블로그</div>
+                  <div class="text-white/25 text-xs">글 작성·수정</div>
                 </div>
               </div>
             </a>
             <a href="/cases/gallery" target="_blank" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-emerald-400/20 transition-all group">
-              <div class="flex items-center gap-3">
+              <div class="flex flex-col items-center gap-2 text-center">
                 <div class="w-10 h-10 rounded-xl bg-emerald-400/10 flex items-center justify-center">
                   <i class="fa-solid fa-images text-emerald-400"></i>
                 </div>
                 <div>
-                  <div class="text-white font-bold text-sm group-hover:text-emerald-400 transition">사례 미리보기</div>
-                  <div class="text-white/25 text-xs">공개 갤러리 보기</div>
+                  <div class="text-white font-bold text-sm group-hover:text-emerald-400 transition">사례 보기</div>
+                  <div class="text-white/25 text-xs">공개 갤러리</div>
                 </div>
               </div>
             </a>
             <a href="/blog" target="_blank" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-cyan-400/20 transition-all group">
-              <div class="flex items-center gap-3">
+              <div class="flex flex-col items-center gap-2 text-center">
                 <div class="w-10 h-10 rounded-xl bg-cyan-400/10 flex items-center justify-center">
                   <i class="fa-solid fa-newspaper text-cyan-400"></i>
                 </div>
                 <div>
                   <div class="text-white font-bold text-sm group-hover:text-cyan-400 transition">블로그 보기</div>
-                  <div class="text-white/25 text-xs">공개 블로그 확인</div>
+                  <div class="text-white/25 text-xs">공개 페이지</div>
                 </div>
               </div>
             </a>
             <a href="/" target="_blank" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-amber-400/20 transition-all group">
-              <div class="flex items-center gap-3">
+              <div class="flex flex-col items-center gap-2 text-center">
                 <div class="w-10 h-10 rounded-xl bg-amber-400/10 flex items-center justify-center">
                   <i class="fa-solid fa-globe text-amber-400"></i>
                 </div>
                 <div>
                   <div class="text-white font-bold text-sm group-hover:text-amber-400 transition">사이트 보기</div>
-                  <div class="text-white/25 text-xs">메인 페이지 확인</div>
+                  <div class="text-white/25 text-xs">메인 페이지</div>
                 </div>
               </div>
             </a>
@@ -546,6 +568,383 @@ async function handleAdminLogout(c: any) {
 }
 adminRoutes.get('/api/admin/logout', async (c) => handleAdminLogout(c))
 adminRoutes.post('/api/admin/logout', async (c) => handleAdminLogout(c))
+
+// ============================================================
+// ADMIN: 상담문의 조회 페이지
+// ============================================================
+adminRoutes.get('/admin/consultations', async (c) => {
+  await initAdminTables(c.env.DB);
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.redirect('/admin');
+
+  let items: any[] = [];
+  try {
+    const result = await c.env.DB.prepare('SELECT * FROM consultations ORDER BY created_at DESC').all();
+    items = result.results || [];
+  } catch {}
+
+  const statusMap: Record<string, { label: string; color: string }> = {
+    new: { label: '새 문의', color: 'red' },
+    contacted: { label: '연락 완료', color: 'blue' },
+    done: { label: '처리 완료', color: 'emerald' },
+  };
+
+  return c.render(
+    <>
+      {/* Admin Header */}
+      <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-white/5">
+        <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center hover:bg-[#0066FF]/30 transition">
+              <i class="fa-solid fa-arrow-left text-[#0066FF] text-sm"></i>
+            </a>
+            <span class="text-white font-bold text-sm">상담문의 관리</span>
+            <span class="text-white/20 text-xs">|</span>
+            <span class="text-red-400 text-xs font-bold">{items.filter((i: any) => i.status === 'new').length}건 새 문의</span>
+          </div>
+          <a href="/api/admin/logout" class="text-red-400/60 hover:text-red-400 text-xs transition"><i class="fa-solid fa-right-from-bracket mr-1"></i>로그아웃</a>
+        </div>
+      </div>
+
+      <section class="min-h-screen bg-gradient-to-br from-gray-900 via-[#0a0e1a] to-gray-900 pt-20 pb-12">
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+          <div class="bg-white/5 border border-white/5 rounded-2xl overflow-hidden">
+            {items.length === 0 ? (
+              <div class="p-16 text-center">
+                <i class="fa-solid fa-headset text-3xl text-white/15 mb-4"></i>
+                <p class="text-white/30 text-sm">접수된 상담 문의가 없습니다.</p>
+              </div>
+            ) : (
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-white/5">
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">상태</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">이름</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">연락처</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell">관심치료</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden lg:table-cell">상담내용</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell">일시</th>
+                      <th class="text-right px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">관리</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.map((item: any) => {
+                      const s = statusMap[item.status] || statusMap.new;
+                      return (
+                        <tr class="border-b border-white/5 hover:bg-white/[0.02] transition">
+                          <td class="px-5 py-3">
+                            <span class={`inline-flex items-center gap-1 text-xs text-${s.color}-400 bg-${s.color}-400/10 px-2.5 py-1 rounded-full`}>
+                              <span class={`w-1.5 h-1.5 bg-${s.color}-400 rounded-full`}></span>{s.label}
+                            </span>
+                          </td>
+                          <td class="px-5 py-3 text-white font-medium">{item.name}</td>
+                          <td class="px-5 py-3"><a href={`tel:${item.phone}`} class="text-[#0066FF] hover:underline">{item.phone}</a></td>
+                          <td class="px-5 py-3 text-white/40 hidden md:table-cell">{item.treatment || '-'}</td>
+                          <td class="px-5 py-3 text-white/30 hidden lg:table-cell max-w-[200px] truncate">{item.message || '-'}</td>
+                          <td class="px-5 py-3 text-white/25 text-xs hidden md:table-cell">{item.created_at?.slice(0, 16)}</td>
+                          <td class="px-5 py-3 text-right">
+                            <select onchange={`updateConsultStatus(${item.id}, this.value)`} class="bg-white/5 border border-white/10 text-white text-xs rounded-lg px-2 py-1 outline-none">
+                              <option value="new" selected={item.status === 'new'} class="bg-gray-900">새 문의</option>
+                              <option value="contacted" selected={item.status === 'contacted'} class="bg-gray-900">연락 완료</option>
+                              <option value="done" selected={item.status === 'done'} class="bg-gray-900">처리 완료</option>
+                            </select>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        async function updateConsultStatus(id, status) {
+          try {
+            const res = await fetch('/api/admin/consultations/' + id, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status })
+            });
+            const data = await res.json();
+            if (data.ok) window.location.reload();
+            else alert(data.error || '오류 발생');
+          } catch(err) { alert('오류: ' + err.message); }
+        }
+      `}} />
+    </>,
+    { title: '상담문의 관리 | 서울365치과' }
+  )
+})
+
+// ADMIN API: Update consultation status
+adminRoutes.put('/api/admin/consultations/:id', async (c) => {
+  await initAdminTables(c.env.DB);
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+  const id = c.req.param('id');
+  const { status, admin_memo } = await c.req.json();
+  await c.env.DB.prepare('UPDATE consultations SET status = ?, admin_memo = ?, updated_at = datetime(\'now\') WHERE id = ?')
+    .bind(status || 'new', admin_memo || null, id).run();
+  return c.json({ ok: true });
+})
+
+// ============================================================
+// ADMIN: 공지사항 관리 페이지
+// ============================================================
+adminRoutes.get('/admin/notices', async (c) => {
+  await initAdminTables(c.env.DB);
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.redirect('/admin');
+
+  let notices: any[] = [];
+  try {
+    const result = await c.env.DB.prepare('SELECT * FROM notices ORDER BY is_pinned DESC, created_at DESC').all();
+    notices = result.results || [];
+  } catch {}
+
+  return c.render(
+    <>
+      {/* Admin Header */}
+      <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-white/5">
+        <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center hover:bg-[#0066FF]/30 transition">
+              <i class="fa-solid fa-arrow-left text-[#0066FF] text-sm"></i>
+            </a>
+            <span class="text-white font-bold text-sm">공지사항 관리</span>
+            <span class="text-white/20 text-xs">|</span>
+            <span class="text-purple-400 text-xs font-bold">{notices.length}건</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <a href="/notices" target="_blank" class="text-white/30 hover:text-white/60 text-xs transition"><i class="fa-solid fa-external-link mr-1"></i>공개 페이지</a>
+            <a href="/api/admin/logout" class="text-red-400/60 hover:text-red-400 text-xs transition"><i class="fa-solid fa-right-from-bracket mr-1"></i>로그아웃</a>
+          </div>
+        </div>
+      </div>
+
+      <section class="min-h-screen bg-gradient-to-br from-gray-900 via-[#0a0e1a] to-gray-900 pt-20 pb-12">
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+          <div class="flex items-center justify-between mb-6">
+            <h1 class="text-xl font-bold text-white">공지사항 관리</h1>
+            <button onclick="openNoticeModal()" class="px-5 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-white text-sm font-bold transition">
+              <i class="fa-solid fa-plus mr-1.5"></i>새 공지 작성
+            </button>
+          </div>
+
+          <div class="bg-white/5 border border-white/5 rounded-2xl overflow-hidden">
+            {notices.length === 0 ? (
+              <div class="p-16 text-center">
+                <i class="fa-solid fa-bullhorn text-3xl text-white/15 mb-4"></i>
+                <p class="text-white/30 text-sm">작성된 공지사항이 없습니다.</p>
+              </div>
+            ) : (
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-white/5">
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">상태</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">카테고리</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">제목</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell">조회</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell">작성일</th>
+                      <th class="text-right px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">관리</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {notices.map((n: any) => (
+                      <tr class="border-b border-white/5 hover:bg-white/[0.02] transition">
+                        <td class="px-5 py-3">
+                          <div class="flex items-center gap-1.5">
+                            {n.is_pinned ? <span class="text-amber-400 text-xs"><i class="fa-solid fa-thumbtack"></i></span> : null}
+                            {n.is_published ? (
+                              <span class="inline-flex items-center gap-1 text-xs text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">공개</span>
+                            ) : (
+                              <span class="inline-flex items-center gap-1 text-xs text-gray-400 bg-gray-400/10 px-2 py-0.5 rounded-full">비공개</span>
+                            )}
+                          </div>
+                        </td>
+                        <td class="px-5 py-3 text-purple-300 text-xs">{n.category}</td>
+                        <td class="px-5 py-3 text-white font-medium">{n.title}</td>
+                        <td class="px-5 py-3 text-white/25 text-xs hidden md:table-cell">{n.view_count}</td>
+                        <td class="px-5 py-3 text-white/25 text-xs hidden md:table-cell">{n.created_at?.slice(0, 10)}</td>
+                        <td class="px-5 py-3 text-right">
+                          <button onclick={`editNotice(${JSON.stringify(n).replace(/"/g, '&quot;')})`} class="text-white/30 hover:text-purple-400 transition p-1.5" title="수정">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                          </button>
+                          <button onclick={`deleteNotice(${n.id})`} class="text-white/30 hover:text-red-400 transition p-1.5 ml-1" title="삭제">
+                            <i class="fa-solid fa-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Notice Modal */}
+      <div id="noticeModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/70 backdrop-blur-sm" onclick="document.getElementById('noticeModal').classList.add('hidden')"></div>
+        <div class="relative bg-gray-900 border border-white/10 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 md:p-8">
+          <div class="flex items-center justify-between mb-6">
+            <h2 id="noticeModalTitle" class="text-lg font-bold text-white">새 공지 작성</h2>
+            <button onclick="document.getElementById('noticeModal').classList.add('hidden')" class="text-white/30 hover:text-white transition">
+              <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+          </div>
+
+          <form id="noticeForm" class="space-y-5">
+            <input type="hidden" id="noticeId" value="" />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">카테고리</label>
+                <select id="noticeCategory" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-purple-400/50">
+                  <option value="공지" class="bg-gray-900">공지</option>
+                  <option value="이벤트" class="bg-gray-900">이벤트</option>
+                  <option value="안내" class="bg-gray-900">안내</option>
+                  <option value="휴무" class="bg-gray-900">휴무</option>
+                </select>
+              </div>
+              <div class="flex items-end gap-4">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="noticePinned" class="w-4 h-4 rounded bg-white/5 border-white/10 text-amber-400 focus:ring-amber-400/20" />
+                  <span class="text-white/50 text-sm"><i class="fa-solid fa-thumbtack text-amber-400/50 mr-1"></i>상단 고정</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="noticePublished" checked class="w-4 h-4 rounded bg-white/5 border-white/10 text-emerald-400 focus:ring-emerald-400/20" />
+                  <span class="text-white/50 text-sm">공개</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">제목 *</label>
+              <input id="noticeTitle" type="text" required class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-purple-400/50 placeholder-white/20" placeholder="공지사항 제목" />
+            </div>
+            <div>
+              <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">내용 *</label>
+              <textarea id="noticeContent" rows={10} required class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-purple-400/50 placeholder-white/20 resize-none font-mono text-sm" placeholder="공지사항 내용을 입력하세요..."></textarea>
+              <p class="text-white/15 text-xs mt-1">줄바꿈은 그대로 반영됩니다.</p>
+            </div>
+            <div class="flex gap-3 pt-2">
+              <button type="submit" id="noticeSubmitBtn" class="flex-1 py-3.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold transition">
+                <i class="fa-solid fa-check mr-1.5"></i>저장
+              </button>
+              <button type="button" onclick="document.getElementById('noticeModal').classList.add('hidden')" class="px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 font-bold transition">취소</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        function openNoticeModal() {
+          document.getElementById('noticeModal').classList.remove('hidden');
+          document.getElementById('noticeId').value = '';
+          document.getElementById('noticeModalTitle').textContent = '새 공지 작성';
+          document.getElementById('noticeTitle').value = '';
+          document.getElementById('noticeContent').value = '';
+          document.getElementById('noticeCategory').value = '공지';
+          document.getElementById('noticePinned').checked = false;
+          document.getElementById('noticePublished').checked = true;
+        }
+
+        function editNotice(n) {
+          document.getElementById('noticeModal').classList.remove('hidden');
+          document.getElementById('noticeModalTitle').textContent = '공지 수정';
+          document.getElementById('noticeId').value = n.id;
+          document.getElementById('noticeTitle').value = n.title;
+          document.getElementById('noticeContent').value = n.content;
+          document.getElementById('noticeCategory').value = n.category || '공지';
+          document.getElementById('noticePinned').checked = !!n.is_pinned;
+          document.getElementById('noticePublished').checked = !!n.is_published;
+        }
+
+        document.getElementById('noticeForm').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('noticeSubmitBtn');
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>저장 중...';
+
+          const id = document.getElementById('noticeId').value;
+          const data = {
+            title: document.getElementById('noticeTitle').value,
+            content: document.getElementById('noticeContent').value,
+            category: document.getElementById('noticeCategory').value,
+            is_pinned: document.getElementById('noticePinned').checked ? 1 : 0,
+            is_published: document.getElementById('noticePublished').checked ? 1 : 0,
+          };
+
+          try {
+            const url = id ? '/api/admin/notices/' + id : '/api/admin/notices';
+            const method = id ? 'PUT' : 'POST';
+            const res = await fetch(url, {
+              method,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+            const json = await res.json();
+            if (json.ok) window.location.reload();
+            else alert(json.error || '오류 발생');
+          } catch(err) {
+            alert('오류: ' + err.message);
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-check mr-1.5"></i>저장';
+          }
+        });
+
+        async function deleteNotice(id) {
+          if (!confirm('이 공지를 삭제하시겠습니까?')) return;
+          try {
+            const res = await fetch('/api/admin/notices/' + id, { method: 'DELETE' });
+            const json = await res.json();
+            if (json.ok) window.location.reload();
+            else alert(json.error || '삭제 실패');
+          } catch(err) { alert('오류: ' + err.message); }
+        }
+      `}} />
+    </>,
+    { title: '공지사항 관리 | 서울365치과' }
+  )
+})
+
+// ADMIN API: Notices CRUD
+adminRoutes.post('/api/admin/notices', async (c) => {
+  await initAdminTables(c.env.DB);
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+  const { title, content, category, is_pinned, is_published } = await c.req.json();
+  if (!title || !content) return c.json({ ok: false, error: '제목과 내용을 입력하세요' }, 400);
+  await c.env.DB.prepare('INSERT INTO notices (title, content, category, is_pinned, is_published) VALUES (?, ?, ?, ?, ?)')
+    .bind(title, content, category || '공지', is_pinned ? 1 : 0, is_published ? 1 : 0).run();
+  return c.json({ ok: true });
+})
+
+adminRoutes.put('/api/admin/notices/:id', async (c) => {
+  await initAdminTables(c.env.DB);
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+  const id = c.req.param('id');
+  const { title, content, category, is_pinned, is_published } = await c.req.json();
+  await c.env.DB.prepare('UPDATE notices SET title=?, content=?, category=?, is_pinned=?, is_published=?, updated_at=datetime(\'now\') WHERE id=?')
+    .bind(title, content, category || '공지', is_pinned ? 1 : 0, is_published ? 1 : 0, id).run();
+  return c.json({ ok: true });
+})
+
+adminRoutes.delete('/api/admin/notices/:id', async (c) => {
+  await initAdminTables(c.env.DB);
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+  const id = c.req.param('id');
+  await c.env.DB.prepare('DELETE FROM notices WHERE id = ?').bind(id).run();
+  return c.json({ ok: true });
+})
 
 // --- CRUD API: Cases ---
 adminRoutes.post('/api/admin/cases', async (c) => {

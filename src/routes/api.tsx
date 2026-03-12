@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clearSessionCookie, getCurrentUser } from '../lib/auth'
+import { initAdminTables } from '../lib/db'
 
 const apiRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -104,5 +105,54 @@ const handleLogout = async (c: any) => {
 };
 apiRoutes.post('/api/auth/logout', handleLogout)
 apiRoutes.get('/api/auth/logout', handleLogout)
+
+// ============================================================
+// CONSULTATIONS API (상담문의)
+// ============================================================
+apiRoutes.post('/api/consultations', async (c) => {
+  await initAdminTables(c.env.DB);
+  try {
+    const { name, phone, treatment, message } = await c.req.json();
+    if (!name || !phone) {
+      return c.json({ ok: false, error: '이름과 연락처를 입력해주세요.' }, 400);
+    }
+    await c.env.DB.prepare(
+      'INSERT INTO consultations (name, phone, treatment, message) VALUES (?, ?, ?, ?)'
+    ).bind(name, phone, treatment || null, message || null).run();
+    return c.json({ ok: true });
+  } catch (e: any) {
+    return c.json({ ok: false, error: '오류가 발생했습니다.' }, 500);
+  }
+})
+
+// ============================================================
+// NOTICES API (공지사항 — 공개)
+// ============================================================
+apiRoutes.get('/api/notices', async (c) => {
+  await initAdminTables(c.env.DB);
+  try {
+    const result = await c.env.DB.prepare(
+      'SELECT id, title, content, category, is_pinned, view_count, created_at FROM notices WHERE is_published = 1 ORDER BY is_pinned DESC, created_at DESC'
+    ).all();
+    return c.json({ ok: true, notices: result.results || [] });
+  } catch {
+    return c.json({ ok: true, notices: [] });
+  }
+})
+
+apiRoutes.get('/api/notices/:id', async (c) => {
+  await initAdminTables(c.env.DB);
+  const id = c.req.param('id');
+  try {
+    await c.env.DB.prepare('UPDATE notices SET view_count = view_count + 1 WHERE id = ? AND is_published = 1').bind(id).run();
+    const notice = await c.env.DB.prepare(
+      'SELECT id, title, content, category, is_pinned, view_count, created_at FROM notices WHERE id = ? AND is_published = 1'
+    ).bind(id).first();
+    if (!notice) return c.json({ ok: false, error: '공지사항을 찾을 수 없습니다.' }, 404);
+    return c.json({ ok: true, notice });
+  } catch {
+    return c.json({ ok: false, error: '오류가 발생했습니다.' }, 500);
+  }
+})
 
 export default apiRoutes

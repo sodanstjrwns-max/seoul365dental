@@ -528,6 +528,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 { href: '/cases/gallery', label: '치료사례' },
                 { href: '/blog', label: '블로그' },
                 { href: '/faq', label: 'FAQ' },
+                { href: '/notices', label: '공지사항' },
                 { href: '/info', label: '내원안내' },
               ].map(item => (
                 <a href={item.href} class="nav-link link-underline text-[0.88rem] font-medium text-gray-600 hover:text-primary transition-colors" data-cursor-hover>{item.label}</a>
@@ -589,6 +590,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 { href: '/cases/gallery', label: '치료사례', icon: 'fa-images' },
                 { href: '/blog', label: '블로그', icon: 'fa-pen-nib' },
                 { href: '/faq', label: 'FAQ', icon: 'fa-circle-question' },
+                { href: '/notices', label: '공지사항', icon: 'fa-bullhorn' },
                 { href: '/info', label: '내원안내', icon: 'fa-hospital' },
               ].map(item => (
                 <a href={item.href} class="flex items-center gap-3 py-3.5 px-4 text-gray-700 font-medium text-[0.95rem] rounded-2xl hover:bg-primary/5 transition-colors">
