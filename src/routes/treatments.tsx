@@ -11,11 +11,6 @@ treatmentRoutes.get('/treatments', (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
-            <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
-            <span class="text-white/60">전체 진료</span>
-          </nav>
           <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">서울365치과 전체 진료 안내</h1>
           <p class="hero-sub text-white/35 max-w-xl reveal" style="transition-delay:0.6s">각 분야 전문의가 최적의 치료를 제안합니다.</p>
         </div>
@@ -150,13 +145,7 @@ treatmentRoutes.get('/treatments/:slug', (c) => {
       {/* Hero — Persona-based Empathy */}
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
-            <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
-            <a href="/treatments" class="hover:text-white transition-colors">진료안내</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
-            <span class="text-white/60">{t.name}</span>
-          </nav>
+
           {empathy ? (
             <>
               <h1 class="hero-display text-white mb-5 reveal" style="font-size:clamp(2rem,6vw,4.5rem);transition-delay:0.4s;white-space:pre-line">{empathy.heroTagline}</h1>

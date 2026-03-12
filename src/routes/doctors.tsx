@@ -17,11 +17,6 @@ doctorRoutes.get('/doctors', (c) => {
           <div class="absolute inset-0" style="background:linear-gradient(to top, #040B18 0%, rgba(4,11,24,0.7) 30%, rgba(4,11,24,0.35) 60%, rgba(4,11,24,0.5) 100%)"></div>
         </div>
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 pt-28 md:pt-36 pb-12">
-          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
-            <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
-            <span class="text-white/60">의료진</span>
-          </nav>
           <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s;text-shadow:0 2px 20px rgba(0,0,0,0.5)">서울365치과 의료진 소개</h1>
           <p class="hero-sub text-white/60 max-w-xl reveal" style="transition-delay:0.6s;text-shadow:0 1px 10px rgba(0,0,0,0.5)">서울대 출신 5인 원장이 하나의 케이스를 함께 봅니다.</p>
           <p class="text-white/30 text-sm mt-4 reveal" style="transition-delay:0.75s">
@@ -188,13 +183,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
-            <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
-            <a href="/doctors" class="hover:text-white transition-colors">의료진</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
-            <span class="text-white/60">{doc.name}</span>
-          </nav>
+
           <div class="md:flex items-center gap-8 reveal" style="transition-delay:0.4s">
             {slug === 'park-junkyu' ? (
               <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#0066FF]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(0,102,255,0.15)">

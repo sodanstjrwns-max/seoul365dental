@@ -372,11 +372,6 @@ blogRoutes.get('/blog', async (c) => {
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-sm text-white/25 mb-6 reveal" style="transition-delay:0.2s">
-            <a href="/" class="hover:text-white transition-colors">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.6rem] mx-2 text-white/10"></i>
-            <span class="text-white/60">블로그</span>
-          </nav>
           <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">서울365치과 블로그</h1>
           <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">치아 건강에 대한 전문 정보를 쉽게 알려드립니다.</p>
         </div>
@@ -490,14 +485,7 @@ blogRoutes.get('/blog/:slug', async (c) => {
         <meta itemprop="author" content="서울365치과" />
 
         <div class="max-w-4xl mx-auto px-5 md:px-8">
-          {/* Breadcrumb */}
-          <nav class="text-sm text-gray-300 mb-8">
-            <a href="/" class="hover:text-[#0066FF] transition">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.5rem] mx-2 text-gray-200"></i>
-            <a href="/blog" class="hover:text-[#0066FF] transition">블로그</a>
-            <i class="fa-solid fa-chevron-right text-[0.5rem] mx-2 text-gray-200"></i>
-            <a href={`/blog?category=${encodeURIComponent(post.category)}`} class="hover:text-[#0066FF] transition">{post.category}</a>
-          </nav>
+
 
           {/* Header */}
           <header class="mb-10">
