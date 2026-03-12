@@ -50,75 +50,118 @@ seoRoutes.get('/terms', (c) => {
 })
 
 // ============================================================
-// SITEMAP.XML — Dynamic SEO Sitemap
+// SITEMAP.XML — Dynamic SEO Sitemap v3.0
 // ============================================================
 seoRoutes.get('/sitemap.xml', async (c) => {
   const base = 'https://seoul365dental.com';
-  const now = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
 
+  // --- 핵심 치료 slug (priority 0.9) ---
+  const highPriorityTreatments = new Set([
+    'full-implant', 'all-on-x', 'implant', 'orthodontics', 'invisalign',
+    'sedation', 'cosmetic', 'pediatric',
+  ]);
+
+  // --- Static Pages ---
   const staticPages = [
-    { loc: '', priority: '1.0', changefreq: 'daily', images: [
-      { url: `${base}/static/og-image.jpg`, title: '서울365치과 메인 이미지', caption: '인천 구월동 서울대 출신 5인 전문의 치과' },
-      { url: `${base}/static/dr-park.jpg`, title: '박준규 대표원장', caption: '서울대 통합치의학과 전문의' },
-    ], video: { url: 'https://www.youtube.com/watch?v=gB_yiatcwAc', title: '서울365치과 소개 영상', thumbnail: 'https://img.youtube.com/vi/gB_yiatcwAc/maxresdefault.jpg', description: '서울365치과 진료 환경 클리닉 투어' } },
-    { loc: '/treatments', priority: '0.9', changefreq: 'weekly' },
-    { loc: '/doctors', priority: '0.9', changefreq: 'monthly', images: [
-      { url: `${base}/static/team-photo.jpg`, title: '서울365치과 의료진 단체사진', caption: '서울대 출신 5인 원장' },
-      { url: `${base}/static/dr-park-profile.jpg`, title: '박준규 대표원장 프로필', caption: '서울대 통합치의학과 전문의' },
-    ] },
-    { loc: '/info', priority: '0.8', changefreq: 'weekly' },
-    { loc: '/reservation', priority: '0.8', changefreq: 'monthly' },
-    { loc: '/blog', priority: '0.8', changefreq: 'daily' },
-    { loc: '/faq', priority: '0.7', changefreq: 'weekly' },
-    { loc: '/cases/gallery', priority: '0.6', changefreq: 'weekly' },
-    { loc: '/privacy', priority: '0.3', changefreq: 'yearly' },
-    { loc: '/terms', priority: '0.3', changefreq: 'yearly' },
+    {
+      loc: '', priority: '1.0', changefreq: 'daily', lastmod: today,
+      images: [
+        { url: `${base}/static/og-image.jpg`, title: '서울365치과 메인 이미지', caption: '인천 구월동 서울대 출신 5인 전문의 치과' },
+        { url: `${base}/static/dr-park.jpg`, title: '박준규 대표원장', caption: '서울대 통합치의학과 전문의' },
+      ],
+      video: {
+        url: 'https://www.youtube.com/watch?v=gB_yiatcwAc',
+        title: '서울365치과 소개 영상',
+        thumbnail: 'https://img.youtube.com/vi/gB_yiatcwAc/maxresdefault.jpg',
+        description: '서울365치과 진료 환경 및 첨단 장비, 감염관리 시스템 클리닉 투어 영상',
+      },
+    },
+    { loc: '/treatments', priority: '0.9', changefreq: 'weekly', lastmod: '2026-03-01' },
+    {
+      loc: '/doctors', priority: '0.9', changefreq: 'monthly', lastmod: '2026-02-01',
+      images: [
+        { url: `${base}/static/team-photo.jpg`, title: '서울365치과 의료진 단체사진', caption: '서울대 출신 5인 원장 — 인천 구월동' },
+        { url: `${base}/static/dr-park-profile.jpg`, title: '박준규 대표원장 프로필', caption: '서울대 통합치의학과 전문의' },
+      ],
+    },
+    { loc: '/info', priority: '0.8', changefreq: 'monthly', lastmod: '2026-03-01' },
+    { loc: '/reservation', priority: '0.8', changefreq: 'monthly', lastmod: '2026-02-01' },
+    { loc: '/blog', priority: '0.8', changefreq: 'daily', lastmod: today },
+    { loc: '/faq', priority: '0.7', changefreq: 'monthly', lastmod: '2026-03-01' },
+    { loc: '/cases/gallery', priority: '0.6', changefreq: 'weekly', lastmod: today },
+    { loc: '/privacy', priority: '0.2', changefreq: 'yearly', lastmod: '2026-01-01' },
+    { loc: '/terms', priority: '0.2', changefreq: 'yearly', lastmod: '2026-01-01' },
   ];
 
+  // --- Treatment Pages (priority split by importance) ---
   const treatmentPages = treatments.map(t => ({
-    loc: `/treatments/${t.slug}`, priority: '0.8', changefreq: 'weekly' as const,
+    loc: `/treatments/${t.slug}`,
+    priority: highPriorityTreatments.has(t.slug) ? '0.9' : '0.7',
+    changefreq: 'monthly' as const,
+    lastmod: '2026-03-01',
+    images: [
+      { url: `${base}/static/og-image.jpg`, title: `${t.name} | 서울365치과`, caption: t.metaDesc || `인천 구월동 서울365치과 ${t.name} 안내` },
+    ],
   }));
 
+  // --- Doctor Pages (all with images) ---
   const doctorPages = doctors.map(d => ({
-    loc: `/doctors/${d.slug}`, priority: '0.7', changefreq: 'monthly' as const,
-    images: d.slug === 'park-junkyu' ? [{ url: `${base}/static/dr-park-profile.jpg`, title: `${d.name} ${d.title}`, caption: d.metaDesc }] : undefined,
+    loc: `/doctors/${d.slug}`,
+    priority: d.slug === 'park-junkyu' ? '0.8' : '0.7',
+    changefreq: 'monthly' as const,
+    lastmod: '2026-02-01',
+    images: [
+      {
+        url: `${base}/static/dr-${d.slug.split('-').pop()}-profile.jpg`,
+        title: `${d.name} ${d.title}`,
+        caption: d.metaDesc,
+      },
+    ],
   }));
 
-  // Dynamic blog posts for sitemap
-  let blogPages: { loc: string; priority: string; changefreq: string }[] = [];
+  // --- Dynamic Blog Posts ---
+  let blogPages: { loc: string; priority: string; changefreq: string; lastmod: string }[] = [];
   try {
     await initBlogTables(c.env.DB);
-    const blogResult = await c.env.DB.prepare('SELECT slug, updated_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 100').all();
+    const blogResult = await c.env.DB.prepare(
+      'SELECT slug, updated_at, created_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 200'
+    ).all();
     blogPages = (blogResult.results || []).map((p: any) => ({
-      loc: `/blog/${p.slug}`, priority: '0.7', changefreq: 'weekly',
+      loc: `/blog/${p.slug}`,
+      priority: '0.6',
+      changefreq: 'weekly',
+      lastmod: (p.updated_at || p.created_at || today).substring(0, 10),
     }));
   } catch {}
 
   const allPages = [...staticPages, ...treatmentPages, ...doctorPages, ...blogPages];
 
+  // XML escape helper
+  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
-        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${allPages.map((p: any) => `  <url>
     <loc>${base}${p.loc}</loc>
-    <lastmod>${now}</lastmod>
+    <lastmod>${p.lastmod || today}</lastmod>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
     <xhtml:link rel="alternate" hreflang="ko-KR" href="${base}${p.loc}" />
     <xhtml:link rel="alternate" hreflang="x-default" href="${base}${p.loc}" />${p.images ? p.images.map((img: any) => `
     <image:image>
-      <image:loc>${img.url}</image:loc>
-      <image:title>${img.title}</image:title>
-      <image:caption>${img.caption}</image:caption>
+      <image:loc>${esc(img.url)}</image:loc>
+      <image:title>${esc(img.title)}</image:title>
+      <image:caption>${esc(img.caption)}</image:caption>
     </image:image>`).join('') : ''}${p.video ? `
     <video:video>
-      <video:thumbnail_loc>${p.video.thumbnail}</video:thumbnail_loc>
-      <video:title>${p.video.title}</video:title>
-      <video:description>${p.video.description}</video:description>
-      <video:content_loc>${p.video.url}</video:content_loc>
+      <video:thumbnail_loc>${esc(p.video.thumbnail)}</video:thumbnail_loc>
+      <video:title>${esc(p.video.title)}</video:title>
+      <video:description>${esc(p.video.description)}</video:description>
+      <video:content_loc>${esc(p.video.url)}</video:content_loc>
       <video:family_friendly>yes</video:family_friendly>
     </video:video>` : ''}
   </url>`).join('\n')}
@@ -127,23 +170,24 @@ ${allPages.map((p: any) => `  <url>
   return new Response(xml, {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
+      'Cache-Control': 'public, max-age=3600, s-maxage=7200',
+      'X-Robots-Tag': 'noindex',
     },
   });
 })
 
 // ============================================================
-// ROBOTS.TXT
+// ROBOTS.TXT — v3.0
 // ============================================================
 seoRoutes.get('/robots.txt', (c) => {
   const robots = `# ====================================================
 # 서울365치과의원 (Seoul 365 Dental Clinic)
 # https://seoul365dental.com
-# robots.txt — SEO/AEO Optimized v2.0
+# robots.txt v3.0 — SEO/AEO Optimized
 # Last updated: ${new Date().toISOString().split('T')[0]}
 # ====================================================
 
-# === GENERAL RULES (all crawlers) ===
+# ─── GENERAL RULES (all crawlers) ───
 User-agent: *
 Allow: /
 Allow: /treatments/
@@ -153,21 +197,24 @@ Allow: /blog
 Allow: /faq
 Allow: /reservation
 Allow: /cases/gallery
+Allow: /privacy
+Allow: /terms
 Allow: /sitemap.xml
 
-# Disallow non-content pages
+# Disallow non-content / private pages
 Disallow: /api/
 Disallow: /admin
 Disallow: /admin/
 Disallow: /login
 Disallow: /register
-Disallow: /privacy
-Disallow: /terms
 
-# === GOOGLE ===
+# Block UTM/tracking parameter duplicates
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&fbclid&gclid&ref
+
+# ─── GOOGLE ───
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 0
+# Note: Googlebot ignores Crawl-delay (use Search Console)
 
 User-agent: Googlebot-Image
 Allow: /static/
@@ -175,11 +222,13 @@ Allow: /*.jpg$
 Allow: /*.png$
 Allow: /*.webp$
 Allow: /*.svg$
+Allow: /*.avif$
 
 User-agent: Googlebot-Video
 Allow: /
 
 User-agent: Googlebot-News
+Allow: /blog
 Allow: /
 
 User-agent: Storebot-Google
@@ -188,7 +237,7 @@ Allow: /
 User-agent: Google-InspectionTool
 Allow: /
 
-# === NAVER ===
+# ─── NAVER (한국 1위 검색엔진) ───
 User-agent: Yeti
 Allow: /
 Crawl-delay: 1
@@ -197,7 +246,7 @@ User-agent: Naverbot
 Allow: /
 Crawl-delay: 1
 
-# === BING ===
+# ─── BING ───
 User-agent: Bingbot
 Allow: /
 Crawl-delay: 1
@@ -205,46 +254,45 @@ Crawl-delay: 1
 User-agent: BingPreview
 Allow: /
 
-# === DAUM/KAKAO ===
+# ─── DAUM/KAKAO ───
 User-agent: Daumoa
 Allow: /
 Crawl-delay: 1
 
-# === YAHOO ===
+# ─── YAHOO ───
 User-agent: Slurp
 Allow: /
 Crawl-delay: 1
 
-# === YANDEX ===
+# ─── YANDEX ───
 User-agent: YandexBot
 Allow: /
 Crawl-delay: 2
 
-# === APPLE ===
+# ─── APPLE ───
 User-agent: Applebot
 Allow: /
 
-# === TWITTER/X ===
+# ─── SOCIAL MEDIA CRAWLERS ───
 User-agent: Twitterbot
 Allow: /
 
-# === FACEBOOK ===
 User-agent: facebookexternalhit
 Allow: /
 
-# === LINKEDIN ===
 User-agent: LinkedInBot
 Allow: /
 
-# === TELEGRAM ===
 User-agent: TelegramBot
 Allow: /
 
-# === KAKAOTALK CRAWLER ===
 User-agent: kakaotalk-scrap
 Allow: /
 
-# === AI/AEO CRAWLERS (critical for AI answer optimization) ===
+User-agent: Slackbot
+Allow: /
+
+# ─── AI/AEO CRAWLERS (핵심: AI 답변 최적화) ───
 User-agent: GPTBot
 Allow: /
 Allow: /treatments/
@@ -252,7 +300,9 @@ Allow: /doctors/
 Allow: /faq
 Allow: /info
 Allow: /blog
+Allow: /cases/gallery
 Disallow: /api/
+Disallow: /admin
 Disallow: /login
 Disallow: /register
 
@@ -260,6 +310,9 @@ User-agent: ChatGPT-User
 Allow: /
 
 User-agent: Google-Extended
+Allow: /
+
+User-agent: Gemini
 Allow: /
 
 User-agent: Anthropic-ai
@@ -276,6 +329,7 @@ Allow: /
 
 User-agent: Bytespider
 Allow: /
+Crawl-delay: 2
 
 User-agent: CCBot
 Allow: /
@@ -306,24 +360,38 @@ Allow: /
 
 User-agent: PetalBot
 Allow: /
+Crawl-delay: 2
 
-# === STRUCTURED DATA VALIDATORS ===
+User-agent: DeepSeekBot
+Allow: /
+
+User-agent: Qwen
+Allow: /
+
+# ─── STRUCTURED DATA VALIDATORS ───
 User-agent: Google-Structured-Data-Testing-Tool
 Allow: /
 
 User-agent: W3C_Validator
 Allow: /
 
-# === BLOCK BAD/AGGRESSIVE BOTS ===
+# ─── SEO TOOL BOTS (제한적 허용) ───
 User-agent: AhrefsBot
+Disallow: /api/
+Disallow: /admin
 Crawl-delay: 10
 
 User-agent: MJ12bot
+Disallow: /api/
+Disallow: /admin
 Crawl-delay: 10
 
 User-agent: SemrushBot
+Disallow: /api/
+Disallow: /admin
 Crawl-delay: 10
 
+# ─── BLOCK AGGRESSIVE/HARMFUL BOTS ───
 User-agent: DotBot
 Disallow: /
 
@@ -331,19 +399,28 @@ User-agent: BLEXBot
 Disallow: /
 
 User-agent: DataForSeoBot
-Crawl-delay: 30
+Disallow: /
 
-# === SITEMAPS ===
+User-agent: Seekport
+Disallow: /
+
+User-agent: ZoominfoBot
+Disallow: /
+
+User-agent: GPTBot-experimental
+Disallow: /
+
+# ─── SITEMAP ───
 Sitemap: https://seoul365dental.com/sitemap.xml
 
-# === HOST ===
+# ─── HOST (Yandex directive) ───
 Host: https://seoul365dental.com
 `;
 
   return new Response(robots, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, max-age=86400',
+      'Cache-Control': 'public, max-age=86400, s-maxage=604800',
       'X-Robots-Tag': 'all',
     },
   });
