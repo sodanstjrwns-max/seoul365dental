@@ -384,6 +384,7 @@ blogRoutes.get('/blog', async (c) => {
 
       <section class="section-lg bg-mesh">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-6 reveal">치아 건강 전문 정보</h2>
           {/* Category Filter */}
           <div class="flex flex-wrap gap-2 mb-10 reveal">
             {categories.map(cat => (
@@ -436,7 +437,7 @@ blogRoutes.get('/blog', async (c) => {
       </section>
     </>,
     {
-      title: `서울365치과 블로그${category ? ' - ' + category : ''} | 치아 건강 전문 정보`,
+      title: `서울365치과 블로그${category ? ' - ' + category : ''} | 치아 건강 정보`,
       description: '서울365치과 치과 전문 블로그. 임플란트, 교정, 충치치료, 잇몸치료 등 치아 건강에 대한 전문 정보와 치료 가이드.',
       canonical: 'https://seoul365dental.com/blog',
       jsonLd: [

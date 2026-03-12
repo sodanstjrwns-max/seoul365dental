@@ -89,8 +89,8 @@ pageRoutes.get('/reservation', (c) => {
       </section>
     </>,
     {
-      title: '상담 예약 | 서울365치과 - 전화·카카오톡·온라인 예약',
-      description: '서울365치과 상담 예약. 전화(032-432-0365), 카카오톡, 네이버 예약, 온라인 상담 신청. 365일 진료, 야간 21시까지. 인천 구월동 예술회관역.',
+      title: '상담 예약 | 서울365치과',
+      description: '서울365치과 상담 예약. 전화(032-432-0365), 카카오톡, 네이버 예약. 365일·야간21시. 인천 구월동.',
       canonical: 'https://seoul365dental.com/reservation',
       jsonLd: [
         {
@@ -372,8 +372,8 @@ pageRoutes.get('/info', (c) => {
       `}} />
     </>,
     {
-      title: '내원안내 | 서울365치과 - 진료비용·오시는길·진료시간',
-      description: '서울365치과 내원 안내. 임플란트, 교정, 심미치료 비용. 인천 남동구 예술로 138 이토타워 2층. 예술회관역 5번 출구 도보 3분.',
+      title: '내원안내 | 서울365치과 비용·오시는길',
+      description: '서울365치과 내원안내. 임플란트·교정 비용, 오시는길, 진료시간. 예술회관역 5번 출구 도보 3분. 032-432-0365',
       canonical: 'https://seoul365dental.com/info',
       jsonLd: [
         {
@@ -443,6 +443,7 @@ pageRoutes.get('/faq', (c) => {
 
       <section class="section-lg bg-mesh" itemscope itemtype="https://schema.org/FAQPage">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-8 reveal">임플란트·교정·수면진료 궁금증 해결</h2>
           <div class="space-y-3 stagger-children">
             {allFaq.map(faq => (
               <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
@@ -464,8 +465,8 @@ pageRoutes.get('/faq', (c) => {
       </section>
     </>,
     {
-      title: '자주 묻는 질문 FAQ | 서울365치과 - 임플란트·교정·수면진료 궁금증 해결',
-      description: '서울365치과 자주 묻는 질문. 임플란트 비용과 기간, 수면진료 안전성, 치아교정 나이제한, 예약 방법, 365일 진료 안내 등 궁금한 점을 확인하세요.',
+      title: 'FAQ | 서울365치과 자주 묻는 질문',
+      description: '서울365치과 FAQ. 임플란트 비용, 수면진료, 교정 나이제한, 예약 방법, 365일 진료 안내. 032-432-0365',
       canonical: 'https://seoul365dental.com/faq',
       jsonLd: [
         {
@@ -561,8 +562,8 @@ pageRoutes.get('/cases/gallery', async (c) => {
         </section>
       </>,
       {
-        title: '치료 사례 | 서울365치과 - 로그인 필요',
-        description: '서울365치과 치료 사례. 회원 로그인 후 열람 가능.',
+        title: '치료 사례 | 서울365치과 Before & After',
+        description: '서울365치과 치료 사례. 회원 로그인 후 열람 가능합니다.',
         canonical: 'https://seoul365dental.com/cases/gallery',
       }
     )
@@ -790,7 +791,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
     </>,
     {
       title: '치료 사례 Before & After | 서울365치과',
-      description: '서울365치과 치료 사례. 임플란트, 교정, 심미치료 Before & After.',
+      description: '서울365치과 치료 사례 갤러리. 임플란트·교정·심미치료 Before & After 실제 치료 결과. 서울대 5인 전문의 협진. 032-432-0365',
       canonical: 'https://seoul365dental.com/cases/gallery',
       jsonLd: [
         {
@@ -840,6 +841,7 @@ pageRoutes.get('/register', (c) => {
       <section class="section-lg bg-mesh">
         <div class="max-w-md mx-auto px-5 md:px-8">
           <div class="premium-card p-8 md:p-10 reveal-3d">
+            <h2 class="text-lg font-bold text-gray-900 mb-6">회원 정보 입력</h2>
             <div id="register-error" class="hidden mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium"></div>
             <form id="register-form" class="space-y-5">
               <div>
@@ -915,8 +917,8 @@ pageRoutes.get('/register', (c) => {
       `}} />
     </>,
     {
-      title: '회원가입 | 서울365치과',
-      description: '서울365치과 회원가입.',
+      title: '회원가입 | 서울365치과 치료사례 열람',
+      description: '서울365치과 회원가입. 30초면 간편 가입. 회원 전용 Before & After 치료사례 확인.',
       canonical: 'https://seoul365dental.com/register',
     }
   )
@@ -938,6 +940,7 @@ pageRoutes.get('/login', (c) => {
       <section class="section-lg bg-mesh">
         <div class="max-w-md mx-auto px-5 md:px-8">
           <div class="premium-card p-8 md:p-10 reveal-3d">
+            <h2 class="text-lg font-bold text-gray-900 mb-6">휴대폰 번호로 로그인</h2>
             <div id="login-error" class="hidden mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium"></div>
             <form id="login-form" class="space-y-5">
               <div>
@@ -992,8 +995,8 @@ pageRoutes.get('/login', (c) => {
       `}} />
     </>,
     {
-      title: '로그인 | 서울365치과',
-      description: '서울365치과 회원 로그인.',
+      title: '로그인 | 서울365치과 회원 전용',
+      description: '서울365치과 로그인. Before & After 치료사례 등 회원 전용 콘텐츠 열람.',
       canonical: 'https://seoul365dental.com/login',
     }
   )

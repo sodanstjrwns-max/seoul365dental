@@ -10,8 +10,8 @@ import { MESSAGING } from './data/brand'
 // - Robots, geo meta, hreflang
 
 export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd }) => {
-  const pageTitle = title || `서울365치과 | 인천 구월동 치과 - 서울대 5인 전문의, 365일 진료`;
-  const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장, 365일 진료, 자체 기공실 보유. 임플란트·교정·수면진료. 032-432-0365`;
+  const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·교정 365일 치과`;
+  const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·교정·수면진료. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dental.com';
   const ogImage = 'https://seoul365dental.com/static/og-image.jpg';
 
