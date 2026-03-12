@@ -146,6 +146,54 @@ adminRoutes.get('/admin/dashboard', async (c) => {
             </div>
           </div>
 
+          {/* Quick Links */}
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <a href="/admin/blog" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-[#0066FF]/20 transition-all group">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-[#0066FF]/10 flex items-center justify-center">
+                  <i class="fa-solid fa-pen-nib text-[#0066FF]"></i>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-sm group-hover:text-[#0066FF] transition">블로그 관리</div>
+                  <div class="text-white/25 text-xs">글 작성·수정·삭제</div>
+                </div>
+              </div>
+            </a>
+            <a href="/cases/gallery" target="_blank" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-emerald-400/20 transition-all group">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-400/10 flex items-center justify-center">
+                  <i class="fa-solid fa-images text-emerald-400"></i>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-sm group-hover:text-emerald-400 transition">사례 미리보기</div>
+                  <div class="text-white/25 text-xs">공개 갤러리 보기</div>
+                </div>
+              </div>
+            </a>
+            <a href="/blog" target="_blank" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-cyan-400/20 transition-all group">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-cyan-400/10 flex items-center justify-center">
+                  <i class="fa-solid fa-newspaper text-cyan-400"></i>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-sm group-hover:text-cyan-400 transition">블로그 보기</div>
+                  <div class="text-white/25 text-xs">공개 블로그 확인</div>
+                </div>
+              </div>
+            </a>
+            <a href="/" target="_blank" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-amber-400/20 transition-all group">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-400/10 flex items-center justify-center">
+                  <i class="fa-solid fa-globe text-amber-400"></i>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-sm group-hover:text-amber-400 transition">사이트 보기</div>
+                  <div class="text-white/25 text-xs">메인 페이지 확인</div>
+                </div>
+              </div>
+            </a>
+          </div>
+
           {/* New Case Button */}
           <div class="flex items-center justify-between mb-6">
             <h1 class="text-xl font-bold text-white">Before &amp; After 케이스 관리</h1>
