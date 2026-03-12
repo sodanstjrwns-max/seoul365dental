@@ -705,20 +705,46 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               </div>
             </div>
 
-            {/* Bottom */}
-            <div class="border-t border-white/[0.04] py-6 flex flex-col md:flex-row justify-between gap-3 text-[0.72rem] text-white/15">
-              <div class="flex flex-wrap gap-x-4 gap-y-1">
-                <span>서울365치과의원</span>
-                <span>대표 박준규</span>
-                <span>사업자등록번호: 문의</span>
-                <span>{CLINIC.address}</span>
-                <span>{CLINIC.phone}</span>
+            {/* Business Info */}
+            <div class="border-t border-white/[0.04] pt-6 pb-3">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-[0.72rem] text-white/20 leading-relaxed">
+                <div class="space-y-1.5">
+                  <div class="flex flex-wrap gap-x-1">
+                    <span class="text-white/30 font-semibold">서울365치과의원</span>
+                    <span class="text-white/10">|</span>
+                    <span>대표자: 박준규</span>
+                  </div>
+                  <div class="flex flex-wrap gap-x-1">
+                    <span>사업자등록번호: 395-37-00559</span>
+                    <span class="text-white/10">|</span>
+                    <span>개업일: 2019.05.01</span>
+                  </div>
+                  <div>
+                    <span>업태: 보건업 및 사회복지서비스업</span>
+                    <span class="text-white/10 mx-1">|</span>
+                    <span>종목: 치과의원</span>
+                  </div>
+                </div>
+                <div class="space-y-1.5">
+                  <div>
+                    <span>소재지: {CLINIC.address}</span>
+                  </div>
+                  <div class="flex flex-wrap gap-x-1">
+                    <span>전화: {CLINIC.phone}</span>
+                    <span class="text-white/10">|</span>
+                    <span>이메일: seoul365dental@gmail.com</span>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            {/* Copyright & Links */}
+            <div class="border-t border-white/[0.04] py-5 flex flex-col md:flex-row justify-between gap-3 text-[0.72rem] text-white/15">
+              <span>&copy; 2019-2026 서울365치과의원. All rights reserved.</span>
               <div class="flex gap-4">
                 <a href="/privacy" class="hover:text-white/50 transition-colors">개인정보처리방침</a>
                 <a href="/terms" class="hover:text-white/50 transition-colors">이용약관</a>
                 <a href="/sitemap.xml" class="hover:text-white/50 transition-colors">사이트맵</a>
-                <span>&copy; 2026 Seoul 365 Dental</span>
               </div>
             </div>
           </div>
