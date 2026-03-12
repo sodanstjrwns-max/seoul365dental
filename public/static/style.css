@@ -1130,6 +1130,7 @@ body {
   opacity: 0;
   transition: opacity 0.5s;
   animation: electricSpark 3s linear infinite;
+  pointer-events: none;
 }
 .electric-card-border:hover::before {
   opacity: 1;

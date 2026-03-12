@@ -31,14 +31,6 @@ home.get('/', (c) => {
             {/* LEFT COLUMN — Copy */}
             <div class="flex-1 min-w-0 lg:max-w-[58%]">
 
-              {/* Philosophy Badge */}
-              <div class="reveal mb-7" style="transition-delay:0.35s">
-                <span class="inline-flex items-center gap-2 text-[0.68rem] tracking-[0.25em] uppercase font-bold text-[#00E5FF]/70 px-4 py-2 rounded-full border border-[#00E5FF]/15 bg-[#00E5FF]/[0.04]">
-                  <span class="w-1.5 h-1.5 bg-[#00E5FF] rounded-full"></span>
-                  {MESSAGING.heroPhilosophy}
-                </span>
-              </div>
-
               {/* H1 — 3-Line Emotional Headline */}
               <h1 class="reveal" style="transition-delay:0.5s">
                 <span class="block text-white/40 mb-1" style="font-size:clamp(2rem,5.5vw,4.2rem);line-height:1.08;letter-spacing:-0.04em;font-weight:800">
