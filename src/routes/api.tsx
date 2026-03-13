@@ -175,11 +175,13 @@ apiRoutes.post('/api/admin/upload', async (c) => {
       return c.json({ ok: false, error: '이미지 파일만 업로드 가능합니다' }, 400);
     }
 
-    // Generate unique key
+    // Generate unique key — support folder param (blog, cases, etc.)
     const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     const timestamp = Date.now().toString(36);
     const rand = Math.random().toString(36).substring(2, 8);
-    const key = `blog/${timestamp}-${rand}.${ext}`;
+    const folder = (formData.get('folder') as string) || 'blog';
+    const safeFolder = folder.replace(/[^a-z0-9-]/gi, '');
+    const key = `${safeFolder}/${timestamp}-${rand}.${ext}`;
 
     // Upload to R2
     await c.env.R2.put(key, file.stream(), {
@@ -287,7 +289,9 @@ apiRoutes.get('/api/admin/uploads', async (c) => {
   if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
 
   try {
-    const list = await c.env.R2.list({ prefix: 'blog/', limit: 200 });
+    const folder = c.req.query('folder') || 'blog';
+    const safeFolder = folder.replace(/[^a-z0-9-]/gi, '');
+    const list = await c.env.R2.list({ prefix: `${safeFolder}/`, limit: 200 });
     const files = list.objects.map(obj => ({
       key: obj.key,
       url: `/r2/${obj.key}`,

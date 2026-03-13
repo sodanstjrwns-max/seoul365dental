@@ -233,7 +233,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
           {/* New Case Button */}
           <div class="flex items-center justify-between mb-6">
             <h1 class="text-xl font-bold text-white">Before &amp; After 케이스 관리</h1>
-            <button onclick="document.getElementById('caseModal').classList.remove('hidden'); document.getElementById('caseForm').reset(); document.getElementById('caseId').value=''; document.getElementById('modalTitle').textContent='새 케이스 등록'; document.getElementById('beforePreview').src=''; document.getElementById('afterPreview').src=''; document.getElementById('beforePreview').classList.add('hidden'); document.getElementById('afterPreview').classList.add('hidden');" class="px-5 py-2.5 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white text-sm font-bold transition">
+            <button onclick="document.getElementById('caseModal').classList.remove('hidden'); document.getElementById('caseForm').reset(); document.getElementById('caseId').value=''; document.getElementById('modalTitle').textContent='새 케이스 등록'; document.getElementById('beforePreview').src=''; document.getElementById('afterPreview').src=''; document.getElementById('beforePreview').classList.add('hidden'); document.getElementById('afterPreview').classList.add('hidden'); document.getElementById('beforePlaceholder').classList.remove('hidden'); document.getElementById('afterPlaceholder').classList.remove('hidden'); document.getElementById('beforeRemoveBtn').classList.add('hidden'); document.getElementById('afterRemoveBtn').classList.add('hidden'); document.getElementById('beforeData').value=''; document.getElementById('afterData').value='';" class="px-5 py-2.5 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white text-sm font-bold transition">
               <i class="fa-solid fa-plus mr-1.5"></i>새 케이스 등록
             </button>
           </div>
@@ -386,28 +386,46 @@ adminRoutes.get('/admin/dashboard', async (c) => {
               </div>
             </div>
 
-            {/* Image Uploads */}
+            {/* Image Uploads — R2 Storage (무제한 용량, 원본 화질) */}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">Before 이미지</label>
                 <div class="relative">
-                  <input type="file" id="beforeFile" accept="image/*" onchange="previewImage(this, 'beforePreview', 'beforeData')" class="hidden" />
+                  <input type="file" id="beforeFile" accept="image/*" onchange="uploadCaseImage(this, 'before')" class="hidden" />
                   <input type="hidden" id="beforeData" name="before_image" />
-                  <button type="button" onclick="document.getElementById('beforeFile').click()" class="w-full py-8 border-2 border-dashed border-white/10 rounded-xl hover:border-white/20 transition text-center">
-                    <img id="beforePreview" src="" class="hidden w-full h-32 object-cover rounded-lg mb-2" />
-                    <span id="beforeLabel" class="text-white/20 text-sm"><i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>Before 사진 업로드</span>
-                  </button>
+                  <div id="beforeDropZone" class="w-full border-2 border-dashed border-white/10 rounded-xl hover:border-[#0066FF]/30 transition cursor-pointer overflow-hidden" onclick="document.getElementById('beforeFile').click()">
+                    <img id="beforePreview" src="" class="hidden w-full h-40 object-cover" />
+                    <div id="beforePlaceholder" class="flex flex-col items-center justify-center gap-2 py-8">
+                      <i class="fa-solid fa-cloud-arrow-up text-xl text-white/15"></i>
+                      <span class="text-white/20 text-sm">Before 사진 업로드</span>
+                      <span class="text-white/10 text-xs">용량 제한 없음 · 원본 화질 유지</span>
+                    </div>
+                    <div id="beforeUploading" class="hidden flex items-center justify-center gap-2 py-8">
+                      <i class="fa-solid fa-spinner fa-spin text-[#0066FF]"></i>
+                      <span class="text-[#0066FF] text-sm">R2 업로드 중...</span>
+                    </div>
+                  </div>
+                  <button type="button" id="beforeRemoveBtn" onclick="event.stopPropagation(); removeCaseImage('before')" class="hidden absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center transition text-xs z-10"><i class="fa-solid fa-xmark"></i></button>
                 </div>
               </div>
               <div>
                 <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">After 이미지</label>
                 <div class="relative">
-                  <input type="file" id="afterFile" accept="image/*" onchange="previewImage(this, 'afterPreview', 'afterData')" class="hidden" />
+                  <input type="file" id="afterFile" accept="image/*" onchange="uploadCaseImage(this, 'after')" class="hidden" />
                   <input type="hidden" id="afterData" name="after_image" />
-                  <button type="button" onclick="document.getElementById('afterFile').click()" class="w-full py-8 border-2 border-dashed border-white/10 rounded-xl hover:border-white/20 transition text-center">
-                    <img id="afterPreview" src="" class="hidden w-full h-32 object-cover rounded-lg mb-2" />
-                    <span id="afterLabel" class="text-white/20 text-sm"><i class="fa-solid fa-cloud-arrow-up mr-1.5"></i>After 사진 업로드</span>
-                  </button>
+                  <div id="afterDropZone" class="w-full border-2 border-dashed border-white/10 rounded-xl hover:border-[#0066FF]/30 transition cursor-pointer overflow-hidden" onclick="document.getElementById('afterFile').click()">
+                    <img id="afterPreview" src="" class="hidden w-full h-40 object-cover" />
+                    <div id="afterPlaceholder" class="flex flex-col items-center justify-center gap-2 py-8">
+                      <i class="fa-solid fa-cloud-arrow-up text-xl text-white/15"></i>
+                      <span class="text-white/20 text-sm">After 사진 업로드</span>
+                      <span class="text-white/10 text-xs">용량 제한 없음 · 원본 화질 유지</span>
+                    </div>
+                    <div id="afterUploading" class="hidden flex items-center justify-center gap-2 py-8">
+                      <i class="fa-solid fa-spinner fa-spin text-[#0066FF]"></i>
+                      <span class="text-[#0066FF] text-sm">R2 업로드 중...</span>
+                    </div>
+                  </div>
+                  <button type="button" id="afterRemoveBtn" onclick="event.stopPropagation(); removeCaseImage('after')" class="hidden absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center transition text-xs z-10"><i class="fa-solid fa-xmark"></i></button>
                 </div>
               </div>
             </div>
@@ -431,31 +449,58 @@ adminRoutes.get('/admin/dashboard', async (c) => {
 
       {/* Admin Scripts */}
       <script dangerouslySetInnerHTML={{__html: `
-        function previewImage(input, previewId, dataId) {
+        // ── R2 Upload for B&A images (무제한 용량, 원본 화질) ──
+        async function uploadCaseImage(input, side) {
           const file = input.files[0];
           if (!file) return;
-          if (file.size > 2 * 1024 * 1024) { alert('이미지는 2MB 이하로 업로드해주세요.'); return; }
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            // Resize image to max 800px width for storage efficiency
-            const img = new Image();
-            img.onload = function() {
-              const canvas = document.createElement('canvas');
-              const maxW = 800;
-              let w = img.width, h = img.height;
-              if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-              canvas.width = w; canvas.height = h;
-              const ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0, w, h);
-              const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-              document.getElementById(dataId).value = dataUrl;
-              const preview = document.getElementById(previewId);
-              preview.src = dataUrl;
+          if (!file.type.startsWith('image/')) { alert('이미지 파일만 업로드 가능합니다.'); return; }
+
+          const preview = document.getElementById(side + 'Preview');
+          const placeholder = document.getElementById(side + 'Placeholder');
+          const uploading = document.getElementById(side + 'Uploading');
+          const dataInput = document.getElementById(side === 'before' ? 'beforeData' : 'afterData');
+          const removeBtn = document.getElementById(side + 'RemoveBtn');
+
+          placeholder.classList.add('hidden');
+          preview.classList.add('hidden');
+          removeBtn.classList.add('hidden');
+          uploading.classList.remove('hidden');
+
+          try {
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('folder', 'cases');
+            const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+            const json = await res.json();
+            if (json.ok) {
+              dataInput.value = json.url;
+              preview.src = json.url;
               preview.classList.remove('hidden');
-            };
-            img.src = e.target.result;
-          };
-          reader.readAsDataURL(file);
+              removeBtn.classList.remove('hidden');
+              uploading.classList.add('hidden');
+            } else {
+              alert(json.error || '업로드 실패');
+              placeholder.classList.remove('hidden');
+              uploading.classList.add('hidden');
+            }
+          } catch(e) {
+            alert('업로드 오류: ' + e.message);
+            placeholder.classList.remove('hidden');
+            uploading.classList.add('hidden');
+          }
+          input.value = '';
+        }
+
+        function removeCaseImage(side) {
+          const preview = document.getElementById(side + 'Preview');
+          const placeholder = document.getElementById(side + 'Placeholder');
+          const dataInput = document.getElementById(side === 'before' ? 'beforeData' : 'afterData');
+          const removeBtn = document.getElementById(side + 'RemoveBtn');
+          dataInput.value = '';
+          preview.src = '';
+          preview.classList.add('hidden');
+          removeBtn.classList.add('hidden');
+          placeholder.classList.remove('hidden');
         }
 
         function editCase(cs) {
@@ -473,21 +518,31 @@ adminRoutes.get('/admin/dashboard', async (c) => {
           document.getElementById('caseSortOrder').value = cs.sort_order || 0;
           document.getElementById('casePublished').checked = !!cs.is_published;
 
+          // Before image (R2 URL)
           if (cs.before_image) {
             document.getElementById('beforePreview').src = cs.before_image;
             document.getElementById('beforePreview').classList.remove('hidden');
             document.getElementById('beforeData').value = cs.before_image;
+            document.getElementById('beforePlaceholder').classList.add('hidden');
+            document.getElementById('beforeRemoveBtn').classList.remove('hidden');
           } else {
             document.getElementById('beforePreview').classList.add('hidden');
             document.getElementById('beforeData').value = '';
+            document.getElementById('beforePlaceholder').classList.remove('hidden');
+            document.getElementById('beforeRemoveBtn').classList.add('hidden');
           }
+          // After image (R2 URL)
           if (cs.after_image) {
             document.getElementById('afterPreview').src = cs.after_image;
             document.getElementById('afterPreview').classList.remove('hidden');
             document.getElementById('afterData').value = cs.after_image;
+            document.getElementById('afterPlaceholder').classList.add('hidden');
+            document.getElementById('afterRemoveBtn').classList.remove('hidden');
           } else {
             document.getElementById('afterPreview').classList.add('hidden');
             document.getElementById('afterData').value = '';
+            document.getElementById('afterPlaceholder').classList.remove('hidden');
+            document.getElementById('afterRemoveBtn').classList.add('hidden');
           }
         }
 
