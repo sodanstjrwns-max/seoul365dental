@@ -155,4 +155,149 @@ apiRoutes.get('/api/notices/:id', async (c) => {
   }
 })
 
+// ============================================================
+// R2 IMAGE UPLOAD / SERVE (블로그 이미지 무제한 업로드)
+// ============================================================
+import { getAdminFromCookie } from '../lib/db'
+
+// Upload — multipart/form-data
+apiRoutes.post('/api/admin/upload', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  try {
+    const formData = await c.req.formData();
+    const file = formData.get('file') as File | null;
+    if (!file) return c.json({ ok: false, error: '파일이 없습니다' }, 400);
+
+    // Validate: image only
+    if (!file.type.startsWith('image/')) {
+      return c.json({ ok: false, error: '이미지 파일만 업로드 가능합니다' }, 400);
+    }
+
+    // Generate unique key
+    const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    const timestamp = Date.now().toString(36);
+    const rand = Math.random().toString(36).substring(2, 8);
+    const key = `blog/${timestamp}-${rand}.${ext}`;
+
+    // Upload to R2
+    await c.env.R2.put(key, file.stream(), {
+      httpMetadata: {
+        contentType: file.type,
+        cacheControl: 'public, max-age=31536000, immutable',
+      },
+      customMetadata: {
+        originalName: file.name,
+        uploadedBy: admin.name || 'admin',
+        uploadedAt: new Date().toISOString(),
+      },
+    });
+
+    const url = `/r2/${key}`;
+    return c.json({ ok: true, url, key, name: file.name, size: file.size });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '업로드 실패' }, 500);
+  }
+})
+
+// Multi-upload — multiple files at once
+apiRoutes.post('/api/admin/upload-multi', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  try {
+    const formData = await c.req.formData();
+    const files = formData.getAll('files') as File[];
+    if (!files.length) return c.json({ ok: false, error: '파일이 없습니다' }, 400);
+
+    const results: any[] = [];
+    for (const file of files) {
+      if (!file.type.startsWith('image/')) continue;
+
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const timestamp = Date.now().toString(36);
+      const rand = Math.random().toString(36).substring(2, 8);
+      const key = `blog/${timestamp}-${rand}.${ext}`;
+
+      await c.env.R2.put(key, file.stream(), {
+        httpMetadata: {
+          contentType: file.type,
+          cacheControl: 'public, max-age=31536000, immutable',
+        },
+        customMetadata: {
+          originalName: file.name,
+          uploadedBy: admin.name || 'admin',
+          uploadedAt: new Date().toISOString(),
+        },
+      });
+
+      results.push({ url: `/r2/${key}`, key, name: file.name, size: file.size });
+    }
+
+    return c.json({ ok: true, files: results });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '업로드 실패' }, 500);
+  }
+})
+
+// Serve R2 images — public, cached
+apiRoutes.get('/r2/*', async (c) => {
+  const key = c.req.path.replace('/r2/', '');
+  if (!key) return c.notFound();
+
+  try {
+    const object = await c.env.R2.get(key);
+    if (!object) return c.notFound();
+
+    const headers = new Headers();
+    headers.set('Content-Type', object.httpMetadata?.contentType || 'image/jpeg');
+    headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    headers.set('ETag', object.httpEtag || '');
+
+    // Conditional request support
+    const ifNoneMatch = c.req.header('if-none-match');
+    if (ifNoneMatch && ifNoneMatch === object.httpEtag) {
+      return new Response(null, { status: 304, headers });
+    }
+
+    return new Response(object.body, { headers });
+  } catch {
+    return c.notFound();
+  }
+})
+
+// Delete R2 image
+apiRoutes.delete('/api/admin/upload/:key{.+}', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  const key = c.req.param('key');
+  try {
+    await c.env.R2.delete(key);
+    return c.json({ ok: true });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '삭제 실패' }, 500);
+  }
+})
+
+// List uploaded images
+apiRoutes.get('/api/admin/uploads', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  try {
+    const list = await c.env.R2.list({ prefix: 'blog/', limit: 200 });
+    const files = list.objects.map(obj => ({
+      key: obj.key,
+      url: `/r2/${obj.key}`,
+      size: obj.size,
+      uploaded: obj.uploaded?.toISOString(),
+    }));
+    return c.json({ ok: true, files });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '조회 실패' }, 500);
+  }
+})
+
 export default apiRoutes

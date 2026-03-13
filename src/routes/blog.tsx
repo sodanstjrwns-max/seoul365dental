@@ -161,6 +161,29 @@ blogRoutes.get('/admin/blog', async (c) => {
                 <label class="block text-white/40 text-xs font-semibold mb-1.5 uppercase">발췌문 (검색결과 미리보기)</label>
                 <textarea id="postExcerpt" rows={2} placeholder="이 글의 핵심을 2-3문장으로 요약하세요" class="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white outline-none text-sm resize-none placeholder-white/15"></textarea>
               </div>
+
+              {/* Cover Image Upload */}
+              <div>
+                <label class="block text-white/40 text-xs font-semibold mb-1.5 uppercase">커버 이미지</label>
+                <input type="hidden" id="postCoverImage" value="" />
+                <div id="coverDropZone" class="relative border-2 border-dashed border-white/10 rounded-xl hover:border-[#0066FF]/30 transition cursor-pointer overflow-hidden"
+                     onclick="document.getElementById('coverFileInput').click()">
+                  <input type="file" id="coverFileInput" accept="image/*" class="hidden" onchange="uploadCoverImage(this)" />
+                  <div id="coverPreviewArea" class="hidden">
+                    <img id="coverPreviewImg" src="" alt="" class="w-full h-40 object-cover" />
+                    <button type="button" onclick="event.stopPropagation(); removeCoverImage()" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center transition text-xs"><i class="fa-solid fa-xmark"></i></button>
+                  </div>
+                  <div id="coverPlaceholder" class="flex items-center justify-center gap-3 py-8 text-white/20">
+                    <i class="fa-solid fa-image text-lg"></i>
+                    <span class="text-sm">커버 이미지를 클릭하여 업로드 (선택사항)</span>
+                  </div>
+                  <div id="coverUploading" class="hidden flex items-center justify-center gap-2 py-8">
+                    <i class="fa-solid fa-spinner fa-spin text-[#0066FF]"></i>
+                    <span class="text-[#0066FF] text-sm">업로드 중...</span>
+                  </div>
+                </div>
+              </div>
+
               <div>
                 <div class="flex items-center justify-between mb-1.5">
                   <label class="block text-white/40 text-xs font-semibold uppercase">본문 (마크다운) *</label>
@@ -171,15 +194,41 @@ blogRoutes.get('/admin/blog', async (c) => {
                     <button type="button" onclick="insertMd('- ')" class="text-white/20 hover:text-white/50 transition px-1.5 py-0.5 rounded text-xs" title="목록">•</button>
                     <button type="button" onclick="insertMd('> ')" class="text-white/20 hover:text-white/50 transition px-1.5 py-0.5 rounded text-xs" title="인용">"</button>
                     <button type="button" onclick="insertMd('---\n')" class="text-white/20 hover:text-white/50 transition px-1.5 py-0.5 rounded text-xs" title="구분선">—</button>
+                    <span class="text-white/10 mx-1">|</span>
+                    <button type="button" onclick="document.getElementById('bodyImageInput').click()" class="text-white/20 hover:text-emerald-400 transition px-1.5 py-0.5 rounded text-xs" title="이미지 삽입"><i class="fa-solid fa-image"></i></button>
+                    <button type="button" onclick="openImageGallery()" class="text-white/20 hover:text-purple-400 transition px-1.5 py-0.5 rounded text-xs" title="이미지 갤러리"><i class="fa-solid fa-photo-film"></i></button>
                   </div>
                 </div>
-                <textarea id="postContent" rows={20} placeholder={"## 서론\n\n환자분들이 가장 많이 궁금해하시는...\n\n## 본론\n\n### 1. 첫 번째 포인트\n\n내용을 작성하세요.\n\n- 목록 항목 1\n- 목록 항목 2\n\n> 전문가 팁: 이런 부분을 주의하세요.\n\n## 결론\n\n정리하면..."} class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none text-sm font-mono resize-none placeholder-white/10 leading-relaxed" oninput="updatePreview()"></textarea>
+                <input type="file" id="bodyImageInput" accept="image/*" multiple class="hidden" onchange="uploadBodyImages(this)" />
+                <div class="relative">
+                  <textarea id="postContent" rows={18} placeholder={"## 서론\n\n환자분들이 가장 많이 궁금해하시는...\n\n## 본론\n\n### 1. 첫 번째 포인트\n\n내용을 작성하세요.\n\n- 목록 항목 1\n- 목록 항목 2\n\n> 전문가 팁: 이런 부분을 주의하세요.\n\n## 결론\n\n정리하면..."} class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none text-sm font-mono resize-none placeholder-white/10 leading-relaxed" oninput="updatePreview()"></textarea>
+                  {/* Drag overlay */}
+                  <div id="dragOverlay" class="hidden absolute inset-0 bg-[#0066FF]/10 border-2 border-dashed border-[#0066FF] rounded-xl flex items-center justify-center z-10 pointer-events-none">
+                    <div class="text-center">
+                      <i class="fa-solid fa-cloud-arrow-up text-3xl text-[#0066FF] mb-2"></i>
+                      <p class="text-[#0066FF] font-bold text-sm">이미지를 여기에 드롭하세요</p>
+                    </div>
+                  </div>
+                </div>
+                {/* Upload status bar */}
+                <div id="uploadStatus" class="hidden mt-2 px-3 py-2 rounded-lg bg-[#0066FF]/10 border border-[#0066FF]/20">
+                  <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-spinner fa-spin text-[#0066FF] text-xs"></i>
+                    <span id="uploadStatusText" class="text-[#0066FF] text-xs">이미지 업로드 중...</span>
+                  </div>
+                  <div class="mt-1 h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div id="uploadProgressBar" class="h-full bg-[#0066FF] rounded-full transition-all duration-300" style="width:0%"></div>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Right — Preview */}
             <div class="hidden lg:block w-1/2 overflow-y-auto bg-white border-l border-white/5">
               <div class="max-w-2xl mx-auto px-8 py-10">
+                <div id="prevCoverWrap" class="hidden -mx-8 -mt-10 mb-6">
+                  <img id="prevCoverImg" src="" alt="" class="w-full h-48 object-cover" />
+                </div>
                 <div class="text-xs text-[#0066FF] font-semibold uppercase tracking-wider mb-3" id="prevCategory">치과상식</div>
                 <h1 class="text-2xl font-bold text-gray-900 mb-4" id="prevTitle">제목을 입력하세요</h1>
                 <div class="flex items-center gap-3 text-xs text-gray-400 mb-8 pb-6 border-b border-gray-100">
@@ -196,10 +245,26 @@ blogRoutes.get('/admin/blog', async (c) => {
         </div>
       </div>
 
+      {/* Image Gallery Modal */}
+      <div id="galleryModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="closeImageGallery()"></div>
+        <div class="relative bg-gray-900 border border-white/10 rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
+          <div class="flex items-center justify-between px-5 py-3 border-b border-white/5">
+            <h3 class="text-white font-bold text-sm"><i class="fa-solid fa-photo-film mr-2 text-purple-400"></i>업로드된 이미지</h3>
+            <button onclick="closeImageGallery()" class="text-white/30 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div id="galleryContent" class="flex-1 overflow-y-auto p-5">
+            <div class="text-center py-10 text-white/30"><i class="fa-solid fa-spinner fa-spin mr-2"></i>로딩 중...</div>
+          </div>
+        </div>
+      </div>
+
       {/* Blog Editor Scripts */}
       <script dangerouslySetInnerHTML={{__html: `
+        // ── Editor open/close ─────────────────────────
         function openEditor(data) {
           document.getElementById('editorModal').classList.remove('hidden');
+          resetCoverImage();
           if (data) {
             document.getElementById('editorTitle').textContent = '글 수정';
             document.getElementById('postId').value = data.id;
@@ -209,6 +274,14 @@ blogRoutes.get('/admin/blog', async (c) => {
             document.getElementById('postTags').value = data.tags || '';
             document.getElementById('postExcerpt').value = data.excerpt || '';
             document.getElementById('postContent').value = data.content || '';
+            if (data.cover_image) {
+              document.getElementById('postCoverImage').value = data.cover_image;
+              document.getElementById('coverPreviewImg').src = data.cover_image;
+              document.getElementById('coverPreviewArea').classList.remove('hidden');
+              document.getElementById('coverPlaceholder').classList.add('hidden');
+              document.getElementById('prevCoverWrap').classList.remove('hidden');
+              document.getElementById('prevCoverImg').src = data.cover_image;
+            }
             updatePreview();
           } else {
             document.getElementById('editorTitle').textContent = '새 글 작성';
@@ -219,11 +292,55 @@ blogRoutes.get('/admin/blog', async (c) => {
             document.getElementById('postTags').value = '';
             document.getElementById('postExcerpt').value = '';
             document.getElementById('postContent').value = '';
+            document.getElementById('postCoverImage').value = '';
             updatePreview();
           }
         }
         function closeEditor() { document.getElementById('editorModal').classList.add('hidden'); }
 
+        // ── Cover Image ────────────────────────────────
+        function resetCoverImage() {
+          document.getElementById('postCoverImage').value = '';
+          document.getElementById('coverPreviewArea').classList.add('hidden');
+          document.getElementById('coverPlaceholder').classList.remove('hidden');
+          document.getElementById('coverUploading').classList.add('hidden');
+          document.getElementById('prevCoverWrap').classList.add('hidden');
+        }
+        function removeCoverImage() {
+          resetCoverImage();
+          updatePreview();
+        }
+        async function uploadCoverImage(input) {
+          const file = input.files[0];
+          if (!file) return;
+          document.getElementById('coverPlaceholder').classList.add('hidden');
+          document.getElementById('coverUploading').classList.remove('hidden');
+          try {
+            const fd = new FormData();
+            fd.append('file', file);
+            const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+            const json = await res.json();
+            if (json.ok) {
+              document.getElementById('postCoverImage').value = json.url;
+              document.getElementById('coverPreviewImg').src = json.url;
+              document.getElementById('coverPreviewArea').classList.remove('hidden');
+              document.getElementById('coverUploading').classList.add('hidden');
+              document.getElementById('prevCoverWrap').classList.remove('hidden');
+              document.getElementById('prevCoverImg').src = json.url;
+            } else {
+              alert(json.error || '업로드 실패');
+              document.getElementById('coverPlaceholder').classList.remove('hidden');
+              document.getElementById('coverUploading').classList.add('hidden');
+            }
+          } catch(e) {
+            alert('업로드 오류: ' + e.message);
+            document.getElementById('coverPlaceholder').classList.remove('hidden');
+            document.getElementById('coverUploading').classList.add('hidden');
+          }
+          input.value = '';
+        }
+
+        // ── Markdown helpers ──────────────────────────
         function insertMd(text) {
           const ta = document.getElementById('postContent');
           const start = ta.selectionStart;
@@ -242,14 +359,108 @@ blogRoutes.get('/admin/blog', async (c) => {
           ta.selectionEnd = end + before.length;
           updatePreview();
         }
+        function insertImageMd(url, alt) {
+          const ta = document.getElementById('postContent');
+          const start = ta.selectionStart;
+          const imgMd = '\\n\\n![' + (alt||'이미지') + '](' + url + ')\\n\\n';
+          ta.value = ta.value.substring(0, start) + imgMd + ta.value.substring(start);
+          ta.focus();
+          ta.selectionStart = ta.selectionEnd = start + imgMd.length;
+          updatePreview();
+        }
 
+        // ── Body Image Upload (button) ─────────────────
+        async function uploadBodyImages(input) {
+          const files = Array.from(input.files);
+          if (!files.length) return;
+          await uploadFilesToBody(files);
+          input.value = '';
+        }
+
+        async function uploadFilesToBody(files) {
+          const statusEl = document.getElementById('uploadStatus');
+          const statusText = document.getElementById('uploadStatusText');
+          const progressBar = document.getElementById('uploadProgressBar');
+          statusEl.classList.remove('hidden');
+          let done = 0;
+          const total = files.length;
+          statusText.textContent = '이미지 업로드 중... (0/' + total + ')';
+          progressBar.style.width = '0%';
+
+          for (const file of files) {
+            if (!file.type.startsWith('image/')) continue;
+            try {
+              const fd = new FormData();
+              fd.append('file', file);
+              const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+              const json = await res.json();
+              if (json.ok) {
+                insertImageMd(json.url, file.name.split('.')[0]);
+              } else {
+                alert(json.error || file.name + ' 업로드 실패');
+              }
+            } catch(e) {
+              alert(file.name + ' 업로드 오류');
+            }
+            done++;
+            statusText.textContent = '이미지 업로드 중... (' + done + '/' + total + ')';
+            progressBar.style.width = Math.round(done/total*100) + '%';
+          }
+          statusText.textContent = done + '개 이미지 업로드 완료!';
+          progressBar.style.width = '100%';
+          setTimeout(() => { statusEl.classList.add('hidden'); }, 2000);
+        }
+
+        // ── Drag & Drop on textarea ────────────────────
+        (function() {
+          const ta = document.getElementById('postContent');
+          const overlay = document.getElementById('dragOverlay');
+          if (!ta || !overlay) return;
+          let dragCounter = 0;
+
+          ta.addEventListener('dragenter', function(e) {
+            e.preventDefault();
+            dragCounter++;
+            overlay.classList.remove('hidden');
+          });
+          ta.addEventListener('dragleave', function(e) {
+            dragCounter--;
+            if (dragCounter <= 0) { overlay.classList.add('hidden'); dragCounter = 0; }
+          });
+          ta.addEventListener('dragover', function(e) { e.preventDefault(); });
+          ta.addEventListener('drop', function(e) {
+            e.preventDefault();
+            overlay.classList.add('hidden');
+            dragCounter = 0;
+            const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+            if (files.length) uploadFilesToBody(files);
+          });
+
+          // ── Paste image from clipboard ─────────────
+          ta.addEventListener('paste', function(e) {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            const imageFiles = [];
+            for (const item of items) {
+              if (item.type.startsWith('image/')) {
+                const file = item.getAsFile();
+                if (file) imageFiles.push(file);
+              }
+            }
+            if (imageFiles.length) {
+              e.preventDefault();
+              uploadFilesToBody(imageFiles);
+            }
+          });
+        })();
+
+        // ── Preview ────────────────────────────────────
         function updatePreview() {
           const title = document.getElementById('postTitle').value;
           const category = document.getElementById('postCategory').value;
           const content = document.getElementById('postContent').value;
           document.getElementById('prevTitle').textContent = title || '제목을 입력하세요';
           document.getElementById('prevCategory').textContent = category;
-          // Simple markdown-like preview
           let html = content
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-gray-900 mt-8 mb-3">$1</h3>')
@@ -258,10 +469,47 @@ blogRoutes.get('/admin/blog', async (c) => {
             .replace(/^- (.+)$/gm, '<li class="ml-4 text-gray-600">• $1</li>')
             .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-blue-200 pl-4 py-2 my-4 text-gray-500 italic bg-blue-50/50 rounded-r-lg">$1</blockquote>')
             .replace(/^---$/gm, '<hr class="my-8 border-gray-100"/>')
-            .replace(/^(?!<[hlubo]|<hr|<li)(.+)$/gm, '<p class="text-gray-600 leading-relaxed mb-4">$1</p>');
+            .replace(/!\\[([^\\]]*)\\]\\(([^)]+)\\)/g, '<img src="$2" alt="$1" class="w-full rounded-xl my-6 shadow-sm" />')
+            .replace(/^(?!<[hlubo]|<hr|<li|<img)(.+)$/gm, '<p class="text-gray-600 leading-relaxed mb-4">$1</p>');
           document.getElementById('prevContent').innerHTML = html || '<p class="text-gray-400">본문 미리보기...</p>';
         }
 
+        // ── Image Gallery ─────────────────────────────
+        async function openImageGallery() {
+          document.getElementById('galleryModal').classList.remove('hidden');
+          const el = document.getElementById('galleryContent');
+          el.innerHTML = '<div class="text-center py-10 text-white/30"><i class="fa-solid fa-spinner fa-spin mr-2"></i>로딩 중...</div>';
+          try {
+            const res = await fetch('/api/admin/uploads');
+            const json = await res.json();
+            if (!json.ok || !json.files.length) {
+              el.innerHTML = '<div class="text-center py-10"><p class="text-white/30 text-sm">업로드된 이미지가 없습니다.</p></div>';
+              return;
+            }
+            let html = '<div class="grid grid-cols-3 md:grid-cols-4 gap-3">';
+            json.files.forEach(f => {
+              const sizeKB = Math.round(f.size/1024);
+              html += '<div class="group relative cursor-pointer rounded-xl overflow-hidden border border-white/5 hover:border-[#0066FF]/30 transition" onclick="selectGalleryImage(\\'' + f.url + '\\')">';
+              html += '<img src="' + f.url + '" alt="" class="w-full aspect-square object-cover" loading="lazy" />';
+              html += '<div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition flex items-center justify-center">';
+              html += '<i class="fa-solid fa-plus text-white text-xl opacity-0 group-hover:opacity-100 transition"></i>';
+              html += '</div>';
+              html += '<div class="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-[0.6rem] text-white/60">' + sizeKB + 'KB</div>';
+              html += '</div>';
+            });
+            html += '</div>';
+            el.innerHTML = html;
+          } catch(e) {
+            el.innerHTML = '<div class="text-center py-10 text-red-400 text-sm">오류: ' + e.message + '</div>';
+          }
+        }
+        function closeImageGallery() { document.getElementById('galleryModal').classList.add('hidden'); }
+        function selectGalleryImage(url) {
+          insertImageMd(url, '이미지');
+          closeImageGallery();
+        }
+
+        // ── Load / Save / Delete ────────────────────
         async function loadPost(id) {
           try {
             const res = await fetch('/api/admin/blog/' + id);
@@ -282,6 +530,7 @@ blogRoutes.get('/admin/blog', async (c) => {
             treatment_slug: document.getElementById('postTreatment').value,
             tags: document.getElementById('postTags').value,
             excerpt: document.getElementById('postExcerpt').value,
+            cover_image: document.getElementById('postCoverImage').value,
             is_published: publish
           };
           try {
@@ -318,9 +567,9 @@ blogRoutes.post('/api/admin/blog', async (c) => {
   const data = await c.req.json();
   const slug = slugify(data.title) + '-' + Date.now().toString(36);
   await c.env.DB.prepare(`
-    INSERT INTO blog_posts (slug, title, excerpt, content, category, tags, treatment_slug, author_name, is_published)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(slug, data.title, data.excerpt || null, data.content, data.category || '치과상식', data.tags || null, data.treatment_slug || null, '서울365치과', data.is_published ? 1 : 0).run();
+    INSERT INTO blog_posts (slug, title, excerpt, content, category, tags, cover_image, treatment_slug, author_name, is_published)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).bind(slug, data.title, data.excerpt || null, data.content, data.category || '치과상식', data.tags || null, data.cover_image || null, data.treatment_slug || null, '서울365치과', data.is_published ? 1 : 0).run();
   return c.json({ ok: true, slug });
 })
 
@@ -338,8 +587,8 @@ blogRoutes.put('/api/admin/blog/:id', async (c) => {
   if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
   const data = await c.req.json();
   await c.env.DB.prepare(`
-    UPDATE blog_posts SET title=?, excerpt=?, content=?, category=?, tags=?, treatment_slug=?, is_published=?, updated_at=datetime('now') WHERE id=?
-  `).bind(data.title, data.excerpt || null, data.content, data.category || '치과상식', data.tags || null, data.treatment_slug || null, data.is_published ? 1 : 0, c.req.param('id')).run();
+    UPDATE blog_posts SET title=?, excerpt=?, content=?, category=?, tags=?, cover_image=?, treatment_slug=?, is_published=?, updated_at=datetime('now') WHERE id=?
+  `).bind(data.title, data.excerpt || null, data.content, data.category || '치과상식', data.tags || null, data.cover_image || null, data.treatment_slug || null, data.is_published ? 1 : 0, c.req.param('id')).run();
   return c.json({ ok: true });
 })
 

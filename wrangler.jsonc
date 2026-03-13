@@ -12,5 +12,11 @@
       "database_name": "seoul365-production",
       "database_id": "local-dev-placeholder"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "seoul365-uploads"
+    }
   ]
 }

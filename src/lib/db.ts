@@ -102,14 +102,22 @@ export async function initBlogTables(db: D1Database) {
 export function renderContent(md: string): string {
   let html = md
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    // Images: ![alt](url) — must come before heading/paragraph replacements
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<figure class="my-6"><img src="$2" alt="$1" class="w-full rounded-xl shadow-sm" loading="lazy" /><figcaption class="text-center text-xs text-gray-400 mt-2">$1</figcaption></figure>')
+    // Remove empty figcaptions
+    .replace(/<figcaption class="text-center text-xs text-gray-400 mt-2"><\/figcaption>/g, '')
+    // Links: [text](url)
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#0066FF] underline hover:text-[#0052cc]" target="_blank" rel="noopener">$1</a>')
     .replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-gray-900 mt-8 mb-3">$1</h3>')
     .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold text-gray-900 mt-10 mb-4">$1</h2>')
     .replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold text-gray-900 mt-12 mb-5">$1</h1>')
     .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-[#0066FF]/20 pl-4 py-2 my-4 text-gray-500 italic bg-[#0066FF]/[0.03] rounded-r-lg">$1</blockquote>')
+    .replace(/^---$/gm, '<hr class="my-8 border-gray-100"/>')
     .replace(/^- (.+)$/gm, '<li class="ml-4 text-gray-600">$1</li>')
     .replace(/(<li.*<\/li>\n?)+/g, (m) => `<ul class="list-disc space-y-1 my-4">${m}</ul>`)
-    .replace(/^(?!<[hul]|<li|<strong|<em)(.+)$/gm, '<p class="text-gray-600 leading-relaxed mb-4">$1</p>')
+    .replace(/^(?!<[hulfba]|<hr|<li|<strong|<em|<img|<figure)(.+)$/gm, '<p class="text-gray-600 leading-relaxed mb-4">$1</p>')
     .replace(/<p class="text-gray-600 leading-relaxed mb-4"><\/p>/g, '');
   // XSS defense
   html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
