@@ -49,4 +49,25 @@ app.route('/', blogRoutes)
 // SEO (sitemap, robots, privacy, terms, 404)
 app.route('/', seoRoutes)
 
+// ── Custom 404 Page ────────────────────────────────────
+app.notFound((c) => {
+  return c.render(
+    <section class="hero-premium" style="min-height:80vh">
+      <div class="hero-grid"></div>
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="relative z-10 max-w-lg mx-auto px-5 text-center" style="padding-top:15vh">
+        <div class="text-[8rem] font-black gradient-text-white leading-none mb-4" style="opacity:0.06">404</div>
+        <h1 class="text-2xl font-bold text-white mb-3">페이지를 찾을 수 없습니다</h1>
+        <p class="text-white/35 mb-8">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
+        <div class="flex flex-wrap justify-center gap-3">
+          <a href="/" class="btn-premium btn-premium-fill" data-cursor-hover>홈으로 가기</a>
+          <a href="/treatments" class="btn-premium btn-premium-white" data-cursor-hover>진료 안내</a>
+        </div>
+      </div>
+    </section>,
+    { title: '404 - 페이지를 찾을 수 없습니다 | 서울365치과' }
+  )
+})
+
 export default app
