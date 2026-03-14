@@ -754,7 +754,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
 
       <script dangerouslySetInnerHTML={{__html: `
         var cases = ${JSON.stringify(dbCases.map((cs: any) => ({
-          title: cs.title, tag: cs.tag, duration: cs.duration || '',
+          id: cs.id, title: cs.title, tag: cs.tag, duration: cs.duration || '',
           description: cs.description || '', doctor_name: cs.doctor_name || '',
           patient_age: cs.patient_age || '', patient_gender: cs.patient_gender || '',
           before_image: cs.before_image || '', after_image: cs.after_image || '',
@@ -766,6 +766,11 @@ pageRoutes.get('/cases/gallery', async (c) => {
           renderModal();
           document.getElementById('caseModal').classList.remove('hidden');
           document.body.style.overflow = 'hidden';
+          // Track view count
+          var c = cases[idx];
+          if (c && c.id) {
+            fetch('/api/cases/' + c.id + '/view', { method: 'POST' }).catch(function(){});
+          }
         }
 
         function closeCaseModal(e) {

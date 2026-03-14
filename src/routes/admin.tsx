@@ -114,6 +114,23 @@ adminRoutes.get('/admin/dashboard', async (c) => {
     cases = result.results || [];
   } catch {}
 
+  // Fetch notices view stats
+  let noticesStats = { total: 0, totalViews: 0 };
+  try {
+    const result = await c.env.DB.prepare('SELECT COUNT(*) as total, COALESCE(SUM(view_count), 0) as totalViews FROM notices').first<{ total: number; totalViews: number }>();
+    if (result) noticesStats = result;
+  } catch {}
+
+  // Fetch blog view stats
+  let blogStats = { total: 0, totalViews: 0 };
+  try {
+    const result = await c.env.DB.prepare('SELECT COUNT(*) as total, COALESCE(SUM(view_count), 0) as totalViews FROM blog_posts').first<{ total: number; totalViews: number }>();
+    if (result) blogStats = result;
+  } catch {}
+
+  // Calculate case view totals
+  const caseTotalViews = cases.reduce((sum: number, cs: any) => sum + (cs.view_count || 0), 0);
+
   const treatmentOptions = treatments.map(t => ({ slug: t.slug, name: t.name, category: t.category }));
   const doctorOptions = doctors.map(d => ({ slug: d.slug, name: d.name }));
 
@@ -141,7 +158,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
 
           {/* Stats */}
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
               <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2">전체 케이스</div>
               <div class="text-3xl font-black text-white">{cases.length}</div>
@@ -157,6 +174,29 @@ adminRoutes.get('/admin/dashboard', async (c) => {
             <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
               <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2">진료 카테고리</div>
               <div class="text-3xl font-black text-[#0066FF]">{new Set(cases.map((cs: any) => cs.treatment_slug)).size}</div>
+            </div>
+          </div>
+
+          {/* View Count Stats */}
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-[#0066FF]/10 to-[#0066FF]/5 border border-[#0066FF]/10 rounded-2xl p-5">
+              <div class="text-[#0066FF]/60 text-xs font-semibold uppercase tracking-wider mb-2"><i class="fa-solid fa-eye mr-1"></i>총 조회수</div>
+              <div class="text-3xl font-black text-[#0066FF]">{(caseTotalViews + noticesStats.totalViews + blogStats.totalViews).toLocaleString()}</div>
+            </div>
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
+              <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2"><i class="fa-solid fa-images mr-1 text-emerald-400/50"></i>사례 조회</div>
+              <div class="text-2xl font-black text-emerald-400">{caseTotalViews.toLocaleString()}</div>
+              <div class="text-white/15 text-[0.65rem] mt-1">{cases.length}건</div>
+            </div>
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
+              <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2"><i class="fa-solid fa-bullhorn mr-1 text-purple-400/50"></i>공지 조회</div>
+              <div class="text-2xl font-black text-purple-400">{noticesStats.totalViews.toLocaleString()}</div>
+              <div class="text-white/15 text-[0.65rem] mt-1">{noticesStats.total}건</div>
+            </div>
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
+              <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2"><i class="fa-solid fa-pen-nib mr-1 text-cyan-400/50"></i>블로그 조회</div>
+              <div class="text-2xl font-black text-cyan-400">{blogStats.totalViews.toLocaleString()}</div>
+              <div class="text-white/15 text-[0.65rem] mt-1">{blogStats.total}건</div>
             </div>
           </div>
 
@@ -268,6 +308,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">제목</th>
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell">진료</th>
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell">담당의</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell"><i class="fa-solid fa-eye mr-1"></i>조회</th>
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">상태</th>
                       <th class="text-right px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">관리</th>
                     </tr>
@@ -298,6 +339,9 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                         </td>
                         <td class="px-5 py-3 hidden md:table-cell">
                           <span class="text-white/40 text-xs">{cs.doctor_name}</span>
+                        </td>
+                        <td class="px-5 py-3 hidden md:table-cell">
+                          <span class="text-white/50 text-xs font-mono"><i class="fa-solid fa-eye text-white/15 mr-1"></i>{cs.view_count || 0}</span>
                         </td>
                         <td class="px-5 py-3">
                           {cs.is_published ? (
@@ -772,6 +816,8 @@ adminRoutes.get('/admin/notices', async (c) => {
     notices = result.results || [];
   } catch {}
 
+  const noticeTotalViews = notices.reduce((s: number, n: any) => s + (n.view_count || 0), 0);
+
   return c.render(
     <>
       {/* Admin Header */}
@@ -784,6 +830,8 @@ adminRoutes.get('/admin/notices', async (c) => {
             <span class="text-white font-bold text-sm">공지사항 관리</span>
             <span class="text-white/20 text-xs">|</span>
             <span class="text-purple-400 text-xs font-bold">{notices.length}건</span>
+            <span class="text-white/10 text-xs">·</span>
+            <span class="text-white/30 text-xs"><i class="fa-solid fa-eye text-white/15 mr-1"></i>{noticeTotalViews.toLocaleString()}</span>
           </div>
           <div class="flex items-center gap-3">
             <a href="/notices" target="_blank" class="text-white/30 hover:text-white/60 text-xs transition"><i class="fa-solid fa-external-link mr-1"></i>공개 페이지</a>
@@ -815,7 +863,7 @@ adminRoutes.get('/admin/notices', async (c) => {
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">상태</th>
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">카테고리</th>
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">제목</th>
-                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell">조회</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell"><i class="fa-solid fa-eye mr-1"></i>조회</th>
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell">작성일</th>
                       <th class="text-right px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">관리</th>
                     </tr>
@@ -835,7 +883,9 @@ adminRoutes.get('/admin/notices', async (c) => {
                         </td>
                         <td class="px-5 py-3 text-purple-300 text-xs">{n.category}</td>
                         <td class="px-5 py-3 text-white font-medium">{n.title}</td>
-                        <td class="px-5 py-3 text-white/25 text-xs hidden md:table-cell">{n.view_count}</td>
+                        <td class="px-5 py-3 hidden md:table-cell">
+                          <span class="text-white/50 text-xs font-mono"><i class="fa-solid fa-eye text-white/15 mr-1"></i>{n.view_count || 0}</span>
+                        </td>
                         <td class="px-5 py-3 text-white/25 text-xs hidden md:table-cell">{n.created_at?.slice(0, 10)}</td>
                         <td class="px-5 py-3 text-right">
                           <button onclick={`editNotice(${JSON.stringify(n).replace(/"/g, '&quot;')})`} class="text-white/30 hover:text-purple-400 transition p-1.5" title="수정">
@@ -1065,11 +1115,22 @@ adminRoutes.delete('/api/admin/cases/:id', async (c) => {
   return c.json({ ok: true });
 })
 
+// --- Public API: Increment case view count ---
+adminRoutes.post('/api/cases/:id/view', async (c) => {
+  const id = c.req.param('id');
+  try {
+    await c.env.DB.prepare('UPDATE before_after_cases SET view_count = view_count + 1 WHERE id = ?').bind(id).run();
+    return c.json({ ok: true });
+  } catch {
+    return c.json({ ok: true });
+  }
+})
+
 // --- Public API: Get published cases (for gallery) ---
 adminRoutes.get('/api/cases', async (c) => {
   await initAdminTables(c.env.DB);
   const slug = c.req.query('slug');
-  let query = 'SELECT id, treatment_slug, title, patient_age, patient_gender, tag, doctor_name, description, duration, before_image, after_image, sort_order, created_at FROM before_after_cases WHERE is_published = 1';
+  let query = 'SELECT id, treatment_slug, title, patient_age, patient_gender, tag, doctor_name, description, duration, before_image, after_image, sort_order, view_count, created_at FROM before_after_cases WHERE is_published = 1';
   const params: any[] = [];
   if (slug) { query += ' AND treatment_slug = ?'; params.push(slug); }
   query += ' ORDER BY sort_order DESC, created_at DESC';

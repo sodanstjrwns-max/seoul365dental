@@ -87,7 +87,7 @@ blogRoutes.get('/admin/blog', async (c) => {
                         <span class="text-[0.65rem] text-white/20 bg-white/5 px-2 py-0.5 rounded-full">{p.category}</span>
                       </div>
                       <h3 class="text-white font-medium text-sm truncate">{p.title}</h3>
-                      <p class="text-white/20 text-xs mt-0.5">{p.slug} · 조회 {p.view_count || 0} · {p.created_at?.split('T')[0] || p.created_at?.split(' ')[0]}</p>
+                      <p class="text-white/20 text-xs mt-0.5">{p.slug} · <i class="fa-solid fa-eye text-white/15 mr-0.5"></i><span class="text-white/40 font-mono">{(p.view_count || 0).toLocaleString()}</span> · {p.created_at?.split('T')[0] || p.created_at?.split(' ')[0]}</p>
                     </div>
                     <div class="flex items-center gap-2 ml-4">
                       <a href={`/blog/${p.slug}`} target="_blank" class="text-white/20 hover:text-white/50 transition p-1.5" title="미리보기"><i class="fa-solid fa-eye text-xs"></i></a>
