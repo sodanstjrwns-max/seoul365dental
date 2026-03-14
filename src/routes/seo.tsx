@@ -150,7 +150,7 @@ seoRoutes.get('/privacy', (c) => {
             <h2 class="text-lg font-bold text-gray-900 mb-3">제9조 (개인정보 보호책임자)</h2>
             <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100">
               <p><strong>개인정보 보호책임자</strong></p>
-              <p class="mt-1">성명: 문석준</p>
+              <p class="mt-1">성명: 박준규</p>
               <p>직위: 대표원장</p>
               <p>연락처: {CLINIC.phone}</p>
               <p>이메일: info@seoul365dental.com</p>
