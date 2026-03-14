@@ -5,13 +5,34 @@ import { doctors } from '../data/doctors'
 import { treatments } from '../data/treatments'
 import { mainFaq, pricingSummary } from '../data/faq'
 import { MESSAGING, MISSION, VISION, MAIN_SUMMARY } from '../data/brand'
+import { initAdminTables, initBlogTables } from '../lib/db'
 
 const home = new Hono<{ Bindings: Bindings }>()
 
-home.get('/', (c) => {
+home.get('/', async (c) => {
   const topTreatments = treatments.filter(t =>
     ['full-implant','all-on-x','orthodontics','sedation','cosmetic','implant'].includes(t.slug)
   );
+
+  // ===== DB에서 최신 비포애프터 케이스 가져오기 =====
+  let baCases: any[] = [];
+  try {
+    await initAdminTables(c.env.DB);
+    const baResult = await c.env.DB.prepare(
+      'SELECT id, treatment_slug, title, tag, doctor_name, before_image, after_image, created_at FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC LIMIT 3'
+    ).all();
+    baCases = baResult.results || [];
+  } catch {}
+
+  // ===== DB에서 최신 블로그 포스트 가져오기 =====
+  let blogPosts: any[] = [];
+  try {
+    await initBlogTables(c.env.DB);
+    const blogResult = await c.env.DB.prepare(
+      'SELECT id, slug, title, excerpt, category, tags, cover_image, author_name, created_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 3'
+    ).all();
+    blogPosts = blogResult.results || [];
+  } catch {}
 
   return c.render(
     <>
@@ -427,7 +448,7 @@ home.get('/', (c) => {
         </div>
       </section>
 
-      {/* ===== S7: BEFORE/AFTER — ELECTRIC ===== */}
+      {/* ===== S7: BEFORE/AFTER — DB 실시간 연동 ===== */}
       <section class="section-lg bg-white relative overflow-hidden" aria-label="치료 전후 사례">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
@@ -437,31 +458,70 @@ home.get('/', (c) => {
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
-            {[
-              { title: '전체임플란트 – 상악 전체 수복', tag: '전체임플란트', doctor: '박준규 대표원장' },
-              { title: '올온X – 하악 즉시로딩', tag: '올온X', doctor: '박준규 대표원장' },
-              { title: '인비절라인 – 성인 투명교정', tag: '교정', doctor: '하누리 원장' },
-            ].map(cs => (
-              <div class="premium-card overflow-hidden group tilt-card electric-card-border" data-cursor-hover>
-                <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
-                  <div class="absolute inset-0 flex">
-                    <div class="w-1/2 flex items-center justify-center bg-gray-100/80 border-r border-gray-200/50 group-hover:bg-gray-50 transition-colors">
-                      <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
-                    </div>
-                    <div class="w-1/2 flex items-center justify-center bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.02] group-hover:from-[#0066FF]/10 transition-all">
-                      <span class="text-[#0066FF]/30 text-sm font-bold tracking-widest uppercase">After</span>
+            {baCases.length > 0 ? (
+              baCases.map((cs: any) => (
+                <a href="/cases/gallery" class="premium-card overflow-hidden group tilt-card electric-card-border block" data-cursor-hover>
+                  <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 flex">
+                      <div class="w-1/2 relative overflow-hidden border-r border-gray-200/50">
+                        {cs.before_image ? (
+                          <img src={cs.before_image} alt="Before" class="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div class="w-full h-full flex items-center justify-center bg-gray-100/80">
+                            <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
+                          </div>
+                        )}
+                        <div class="absolute bottom-2 left-2 bg-black/50 text-white text-[0.6rem] px-2 py-0.5 rounded-full font-bold tracking-wider">BEFORE</div>
+                      </div>
+                      <div class="w-1/2 relative overflow-hidden">
+                        {cs.after_image ? (
+                          <img src={cs.after_image} alt="After" class="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.02]">
+                            <span class="text-[#0066FF]/30 text-sm font-bold tracking-widest uppercase">After</span>
+                          </div>
+                        )}
+                        <div class="absolute bottom-2 left-2 bg-[#0066FF]/80 text-white text-[0.6rem] px-2 py-0.5 rounded-full font-bold tracking-wider">AFTER</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="p-5">
-                  <div class="flex items-center gap-2 mb-2.5">
-                    <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
+                  <div class="p-5">
+                    <div class="flex items-center gap-2 mb-2.5">
+                      <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-[0.95rem] group-hover:text-[#0066FF] transition-colors">{cs.title}</h3>
+                    <p class="text-xs text-gray-400 mt-1">담당: {cs.doctor_name}</p>
                   </div>
-                  <h3 class="font-bold text-gray-900 text-[0.95rem]">{cs.title}</h3>
-                  <p class="text-xs text-gray-400 mt-1">담당: {cs.doctor}</p>
+                </a>
+              ))
+            ) : (
+              /* 폴백: DB에 데이터가 없을 때 기본 표시 */
+              [
+                { title: '전체임플란트 – 상악 전체 수복', tag: '전체임플란트', doctor: '박준규 대표원장' },
+                { title: '올온X – 하악 즉시로딩', tag: '올온X', doctor: '박준규 대표원장' },
+                { title: '인비절라인 – 성인 투명교정', tag: '교정', doctor: '하누리 원장' },
+              ].map(cs => (
+                <div class="premium-card overflow-hidden group tilt-card electric-card-border" data-cursor-hover>
+                  <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
+                    <div class="absolute inset-0 flex">
+                      <div class="w-1/2 flex items-center justify-center bg-gray-100/80 border-r border-gray-200/50 group-hover:bg-gray-50 transition-colors">
+                        <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
+                      </div>
+                      <div class="w-1/2 flex items-center justify-center bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.02] group-hover:from-[#0066FF]/10 transition-all">
+                        <span class="text-[#0066FF]/30 text-sm font-bold tracking-widest uppercase">After</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-5">
+                    <div class="flex items-center gap-2 mb-2.5">
+                      <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-[0.95rem]">{cs.title}</h3>
+                    <p class="text-xs text-gray-400 mt-1">담당: {cs.doctor}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
           <p class="text-[0.72rem] text-gray-300 text-center mt-10">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
@@ -601,7 +661,7 @@ home.get('/', (c) => {
         </div>
       </section>
 
-      {/* ===== S11: CONTENT / COLUMNS — ELECTRIC ===== */}
+      {/* ===== S11: CONTENT / COLUMNS — DB 실시간 연동 ===== */}
       <section class="section-lg bg-white">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
@@ -610,25 +670,57 @@ home.get('/', (c) => {
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
-            {[
-              { title: '전체임플란트, 틀니보다 좋은 이유 5가지', tag: '임플란트', date: '2026.02.15' },
-              { title: '치아교정 나이 제한? 성인교정 궁금증 해결', tag: '교정', date: '2026.02.10' },
-              { title: '수면진료, 정말 안전한가요?', tag: '수면진료', date: '2026.02.05' },
-            ].map(article => (
-              <div class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border" data-cursor-hover>
-                <div class="aspect-[16/9] bg-gradient-to-br from-[#0066FF]/[0.06] to-[#00E5FF]/[0.02] flex items-center justify-center overflow-hidden">
-                  <i class="fa-solid fa-newspaper text-4xl text-[#0066FF]/10 group-hover:text-[#0066FF]/20 group-hover:scale-110 transition-all duration-700"></i>
-                </div>
-                <div class="p-5">
-                  <div class="flex items-center gap-2 mb-2.5">
-                    <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{article.tag}</span>
-                    <span class="text-[0.7rem] text-gray-300">{article.date}</span>
+            {blogPosts.length > 0 ? (
+              blogPosts.map((article: any) => {
+                const dateStr = article.created_at ? new Date(article.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.').replace(/\.$/, '') : '';
+                return (
+                  <a href={`/blog/${article.slug}`} class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border block" data-cursor-hover>
+                    <div class="aspect-[16/9] bg-gradient-to-br from-[#0066FF]/[0.06] to-[#00E5FF]/[0.02] flex items-center justify-center overflow-hidden relative">
+                      {article.cover_image ? (
+                        <img src={article.cover_image} alt={article.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                      ) : (
+                        <i class="fa-solid fa-newspaper text-4xl text-[#0066FF]/10 group-hover:text-[#0066FF]/20 group-hover:scale-110 transition-all duration-700"></i>
+                      )}
+                    </div>
+                    <div class="p-5">
+                      <div class="flex items-center gap-2 mb-2.5">
+                        <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{article.category || '일반'}</span>
+                        <span class="text-[0.7rem] text-gray-300">{dateStr}</span>
+                      </div>
+                      <h3 class="font-bold text-gray-900 text-[0.95rem] leading-snug group-hover:text-[#0066FF] transition-colors">{article.title}</h3>
+                      {article.excerpt && <p class="text-xs text-gray-400 mt-2 line-clamp-2">{article.excerpt}</p>}
+                    </div>
+                  </a>
+                );
+              })
+            ) : (
+              /* 폴백: DB에 블로그가 없을 때 기본 표시 */
+              [
+                { title: '전체임플란트, 틀니보다 좋은 이유 5가지', tag: '임플란트', date: '2026.02.15' },
+                { title: '치아교정 나이 제한? 성인교정 궁금증 해결', tag: '교정', date: '2026.02.10' },
+                { title: '수면진료, 정말 안전한가요?', tag: '수면진료', date: '2026.02.05' },
+              ].map(article => (
+                <div class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border" data-cursor-hover>
+                  <div class="aspect-[16/9] bg-gradient-to-br from-[#0066FF]/[0.06] to-[#00E5FF]/[0.02] flex items-center justify-center overflow-hidden">
+                    <i class="fa-solid fa-newspaper text-4xl text-[#0066FF]/10 group-hover:text-[#0066FF]/20 group-hover:scale-110 transition-all duration-700"></i>
                   </div>
-                  <h3 class="font-bold text-gray-900 text-[0.95rem] leading-snug group-hover:text-[#0066FF] transition-colors">{article.title}</h3>
+                  <div class="p-5">
+                    <div class="flex items-center gap-2 mb-2.5">
+                      <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{article.tag}</span>
+                      <span class="text-[0.7rem] text-gray-300">{article.date}</span>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-[0.95rem] leading-snug group-hover:text-[#0066FF] transition-colors">{article.title}</h3>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
+
+          {blogPosts.length > 0 && (
+            <div class="text-center mt-10 reveal">
+              <a href="/blog" class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-semibold link-underline" data-cursor-hover>블로그 전체 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
+            </div>
+          )}
         </div>
       </section>
 
