@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { hashPassword, verifyPassword, generateSessionId } from '../lib/auth'
-import { getAdminUser, getAdminFromCookie, initAdminTables } from '../lib/db'
+import { getAdminUser, getAdminFromCookie, initAdminTables, initUserTables } from '../lib/db'
 import { treatments } from '../data/treatments'
 import { doctors } from '../data/doctors'
 
@@ -1152,13 +1152,7 @@ adminRoutes.get('/admin/members', async (c) => {
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
   if (!admin) return c.redirect('/admin');
 
-  // Ensure users table has new columns
-  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN privacy_agreed INTEGER DEFAULT 0').run(); } catch {}
-  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN privacy_agreed_at DATETIME').run(); } catch {}
-  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN marketing_agreed INTEGER DEFAULT 0').run(); } catch {}
-  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN marketing_agreed_at DATETIME').run(); } catch {}
-  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1').run(); } catch {}
-  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP').run(); } catch {}
+  await initUserTables(c.env.DB);
 
   let members: any[] = [];
   let totalCount = 0;

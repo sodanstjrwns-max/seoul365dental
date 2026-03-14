@@ -1,51 +1,44 @@
 // Auth utilities for Cloudflare Workers (Web Crypto API — no Node.js fs/crypto)
 
-/**
- * Hash password using PBKDF2 (Web Crypto API compatible)
- */
-export async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const salt = crypto.getRandomValues(new Uint8Array(16));
+const PBKDF2_ITERATIONS = 100000;
+const encoder = new TextEncoder();
+
+/** Convert Uint8Array to hex string */
+function toHex(bytes: Uint8Array): string {
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** Convert hex string to Uint8Array */
+function fromHex(hex: string): Uint8Array {
+  return new Uint8Array(hex.match(/.{2}/g)!.map(b => parseInt(b, 16)));
+}
+
+/** Derive PBKDF2 key bits from password and salt */
+async function deriveBits(password: string, salt: Uint8Array): Promise<ArrayBuffer> {
   const keyMaterial = await crypto.subtle.importKey(
     'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
   );
-  const hash = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
-    keyMaterial,
-    256
+  return crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
+    keyMaterial, 256
   );
-  const saltHex = Array.from(salt).map(b => b.toString(16).padStart(2, '0')).join('');
-  const hashHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  return `${saltHex}:${hashHex}`;
 }
 
-/**
- * Verify password against stored hash
- */
+export async function hashPassword(password: string): Promise<string> {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const hash = await deriveBits(password, salt);
+  return `${toHex(salt)}:${toHex(new Uint8Array(hash))}`;
+}
+
 export async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
   const [saltHex, hashHex] = storedHash.split(':');
   if (!saltHex || !hashHex) return false;
-
-  const salt = new Uint8Array(saltHex.match(/.{2}/g)!.map(b => parseInt(b, 16)));
-  const encoder = new TextEncoder();
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
-  );
-  const hash = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
-    keyMaterial,
-    256
-  );
-  const computedHex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  return computedHex === hashHex;
+  const hash = await deriveBits(password, fromHex(saltHex));
+  return toHex(new Uint8Array(hash)) === hashHex;
 }
 
-/**
- * Generate a random session ID (hex string)
- */
 export function generateSessionId(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(32));
-  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  return toHex(crypto.getRandomValues(new Uint8Array(32)));
 }
 
 /**

@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
-import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clearSessionCookie, getCurrentUser } from '../lib/auth'
-import { initAdminTables } from '../lib/db'
+import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clearSessionCookie, getSessionIdFromCookie, getCurrentUser } from '../lib/auth'
+import { initAdminTables, initUserTables } from '../lib/db'
 
 const apiRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -18,29 +18,7 @@ apiRoutes.post('/api/auth/register', async (c) => {
       return c.json({ ok: false, error: '개인정보 수집·이용에 동의해주세요.' }, 400);
     }
 
-    // Init tables if needed (upgraded schema with consent columns)
-    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      phone TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL,
-      privacy_agreed INTEGER DEFAULT 0,
-      privacy_agreed_at DATETIME,
-      marketing_agreed INTEGER DEFAULT 0,
-      marketing_agreed_at DATETIME,
-      is_active INTEGER DEFAULT 1,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )`).run();
-    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`).run();
-
-    // Ensure new columns exist for older schema
-    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN privacy_agreed INTEGER DEFAULT 0').run(); } catch {}
-    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN privacy_agreed_at DATETIME').run(); } catch {}
-    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN marketing_agreed INTEGER DEFAULT 0').run(); } catch {}
-    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN marketing_agreed_at DATETIME').run(); } catch {}
-    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1').run(); } catch {}
-    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP').run(); } catch {}
+    await initUserTables(c.env.DB);
 
     // Check existing
     const existing = await c.env.DB.prepare('SELECT id FROM users WHERE phone = ?').bind(phone).first();
@@ -78,25 +56,7 @@ apiRoutes.post('/api/auth/login', async (c) => {
       return c.json({ ok: false, error: '휴대폰 번호와 비밀번호를 입력해주세요.' }, 400);
     }
 
-    // Init tables if needed (upgraded schema)
-    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      phone TEXT NOT NULL UNIQUE,
-      password_hash TEXT NOT NULL,
-      privacy_agreed INTEGER DEFAULT 0,
-      privacy_agreed_at DATETIME,
-      marketing_agreed INTEGER DEFAULT 0,
-      marketing_agreed_at DATETIME,
-      is_active INTEGER DEFAULT 1,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )`).run();
-    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`).run();
-    // Ensure new columns exist for older schema
-    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN privacy_agreed INTEGER DEFAULT 0').run(); } catch {}
-    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN marketing_agreed INTEGER DEFAULT 0').run(); } catch {}
-    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1').run(); } catch {}
+    await initUserTables(c.env.DB);
 
     const user = await c.env.DB.prepare('SELECT id, name, phone, password_hash FROM users WHERE phone = ? AND is_active = 1').bind(phone).first<{ id: number; name: string; phone: string; password_hash: string }>();
     if (!user) {
@@ -132,7 +92,6 @@ apiRoutes.get('/api/auth/me', async (c) => {
 
 // Support both GET and POST for logout
 const handleLogout = async (c: any) => {
-  const { getSessionIdFromCookie } = await import('../lib/auth');
   const sessionId = getSessionIdFromCookie(c.req.header('cookie'));
   if (sessionId) {
     try { await c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(sessionId).run(); } catch {}

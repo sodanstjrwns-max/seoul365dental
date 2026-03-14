@@ -20,60 +20,22 @@ export async function getAdminFromCookie(
   } catch { return null; }
 }
 
-// Admin session verification via getSessionIdFromCookie
-export async function getAdminUser(
-  db: D1Database,
-  cookieHeader?: string | null
-): Promise<{ id: number; username: string; name: string } | null> {
-  if (!cookieHeader) return null;
-  // Try admin_session cookie first (used after admin login)
-  const match = cookieHeader.match(/(?:^|;\s*)admin_session=([^;]+)/);
-  if (!match) return null;
-  try {
-    const row = await db.prepare(`
-      SELECT a.id, a.username, a.name FROM admin_sessions s
-      JOIN admin_users a ON a.id = s.admin_id
-      WHERE s.id = ? AND s.expires_at > datetime('now')
-    `).bind(match[1]).first<{ id: number; username: string; name: string }>();
-    return row || null;
-  } catch { return null; }
-}
+// Alias for backward compatibility
+export const getAdminUser = getAdminFromCookie;
 
 // Init admin tables (idempotent, with flag to skip redundant calls)
 let _adminTablesReady = false;
 export async function initAdminTables(db: D1Database) {
   if (_adminTablesReady) return;
-  await db.prepare(`CREATE TABLE IF NOT EXISTS admin_users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, name TEXT NOT NULL, role TEXT DEFAULT 'admin', created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`).run();
-  await db.prepare(`CREATE TABLE IF NOT EXISTS admin_sessions (id TEXT PRIMARY KEY, admin_id INTEGER NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (admin_id) REFERENCES admin_users(id) ON DELETE CASCADE)`).run();
-  await db.prepare(`CREATE TABLE IF NOT EXISTS before_after_cases (id INTEGER PRIMARY KEY AUTOINCREMENT, treatment_slug TEXT NOT NULL, title TEXT NOT NULL, patient_age TEXT, patient_gender TEXT, tag TEXT NOT NULL, doctor_name TEXT NOT NULL, description TEXT, duration TEXT, before_image TEXT, after_image TEXT, is_published INTEGER DEFAULT 1, sort_order INTEGER DEFAULT 0, view_count INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`).run();
+  await db.batch([
+    db.prepare(`CREATE TABLE IF NOT EXISTS admin_users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, name TEXT NOT NULL, role TEXT DEFAULT 'admin', created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS admin_sessions (id TEXT PRIMARY KEY, admin_id INTEGER NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (admin_id) REFERENCES admin_users(id) ON DELETE CASCADE)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS before_after_cases (id INTEGER PRIMARY KEY AUTOINCREMENT, treatment_slug TEXT NOT NULL, title TEXT NOT NULL, patient_age TEXT, patient_gender TEXT, tag TEXT NOT NULL, doctor_name TEXT NOT NULL, description TEXT, duration TEXT, before_image TEXT, after_image TEXT, is_published INTEGER DEFAULT 1, sort_order INTEGER DEFAULT 0, view_count INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS consultations (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT NOT NULL, treatment TEXT, message TEXT, status TEXT DEFAULT 'new', admin_memo TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS notices (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, content TEXT NOT NULL, category TEXT DEFAULT '공지', is_pinned INTEGER DEFAULT 0, is_published INTEGER DEFAULT 1, view_count INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`),
+  ]);
   // Ensure view_count column exists for older tables
   try { await db.prepare('ALTER TABLE before_after_cases ADD COLUMN view_count INTEGER DEFAULT 0').run(); } catch {}
-  // Consultations table (상담문의)
-  await db.prepare(`CREATE TABLE IF NOT EXISTS consultations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    treatment TEXT,
-    message TEXT,
-    status TEXT DEFAULT 'new',
-    admin_memo TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`).run();
-
-  // Notices table (공지사항)
-  await db.prepare(`CREATE TABLE IF NOT EXISTS notices (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    content TEXT NOT NULL,
-    category TEXT DEFAULT '공지',
-    is_pinned INTEGER DEFAULT 0,
-    is_published INTEGER DEFAULT 1,
-    view_count INTEGER DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`).run();
-
   _adminTablesReady = true;
 }
 
@@ -81,23 +43,29 @@ export async function initAdminTables(db: D1Database) {
 let _blogTablesReady = false;
 export async function initBlogTables(db: D1Database) {
   if (_blogTablesReady) return;
-  await db.prepare(`CREATE TABLE IF NOT EXISTS blog_posts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    slug TEXT NOT NULL UNIQUE,
-    title TEXT NOT NULL,
-    excerpt TEXT,
-    content TEXT NOT NULL,
-    category TEXT DEFAULT '일반',
-    tags TEXT DEFAULT '',
-    cover_image TEXT,
-    treatment_slug TEXT,
-    author_name TEXT DEFAULT '서울365치과',
-    is_published INTEGER DEFAULT 0,
-    view_count INTEGER DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`).run();
+  await db.prepare(`CREATE TABLE IF NOT EXISTS blog_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, slug TEXT NOT NULL UNIQUE, title TEXT NOT NULL, excerpt TEXT, content TEXT NOT NULL, category TEXT DEFAULT '일반', tags TEXT DEFAULT '', cover_image TEXT, treatment_slug TEXT, author_name TEXT DEFAULT '서울365치과', is_published INTEGER DEFAULT 0, view_count INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`).run();
   _blogTablesReady = true;
+}
+
+// Init user tables (idempotent, with flag)
+let _userTablesReady = false;
+export async function initUserTables(db: D1Database) {
+  if (_userTablesReady) return;
+  await db.batch([
+    db.prepare(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, privacy_agreed INTEGER DEFAULT 0, privacy_agreed_at DATETIME, marketing_agreed INTEGER DEFAULT 0, marketing_agreed_at DATETIME, is_active INTEGER DEFAULT 1, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`),
+  ]);
+  // Ensure columns exist for older schemas
+  const cols = [
+    'ALTER TABLE users ADD COLUMN privacy_agreed INTEGER DEFAULT 0',
+    'ALTER TABLE users ADD COLUMN privacy_agreed_at DATETIME',
+    'ALTER TABLE users ADD COLUMN marketing_agreed INTEGER DEFAULT 0',
+    'ALTER TABLE users ADD COLUMN marketing_agreed_at DATETIME',
+    'ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1',
+    'ALTER TABLE users ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP',
+  ];
+  for (const sql of cols) { try { await db.prepare(sql).run(); } catch {} }
+  _userTablesReady = true;
 }
 
 // Lightweight markdown renderer
