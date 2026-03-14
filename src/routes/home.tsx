@@ -231,7 +231,7 @@ home.get('/', async (c) => {
       </section>
 
       {/* ===== S2.5: CINEMATIC VIDEO — FULL BLEED ===== */}
-      <section class="relative w-full overflow-hidden bg-black" style="height:100vh;max-height:900px;min-height:500px" id="video-section" aria-label="서울365치과 소개 영상">
+      <section class="relative w-full overflow-hidden bg-black" style="height:clamp(400px, 70vh, 900px)" id="video-section" aria-label="서울365치과 소개 영상">
         {/* YouTube iframe will be injected by JS when section enters viewport */}
         <div id="yt-player-wrap" class="absolute inset-0 z-0" style="pointer-events:none"></div>
 
