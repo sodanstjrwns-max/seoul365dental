@@ -7,6 +7,18 @@
 /* === RESET & BASE === */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+/* === VIDEO SECTION RESPONSIVE === */
+.video-section-responsive {
+  height: clamp(400px, 80vh, 900px);
+}
+@media (max-width: 767px) {
+  .video-section-responsive {
+    height: 56.25vw;       /* 16:9 비율 = 화면 너비에 딱 맞춤 */
+    min-height: 300px;     /* 최소 높이 보장 */
+    max-height: 70vh;      /* 너무 크지 않게 */
+  }
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
