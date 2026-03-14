@@ -7,17 +7,40 @@ const apiRoutes = new Hono<{ Bindings: Bindings }>()
 
 apiRoutes.post('/api/auth/register', async (c) => {
   try {
-    const { name, phone, password } = await c.req.json();
+    const { name, phone, password, privacy_agreed, marketing_agreed } = await c.req.json();
     if (!name || !phone || !password) {
       return c.json({ ok: false, error: '모든 항목을 입력해주세요.' }, 400);
     }
     if (password.length < 4) {
       return c.json({ ok: false, error: '비밀번호는 4자리 이상이어야 합니다.' }, 400);
     }
+    if (!privacy_agreed) {
+      return c.json({ ok: false, error: '개인정보 수집·이용에 동의해주세요.' }, 400);
+    }
 
-    // Init tables if needed
-    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`).run();
+    // Init tables if needed (upgraded schema with consent columns)
+    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      phone TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      privacy_agreed INTEGER DEFAULT 0,
+      privacy_agreed_at DATETIME,
+      marketing_agreed INTEGER DEFAULT 0,
+      marketing_agreed_at DATETIME,
+      is_active INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`).run();
     await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`).run();
+
+    // Ensure new columns exist for older schema
+    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN privacy_agreed INTEGER DEFAULT 0').run(); } catch {}
+    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN privacy_agreed_at DATETIME').run(); } catch {}
+    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN marketing_agreed INTEGER DEFAULT 0').run(); } catch {}
+    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN marketing_agreed_at DATETIME').run(); } catch {}
+    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1').run(); } catch {}
+    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP').run(); } catch {}
 
     // Check existing
     const existing = await c.env.DB.prepare('SELECT id FROM users WHERE phone = ?').bind(phone).first();
@@ -25,8 +48,11 @@ apiRoutes.post('/api/auth/register', async (c) => {
       return c.json({ ok: false, error: '이미 가입된 번호입니다. 로그인해 주세요.' }, 409);
     }
 
+    const now = new Date().toISOString();
     const passwordHash = await hashPassword(password);
-    const result = await c.env.DB.prepare('INSERT INTO users (name, phone, password_hash) VALUES (?, ?, ?)').bind(name, phone, passwordHash).run();
+    const result = await c.env.DB.prepare(
+      'INSERT INTO users (name, phone, password_hash, privacy_agreed, privacy_agreed_at, marketing_agreed, marketing_agreed_at, is_active) VALUES (?, ?, ?, 1, ?, ?, ?, 1)'
+    ).bind(name, phone, passwordHash, now, marketing_agreed ? 1 : 0, marketing_agreed ? now : null).run();
 
     const userId = (result.meta as any).last_row_id;
     const sessionId = generateSessionId();
@@ -52,11 +78,27 @@ apiRoutes.post('/api/auth/login', async (c) => {
       return c.json({ ok: false, error: '휴대폰 번호와 비밀번호를 입력해주세요.' }, 400);
     }
 
-    // Init tables if needed
-    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, phone TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`).run();
+    // Init tables if needed (upgraded schema)
+    await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      phone TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      privacy_agreed INTEGER DEFAULT 0,
+      privacy_agreed_at DATETIME,
+      marketing_agreed INTEGER DEFAULT 0,
+      marketing_agreed_at DATETIME,
+      is_active INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`).run();
     await c.env.DB.prepare(`CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, expires_at DATETIME NOT NULL, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE)`).run();
+    // Ensure new columns exist for older schema
+    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN privacy_agreed INTEGER DEFAULT 0').run(); } catch {}
+    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN marketing_agreed INTEGER DEFAULT 0').run(); } catch {}
+    try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1').run(); } catch {}
 
-    const user = await c.env.DB.prepare('SELECT id, name, phone, password_hash FROM users WHERE phone = ?').bind(phone).first<{ id: number; name: string; phone: string; password_hash: string }>();
+    const user = await c.env.DB.prepare('SELECT id, name, phone, password_hash FROM users WHERE phone = ? AND is_active = 1').bind(phone).first<{ id: number; name: string; phone: string; password_hash: string }>();
     if (!user) {
       return c.json({ ok: false, error: '가입되지 않은 번호입니다.' }, 401);
     }

@@ -173,6 +173,17 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                 </div>
               </div>
             </a>
+            <a href="/admin/members" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-teal-400/20 transition-all group">
+              <div class="flex flex-col items-center gap-2 text-center">
+                <div class="w-10 h-10 rounded-xl bg-teal-400/10 flex items-center justify-center">
+                  <i class="fa-solid fa-users text-teal-400"></i>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-sm group-hover:text-teal-400 transition">회원 관리</div>
+                  <div class="text-white/25 text-xs">회원·광고동의 조회</div>
+                </div>
+              </div>
+            </a>
             <a href="/admin/notices" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-purple-400/20 transition-all group">
               <div class="flex flex-col items-center gap-2 text-center">
                 <div class="w-10 h-10 rounded-xl bg-purple-400/10 flex items-center justify-center">
@@ -1070,6 +1081,236 @@ adminRoutes.get('/api/cases', async (c) => {
     return c.json({ ok: true, cases: result.results || [] });
   } catch {
     return c.json({ ok: true, cases: [] });
+  }
+})
+
+// ============================================================
+// ADMIN: 회원 관리 페이지
+// ============================================================
+adminRoutes.get('/admin/members', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.redirect('/admin');
+
+  // Ensure users table has new columns
+  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN privacy_agreed INTEGER DEFAULT 0').run(); } catch {}
+  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN privacy_agreed_at DATETIME').run(); } catch {}
+  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN marketing_agreed INTEGER DEFAULT 0').run(); } catch {}
+  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN marketing_agreed_at DATETIME').run(); } catch {}
+  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1').run(); } catch {}
+  try { await c.env.DB.prepare('ALTER TABLE users ADD COLUMN updated_at DATETIME DEFAULT CURRENT_TIMESTAMP').run(); } catch {}
+
+  let members: any[] = [];
+  let totalCount = 0;
+  let marketingCount = 0;
+  try {
+    const result = await c.env.DB.prepare(
+      'SELECT id, name, phone, privacy_agreed, privacy_agreed_at, marketing_agreed, marketing_agreed_at, is_active, created_at FROM users ORDER BY created_at DESC'
+    ).all();
+    members = result.results || [];
+    totalCount = members.length;
+    marketingCount = members.filter((m: any) => m.marketing_agreed === 1).length;
+  } catch {}
+
+  return c.render(
+    <>
+      {/* Admin Header */}
+      <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-white/5">
+        <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center">
+              <i class="fa-solid fa-shield-halved text-[#0066FF] text-sm"></i>
+            </div>
+            <a href="/admin/dashboard" class="text-white font-bold text-sm hover:text-white/80 transition">서울365 관리자</a>
+            <span class="text-white/20 text-xs">|</span>
+            <span class="text-teal-400 text-xs font-semibold">회원 관리</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <a href="/admin/dashboard" class="text-white/30 hover:text-white/60 text-xs transition"><i class="fa-solid fa-arrow-left mr-1"></i>대시보드</a>
+            <a href="/api/admin/logout" class="text-red-400/60 hover:text-red-400 text-xs transition"><i class="fa-solid fa-right-from-bracket mr-1"></i>로그아웃</a>
+          </div>
+        </div>
+      </div>
+
+      <section class="min-h-screen bg-gradient-to-br from-gray-900 via-[#0a0e1a] to-gray-900 pt-20 pb-12">
+        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+
+          {/* Stats */}
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
+              <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2">전체 회원</div>
+              <div class="text-3xl font-black text-white">{totalCount}</div>
+            </div>
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
+              <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2">활성 회원</div>
+              <div class="text-3xl font-black text-emerald-400">{members.filter((m: any) => m.is_active === 1).length}</div>
+            </div>
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
+              <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2">광고 동의</div>
+              <div class="text-3xl font-black text-teal-400">{marketingCount}</div>
+            </div>
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
+              <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2">광고 미동의</div>
+              <div class="text-3xl font-black text-amber-400">{totalCount - marketingCount}</div>
+            </div>
+          </div>
+
+          {/* Filter */}
+          <div class="flex flex-wrap items-center gap-3 mb-6">
+            <button onclick="filterMembers('all')" id="filter-all" class="px-4 py-2 rounded-xl text-xs font-bold bg-white/10 text-white border border-white/10 hover:bg-white/15 transition active-filter">전체 ({totalCount})</button>
+            <button onclick="filterMembers('marketing')" id="filter-marketing" class="px-4 py-2 rounded-xl text-xs font-bold bg-teal-500/10 text-teal-400 border border-teal-400/20 hover:bg-teal-500/20 transition">광고동의 ({marketingCount})</button>
+            <button onclick="filterMembers('no-marketing')" id="filter-no-marketing" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-400/20 hover:bg-amber-500/20 transition">광고미동의 ({totalCount - marketingCount})</button>
+            <div class="ml-auto">
+              <button onclick="exportCSV()" class="px-4 py-2 rounded-xl text-xs font-bold bg-[#0066FF]/10 text-[#0066FF] border border-[#0066FF]/20 hover:bg-[#0066FF]/20 transition">
+                <i class="fa-solid fa-file-csv mr-1"></i>CSV 내보내기
+              </button>
+            </div>
+          </div>
+
+          {/* Members Table */}
+          <div class="bg-white/5 border border-white/5 rounded-2xl overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm" id="members-table">
+                <thead>
+                  <tr class="border-b border-white/5">
+                    <th class="px-5 py-3.5 text-left text-xs font-bold text-white/40 uppercase tracking-wider">ID</th>
+                    <th class="px-5 py-3.5 text-left text-xs font-bold text-white/40 uppercase tracking-wider">이름</th>
+                    <th class="px-5 py-3.5 text-left text-xs font-bold text-white/40 uppercase tracking-wider">연락처</th>
+                    <th class="px-5 py-3.5 text-left text-xs font-bold text-white/40 uppercase tracking-wider">개인정보동의</th>
+                    <th class="px-5 py-3.5 text-left text-xs font-bold text-white/40 uppercase tracking-wider">광고동의</th>
+                    <th class="px-5 py-3.5 text-left text-xs font-bold text-white/40 uppercase tracking-wider">상태</th>
+                    <th class="px-5 py-3.5 text-left text-xs font-bold text-white/40 uppercase tracking-wider">가입일</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {members.length === 0 ? (
+                    <tr><td colspan="7" class="px-5 py-16 text-center text-white/20">
+                      <i class="fa-solid fa-users text-3xl mb-3 block opacity-30"></i>
+                      등록된 회원이 없습니다
+                    </td></tr>
+                  ) : (
+                    members.map((m: any) => (
+                      <tr class={`border-b border-white/5 hover:bg-white/[0.03] transition member-row ${m.marketing_agreed ? 'marketing-yes' : 'marketing-no'}`}>
+                        <td class="px-5 py-3.5 text-white/50 font-mono text-xs">{m.id}</td>
+                        <td class="px-5 py-3.5 text-white font-semibold">{m.name}</td>
+                        <td class="px-5 py-3.5 text-white/70 font-mono">{m.phone}</td>
+                        <td class="px-5 py-3.5">
+                          {m.privacy_agreed ? (
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-400/10 text-emerald-400 text-xs font-bold">
+                              <i class="fa-solid fa-check text-[0.6rem]"></i> 동의
+                            </span>
+                          ) : (
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-400/10 text-gray-400 text-xs font-bold">
+                              <i class="fa-solid fa-minus text-[0.6rem]"></i> 미동의
+                            </span>
+                          )}
+                        </td>
+                        <td class="px-5 py-3.5">
+                          {m.marketing_agreed ? (
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-teal-400/10 text-teal-400 text-xs font-bold">
+                              <i class="fa-solid fa-bullhorn text-[0.6rem]"></i> 동의
+                            </span>
+                          ) : (
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-400/10 text-amber-400 text-xs font-bold">
+                              <i class="fa-solid fa-ban text-[0.6rem]"></i> 미동의
+                            </span>
+                          )}
+                        </td>
+                        <td class="px-5 py-3.5">
+                          {m.is_active !== 0 ? (
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-400/10 text-emerald-400 text-xs font-bold">활성</span>
+                          ) : (
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-400/10 text-red-400 text-xs font-bold">비활성</span>
+                          )}
+                        </td>
+                        <td class="px-5 py-3.5 text-white/40 text-xs">{m.created_at ? new Date(m.created_at).toLocaleDateString('ko-KR') : '-'}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Marketing Consent Info */}
+          <div class="mt-6 bg-teal-400/5 border border-teal-400/10 rounded-2xl p-5">
+            <h3 class="text-teal-400 font-bold text-sm mb-2"><i class="fa-solid fa-circle-info mr-1.5"></i>광고 활용 안내</h3>
+            <ul class="text-white/40 text-xs space-y-1 leading-relaxed">
+              <li>• 광고 동의 회원에게만 SMS/카카오톡 마케팅 메시지를 발송할 수 있습니다.</li>
+              <li>• 광고 미동의 회원의 연락처는 마케팅 목적으로 사용할 수 없습니다.</li>
+              <li>• CSV 내보내기 시 광고동의 필터를 적용하여 동의 회원만 추출 가능합니다.</li>
+              <li>• 개인정보보호법 제22조에 따라 동의 내역과 시점이 기록됩니다.</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        function filterMembers(type) {
+          const rows = document.querySelectorAll('.member-row');
+          rows.forEach(row => {
+            if (type === 'all') row.style.display = '';
+            else if (type === 'marketing') row.style.display = row.classList.contains('marketing-yes') ? '' : 'none';
+            else if (type === 'no-marketing') row.style.display = row.classList.contains('marketing-no') ? '' : 'none';
+          });
+          document.querySelectorAll('[id^="filter-"]').forEach(b => b.classList.remove('active-filter'));
+          document.getElementById('filter-' + type).classList.add('active-filter');
+        }
+
+        function exportCSV() {
+          const rows = document.querySelectorAll('.member-row');
+          let csv = '\\uFEFF번호,이름,연락처,개인정보동의,광고동의,상태,가입일\\n';
+          rows.forEach(row => {
+            if (row.style.display === 'none') return;
+            const cells = row.querySelectorAll('td');
+            const values = Array.from(cells).map(c => c.textContent.trim().replace(/,/g, ' '));
+            csv += values.join(',') + '\\n';
+          });
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = '서울365_회원목록_' + new Date().toISOString().split('T')[0] + '.csv';
+          link.click();
+        }
+      `}} />
+      <style dangerouslySetInnerHTML={{__html: `
+        .active-filter { ring: 2px; box-shadow: 0 0 0 2px rgba(255,255,255,0.15); }
+      `}} />
+    </>,
+    {
+      title: '회원 관리 | 서울365 관리자',
+      description: '서울365치과 관리자 회원 관리 페이지',
+    }
+  )
+})
+
+// 회원 관리 API — 회원 목록 조회
+adminRoutes.get('/api/admin/members', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  try {
+    const result = await c.env.DB.prepare(
+      'SELECT id, name, phone, privacy_agreed, privacy_agreed_at, marketing_agreed, marketing_agreed_at, is_active, created_at FROM users ORDER BY created_at DESC'
+    ).all();
+    return c.json({ ok: true, members: result.results || [] });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '조회 실패' }, 500);
+  }
+})
+
+// 회원 관리 API — 광고동의 회원만 조회
+adminRoutes.get('/api/admin/members/marketing', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  try {
+    const result = await c.env.DB.prepare(
+      'SELECT id, name, phone, marketing_agreed_at, created_at FROM users WHERE marketing_agreed = 1 AND is_active = 1 ORDER BY created_at DESC'
+    ).all();
+    return c.json({ ok: true, members: result.results || [] });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '조회 실패' }, 500);
   }
 })
 

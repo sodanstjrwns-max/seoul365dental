@@ -895,11 +895,38 @@ pageRoutes.get('/register', (c) => {
                 <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 확인 *</label>
                 <input type="password" name="password2" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="비밀번호 재입력" />
               </div>
-              <div class="flex items-start gap-2.5">
-                <input type="checkbox" required class="mt-1 accent-[#0066FF]" id="agree" />
-                <label for="agree" class="text-sm text-gray-500">
-                  <a href="/privacy" class="text-[#0066FF] font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
-                </label>
+              <div class="space-y-3 pt-1">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">약관 동의</p>
+                
+                {/* 전체 동의 */}
+                <div class="flex items-center gap-2.5 p-3.5 bg-gray-50 rounded-2xl border border-gray-100">
+                  <input type="checkbox" class="accent-[#0066FF] w-4 h-4" id="agree-all" />
+                  <label for="agree-all" class="text-sm font-bold text-gray-800 cursor-pointer select-none">전체 동의</label>
+                </div>
+
+                {/* 개인정보 수집·이용 동의 (필수) */}
+                <div class="flex items-start gap-2.5 pl-1">
+                  <input type="checkbox" required class="mt-0.5 accent-[#0066FF] w-4 h-4" id="agree-privacy" name="privacy_agreed" />
+                  <label for="agree-privacy" class="text-sm text-gray-600 cursor-pointer select-none">
+                    <span class="text-[#0066FF] font-semibold">[필수]</span>{' '}
+                    <a href="/privacy" target="_blank" class="text-[#0066FF] font-semibold underline underline-offset-2 hover:text-[#0044CC]">개인정보 수집·이용</a>에 동의합니다
+                  </label>
+                </div>
+                <div class="ml-7 -mt-2 p-3 bg-gray-50/80 rounded-xl text-xs text-gray-400 leading-relaxed border border-gray-100/60">
+                  수집항목: 이름, 연락처 | 이용목적: 회원관리, 진료상담 | 보유기간: 탈퇴 시까지 (의료법 보존의무 별도)
+                </div>
+
+                {/* 광고·마케팅 활용 동의 (선택) */}
+                <div class="flex items-start gap-2.5 pl-1">
+                  <input type="checkbox" class="mt-0.5 accent-[#0066FF] w-4 h-4" id="agree-marketing" name="marketing_agreed" />
+                  <label for="agree-marketing" class="text-sm text-gray-600 cursor-pointer select-none">
+                    <span class="text-gray-400 font-semibold">[선택]</span>{' '}
+                    광고·마케팅 정보 수신에 동의합니다
+                  </label>
+                </div>
+                <div class="ml-7 -mt-2 p-3 bg-gray-50/80 rounded-xl text-xs text-gray-400 leading-relaxed border border-gray-100/60">
+                  치료 이벤트, 건강정보, 프로모션 등 문자(SMS/카카오) 안내 | 동의 후 언제든 철회 가능
+                </div>
               </div>
               <button type="submit" id="register-btn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>
                 회원가입
@@ -913,6 +940,21 @@ pageRoutes.get('/register', (c) => {
       </section>
 
       <script dangerouslySetInnerHTML={{__html: `
+        // 전체 동의 체크박스 로직
+        const agreeAll = document.getElementById('agree-all');
+        const agreePrivacy = document.getElementById('agree-privacy');
+        const agreeMarketing = document.getElementById('agree-marketing');
+        
+        agreeAll.addEventListener('change', function() {
+          agreePrivacy.checked = this.checked;
+          agreeMarketing.checked = this.checked;
+        });
+        [agreePrivacy, agreeMarketing].forEach(cb => {
+          cb.addEventListener('change', function() {
+            agreeAll.checked = agreePrivacy.checked && agreeMarketing.checked;
+          });
+        });
+
         document.getElementById('register-form').addEventListener('submit', async function(e) {
           e.preventDefault();
           const btn = document.getElementById('register-btn');
@@ -930,11 +972,24 @@ pageRoutes.get('/register', (c) => {
             return;
           }
 
+          if (!agreePrivacy.checked) {
+            err.textContent = '개인정보 수집·이용에 동의해주세요.';
+            err.classList.remove('hidden');
+            btn.disabled = false; btn.textContent = '회원가입';
+            return;
+          }
+
           try {
             const res = await fetch('/api/auth/register', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name: data.name, phone: data.phone, password: data.password })
+              body: JSON.stringify({ 
+                name: data.name, 
+                phone: data.phone, 
+                password: data.password,
+                privacy_agreed: true,
+                marketing_agreed: agreeMarketing.checked
+              })
             });
             const json = await res.json();
             if (json.ok) {

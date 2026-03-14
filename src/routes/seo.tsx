@@ -10,18 +10,157 @@ const seoRoutes = new Hono<{ Bindings: Bindings }>()
 seoRoutes.get('/privacy', (c) => {
   return c.render(
     <section class="section-lg">
-      <div class="max-w-3xl mx-auto px-5 md:px-8 pt-24">
-        <h1 class="section-headline text-gray-900 mb-8">개인정보처리방침</h1>
-        <div class="text-gray-500 text-[0.9rem] leading-relaxed space-y-6">
-          <p>서울365치과의원(이하 "병원")은 개인정보보호법에 따라 이용자의 개인정보를 보호합니다.</p>
-          <h2 class="text-lg font-bold text-gray-900">1. 수집하는 개인정보 항목</h2>
-          <p>상담 예약을 위해 이름, 연락처, 상담 내용을 수집합니다.</p>
-          <h2 class="text-lg font-bold text-gray-900">2. 이용 목적</h2>
-          <p>상담 예약 확인 및 진료 안내 목적으로만 사용됩니다.</p>
-          <h2 class="text-lg font-bold text-gray-900">3. 보유 기간</h2>
-          <p>수집 목적 달성 후 즉시 파기합니다. 의료법에 따른 진료기록은 법정 보관 기간 동안 보관합니다.</p>
-          <h2 class="text-lg font-bold text-gray-900">4. 문의처</h2>
-          <p>{CLINIC.phone}</p>
+      <div class="max-w-3xl mx-auto px-5 md:px-8 pt-24 pb-16">
+        <h1 class="section-headline text-gray-900 mb-3">개인정보처리방침</h1>
+        <p class="text-sm text-gray-400 mb-10">시행일: 2026년 3월 1일 | 최종 수정: 2026년 3월 14일</p>
+        
+        <div class="text-gray-500 text-[0.9rem] leading-relaxed space-y-8">
+          <p>서울365치과의원(이하 "병원")은 「개인정보 보호법」 제30조에 따라 정보주체의 개인정보를 보호하고 이와 관련한 고충을 신속하고 원활하게 처리할 수 있도록 다음과 같이 개인정보 처리방침을 수립·공개합니다.</p>
+
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">제1조 (개인정보의 수집 항목 및 수집 방법)</h2>
+            <p class="mb-2">병원은 다음의 개인정보를 수집합니다.</p>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm border-collapse border border-gray-200 rounded-xl overflow-hidden">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="border border-gray-200 px-4 py-2.5 text-left font-semibold text-gray-700">구분</th>
+                    <th class="border border-gray-200 px-4 py-2.5 text-left font-semibold text-gray-700">수집 항목</th>
+                    <th class="border border-gray-200 px-4 py-2.5 text-left font-semibold text-gray-700">수집 방법</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border border-gray-200 px-4 py-2 font-medium text-gray-700">회원가입 (필수)</td>
+                    <td class="border border-gray-200 px-4 py-2">이름, 휴대폰 번호, 비밀번호(암호화 저장)</td>
+                    <td class="border border-gray-200 px-4 py-2">홈페이지 회원가입</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-200 px-4 py-2 font-medium text-gray-700">상담 문의 (필수)</td>
+                    <td class="border border-gray-200 px-4 py-2">이름, 연락처, 상담 내용, 관심 진료</td>
+                    <td class="border border-gray-200 px-4 py-2">홈페이지 상담 폼</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-200 px-4 py-2 font-medium text-gray-700">마케팅 수신 (선택)</td>
+                    <td class="border border-gray-200 px-4 py-2">이름, 연락처</td>
+                    <td class="border border-gray-200 px-4 py-2">회원가입 시 동의</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-200 px-4 py-2 font-medium text-gray-700">자동 수집</td>
+                    <td class="border border-gray-200 px-4 py-2">접속 IP, 접속 일시, 브라우저 정보, 쿠키</td>
+                    <td class="border border-gray-200 px-4 py-2">서비스 이용 과정에서 자동 생성·수집</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">제2조 (개인정보의 수집·이용 목적)</h2>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>회원 관리:</strong> 회원제 서비스 이용에 따른 본인확인, 개인식별, 부정이용 방지</li>
+              <li><strong>진료 상담:</strong> 상담 예약 확인, 진료 안내, 사후 관리 안내</li>
+              <li><strong>마케팅(선택 동의 시):</strong> 신규 진료 안내, 건강정보 제공, 이벤트·프로모션 알림 (문자/카카오)</li>
+              <li><strong>서비스 개선:</strong> 접속 빈도 분석, 서비스 이용 통계</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">제3조 (개인정보의 보유 및 이용 기간)</h2>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm border-collapse border border-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="border border-gray-200 px-4 py-2.5 text-left font-semibold text-gray-700">보유 항목</th>
+                    <th class="border border-gray-200 px-4 py-2.5 text-left font-semibold text-gray-700">보유 기간</th>
+                    <th class="border border-gray-200 px-4 py-2.5 text-left font-semibold text-gray-700">근거 법령</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border border-gray-200 px-4 py-2">회원 정보</td>
+                    <td class="border border-gray-200 px-4 py-2">회원 탈퇴 시까지</td>
+                    <td class="border border-gray-200 px-4 py-2">개인정보 보호법</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-200 px-4 py-2">진료기록</td>
+                    <td class="border border-gray-200 px-4 py-2">10년</td>
+                    <td class="border border-gray-200 px-4 py-2">의료법 제22조</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-200 px-4 py-2">상담 문의 기록</td>
+                    <td class="border border-gray-200 px-4 py-2">3년</td>
+                    <td class="border border-gray-200 px-4 py-2">전자상거래법</td>
+                  </tr>
+                  <tr>
+                    <td class="border border-gray-200 px-4 py-2">접속 로그</td>
+                    <td class="border border-gray-200 px-4 py-2">3개월</td>
+                    <td class="border border-gray-200 px-4 py-2">통신비밀보호법</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">제4조 (개인정보의 제3자 제공)</h2>
+            <p>병원은 이용자의 개인정보를 원칙적으로 외부에 제공하지 않습니다. 다만 다음의 경우 예외로 합니다.</p>
+            <ul class="list-disc pl-5 space-y-1 mt-2">
+              <li>이용자가 사전에 동의한 경우</li>
+              <li>법령에 의하여 수사 목적으로 관련 기관의 요구가 있는 경우</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">제5조 (개인정보의 파기 절차 및 방법)</h2>
+            <ul class="list-disc pl-5 space-y-1">
+              <li><strong>파기 절차:</strong> 보유 기간 경과, 처리 목적 달성 등 불필요 시 즉시 파기</li>
+              <li><strong>파기 방법:</strong> 전자적 파일 형태는 복구 불가능한 방법으로 영구 삭제, 종이 문서는 분쇄 또는 소각</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">제6조 (정보주체의 권리·의무 및 행사 방법)</h2>
+            <p class="mb-2">이용자는 언제든지 다음의 권리를 행사할 수 있습니다.</p>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>개인정보 열람 요구</li>
+              <li>오류 등이 있을 경우 정정 요구</li>
+              <li>삭제(탈퇴) 요구</li>
+              <li>처리 정지 요구</li>
+              <li><strong>마케팅 수신 동의 철회:</strong> 언제든 전화({CLINIC.phone}) 또는 문자로 요청 가능</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">제7조 (개인정보의 안전성 확보 조치)</h2>
+            <ul class="list-disc pl-5 space-y-1">
+              <li>비밀번호 암호화 저장 (SHA-256 해시)</li>
+              <li>SSL/TLS 보안 통신 적용</li>
+              <li>접근 권한 최소화 및 관리</li>
+              <li>정기적인 보안 점검</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">제8조 (쿠키의 사용)</h2>
+            <p>병원은 로그인 세션 유지를 위해 쿠키를 사용합니다. 이용자는 브라우저 설정을 통해 쿠키 저장을 거부할 수 있으나, 이 경우 로그인이 필요한 서비스 이용이 제한될 수 있습니다.</p>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">제9조 (개인정보 보호책임자)</h2>
+            <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+              <p><strong>개인정보 보호책임자</strong></p>
+              <p class="mt-1">성명: 문석준</p>
+              <p>직위: 대표원장</p>
+              <p>연락처: {CLINIC.phone}</p>
+              <p>이메일: info@seoul365dental.com</p>
+            </div>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-gray-900 mb-3">제10조 (개인정보 처리방침의 변경)</h2>
+            <p>이 개인정보 처리방침은 시행일로부터 적용되며, 관련 법령 및 방침의 변경이 있을 경우 홈페이지를 통해 공개합니다.</p>
+          </div>
         </div>
       </div>
     </section>,
