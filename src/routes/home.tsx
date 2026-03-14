@@ -501,7 +501,7 @@ home.get('/', async (c) => {
                 { title: '올온X – 하악 즉시로딩', tag: '올온X', doctor: '박준규 대표원장' },
                 { title: '인비절라인 – 성인 투명교정', tag: '교정', doctor: '하누리 원장' },
               ].map(cs => (
-                <div class="premium-card overflow-hidden group tilt-card electric-card-border" data-cursor-hover>
+                <a href="/cases/gallery" class="premium-card overflow-hidden group tilt-card electric-card-border block" data-cursor-hover>
                   <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
                     <div class="absolute inset-0 flex">
                       <div class="w-1/2 flex items-center justify-center bg-gray-100/80 border-r border-gray-200/50 group-hover:bg-gray-50 transition-colors">
@@ -516,10 +516,10 @@ home.get('/', async (c) => {
                     <div class="flex items-center gap-2 mb-2.5">
                       <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
                     </div>
-                    <h3 class="font-bold text-gray-900 text-[0.95rem]">{cs.title}</h3>
+                    <h3 class="font-bold text-gray-900 text-[0.95rem] group-hover:text-[#0066FF] transition-colors">{cs.title}</h3>
                     <p class="text-xs text-gray-400 mt-1">담당: {cs.doctor}</p>
                   </div>
-                </div>
+                </a>
               ))
             )}
           </div>
@@ -700,7 +700,7 @@ home.get('/', async (c) => {
                 { title: '치아교정 나이 제한? 성인교정 궁금증 해결', tag: '교정', date: '2026.02.10' },
                 { title: '수면진료, 정말 안전한가요?', tag: '수면진료', date: '2026.02.05' },
               ].map(article => (
-                <div class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border" data-cursor-hover>
+                <a href="/blog" class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border block" data-cursor-hover>
                   <div class="aspect-[16/9] bg-gradient-to-br from-[#0066FF]/[0.06] to-[#00E5FF]/[0.02] flex items-center justify-center overflow-hidden">
                     <i class="fa-solid fa-newspaper text-4xl text-[#0066FF]/10 group-hover:text-[#0066FF]/20 group-hover:scale-110 transition-all duration-700"></i>
                   </div>
@@ -711,7 +711,7 @@ home.get('/', async (c) => {
                     </div>
                     <h3 class="font-bold text-gray-900 text-[0.95rem] leading-snug group-hover:text-[#0066FF] transition-colors">{article.title}</h3>
                   </div>
-                </div>
+                </a>
               ))
             )}
           </div>
