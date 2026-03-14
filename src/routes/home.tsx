@@ -796,29 +796,29 @@ home.get('/', async (c) => {
     {
       title: '서울365치과 | 인천 구월동 임플란트·교정',
       description: '인천 구월동 서울365치과. 서울대 5인 전문의, 365일·야간21시 진료. 수면진료·자체 기공실. 032-432-0365',
-      canonical: 'https://seoul365dental.com',
+      canonical: 'https://seoul365dc.kr',
       jsonLd: [
         // BreadcrumbList
         {
           "@context": "https://schema.org", "@type": "BreadcrumbList",
-          "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "서울365치과", "item": "https://seoul365dental.com" }]
+          "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "서울365치과", "item": "https://seoul365dc.kr" }]
         },
         // WebPage — homepage
         {
           "@context": "https://schema.org",
           "@type": ["WebPage", "MedicalWebPage"],
-          "@id": "https://seoul365dental.com/#webpage",
-          "url": "https://seoul365dental.com",
+          "@id": "https://seoul365dc.kr/#webpage",
+          "url": "https://seoul365dc.kr",
           "name": "서울365치과 | 인천 구월동 서울대 5인 전문의 치과",
           "description": "치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원.",
-          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
-          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
+          "about": { "@id": "https://seoul365dc.kr/#dentist" },
           "inLanguage": "ko-KR",
           "datePublished": "2024-01-01",
           "dateModified": new Date().toISOString().split('T')[0],
           "primaryImageOfPage": {
             "@type": "ImageObject",
-            "url": "https://seoul365dental.com/static/og-image.jpg",
+            "url": "https://seoul365dc.kr/static/og-image.png",
             "width": 1200,
             "height": 630,
             "caption": "서울365치과 인천 구월동 - 서울대 출신 5인 전문의 치과"
@@ -839,7 +839,7 @@ home.get('/', async (c) => {
           "uploadDate": "2024-01-01",
           "contentUrl": "https://www.youtube.com/watch?v=gB_yiatcwAc",
           "embedUrl": "https://www.youtube-nocookie.com/embed/gB_yiatcwAc",
-          "publisher": { "@id": "https://seoul365dental.com/#dentist" },
+          "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
           "inLanguage": "ko",
           "isFamilyFriendly": true
         },
@@ -854,12 +854,12 @@ home.get('/', async (c) => {
             "@type": "ListItem",
             "position": i + 1,
             "name": t.name,
-            "url": `https://seoul365dental.com/treatments/${t.slug}`,
+            "url": `https://seoul365dc.kr/treatments/${t.slug}`,
             "item": {
               "@type": "MedicalProcedure",
               "name": t.name,
               "description": t.shortDesc,
-              "url": `https://seoul365dental.com/treatments/${t.slug}`
+              "url": `https://seoul365dc.kr/treatments/${t.slug}`
             }
           }))
         },
@@ -891,10 +891,10 @@ home.get('/', async (c) => {
           "@type": "OfferCatalog",
           "name": "서울365치과 진료 서비스",
           "itemListElement": [
-            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" }, "priceCurrency": "KRW", "description": "자체 기공실 MUA 즉시로딩", "url": "https://seoul365dental.com/treatments/full-implant" },
-            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "올온X 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dental.com/treatments/all-on-x" },
-            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "수면진료" }, "priceCurrency": "KRW", "description": "잠깐 잠들었다 깨면 치료 완료", "url": "https://seoul365dental.com/treatments/sedation" },
-            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "치아교정" }, "priceCurrency": "KRW", "description": "인비절라인 투명교정", "url": "https://seoul365dental.com/treatments/orthodontics" },
+            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" }, "priceCurrency": "KRW", "description": "자체 기공실 MUA 즉시로딩", "url": "https://seoul365dc.kr/treatments/full-implant" },
+            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "올온X 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dc.kr/treatments/all-on-x" },
+            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "수면진료" }, "priceCurrency": "KRW", "description": "잠깐 잠들었다 깨면 치료 완료", "url": "https://seoul365dc.kr/treatments/sedation" },
+            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "치아교정" }, "priceCurrency": "KRW", "description": "인비절라인 투명교정", "url": "https://seoul365dc.kr/treatments/orthodontics" },
           ]
         },
         // Article — clinic columns (AEO: rich snippet for blog-like content)
@@ -905,15 +905,15 @@ home.get('/', async (c) => {
           "itemListElement": [
             {
               "@type": "ListItem", "position": 1,
-              "item": { "@type": "Article", "headline": "전체임플란트, 틀니보다 좋은 이유 5가지", "datePublished": "2026-02-15", "author": { "@type": "Physician", "name": "박준규" }, "publisher": { "@id": "https://seoul365dental.com/#dentist" }, "articleSection": "임플란트", "inLanguage": "ko-KR" }
+              "item": { "@type": "Article", "headline": "전체임플란트, 틀니보다 좋은 이유 5가지", "datePublished": "2026-02-15", "author": { "@type": "Physician", "name": "박준규" }, "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "articleSection": "임플란트", "inLanguage": "ko-KR" }
             },
             {
               "@type": "ListItem", "position": 2,
-              "item": { "@type": "Article", "headline": "치아교정 나이 제한? 성인교정 궁금증 해결", "datePublished": "2026-02-10", "author": { "@type": "Physician", "name": "하누리" }, "publisher": { "@id": "https://seoul365dental.com/#dentist" }, "articleSection": "교정", "inLanguage": "ko-KR" }
+              "item": { "@type": "Article", "headline": "치아교정 나이 제한? 성인교정 궁금증 해결", "datePublished": "2026-02-10", "author": { "@type": "Physician", "name": "하누리" }, "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "articleSection": "교정", "inLanguage": "ko-KR" }
             },
             {
               "@type": "ListItem", "position": 3,
-              "item": { "@type": "Article", "headline": "수면진료, 정말 안전한가요?", "datePublished": "2026-02-05", "author": { "@type": "Physician", "name": "박준규" }, "publisher": { "@id": "https://seoul365dental.com/#dentist" }, "articleSection": "수면진료", "inLanguage": "ko-KR" }
+              "item": { "@type": "Article", "headline": "수면진료, 정말 안전한가요?", "datePublished": "2026-02-05", "author": { "@type": "Physician", "name": "박준규" }, "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "articleSection": "수면진료", "inLanguage": "ko-KR" }
             },
           ]
         },
@@ -922,7 +922,7 @@ home.get('/', async (c) => {
           "@context": "https://schema.org",
           "@type": "MedicalWebPage",
           "name": "서울365치과 치과 질환 및 치료 안내",
-          "url": "https://seoul365dental.com",
+          "url": "https://seoul365dc.kr",
           "about": [
             { "@type": "MedicalCondition", "name": "무치악(치아 상실)", "associatedAnatomy": { "@type": "AnatomicalStructure", "name": "구강" }, "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "전체임플란트" }, { "@type": "MedicalProcedure", "name": "올온X" }] },
             { "@type": "MedicalCondition", "name": "부정교합", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "인비절라인" }, { "@type": "MedicalProcedure", "name": "교정치료" }] },
@@ -937,7 +937,7 @@ home.get('/', async (c) => {
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
           "name": "서울365치과의원",
-          "image": "https://seoul365dental.com/static/og-image.jpg",
+          "image": "https://seoul365dc.kr/static/og-image.png",
           "telephone": "+82-32-432-0365",
           "address": {
             "@type": "PostalAddress",
@@ -956,7 +956,7 @@ home.get('/', async (c) => {
           "priceRange": "₩₩~₩₩₩",
           "potentialAction": {
             "@type": "OrderAction",
-            "target": { "@type": "EntryPoint", "urlTemplate": "https://seoul365dental.com/reservation", "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"] },
+            "target": { "@type": "EntryPoint", "urlTemplate": "https://seoul365dc.kr/reservation", "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"] },
             "deliveryMethod": "http://purl.org/goodrelations/v1#DeliveryModeOwnFleet",
           },
           "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "bestRating": "5", "ratingCount": "2150", "reviewCount": "1840" },

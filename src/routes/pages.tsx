@@ -131,13 +131,13 @@ pageRoutes.get('/reservation', (c) => {
     {
       title: '상담 예약 | 서울365치과',
       description: '서울365치과 상담 예약. 전화(032-432-0365), 카카오톡, 네이버 예약. 365일·야간21시. 인천 구월동.',
-      canonical: 'https://seoul365dental.com/reservation',
+      canonical: 'https://seoul365dc.kr/reservation',
       jsonLd: [
         {
           "@context": "https://schema.org", "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-            { "@type": "ListItem", "position": 2, "name": "상담 예약", "item": "https://seoul365dental.com/reservation" }
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "상담 예약", "item": "https://seoul365dc.kr/reservation" }
           ]
         },
         // ContactPage
@@ -146,9 +146,9 @@ pageRoutes.get('/reservation', (c) => {
           "@type": "ContactPage",
           "name": "서울365치과 상담 예약",
           "description": "서울365치과 상담 예약. 전화, 카카오톡, 네이버 예약, 온라인 상담 신청.",
-          "url": "https://seoul365dental.com/reservation",
-          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
-          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "url": "https://seoul365dc.kr/reservation",
+          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
+          "about": { "@id": "https://seoul365dc.kr/#dentist" },
           "inLanguage": "ko-KR"
         },
         // ReserveAction
@@ -158,16 +158,16 @@ pageRoutes.get('/reservation', (c) => {
           "name": "서울365치과 상담 예약하기",
           "target": {
             "@type": "EntryPoint",
-            "urlTemplate": "https://seoul365dental.com/reservation",
+            "urlTemplate": "https://seoul365dc.kr/reservation",
             "inLanguage": "ko",
             "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"]
           },
           "result": {
             "@type": "Reservation",
             "name": "치과 상담 예약",
-            "reservationFor": { "@id": "https://seoul365dental.com/#dentist" }
+            "reservationFor": { "@id": "https://seoul365dc.kr/#dentist" }
           },
-          "agent": { "@id": "https://seoul365dental.com/#dentist" },
+          "agent": { "@id": "https://seoul365dc.kr/#dentist" },
           "object": { "@type": "MedicalClinic", "name": "서울365치과의원" }
         },
         // CommunicateAction — multiple communication channels
@@ -200,7 +200,7 @@ pageRoutes.get('/reservation', (c) => {
           "@type": "Service",
           "name": "서울365치과 상담 서비스",
           "serviceType": "치과 상담",
-          "provider": { "@id": "https://seoul365dental.com/#dentist" },
+          "provider": { "@id": "https://seoul365dc.kr/#dentist" },
           "areaServed": { "@type": "City", "name": "인천광역시" },
           "serviceOutput": {
             "@type": "Thing",
@@ -213,9 +213,9 @@ pageRoutes.get('/reservation', (c) => {
             "priceCurrency": "KRW",
             "description": "초진 상담 무료",
           },
-          "termsOfService": "https://seoul365dental.com/terms",
+          "termsOfService": "https://seoul365dc.kr/terms",
           "availableChannel": [
-            { "@type": "ServiceChannel", "serviceUrl": "https://seoul365dental.com/reservation", "serviceSmsNumber": "+82-32-432-0365", "name": "온라인 예약" },
+            { "@type": "ServiceChannel", "serviceUrl": "https://seoul365dc.kr/reservation", "serviceSmsNumber": "+82-32-432-0365", "name": "온라인 예약" },
             { "@type": "ServiceChannel", "servicePhone": { "@type": "ContactPoint", "telephone": "+82-32-432-0365" }, "name": "전화 예약" },
             { "@type": "ServiceChannel", "serviceUrl": "https://pf.kakao.com/_dMsCT", "name": "카카오톡 상담" },
           ]
@@ -409,13 +409,13 @@ pageRoutes.get('/info', (c) => {
     {
       title: '내원안내 | 서울365치과 비용·오시는길',
       description: '서울365치과 내원안내. 임플란트·교정 비용, 오시는길, 진료시간. 예술회관역 5번 출구 도보 3분. 032-432-0365',
-      canonical: 'https://seoul365dental.com/info',
+      canonical: 'https://seoul365dc.kr/info',
       jsonLd: [
         {
           "@context": "https://schema.org", "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-            { "@type": "ListItem", "position": 2, "name": "내원안내", "item": "https://seoul365dental.com/info" }
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "내원안내", "item": "https://seoul365dc.kr/info" }
           ]
         },
         {
@@ -428,7 +428,7 @@ pageRoutes.get('/info', (c) => {
             "itemOffered": { "@type": "MedicalProcedure", "name": p.treatment },
             "priceCurrency": "KRW", "price": p.price,
             "description": `보험: ${p.insurance}`,
-            "seller": { "@id": "https://seoul365dental.com/#dentist" },
+            "seller": { "@id": "https://seoul365dc.kr/#dentist" },
             "availability": "https://schema.org/InStock"
           }))
         },
@@ -502,14 +502,14 @@ pageRoutes.get('/faq', (c) => {
     {
       title: 'FAQ | 서울365치과 자주 묻는 질문',
       description: '서울365치과 FAQ. 임플란트 비용, 수면진료, 교정 나이제한, 예약 방법, 365일 진료 안내. 032-432-0365',
-      canonical: 'https://seoul365dental.com/faq',
+      canonical: 'https://seoul365dc.kr/faq',
       jsonLd: [
         {
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-            { "@type": "ListItem", "position": 2, "name": "FAQ", "item": "https://seoul365dental.com/faq" }
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "FAQ", "item": "https://seoul365dc.kr/faq" }
           ]
         },
         {
@@ -544,7 +544,7 @@ pageRoutes.get('/faq', (c) => {
           "@context": "https://schema.org",
           "@type": "WebPage",
           "name": "자주 묻는 질문 FAQ | 서울365치과",
-          "url": "https://seoul365dental.com/faq",
+          "url": "https://seoul365dc.kr/faq",
           "speakable": {
             "@type": "SpeakableSpecification",
             "cssSelector": ["h1", "h3[itemprop='name']", "p[itemprop='text']"]
@@ -599,7 +599,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
       {
         title: '치료 사례 | 서울365치과 Before & After',
         description: '서울365치과 치료 사례. 회원 로그인 후 열람 가능합니다.',
-        canonical: 'https://seoul365dental.com/cases/gallery',
+        canonical: 'https://seoul365dc.kr/cases/gallery',
       }
     )
   }
@@ -832,13 +832,13 @@ pageRoutes.get('/cases/gallery', async (c) => {
     {
       title: '치료 사례 Before & After | 서울365치과',
       description: '서울365치과 치료 사례 갤러리. 임플란트·교정·심미치료 Before & After 실제 치료 결과. 서울대 5인 전문의 협진. 032-432-0365',
-      canonical: 'https://seoul365dental.com/cases/gallery',
+      canonical: 'https://seoul365dc.kr/cases/gallery',
       jsonLd: [
         {
           "@context": "https://schema.org", "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-            { "@type": "ListItem", "position": 2, "name": "치료사례", "item": "https://seoul365dental.com/cases/gallery" }
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "치료사례", "item": "https://seoul365dc.kr/cases/gallery" }
           ]
         },
         {
@@ -846,9 +846,9 @@ pageRoutes.get('/cases/gallery', async (c) => {
           "@type": "ImageGallery",
           "name": "서울365치과 치료 사례 갤러리",
           "description": "서울365치과 임플란트, 교정, 심미치료 Before & After 갤러리. 실제 치료 전후 사진.",
-          "url": "https://seoul365dental.com/cases/gallery",
-          "about": { "@id": "https://seoul365dental.com/#dentist" },
-          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "url": "https://seoul365dc.kr/cases/gallery",
+          "about": { "@id": "https://seoul365dc.kr/#dentist" },
+          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
           "accessMode": "visual",
           "isAccessibleForFree": false,
           "conditionsOfAccess": "회원 로그인 필요",
@@ -857,7 +857,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
           "@context": "https://schema.org",
           "@type": "CollectionPage",
           "name": "서울365치과 치료 사례",
-          "url": "https://seoul365dental.com/cases/gallery",
+          "url": "https://seoul365dc.kr/cases/gallery",
           "inLanguage": "ko-KR",
         },
       ]
@@ -1014,7 +1014,7 @@ pageRoutes.get('/register', (c) => {
     {
       title: '회원가입 | 서울365치과 치료사례 열람',
       description: '서울365치과 회원가입. 30초면 간편 가입. 회원 전용 Before & After 치료사례 확인.',
-      canonical: 'https://seoul365dental.com/register',
+      canonical: 'https://seoul365dc.kr/register',
     }
   )
 })
@@ -1092,7 +1092,7 @@ pageRoutes.get('/login', (c) => {
     {
       title: '로그인 | 서울365치과 회원 전용',
       description: '서울365치과 로그인. Before & After 치료사례 등 회원 전용 콘텐츠 열람.',
-      canonical: 'https://seoul365dental.com/login',
+      canonical: 'https://seoul365dc.kr/login',
     }
   )
 })
@@ -1173,7 +1173,7 @@ pageRoutes.get('/notices', async (c) => {
     {
       title: '공지사항 | 서울365치과',
       description: '서울365치과 공지사항. 진료 안내, 이벤트, 휴무일 공지 등 병원 소식을 확인하세요.',
-      canonical: 'https://seoul365dental.com/notices',
+      canonical: 'https://seoul365dc.kr/notices',
     }
   )
 })
@@ -1237,7 +1237,7 @@ pageRoutes.get('/notices/:id', async (c) => {
     {
       title: `${notice.title} | 서울365치과 공지사항`,
       description: `서울365치과 공지: ${notice.title}`,
-      canonical: `https://seoul365dental.com/notices/${notice.id}`,
+      canonical: `https://seoul365dc.kr/notices/${notice.id}`,
     }
   )
 })

@@ -12,7 +12,7 @@ export const CLINIC = {
   nearStation: '예술회관역 5번 출구 250m',
   geo: { lat: 37.4482, lng: 126.7042 },
   foundingYear: 2019,
-  url: 'https://seoul365dental.com',
+  url: 'https://seoul365dc.kr',
   kakao: 'https://pf.kakao.com/_dMsCT',
   naverBooking: 'https://booking.naver.com/booking/13/bizes/426166',
   naverTalk: 'https://talk.naver.com/ct/w4iv2k',

@@ -153,7 +153,7 @@ seoRoutes.get('/privacy', (c) => {
               <p class="mt-1">성명: 박준규</p>
               <p>직위: 대표원장</p>
               <p>연락처: {CLINIC.phone}</p>
-              <p>이메일: info@seoul365dental.com</p>
+              <p>이메일: info@seoul365dc.kr</p>
             </div>
           </div>
 
@@ -164,7 +164,7 @@ seoRoutes.get('/privacy', (c) => {
         </div>
       </div>
     </section>,
-    { title: '개인정보처리방침 | 서울365치과', canonical: 'https://seoul365dental.com/privacy' }
+    { title: '개인정보처리방침 | 서울365치과', canonical: 'https://seoul365dc.kr/privacy' }
   )
 })
 
@@ -184,7 +184,7 @@ seoRoutes.get('/terms', (c) => {
         </div>
       </div>
     </section>,
-    { title: '이용약관 | 서울365치과', canonical: 'https://seoul365dental.com/terms' }
+    { title: '이용약관 | 서울365치과', canonical: 'https://seoul365dc.kr/terms' }
   )
 })
 
@@ -192,7 +192,7 @@ seoRoutes.get('/terms', (c) => {
 // SITEMAP.XML — Dynamic SEO Sitemap v3.0
 // ============================================================
 seoRoutes.get('/sitemap.xml', async (c) => {
-  const base = 'https://seoul365dental.com';
+  const base = 'https://seoul365dc.kr';
   const today = new Date().toISOString().split('T')[0];
 
   // --- 핵심 치료 slug (priority 0.9) ---
@@ -206,7 +206,7 @@ seoRoutes.get('/sitemap.xml', async (c) => {
     {
       loc: '', priority: '1.0', changefreq: 'daily', lastmod: today,
       images: [
-        { url: `${base}/static/og-image.jpg`, title: '서울365치과 메인 이미지', caption: '인천 구월동 서울대 출신 5인 전문의 치과' },
+        { url: `${base}/static/og-image.png`, title: '서울365치과 메인 이미지', caption: '인천 구월동 서울대 출신 5인 전문의 치과' },
         { url: `${base}/static/dr-park.jpg`, title: '박준규 대표원장', caption: '서울대 통합치의학과 전문의' },
       ],
       video: {
@@ -240,7 +240,7 @@ seoRoutes.get('/sitemap.xml', async (c) => {
     changefreq: 'monthly' as const,
     lastmod: '2026-03-01',
     images: [
-      { url: `${base}/static/og-image.jpg`, title: `${t.name} | 서울365치과`, caption: t.metaDesc || `인천 구월동 서울365치과 ${t.name} 안내` },
+      { url: `${base}/static/og-image.png`, title: `${t.name} | 서울365치과`, caption: t.metaDesc || `인천 구월동 서울365치과 ${t.name} 안내` },
     ],
   }));
 
@@ -321,7 +321,7 @@ ${allPages.map((p: any) => `  <url>
 seoRoutes.get('/robots.txt', (c) => {
   const robots = `# ====================================================
 # 서울365치과의원 (Seoul 365 Dental Clinic)
-# https://seoul365dental.com
+# https://seoul365dc.kr
 # robots.txt v3.0 — SEO/AEO Optimized
 # Last updated: ${new Date().toISOString().split('T')[0]}
 # ====================================================
@@ -550,10 +550,10 @@ User-agent: GPTBot-experimental
 Disallow: /
 
 # ─── SITEMAP ───
-Sitemap: https://seoul365dental.com/sitemap.xml
+Sitemap: https://seoul365dc.kr/sitemap.xml
 
 # ─── HOST (Yandex directive) ───
-Host: https://seoul365dental.com
+Host: https://seoul365dc.kr
 `;
 
   return new Response(robots, {

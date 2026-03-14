@@ -83,13 +83,13 @@ doctorRoutes.get('/doctors', (c) => {
     {
       title: '의료진 소개 | 서울365치과 서울대 5인 전문의',
       description: '서울365치과 의료진. 서울대 치대 출신 5인 원장 협진. 통합치의학·보존과·교정과 전문의. 인천 구월동. 032-432-0365',
-      canonical: 'https://seoul365dental.com/doctors',
+      canonical: 'https://seoul365dc.kr/doctors',
       jsonLd: [
         {
           "@context": "https://schema.org", "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-            { "@type": "ListItem", "position": 2, "name": "의료진", "item": "https://seoul365dental.com/doctors" }
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "의료진", "item": "https://seoul365dc.kr/doctors" }
           ]
         },
         // AboutPage — doctors listing
@@ -98,9 +98,9 @@ doctorRoutes.get('/doctors', (c) => {
           "@type": ["AboutPage", "MedicalWebPage"],
           "name": "서울365치과 의료진 소개",
           "description": "서울365치과 의료진. 서울대학교 치과대학 출신 5인 원장이 한 팀으로 협진합니다.",
-          "url": "https://seoul365dental.com/doctors",
-          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
-          "about": { "@id": "https://seoul365dental.com/#dentist" },
+          "url": "https://seoul365dc.kr/doctors",
+          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
+          "about": { "@id": "https://seoul365dc.kr/#dentist" },
           "inLanguage": "ko-KR"
         },
         // ItemList — all doctors
@@ -113,14 +113,14 @@ doctorRoutes.get('/doctors', (c) => {
           "itemListElement": doctors.map((doc: any, i: number) => ({
             "@type": "ListItem",
             "position": i + 1,
-            "url": `https://seoul365dental.com/doctors/${doc.slug}`,
+            "url": `https://seoul365dc.kr/doctors/${doc.slug}`,
             "item": {
               "@type": "Physician",
               "name": doc.name,
               "jobTitle": doc.title,
               "medicalSpecialty": doc.specialties,
               "description": doc.philosophy.split('.')[0] + '.',
-              "worksFor": { "@id": "https://seoul365dental.com/#dentist" },
+              "worksFor": { "@id": "https://seoul365dc.kr/#dentist" },
               "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" }
             }
           }))
@@ -130,7 +130,7 @@ doctorRoutes.get('/doctors', (c) => {
           "@context": "https://schema.org",
           "@type": "ImageObject",
           "name": "서울365치과 의료진 단체사진",
-          "url": "https://seoul365dental.com/static/team-photo.jpg",
+          "url": "https://seoul365dc.kr/static/team-photo.jpg",
           "description": "서울365치과 의료진 단체사진 - 서울대 출신 5인 원장",
           "representativeOfPage": true
         },
@@ -140,7 +140,7 @@ doctorRoutes.get('/doctors', (c) => {
           "@type": "MedicalOrganization",
           "name": "서울365치과 의료진",
           "description": "서울대학교 치과대학 출신 5인 원장이 한 팀으로 협진하는 인천 구월동 치과",
-          "url": "https://seoul365dental.com/doctors",
+          "url": "https://seoul365dc.kr/doctors",
           "medicalSpecialty": ["Dentistry", "Implantology", "Orthodontics", "Endodontics", "Prosthodontics"],
           "employee": doctors.map((doc: any) => ({
             "@type": "Physician",
@@ -148,7 +148,7 @@ doctorRoutes.get('/doctors', (c) => {
             "jobTitle": doc.title,
             "medicalSpecialty": doc.specialties,
             "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" },
-            "url": `https://seoul365dental.com/doctors/${doc.slug}`,
+            "url": `https://seoul365dc.kr/doctors/${doc.slug}`,
           })),
           "numberOfEmployees": { "@type": "QuantitativeValue", "value": 5, "unitText": "원장" },
         },
@@ -162,7 +162,7 @@ doctorRoutes.get('/doctors', (c) => {
             "@type": "Person",
             "name": doc.name,
             "jobTitle": doc.title,
-            "worksFor": { "@id": "https://seoul365dental.com/#dentist" }
+            "worksFor": { "@id": "https://seoul365dc.kr/#dentist" }
           })),
         },
       ]
@@ -296,21 +296,21 @@ doctorRoutes.get('/doctors/:slug', (c) => {
     {
       title: doc.metaTitle,
       description: doc.metaDesc,
-      canonical: `https://seoul365dental.com/doctors/${doc.slug}`,
+      canonical: `https://seoul365dc.kr/doctors/${doc.slug}`,
       jsonLd: [
         // Physician (detailed)
         {
           "@context": "https://schema.org", "@type": "Physician",
-          "@id": `https://seoul365dental.com/doctors/${doc.slug}#physician`,
+          "@id": `https://seoul365dc.kr/doctors/${doc.slug}#physician`,
           "name": doc.name, "jobTitle": doc.title,
           "description": doc.philosophy,
-          "image": doc.slug === 'park-junkyu' ? 'https://seoul365dental.com/static/dr-park-profile.jpg' : undefined,
+          "image": doc.slug === 'park-junkyu' ? 'https://seoul365dc.kr/static/dr-park-profile.jpg' : undefined,
           "medicalSpecialty": doc.specialties,
           "alumniOf": doc.education.map((edu: string) => ({
             "@type": "EducationalOrganization",
             "name": edu
           })),
-          "worksFor": { "@type": "Dentist", "@id": "https://seoul365dental.com/#dentist", "name": "서울365치과의원", "url": "https://seoul365dental.com" },
+          "worksFor": { "@type": "Dentist", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원", "url": "https://seoul365dc.kr" },
           "knowsAbout": doc.specialties,
           "hasCredential": doc.credentials.map((cred: string) => ({
             "@type": "EducationalOccupationalCredential",
@@ -330,16 +330,16 @@ doctorRoutes.get('/doctors/:slug', (c) => {
           "availableService": doc.specialties.map((s: string) => ({
             "@type": "MedicalProcedure", "name": s
           })),
-          "url": `https://seoul365dental.com/doctors/${doc.slug}`,
+          "url": `https://seoul365dc.kr/doctors/${doc.slug}`,
         },
         // ProfilePage
         {
           "@context": "https://schema.org",
           "@type": "ProfilePage",
           "name": `${doc.name} ${doc.title} 프로필`,
-          "url": `https://seoul365dental.com/doctors/${doc.slug}`,
-          "mainEntity": { "@id": `https://seoul365dental.com/doctors/${doc.slug}#physician` },
-          "isPartOf": { "@id": "https://seoul365dental.com/#website" },
+          "url": `https://seoul365dc.kr/doctors/${doc.slug}`,
+          "mainEntity": { "@id": `https://seoul365dc.kr/doctors/${doc.slug}#physician` },
+          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
           "inLanguage": "ko-KR",
           "dateModified": new Date().toISOString().split('T')[0]
         },
@@ -347,9 +347,9 @@ doctorRoutes.get('/doctors/:slug', (c) => {
         {
           "@context": "https://schema.org", "@type": "BreadcrumbList",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-            { "@type": "ListItem", "position": 2, "name": "의료진", "item": "https://seoul365dental.com/doctors" },
-            { "@type": "ListItem", "position": 3, "name": doc.name, "item": `https://seoul365dental.com/doctors/${doc.slug}` }
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "의료진", "item": "https://seoul365dc.kr/doctors" },
+            { "@type": "ListItem", "position": 3, "name": doc.name, "item": `https://seoul365dc.kr/doctors/${doc.slug}` }
           ]
         },
         // Person schema (supplementary)
@@ -358,7 +358,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
           "@type": "Person",
           "name": doc.name,
           "jobTitle": doc.title,
-          "worksFor": { "@id": "https://seoul365dental.com/#dentist" },
+          "worksFor": { "@id": "https://seoul365dc.kr/#dentist" },
           "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" },
           "nationality": { "@type": "Country", "name": "KR" },
           "knowsLanguage": ["ko", "en"],
@@ -383,9 +383,9 @@ doctorRoutes.get('/doctors/:slug', (c) => {
           "@context": "https://schema.org",
           "@type": "MedicalScholarlyArticle",
           "name": `${doc.name} ${doc.title} — 진료 철학과 전문 분야`,
-          "author": { "@type": "Physician", "name": doc.name, "@id": `https://seoul365dental.com/doctors/${doc.slug}#physician` },
+          "author": { "@type": "Physician", "name": doc.name, "@id": `https://seoul365dc.kr/doctors/${doc.slug}#physician` },
           "about": doc.specialties.map((s: string) => ({ "@type": "MedicalEntity", "name": s })),
-          "publisher": { "@id": "https://seoul365dental.com/#dentist" },
+          "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
           "inLanguage": "ko-KR",
           "datePublished": "2024-01-01",
         },

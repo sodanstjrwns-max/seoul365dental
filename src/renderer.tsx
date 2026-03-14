@@ -12,28 +12,28 @@ import { MESSAGING } from './data/brand'
 export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd }) => {
   const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·교정 365일 치과`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·교정·수면진료. 032-432-0365`;
-  const canonicalUrl = canonical || 'https://seoul365dental.com';
-  const ogImage = 'https://seoul365dental.com/static/og-image.jpg';
+  const canonicalUrl = canonical || 'https://seoul365dc.kr';
+  const ogImage = 'https://seoul365dc.kr/static/og-image.png';
 
   // WebSite schema for sitelinks searchbox (AEO/SEO)
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "@id": "https://seoul365dental.com/#website",
+    "@id": "https://seoul365dc.kr/#website",
     "name": "서울365치과의원",
     "alternateName": ["Seoul 365 Dental", "서울365치과", "서울삼육오치과"],
-    "url": "https://seoul365dental.com",
+    "url": "https://seoul365dc.kr",
     "inLanguage": "ko-KR",
-    "publisher": { "@id": "https://seoul365dental.com/#dentist" },
+    "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://seoul365dental.com/treatments?q={search_term_string}"
+        "urlTemplate": "https://seoul365dc.kr/treatments?q={search_term_string}"
       },
       "query-input": "required name=search_term_string"
     },
-    "copyrightHolder": { "@id": "https://seoul365dental.com/#dentist" },
+    "copyrightHolder": { "@id": "https://seoul365dc.kr/#dentist" },
     "copyrightYear": "2019",
   };
 
@@ -41,15 +41,15 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const dentistSchema = {
     "@context": "https://schema.org",
     "@type": ["Dentist", "MedicalOrganization", "LocalBusiness"],
-    "@id": "https://seoul365dental.com/#dentist",
+    "@id": "https://seoul365dc.kr/#dentist",
     "name": "서울365치과의원",
     "alternateName": "Seoul 365 Dental Clinic",
     "description": "인천 구월동 서울대 출신 5인 전문의 협진 치과. 365일 진료, 자체 기공실, 수면진료, 무통마취. 임플란트·교정·심미치료 전문.",
-    "url": "https://seoul365dental.com",
+    "url": "https://seoul365dc.kr",
     "telephone": "+82-32-432-0365",
     "email": "seoul365dental@gmail.com",
     "image": ogImage,
-    "logo": "https://seoul365dental.com/static/logo.png",
+    "logo": "https://seoul365dc.kr/static/logo.png",
     "priceRange": "₩₩~₩₩₩",
     "currenciesAccepted": "KRW",
     "paymentAccepted": "현금, 신용카드, 카카오페이",
@@ -162,11 +162,11 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     ],
     // Member doctors
     "employee": [
-      { "@type": "Physician", "@id": "https://seoul365dental.com/doctors/park-junkyu#physician", "name": "박준규", "jobTitle": "대표원장" },
-      { "@type": "Physician", "@id": "https://seoul365dental.com/doctors/choi-dabin#physician", "name": "최다빈", "jobTitle": "원장" },
-      { "@type": "Physician", "@id": "https://seoul365dental.com/doctors/jung-moonhee#physician", "name": "정문희", "jobTitle": "원장" },
-      { "@type": "Physician", "@id": "https://seoul365dental.com/doctors/sang-sehoon#physician", "name": "상세훈", "jobTitle": "원장" },
-      { "@type": "Physician", "@id": "https://seoul365dental.com/doctors/ha-nuri#physician", "name": "하누리", "jobTitle": "원장" },
+      { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/park-junkyu#physician", "name": "박준규", "jobTitle": "대표원장" },
+      { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/choi-dabin#physician", "name": "최다빈", "jobTitle": "원장" },
+      { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/jung-moonhee#physician", "name": "정문희", "jobTitle": "원장" },
+      { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/sang-sehoon#physician", "name": "상세훈", "jobTitle": "원장" },
+      { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/ha-nuri#physician", "name": "하누리", "jobTitle": "원장" },
     ],
     // Potential reservation action
     "potentialAction": [
@@ -174,7 +174,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         "@type": "ReserveAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": "https://seoul365dental.com/reservation",
+          "urlTemplate": "https://seoul365dc.kr/reservation",
           "inLanguage": "ko",
           "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"]
         },
@@ -207,12 +207,12 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": "https://seoul365dental.com/#organization",
+    "@id": "https://seoul365dc.kr/#organization",
     "name": "서울365치과의원",
-    "url": "https://seoul365dental.com",
+    "url": "https://seoul365dc.kr",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://seoul365dental.com/static/logo.png",
+      "url": "https://seoul365dc.kr/static/logo.png",
       "width": 512,
       "height": 512
     },
@@ -237,17 +237,17 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const navigationSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "@id": "https://seoul365dental.com/#navigation",
+    "@id": "https://seoul365dc.kr/#navigation",
     "name": "서울365치과 사이트 메뉴",
     "itemListElement": [
-      { "@type": "SiteNavigationElement", "position": 1, "name": "홈", "url": "https://seoul365dental.com" },
-      { "@type": "SiteNavigationElement", "position": 2, "name": "진료안내", "url": "https://seoul365dental.com/treatments" },
-      { "@type": "SiteNavigationElement", "position": 3, "name": "의료진", "url": "https://seoul365dental.com/doctors" },
-      { "@type": "SiteNavigationElement", "position": 4, "name": "치료사례", "url": "https://seoul365dental.com/cases/gallery" },
-      { "@type": "SiteNavigationElement", "position": 5, "name": "블로그", "url": "https://seoul365dental.com/blog" },
-      { "@type": "SiteNavigationElement", "position": 6, "name": "FAQ", "url": "https://seoul365dental.com/faq" },
-      { "@type": "SiteNavigationElement", "position": 7, "name": "내원안내", "url": "https://seoul365dental.com/info" },
-      { "@type": "SiteNavigationElement", "position": 8, "name": "상담예약", "url": "https://seoul365dental.com/reservation" },
+      { "@type": "SiteNavigationElement", "position": 1, "name": "홈", "url": "https://seoul365dc.kr" },
+      { "@type": "SiteNavigationElement", "position": 2, "name": "진료안내", "url": "https://seoul365dc.kr/treatments" },
+      { "@type": "SiteNavigationElement", "position": 3, "name": "의료진", "url": "https://seoul365dc.kr/doctors" },
+      { "@type": "SiteNavigationElement", "position": 4, "name": "치료사례", "url": "https://seoul365dc.kr/cases/gallery" },
+      { "@type": "SiteNavigationElement", "position": 5, "name": "블로그", "url": "https://seoul365dc.kr/blog" },
+      { "@type": "SiteNavigationElement", "position": 6, "name": "FAQ", "url": "https://seoul365dc.kr/faq" },
+      { "@type": "SiteNavigationElement", "position": 7, "name": "내원안내", "url": "https://seoul365dc.kr/info" },
+      { "@type": "SiteNavigationElement", "position": 8, "name": "상담예약", "url": "https://seoul365dc.kr/reservation" },
     ]
   };
 
@@ -255,9 +255,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const medicalBusinessSchema = {
     "@context": "https://schema.org",
     "@type": "MedicalBusiness",
-    "@id": "https://seoul365dental.com/#medical-business",
+    "@id": "https://seoul365dc.kr/#medical-business",
     "name": "서울365치과의원",
-    "url": "https://seoul365dental.com",
+    "url": "https://seoul365dc.kr",
     "telephone": "+82-32-432-0365",
     "isAcceptingNewPatients": true,
     "medicalSpecialty": [
@@ -300,20 +300,20 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const brandSchema = {
     "@context": "https://schema.org",
     "@type": "Brand",
-    "@id": "https://seoul365dental.com/#brand",
+    "@id": "https://seoul365dc.kr/#brand",
     "name": "서울365치과",
     "alternateName": ["Seoul 365 Dental", "서울삼육오치과"],
-    "logo": "https://seoul365dental.com/static/logo.png",
+    "logo": "https://seoul365dc.kr/static/logo.png",
     "slogan": MESSAGING.brandSlogan,
     "description": "치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원.",
-    "url": "https://seoul365dental.com",
+    "url": "https://seoul365dc.kr",
   };
 
   // Event schema — special promotions/ongoing service
   const eventSchema = {
     "@context": "https://schema.org",
     "@type": "Event",
-    "@id": "https://seoul365dental.com/#free-ct-event",
+    "@id": "https://seoul365dc.kr/#free-ct-event",
     "name": "서울365치과 무료 CT 정밀진단 이벤트",
     "description": "첫 내원 시 무료 CT 촬영으로 정밀 진단을 받아보세요. 서울대 출신 5인 전문의가 직접 진단합니다.",
     "startDate": "2026-01-01",
@@ -330,13 +330,13 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         "addressCountry": "KR",
       }
     },
-    "organizer": { "@id": "https://seoul365dental.com/#dentist" },
+    "organizer": { "@id": "https://seoul365dc.kr/#dentist" },
     "offers": {
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "KRW",
       "availability": "https://schema.org/InStock",
-      "url": "https://seoul365dental.com/reservation",
+      "url": "https://seoul365dc.kr/reservation",
       "validFrom": "2026-01-01",
     },
     "isAccessibleForFree": true,
@@ -346,9 +346,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const medicalClinicSchema = {
     "@context": "https://schema.org",
     "@type": "MedicalClinic",
-    "@id": "https://seoul365dental.com/#clinic",
+    "@id": "https://seoul365dc.kr/#clinic",
     "name": "서울365치과의원",
-    "url": "https://seoul365dental.com",
+    "url": "https://seoul365dc.kr",
     "telephone": "+82-32-432-0365",
     "medicalSpecialty": ["Dentistry", "Implantology", "Orthodontics"],
     "availableService": [
@@ -372,7 +372,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const healthTopicSchema = {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
-    "@id": "https://seoul365dental.com/#health-topics",
+    "@id": "https://seoul365dc.kr/#health-topics",
     "about": [
       { "@type": "MedicalCondition", "name": "치아 상실", "possibleTreatment": { "@type": "MedicalProcedure", "name": "임플란트" } },
       { "@type": "MedicalCondition", "name": "부정교합", "possibleTreatment": { "@type": "MedicalProcedure", "name": "치아교정" } },

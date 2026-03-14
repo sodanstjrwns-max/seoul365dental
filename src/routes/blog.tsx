@@ -683,19 +683,19 @@ blogRoutes.get('/blog', async (c) => {
     {
       title: `서울365치과 블로그${category ? ' - ' + category : ''} | 치아 건강 정보`,
       description: '서울365치과 치과 전문 블로그. 임플란트, 교정, 충치치료, 잇몸치료 등 치아 건강에 대한 전문 정보와 치료 가이드.',
-      canonical: 'https://seoul365dental.com/blog',
+      canonical: 'https://seoul365dc.kr/blog',
       jsonLd: [
         { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-          { "@type": "ListItem", "position": 2, "name": "블로그", "item": "https://seoul365dental.com/blog" }
+          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+          { "@type": "ListItem", "position": 2, "name": "블로그", "item": "https://seoul365dc.kr/blog" }
         ]},
-        { "@context": "https://schema.org", "@type": "Blog", "name": "서울365치과 블로그", "description": "치아 건강 전문 정보 블로그", "url": "https://seoul365dental.com/blog", "publisher": { "@id": "https://seoul365dental.com/#dentist" }, "inLanguage": "ko-KR",
+        { "@context": "https://schema.org", "@type": "Blog", "name": "서울365치과 블로그", "description": "치아 건강 전문 정보 블로그", "url": "https://seoul365dc.kr/blog", "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "inLanguage": "ko-KR",
           "blogPost": posts.slice(0, 10).map((p: any) => ({
-            "@type": "BlogPosting", "headline": p.title, "description": p.excerpt || '', "url": `https://seoul365dental.com/blog/${p.slug}`,
+            "@type": "BlogPosting", "headline": p.title, "description": p.excerpt || '', "url": `https://seoul365dc.kr/blog/${p.slug}`,
             "datePublished": p.created_at, "author": { "@type": "Organization", "name": "서울365치과" }
           }))
         },
-        { "@context": "https://schema.org", "@type": "CollectionPage", "name": "서울365치과 블로그", "url": "https://seoul365dental.com/blog", "isPartOf": { "@id": "https://seoul365dental.com/#website" } }
+        { "@context": "https://schema.org", "@type": "CollectionPage", "name": "서울365치과 블로그", "url": "https://seoul365dc.kr/blog", "isPartOf": { "@id": "https://seoul365dc.kr/#website" } }
       ]
     }
   )
@@ -826,12 +826,12 @@ blogRoutes.get('/blog/:slug', async (c) => {
     {
       title: `${post.title} | 서울365치과 블로그`,
       description: post.excerpt || post.title + ' - 서울365치과 치과 전문 블로그',
-      canonical: `https://seoul365dental.com/blog/${post.slug}`,
+      canonical: `https://seoul365dc.kr/blog/${post.slug}`,
       jsonLd: [
         { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dental.com" },
-          { "@type": "ListItem", "position": 2, "name": "블로그", "item": "https://seoul365dental.com/blog" },
-          { "@type": "ListItem", "position": 3, "name": post.title, "item": `https://seoul365dental.com/blog/${post.slug}` }
+          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+          { "@type": "ListItem", "position": 2, "name": "블로그", "item": "https://seoul365dc.kr/blog" },
+          { "@type": "ListItem", "position": 3, "name": post.title, "item": `https://seoul365dc.kr/blog/${post.slug}` }
         ]},
         {
           "@context": "https://schema.org", "@type": "BlogPosting",
@@ -839,10 +839,10 @@ blogRoutes.get('/blog/:slug', async (c) => {
           "description": post.excerpt || post.title,
           "datePublished": post.created_at,
           "dateModified": post.updated_at,
-          "author": { "@type": "Organization", "name": "서울365치과", "url": "https://seoul365dental.com" },
-          "publisher": { "@id": "https://seoul365dental.com/#dentist" },
-          "mainEntityOfPage": `https://seoul365dental.com/blog/${post.slug}`,
-          "url": `https://seoul365dental.com/blog/${post.slug}`,
+          "author": { "@type": "Organization", "name": "서울365치과", "url": "https://seoul365dc.kr" },
+          "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
+          "mainEntityOfPage": `https://seoul365dc.kr/blog/${post.slug}`,
+          "url": `https://seoul365dc.kr/blog/${post.slug}`,
           "inLanguage": "ko-KR",
           "keywords": tagsArray.join(', '),
           "articleSection": post.category,
