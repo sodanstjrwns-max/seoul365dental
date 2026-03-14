@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "webapp",
+  "name": "seoul365dental",
   "compatibility_date": "2026-02-21",
   "pages_build_output_dir": "./dist",
   "compatibility_flags": [
@@ -10,7 +10,7 @@
     {
       "binding": "DB",
       "database_name": "seoul365-production",
-      "database_id": "local-dev-placeholder"
+      "database_id": "a63b49ed-8ee6-4657-b576-28807521c191"
     }
   ],
   "r2_buckets": [
