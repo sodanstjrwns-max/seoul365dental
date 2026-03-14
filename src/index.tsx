@@ -3,8 +3,9 @@
 // Modular architecture: routes split into separate files
 // ============================================================
 import { Hono } from 'hono'
-import { renderer } from './renderer'
+import { renderer, setCurrentSeoSettings } from './renderer'
 import type { Bindings } from './lib/types'
+import { getAllSeoSettings } from './lib/db'
 
 // Route modules
 import home from './routes/home'
@@ -26,6 +27,22 @@ app.use('*', async (c, next) => {
   c.header('X-Frame-Options', 'SAMEORIGIN');
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
   c.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
+})
+
+// SEO settings middleware: load from DB + env, inject into renderer context
+app.use('*', async (c, next) => {
+  // Skip for API and static routes
+  const path = c.req.path;
+  if (path.startsWith('/api/') || path.startsWith('/static/') || path === '/robots.txt' || path === '/sitemap.xml') {
+    return next();
+  }
+  try {
+    const seoSettings = await getAllSeoSettings(c.env.DB, c.env as any);
+    setCurrentSeoSettings(seoSettings);
+  } catch {
+    setCurrentSeoSettings({});
+  }
+  await next();
 })
 
 app.use(renderer)

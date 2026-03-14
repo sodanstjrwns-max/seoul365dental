@@ -3,7 +3,7 @@ import type { Bindings } from '../lib/types'
 import { CLINIC } from '../data/clinic'
 import { treatments } from '../data/treatments'
 import { doctors } from '../data/doctors'
-import { initBlogTables } from '../lib/db'
+import { initBlogTables, getSetting } from '../lib/db'
 
 const seoRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -563,6 +563,97 @@ Host: https://seoul365dc.kr
       'X-Robots-Tag': 'all',
     },
   });
+})
+
+// ============================================================
+// IndexNow — Instant Indexing for Bing/Yandex/Naver
+// ============================================================
+
+// IndexNow key file endpoint (required by protocol)
+seoRoutes.get('/:key.txt', async (c) => {
+  const key = c.req.param('key');
+  const indexNowKey = await getSetting(c.env.DB, 'INDEXNOW_KEY', c.env.INDEXNOW_KEY || '');
+  if (!indexNowKey || key !== indexNowKey) {
+    return c.notFound();
+  }
+  return new Response(indexNowKey, {
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  });
+})
+
+// IndexNow submit API (admin-triggered)
+seoRoutes.post('/api/indexnow/submit', async (c) => {
+  // Verify admin session
+  const cookie = c.req.header('Cookie');
+  const match = cookie?.match(/(?:^|;\s*)admin_session=([^;]+)/);
+  if (!match) return c.json({ error: '관리자 인증 필요' }, 401);
+
+  const indexNowKey = await getSetting(c.env.DB, 'INDEXNOW_KEY', c.env.INDEXNOW_KEY || '');
+  if (!indexNowKey) return c.json({ error: 'IndexNow 키가 설정되지 않았습니다' }, 400);
+
+  const body = await c.req.json<{ urls?: string[] }>().catch(() => ({}));
+  const base = 'https://seoul365dc.kr';
+
+  // Default: submit all important pages
+  const urls = body.urls?.length ? body.urls : [
+    '/', '/treatments', '/doctors', '/info', '/reservation',
+    '/blog', '/faq', '/cases/gallery',
+    ...treatments.map(t => `/treatments/${t.slug}`),
+    ...doctors.map(d => `/doctors/${d.slug}`),
+  ].map(p => `${base}${p}`);
+
+  // Submit to IndexNow API (covers Bing, Yandex, Naver, Seznam, etc.)
+  const endpoints = [
+    'https://api.indexnow.org/indexnow',
+    'https://www.bing.com/indexnow',
+    'https://yandex.com/indexnow',
+  ];
+
+  const results: Record<string, number> = {};
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify({
+          host: 'seoul365dc.kr',
+          key: indexNowKey,
+          keyLocation: `${base}/${indexNowKey}.txt`,
+          urlList: urls,
+        }),
+      });
+      results[endpoint] = res.status;
+    } catch {
+      results[endpoint] = 0;
+    }
+  }
+
+  return c.json({ ok: true, submitted: urls.length, results });
+})
+
+// Search Engine Ping — Notify sitemap updates
+seoRoutes.post('/api/seo/ping', async (c) => {
+  const cookie = c.req.header('Cookie');
+  const match = cookie?.match(/(?:^|;\s*)admin_session=([^;]+)/);
+  if (!match) return c.json({ error: '관리자 인증 필요' }, 401);
+
+  const sitemapUrl = 'https://seoul365dc.kr/sitemap.xml';
+  const pingTargets = [
+    `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`,
+    `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`,
+  ];
+
+  const results: Record<string, number> = {};
+  for (const url of pingTargets) {
+    try {
+      const res = await fetch(url);
+      results[url.split('//')[1]?.split('/')[0] || url] = res.status;
+    } catch {
+      results[url] = 0;
+    }
+  }
+
+  return c.json({ ok: true, results });
 })
 
 // ============================================================

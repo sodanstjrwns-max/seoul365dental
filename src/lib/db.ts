@@ -95,6 +95,50 @@ export function renderContent(md: string): string {
   return html;
 }
 
+// Init site_settings table (for admin-configurable SEO/analytics settings)
+let _settingsTableReady = false;
+export async function initSettingsTable(db: D1Database) {
+  if (_settingsTableReady) return;
+  await db.prepare(`CREATE TABLE IF NOT EXISTS site_settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`).run();
+  _settingsTableReady = true;
+}
+
+// Get a setting value (DB first, then env fallback)
+export async function getSetting(db: D1Database, key: string, envFallback?: string): Promise<string> {
+  try {
+    await initSettingsTable(db);
+    const row = await db.prepare('SELECT value FROM site_settings WHERE key = ?').bind(key).first<{ value: string }>();
+    if (row?.value) return row.value;
+  } catch {}
+  return envFallback || '';
+}
+
+// Set a setting value
+export async function setSetting(db: D1Database, key: string, value: string) {
+  await initSettingsTable(db);
+  await db.prepare(`INSERT INTO site_settings (key, value, updated_at) VALUES (?, ?, datetime('now'))
+    ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = datetime('now')`)
+    .bind(key, value).run();
+}
+
+// Get all SEO/analytics settings at once
+export async function getAllSeoSettings(db: D1Database, env: Record<string, string | undefined>): Promise<Record<string, string>> {
+  const keys = [
+    'GA4_MEASUREMENT_ID', 'GTM_CONTAINER_ID',
+    'GOOGLE_SITE_VERIFICATION', 'NAVER_SITE_VERIFICATION', 'BING_SITE_VERIFICATION',
+    'INDEXNOW_KEY'
+  ];
+  const result: Record<string, string> = {};
+  for (const k of keys) {
+    result[k] = await getSetting(db, k, (env as any)[k] || '');
+  }
+  return result;
+}
+
 // Slugify helper
 export function slugify(text: string): string {
   return text

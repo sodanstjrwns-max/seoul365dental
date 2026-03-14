@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { hashPassword, verifyPassword, generateSessionId } from '../lib/auth'
-import { getAdminUser, getAdminFromCookie, initAdminTables, initUserTables } from '../lib/db'
+import { getAdminUser, getAdminFromCookie, initAdminTables, initUserTables, initSettingsTable, getSetting, setSetting, getAllSeoSettings } from '../lib/db'
 import { treatments } from '../data/treatments'
 import { doctors } from '../data/doctors'
 
@@ -276,6 +276,17 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                 <div>
                   <div class="text-white font-bold text-sm group-hover:text-amber-400 transition">사이트 보기</div>
                   <div class="text-white/25 text-xs">메인 페이지</div>
+                </div>
+              </div>
+            </a>
+            <a href="/admin/seo" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-green-400/20 transition-all group">
+              <div class="flex flex-col items-center gap-2 text-center">
+                <div class="w-10 h-10 rounded-xl bg-green-400/10 flex items-center justify-center">
+                  <i class="fa-solid fa-magnifying-glass-chart text-green-400"></i>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-sm group-hover:text-green-400 transition">SEO/색인</div>
+                  <div class="text-white/25 text-xs">검색엔진·애널리틱스</div>
                 </div>
               </div>
             </a>
@@ -1367,6 +1378,317 @@ adminRoutes.get('/api/admin/members/marketing', async (c) => {
   } catch (e: any) {
     return c.json({ ok: false, error: e.message || '조회 실패' }, 500);
   }
+})
+
+// ============================================================
+// SEO / 색인 설정 관리 페이지
+// ============================================================
+adminRoutes.get('/admin/seo', async (c) => {
+  await initAdminTables(c.env.DB);
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.redirect('/admin');
+
+  const settings = await getAllSeoSettings(c.env.DB, c.env as any);
+
+  return c.render(
+    <>
+      {/* Admin Header */}
+      <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-white/5">
+        <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <a href="/admin/dashboard" class="text-white/40 hover:text-white/70 transition"><i class="fa-solid fa-arrow-left mr-1"></i></a>
+            <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+              <i class="fa-solid fa-magnifying-glass-chart text-green-400 text-sm"></i>
+            </div>
+            <span class="text-white font-bold text-sm">SEO / 색인 설정</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <a href="/" target="_blank" class="text-white/30 hover:text-white/60 text-xs transition"><i class="fa-solid fa-external-link mr-1"></i>사이트 보기</a>
+            <a href="/api/admin/logout" class="text-red-400/60 hover:text-red-400 text-xs transition"><i class="fa-solid fa-right-from-bracket mr-1"></i>로그아웃</a>
+          </div>
+        </div>
+      </div>
+
+      <section class="min-h-screen bg-gradient-to-br from-gray-900 via-[#0a0e1a] to-gray-900 pt-20 pb-12">
+        <div class="max-w-4xl mx-auto px-5">
+
+          {/* Status Banner */}
+          <div class="bg-gradient-to-r from-green-500/10 to-[#0066FF]/10 border border-green-500/20 rounded-2xl p-6 mb-8">
+            <h2 class="text-white font-bold text-lg mb-2"><i class="fa-solid fa-circle-check text-green-400 mr-2"></i>검색엔진 색인 설정</h2>
+            <p class="text-white/40 text-sm">각 서비스에 가입 후 발급받은 인증 코드를 입력하면 자동으로 적용됩니다.</p>
+          </div>
+
+          <form id="seo-form" class="space-y-6">
+
+            {/* Google Section */}
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-6">
+              <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <i class="fa-brands fa-google text-blue-400 text-lg"></i>
+                </div>
+                <div>
+                  <h3 class="text-white font-bold">Google</h3>
+                  <p class="text-white/30 text-xs">Search Console + Analytics</p>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-white/50 text-xs font-semibold mb-1.5">Google Search Console 인증 코드</label>
+                  <input type="text" name="GOOGLE_SITE_VERIFICATION" value={settings.GOOGLE_SITE_VERIFICATION || ''} placeholder="예: ABC123xyz..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-blue-500/50 focus:outline-none transition" />
+                  <p class="text-white/20 text-xs mt-1"><a href="https://search.google.com/search-console" target="_blank" class="text-blue-400/70 hover:text-blue-400 underline">Search Console</a> → 설정 → 소유권 확인 → HTML 태그 → content="" 안의 값</p>
+                </div>
+
+                <div>
+                  <label class="block text-white/50 text-xs font-semibold mb-1.5">Google Analytics 4 측정 ID</label>
+                  <input type="text" name="GA4_MEASUREMENT_ID" value={settings.GA4_MEASUREMENT_ID || ''} placeholder="예: G-XXXXXXXXXX" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-blue-500/50 focus:outline-none transition" />
+                  <p class="text-white/20 text-xs mt-1"><a href="https://analytics.google.com" target="_blank" class="text-blue-400/70 hover:text-blue-400 underline">GA4</a> → 관리 → 데이터 스트림 → 웹 → 측정 ID (G-로 시작)</p>
+                </div>
+
+                <div>
+                  <label class="block text-white/50 text-xs font-semibold mb-1.5">Google Tag Manager 컨테이너 ID</label>
+                  <input type="text" name="GTM_CONTAINER_ID" value={settings.GTM_CONTAINER_ID || ''} placeholder="예: GTM-XXXXXXX" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-blue-500/50 focus:outline-none transition" />
+                  <p class="text-white/20 text-xs mt-1"><a href="https://tagmanager.google.com" target="_blank" class="text-blue-400/70 hover:text-blue-400 underline">GTM</a> → 컨테이너 ID (GTM-으로 시작). GA4만 사용 시 비워두세요.</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Naver Section */}
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-6">
+              <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                  <span class="text-green-400 font-black text-lg">N</span>
+                </div>
+                <div>
+                  <h3 class="text-white font-bold">Naver</h3>
+                  <p class="text-white/30 text-xs">Search Advisor (네이버 웹마스터 도구)</p>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-white/50 text-xs font-semibold mb-1.5">Naver Search Advisor 인증 코드</label>
+                <input type="text" name="NAVER_SITE_VERIFICATION" value={settings.NAVER_SITE_VERIFICATION || ''} placeholder="예: abc123def456..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-green-500/50 focus:outline-none transition" />
+                <p class="text-white/20 text-xs mt-1"><a href="https://searchadvisor.naver.com" target="_blank" class="text-green-400/70 hover:text-green-400 underline">Search Advisor</a> → 사이트 등록 → 소유확인 → HTML 태그 → content="" 안의 값</p>
+              </div>
+            </div>
+
+            {/* Bing Section */}
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-6">
+              <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center">
+                  <i class="fa-brands fa-microsoft text-cyan-400 text-lg"></i>
+                </div>
+                <div>
+                  <h3 class="text-white font-bold">Bing</h3>
+                  <p class="text-white/30 text-xs">Webmaster Tools</p>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-white/50 text-xs font-semibold mb-1.5">Bing 인증 코드</label>
+                <input type="text" name="BING_SITE_VERIFICATION" value={settings.BING_SITE_VERIFICATION || ''} placeholder="예: ABC123..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-cyan-500/50 focus:outline-none transition" />
+                <p class="text-white/20 text-xs mt-1"><a href="https://www.bing.com/webmasters" target="_blank" class="text-cyan-400/70 hover:text-cyan-400 underline">Bing Webmaster</a> → 사이트 추가 → HTML 메타 태그 → content="" 안의 값</p>
+              </div>
+            </div>
+
+            {/* IndexNow Section */}
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-6">
+              <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
+                  <i class="fa-solid fa-bolt text-orange-400 text-lg"></i>
+                </div>
+                <div>
+                  <h3 class="text-white font-bold">IndexNow</h3>
+                  <p class="text-white/30 text-xs">Bing/Yandex 즉시 색인 프로토콜</p>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-white/50 text-xs font-semibold mb-1.5">IndexNow API 키</label>
+                <input type="text" name="INDEXNOW_KEY" value={settings.INDEXNOW_KEY || ''} placeholder="예: a1b2c3d4e5f6..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-orange-500/50 focus:outline-none transition" />
+                <p class="text-white/20 text-xs mt-1"><a href="https://www.indexnow.org/documentation" target="_blank" class="text-orange-400/70 hover:text-orange-400 underline">IndexNow</a> → 아무 영숫자 32자 문자열 입력 (예: 랜덤 UUID). 입력 후 '즉시 색인 요청' 버튼 사용 가능.</p>
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div class="flex flex-col sm:flex-row gap-3">
+              <button type="submit" id="save-btn" class="flex-1 bg-gradient-to-r from-[#0066FF] to-[#2979FF] text-white font-bold py-4 rounded-xl hover:shadow-lg hover:shadow-[#0066FF]/20 transition-all text-sm">
+                <i class="fa-solid fa-floppy-disk mr-2"></i>설정 저장
+              </button>
+            </div>
+          </form>
+
+          {/* Action Buttons */}
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+            <button id="btn-indexnow" class="bg-white/5 border border-orange-500/20 text-orange-400 font-semibold py-3 rounded-xl hover:bg-orange-500/10 transition-all text-sm disabled:opacity-30">
+              <i class="fa-solid fa-bolt mr-1"></i>즉시 색인 요청
+            </button>
+            <button id="btn-ping" class="bg-white/5 border border-purple-500/20 text-purple-400 font-semibold py-3 rounded-xl hover:bg-purple-500/10 transition-all text-sm">
+              <i class="fa-solid fa-satellite-dish mr-1"></i>사이트맵 알림
+            </button>
+            <a href="/sitemap.xml" target="_blank" class="bg-white/5 border border-white/10 text-white/60 font-semibold py-3 rounded-xl hover:bg-white/10 transition-all text-sm text-center">
+              <i class="fa-solid fa-sitemap mr-1"></i>사이트맵 확인
+            </a>
+          </div>
+
+          {/* Result Log */}
+          <div id="result-log" class="mt-6 hidden">
+            <div class="bg-black/30 border border-white/5 rounded-xl p-4 font-mono text-xs text-white/50 max-h-48 overflow-y-auto whitespace-pre-wrap" id="log-content"></div>
+          </div>
+
+          {/* Quick Guide */}
+          <div class="mt-10 bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+            <h3 class="text-white font-bold mb-4"><i class="fa-solid fa-book-open text-[#0066FF] mr-2"></i>빠른 등록 가이드</h3>
+            <div class="space-y-4 text-sm text-white/40">
+              <div class="flex gap-3">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">1</span>
+                <div><strong class="text-white/70">Google Search Console</strong> — <a href="https://search.google.com/search-console" target="_blank" class="text-blue-400/70 underline">접속</a> → 속성 추가 → URL 접두어 → https://seoul365dc.kr 입력 → HTML 태그 → 메타 태그의 content 값 복사</div>
+              </div>
+              <div class="flex gap-3">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">2</span>
+                <div><strong class="text-white/70">Google Analytics 4</strong> — <a href="https://analytics.google.com" target="_blank" class="text-blue-400/70 underline">접속</a> → 계정 만들기 → 속성 만들기 → 데이터 스트림 → 웹 → G-XXXXXXXXXX 복사</div>
+              </div>
+              <div class="flex gap-3">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center text-xs font-bold">3</span>
+                <div><strong class="text-white/70">Naver Search Advisor</strong> — <a href="https://searchadvisor.naver.com" target="_blank" class="text-green-400/70 underline">접속</a> → 사이트 등록 → https://seoul365dc.kr → 소유확인 → HTML 태그 → content 값 복사</div>
+              </div>
+              <div class="flex gap-3">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-bold">4</span>
+                <div><strong class="text-white/70">Bing Webmaster</strong> — <a href="https://www.bing.com/webmasters" target="_blank" class="text-cyan-400/70 underline">접속</a> → Google 계정으로 가져오기 (가장 빠름) 또는 수동 등록</div>
+              </div>
+              <div class="flex gap-3">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center text-xs font-bold">5</span>
+                <div><strong class="text-white/70">IndexNow</strong> — 별도 가입 불필요. 위 칸에 아무 영숫자 32자 입력 후 저장 → '즉시 색인 요청' 클릭</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        // Save settings
+        document.getElementById('seo-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('save-btn');
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>저장 중...';
+
+          const formData = new FormData(this);
+          const data = {};
+          formData.forEach((v, k) => { data[k] = v.toString().trim(); });
+
+          try {
+            const res = await fetch('/api/admin/seo/settings', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data),
+            });
+            const result = await res.json();
+            if (result.ok) {
+              btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>저장 완료!';
+              btn.className = btn.className.replace('from-[#0066FF] to-[#2979FF]', 'from-emerald-500 to-emerald-600');
+              setTimeout(() => {
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i>설정 저장';
+                btn.className = btn.className.replace('from-emerald-500 to-emerald-600', 'from-[#0066FF] to-[#2979FF]');
+                btn.disabled = false;
+              }, 2000);
+            } else {
+              throw new Error(result.error);
+            }
+          } catch (err) {
+            btn.innerHTML = '<i class="fa-solid fa-xmark mr-2"></i>저장 실패';
+            btn.disabled = false;
+            setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i>설정 저장'; }, 2000);
+          }
+        });
+
+        function showLog(msg) {
+          const logDiv = document.getElementById('result-log');
+          const content = document.getElementById('log-content');
+          logDiv.classList.remove('hidden');
+          content.textContent += new Date().toLocaleTimeString() + ' | ' + msg + '\\n';
+          content.scrollTop = content.scrollHeight;
+        }
+
+        // IndexNow submit
+        document.getElementById('btn-indexnow').addEventListener('click', async function() {
+          this.disabled = true;
+          this.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>요청 중...';
+          showLog('IndexNow 즉시 색인 요청 시작...');
+          try {
+            const res = await fetch('/api/indexnow/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+            const data = await res.json();
+            if (data.ok) {
+              showLog('✅ ' + data.submitted + '개 URL 전송 완료');
+              Object.entries(data.results || {}).forEach(([k, v]) => {
+                showLog('  → ' + k.split('/').pop() + ': HTTP ' + v + (v === 200 || v === 202 ? ' ✓' : ' ✗'));
+              });
+            } else {
+              showLog('❌ 실패: ' + (data.error || '알 수 없는 오류'));
+            }
+          } catch (err) {
+            showLog('❌ 네트워크 오류: ' + err.message);
+          }
+          this.disabled = false;
+          this.innerHTML = '<i class="fa-solid fa-bolt mr-1"></i>즉시 색인 요청';
+        });
+
+        // Sitemap ping
+        document.getElementById('btn-ping').addEventListener('click', async function() {
+          this.disabled = true;
+          this.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>알림 중...';
+          showLog('사이트맵 알림 전송 시작...');
+          try {
+            const res = await fetch('/api/seo/ping', { method: 'POST' });
+            const data = await res.json();
+            if (data.ok) {
+              showLog('✅ 사이트맵 알림 완료');
+              Object.entries(data.results || {}).forEach(([k, v]) => {
+                showLog('  → ' + k + ': HTTP ' + v);
+              });
+            } else {
+              showLog('❌ 실패: ' + (data.error || '알 수 없는 오류'));
+            }
+          } catch (err) {
+            showLog('❌ 네트워크 오류: ' + err.message);
+          }
+          this.disabled = false;
+          this.innerHTML = '<i class="fa-solid fa-satellite-dish mr-1"></i>사이트맵 알림';
+        });
+      `}} />
+    </>,
+    { title: 'SEO / 색인 설정 | 서울365 관리자' }
+  )
+})
+
+// --- SEO Settings API ---
+adminRoutes.put('/api/admin/seo/settings', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  const body = await c.req.json<Record<string, string>>();
+  const allowedKeys = ['GA4_MEASUREMENT_ID', 'GTM_CONTAINER_ID', 'GOOGLE_SITE_VERIFICATION', 'NAVER_SITE_VERIFICATION', 'BING_SITE_VERIFICATION', 'INDEXNOW_KEY'];
+
+  try {
+    for (const key of allowedKeys) {
+      if (key in body) {
+        await setSetting(c.env.DB, key, body[key] || '');
+      }
+    }
+    return c.json({ ok: true });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '저장 실패' }, 500);
+  }
+})
+
+// --- SEO Settings GET API ---
+adminRoutes.get('/api/admin/seo/settings', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  const settings = await getAllSeoSettings(c.env.DB, c.env as any);
+  return c.json({ ok: true, settings });
 })
 
 export default adminRoutes

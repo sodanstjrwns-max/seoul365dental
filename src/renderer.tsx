@@ -2,18 +2,29 @@ import { jsxRenderer } from 'hono/jsx-renderer'
 import { CLINIC, HOURS } from './data/clinic'
 import { MESSAGING } from './data/brand'
 
-// SEO/AEO Optimized Renderer — v2.0
+// SEO/AEO Optimized Renderer — v3.0
 // - Rich Schema.org (Dentist + MedicalOrganization + WebSite + Speakable)
 // - Complete OG + Twitter meta
-// - Semantic HTML (header/main/footer with role attributes)
-// - Accessibility enhancements (aria-labels, lang, skip-nav)
-// - Robots, geo meta, hreflang
+// - Dynamic GA4/GTM/Search Console/Naver/Bing integration
+// - Semantic HTML, Accessibility, AEO
+
+// Global SEO settings cache (set by middleware in index.tsx)
+let _currentSeoSettings: Record<string, string> = {};
+export function setCurrentSeoSettings(s: Record<string, string>) { _currentSeoSettings = s; }
 
 export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd }) => {
   const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·교정 365일 치과`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·교정·수면진료. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
   const ogImage = 'https://seoul365dc.kr/static/og-image.png';
+
+  // Dynamic SEO/Analytics settings (from DB or env via global cache)
+  const seo = _currentSeoSettings || {};
+  const ga4Id = seo.GA4_MEASUREMENT_ID || '';
+  const gtmId = seo.GTM_CONTAINER_ID || '';
+  const googleVerify = seo.GOOGLE_SITE_VERIFICATION || '';
+  const naverVerify = seo.NAVER_SITE_VERIFICATION || '';
+  const bingVerify = seo.BING_SITE_VERIFICATION || '';
 
   // WebSite schema for sitelinks searchbox (AEO/SEO)
   const websiteSchema = {
@@ -431,8 +442,23 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <meta name="twitter:image" content={ogImage} />
         <meta name="twitter:image:alt" content="서울365치과 - 인천 구월동 서울대 출신 5인 전문의 치과" />
 
-        {/* === NAVER VERIFICATION (placeholder) === */}
-        <meta name="naver-site-verification" content="placeholder" />
+        {/* === NAVER VERIFICATION === */}
+        {naverVerify && <meta name="naver-site-verification" content={naverVerify} />}
+
+        {/* === GOOGLE SEARCH CONSOLE VERIFICATION === */}
+        {googleVerify && <meta name="google-site-verification" content={googleVerify} />}
+
+        {/* === BING WEBMASTER TOOLS VERIFICATION === */}
+        {bingVerify && <meta name="msvalidate.01" content={bingVerify} />}
+
+        {/* === GOOGLE TAG MANAGER (HEAD) === */}
+        {gtmId && <script dangerouslySetInnerHTML={{__html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${gtmId}');`}} />}
+
+        {/* === GOOGLE ANALYTICS 4 === */}
+        {ga4Id && <>
+          <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}></script>
+          <script dangerouslySetInnerHTML={{__html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4Id}',{page_title:document.title,page_location:window.location.href,cookie_flags:'SameSite=None;Secure',anonymize_ip:true,send_page_view:true});`}} />
+        </>}
 
         {/* === PRECONNECT === */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
@@ -482,6 +508,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         )}
       </head>
       <body class="font-sans text-gray-900 bg-white antialiased">
+
+        {/* === GTM NOSCRIPT FALLBACK === */}
+        {gtmId && <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`} height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>}
 
         {/* === SKIP NAVIGATION (접근성) === */}
         <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-primary focus:font-semibold">
