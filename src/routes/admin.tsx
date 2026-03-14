@@ -68,8 +68,8 @@ adminRoutes.post('/api/admin/login', async (c) => {
   // Auto-create default admin if none exists
   const adminCount = await c.env.DB.prepare('SELECT COUNT(*) as cnt FROM admin_users').first<{ cnt: number }>();
   if (!adminCount || adminCount.cnt === 0) {
-    const defaultHash = await hashPassword('seoul365!');
-    await c.env.DB.prepare('INSERT INTO admin_users (username, password_hash, name) VALUES (?, ?, ?)').bind('admin', defaultHash, '관리자').run();
+    const defaultHash = await hashPassword('Seoul365@dm!n');
+    await c.env.DB.prepare('INSERT INTO admin_users (username, password_hash, name) VALUES (?, ?, ?)').bind('admin', defaultHash, '박준규 원장').run();
   }
 
   const admin = await c.env.DB.prepare('SELECT id, username, name, password_hash FROM admin_users WHERE username = ?').bind(username).first<{ id: number; username: string; name: string; password_hash: string }>();
