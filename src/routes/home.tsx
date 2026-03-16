@@ -145,6 +145,7 @@ home.get('/', async (c) => {
                 <img
                   src="/static/dr-park.jpg"
                   alt="박준규 대표원장 — 서울대 출신 통합치의학과 전문의"
+                  title="서울365치과 박준규 대표원장"
                   class="hero-portrait"
                   loading="eager"
                   width="1024"
@@ -174,6 +175,7 @@ home.get('/', async (c) => {
                   <img
                     src="/static/dr-park.jpg"
                     alt="박준규 대표원장"
+                    title="서울365치과 박준규 대표원장 진료 사진"
                     class="w-full h-auto object-cover"
                     style="aspect-ratio:3/2"
                     loading="eager"
@@ -396,7 +398,7 @@ home.get('/', async (c) => {
                 <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(4,11,24,0.8),transparent)"></div>
                 <div class="text-center relative z-10">
                   <div class="w-36 h-36 rounded-full mx-auto mb-5 overflow-hidden border-2 border-[#0066FF]/20 pulse-ring" style="box-shadow:0 0 40px rgba(0,102,255,0.2)">
-                    <img src="/static/dr-park-profile.jpg" alt={doctors[0].name} class="w-full h-full object-cover object-[center_20%]" loading="lazy" />
+                    <img src="/static/dr-park-profile.jpg" alt={`${doctors[0].name} ${doctors[0].title} - 서울365치과`} title={`서울365치과 ${doctors[0].name} ${doctors[0].title}`} class="w-full h-full object-cover object-[center_20%]" loading="lazy" />
                   </div>
                   <h3 class="text-2xl font-bold text-white">{doctors[0].name}</h3>
                   <p class="text-[#00E5FF] text-sm font-semibold mt-1">{doctors[0].title}</p>
@@ -465,7 +467,7 @@ home.get('/', async (c) => {
                     <div class="absolute inset-0 flex">
                       <div class="w-1/2 relative overflow-hidden border-r border-gray-200/50">
                         {cs.before_image ? (
-                          <img src={cs.before_image} alt="Before" class="w-full h-full object-cover" loading="lazy" />
+                          <img src={cs.before_image} alt={`서울365치과 ${cs.title || cs.tag} 치료 전 사진`} title={`${cs.title || cs.tag} Before`} class="w-full h-full object-cover" loading="lazy" />
                         ) : (
                           <div class="w-full h-full flex items-center justify-center bg-gray-100/80">
                             <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
@@ -475,7 +477,7 @@ home.get('/', async (c) => {
                       </div>
                       <div class="w-1/2 relative overflow-hidden">
                         {cs.after_image ? (
-                          <img src={cs.after_image} alt="After" class="w-full h-full object-cover" loading="lazy" />
+                          <img src={cs.after_image} alt={`서울365치과 ${cs.title || cs.tag} 치료 후 사진`} title={`${cs.title || cs.tag} After`} class="w-full h-full object-cover" loading="lazy" />
                         ) : (
                           <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.02]">
                             <span class="text-[#0066FF]/30 text-sm font-bold tracking-widest uppercase">After</span>
@@ -677,7 +679,7 @@ home.get('/', async (c) => {
                   <a href={`/blog/${article.slug}`} class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border block" data-cursor-hover>
                     <div class="aspect-[16/9] bg-gradient-to-br from-[#0066FF]/[0.06] to-[#00E5FF]/[0.02] flex items-center justify-center overflow-hidden relative">
                       {article.cover_image ? (
-                        <img src={article.cover_image} alt={article.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                        <img src={article.cover_image} alt={article.title} title={`${article.title} | 서울365치과 블로그`} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
                       ) : (
                         <i class="fa-solid fa-newspaper text-4xl text-[#0066FF]/10 group-hover:text-[#0066FF]/20 group-hover:scale-110 transition-all duration-700"></i>
                       )}
@@ -780,10 +782,10 @@ home.get('/', async (c) => {
               <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white btn-magnetic px-9 py-4 text-[0.95rem]" data-cursor-hover>
                 <i class="fa-solid fa-phone"></i> 전화 상담
               </a>
-              <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium btn-magnetic px-9 py-4 text-[0.95rem]" style="background:#FEE500;color:#3C1E1E;border:none;" data-cursor-hover>
+              <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" class="btn-premium btn-magnetic px-9 py-4 text-[0.95rem]" style="background:#FEE500;color:#3C1E1E;border:none;" data-cursor-hover>
                 <i class="fa-solid fa-comment"></i> 카카오톡
               </a>
-              <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic px-9 py-4 text-[0.95rem]" data-cursor-hover>
+              <a href={CLINIC.naverBooking} target="_blank" rel="noopener noreferrer nofollow" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic px-9 py-4 text-[0.95rem]" data-cursor-hover>
                 <i class="fa-solid fa-calendar-check"></i> 네이버 예약
               </a>
             </div>
@@ -794,7 +796,7 @@ home.get('/', async (c) => {
       </section>
     </>,
     {
-      title: '서울365치과 | 인천 구월동 임플란트·교정',
+      title: '서울365치과 | 인천 구월동 임플란트·교정·수면진료 365일 야간진료',
       description: '인천 구월동 서울365치과. 서울대 5인 전문의, 365일·야간21시 진료. 수면진료·자체 기공실. 032-432-0365',
       canonical: 'https://seoul365dc.kr',
       jsonLd: [

@@ -13,7 +13,7 @@ let _currentSeoSettings: Record<string, string> = {};
 export function setCurrentSeoSettings(s: Record<string, string>) { _currentSeoSettings = s; }
 
 export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd }) => {
-  const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·교정 365일 치과`;
+  const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·교정·수면진료 365일 야간진료`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·교정·수면진료. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
   const ogImage = 'https://seoul365dc.kr/static/og-image.png';
@@ -405,6 +405,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* === PRIMARY SEO META === */}
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
+        <meta name="keywords" content="인천치과, 구월동치과, 임플란트, 치아교정, 인비절라인, 수면진료, 전체임플란트, 올온X, 서울365치과, 인천임플란트, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 소아치과, 심미치료, 신경치료, 서울대치과" />
         <link rel="canonical" href={canonicalUrl} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
@@ -686,7 +687,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                     { href: CLINIC.naverBlog, icon: 'fa-solid fa-n', label: '네이버 블로그에서 서울365치과 보기' },
                     { href: CLINIC.kakao, icon: 'fa-solid fa-comment', label: '카카오톡으로 서울365치과 상담하기' },
                   ].map(s => (
-                    <a href={s.href} target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-[#00E5FF] hover:bg-[#0066FF]/10 hover:border-[#0066FF]/20 transition-all text-sm" aria-label={s.label} data-cursor-hover>
+                    <a href={s.href} target="_blank" rel="noopener noreferrer nofollow" class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-[#00E5FF] hover:bg-[#0066FF]/10 hover:border-[#0066FF]/20 transition-all text-sm" aria-label={s.label} data-cursor-hover>
                       <i class={s.icon} aria-hidden="true"></i>
                     </a>
                   ))}
@@ -788,7 +789,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               <i class="fa-solid fa-phone text-[1.1rem]" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-medium">전화</span>
             </a>
-            <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="카카오톡 상담">
+            <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="카카오톡 상담">
               <i class="fa-solid fa-comment text-[1.1rem]" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-medium">카카오톡</span>
             </a>
@@ -806,7 +807,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === DESKTOP FLOATING CTA === */}
         <div class="hidden md:flex fixed bottom-8 right-8 z-40 flex-col gap-3" aria-label="빠른 연락 버튼">
-          <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer" class="floating-btn bg-[#FEE500] text-[#3C1E1E] rounded-2xl flex items-center justify-center" aria-label="카카오톡 상담" style="width:52px;height:52px;" data-cursor-hover>
+          <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" class="floating-btn bg-[#FEE500] text-[#3C1E1E] rounded-2xl flex items-center justify-center" aria-label="카카오톡 상담" style="width:52px;height:52px;" data-cursor-hover>
             <i class="fa-solid fa-comment text-lg" aria-hidden="true"></i>
           </a>
           <a href={CLINIC.phoneTel} class="floating-btn bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white rounded-2xl flex items-center justify-center relative overflow-hidden" aria-label="전화 상담 032-432-0365" style="width:52px;height:52px;" data-cursor-hover>
