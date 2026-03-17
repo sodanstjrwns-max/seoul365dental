@@ -62,7 +62,7 @@ adminRoutes.post('/api/admin/login', async (c) => {
   const isJson = ct.includes('application/json');
   if (!username || !password) {
     if (isJson) return c.json({ ok: false, error: '아이디와 비밀번호를 입력하세요' }, 400);
-    return c.redirect('/admin?error=' + encodeURIComponent('아이디와 비밀번호를 입력하세요'));
+    return c.redirect('/admin?error=' + encodeURIComponent('아이디와 비밀번호를 입력하세요'), 303);
   }
 
   // Auto-create default admin if none exists
@@ -75,13 +75,13 @@ adminRoutes.post('/api/admin/login', async (c) => {
   const admin = await c.env.DB.prepare('SELECT id, username, name, password_hash FROM admin_users WHERE username = ?').bind(username).first<{ id: number; username: string; name: string; password_hash: string }>();
   if (!admin) {
     if (isJson) return c.json({ ok: false, error: '존재하지 않는 계정입니다' }, 401);
-    return c.redirect('/admin?error=' + encodeURIComponent('존재하지 않는 계정입니다'));
+    return c.redirect('/admin?error=' + encodeURIComponent('존재하지 않는 계정입니다'), 303);
   }
 
   const valid = await verifyPassword(password, admin.password_hash);
   if (!valid) {
     if (isJson) return c.json({ ok: false, error: '비밀번호가 올바르지 않습니다' }, 401);
-    return c.redirect('/admin?error=' + encodeURIComponent('비밀번호가 올바르지 않습니다'));
+    return c.redirect('/admin?error=' + encodeURIComponent('비밀번호가 올바르지 않습니다'), 303);
   }
 
   const sessionId = generateSessionId();
@@ -96,7 +96,7 @@ adminRoutes.post('/api/admin/login', async (c) => {
     });
   }
   return new Response(null, {
-    status: 302,
+    status: 303,
     headers: { 'Location': '/admin/dashboard', 'Set-Cookie': sessionCookie },
   });
 })
@@ -680,7 +680,7 @@ async function handleAdminLogout(c: any) {
     try { await c.env.DB.prepare('DELETE FROM admin_sessions WHERE id = ?').bind(match[1]).run(); } catch {}
   }
   return new Response(null, {
-    status: 302,
+    status: 303,
     headers: {
       'Location': '/admin',
       'Set-Cookie': 'admin_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0',
