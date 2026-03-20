@@ -13,7 +13,7 @@ export const mainFaq = [
   },
   {
     q: '365일 진료가 정말 가능한가요?',
-    a: '네, 서울365치과는 이름 그대로 365일 진료합니다. 일요일과 공휴일에도 14:00~18:00 진료하며, 평일 월~목은 야간 21시까지 진료합니다. 점심시간 없이 연속 진료합니다.',
+    a: '네, 서울365치과는 이름 그대로 365일 진료합니다. 평일 월~목은 야간 21시까지, 금요일은 18시까지, 토요일은 14:00~18:00, 일요일과 공휴일에도 14:00~18:00 진료합니다. 점심시간 없이 연속 진료합니다.',
   },
   {
     q: '주차는 어디에 하나요?',
@@ -46,11 +46,9 @@ export const pricingCategories = [
 
 export const pricingData: PricingItem[] = [
   // ── 임플란트 치료 ──
-  { treatment: 'CT 촬영', price: '5만원', insurance: '비급여', category: '임플란트' },
   { treatment: '네비게이션 가이드', price: '10만원', insurance: '비급여', category: '임플란트' },
   { treatment: '네비게이션 hole', price: '5만원', insurance: '비급여', category: '임플란트' },
-  { treatment: '수면마취 (의식하진정요법)', price: '20만원', insurance: '비급여', category: '임플란트' },
-  { treatment: 'MUA', price: '10만원', insurance: '비급여', category: '임플란트' },
+  { treatment: 'MUA', price: '10~30만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트 (+임시치아)', price: '94만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트', price: '84만원', insurance: '65세 건보 적용 가능', category: '임플란트' },
   { treatment: '오스템 프리미엄 SOI (+임시치아)', price: '109만원', insurance: '비급여', category: '임플란트' },
@@ -180,20 +178,14 @@ export const pricingData: PricingItem[] = [
   { treatment: 'Fermit (임시충전)', price: '2만원', insurance: '비급여', category: '기타' },
 ];
 
-// 대표 수가 요약 (홈/pricing 간략 표시용)
+// 대표 수가 요약 (홈/pricing 간략 표시용) — 가격순 정렬, 이벤트 표시
 export const pricingSummary: PricingItem[] = [
+  { treatment: '임플란트 이벤트', price: '59만원~', insurance: '비급여', category: '임플란트', note: '특가 이벤트' },
+  { treatment: '메가젠 임플란트', price: '74만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트', price: '84만원~', insurance: '65세 건보 적용 가능', category: '임플란트' },
-  { treatment: '오스템+임시치아 포함', price: '94만원~', insurance: '비급여', category: '임플란트' },
-  { treatment: '스트라우만 임플란트', price: '109만원', insurance: '비급여', category: '임플란트' },
-  { treatment: 'All-on-4', price: '550만원', insurance: '비급여', category: '임플란트' },
-  { treatment: 'All-on-6', price: '700만원', insurance: '비급여', category: '임플란트' },
-  { treatment: '인비절라인 교정', price: '700만원', insurance: '비급여', category: '교정' },
-  { treatment: 'CLIPPY-C 교정', price: '365만원', insurance: '비급여', category: '교정' },
+  { treatment: '오스템 프리미엄 SOI', price: '99만원~', insurance: '비급여', category: '임플란트' },
+  { treatment: '스트라우만 임플란트', price: '109만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
+  { treatment: '레진 충치치료', price: '8~20만원', insurance: '비급여', category: '보존', note: '부위·범위에 따라 변동' },
+  { treatment: 'MUA', price: '10~30만원', insurance: '비급여', category: '임플란트' },
   { treatment: '지르코니아 크라운', price: '50~60만원', insurance: '비급여', category: '보철' },
-  { treatment: '레진 충치치료', price: '8~20만원', insurance: '비급여', category: '보존' },
-  { treatment: 'Enamic 인레이', price: '35만원', insurance: '비급여', category: '보존' },
-  { treatment: '라미네이트', price: '60만원', insurance: '비급여 (과세)', category: '미용' },
-  { treatment: '치아 미백 (3회)', price: '19만원', insurance: '비급여 (과세)', category: '미용' },
-  { treatment: '스케일링 (건보)', price: '약 1.5~2만원', insurance: '연 1회 급여', category: '기타' },
-  { treatment: '수면마취', price: '20만원', insurance: '비급여', category: '임플란트' },
 ];

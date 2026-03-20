@@ -38,7 +38,7 @@ export const doctors: Doctor[] = [
     career: [
       '서울대학교 치과병원 수련의',
       '오스템 임플란트 연구센터 자문위원',
-      '디오임플란트 연구센터 자문위원',
+      '메가젠임플란트 연구센터 자문위원',
       '오스템 A.I.C Implant Master course 수료',
       'CAD-CAM master class 수료',
     ],
@@ -50,11 +50,11 @@ export const doctors: Doctor[] = [
       '대한턱관절교합학회 정회원',
       '대한통합치과학회 정회원',
     ],
-    specialties: ['전체임플란트', '올온X', '심미보철', '수면임플란트'],
+    specialties: ['전체임플란트', '디지털풀아치(올온X)', '심미보철', '수면임플란트'],
     treatmentLinks: ['/treatments/full-implant', '/treatments/all-on-x', '/treatments/implant'],
     h1: '박준규 대표원장 – 서울대 통합치의학과 전문의',
     metaTitle: '박준규 대표원장 | 서울365치과 - 서울대 통합치의학과 전문의',
-    metaDesc: '서울365치과 박준규 대표원장. 서울대 치의학과 졸업, 통합치의학과 전문의, 하버드 임플란트 고급과정. 전체임플란트·올온X·심미보철 전문.',
+    metaDesc: '서울365치과 박준규 대표원장. 서울대 치의학과 졸업, 통합치의학과 전문의, 하버드 임플란트 고급과정. 전체임플란트·디지털풀아치·심미보철 전문.',
   },
   {
     slug: 'choi-dabin',

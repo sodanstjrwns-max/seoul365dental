@@ -54,13 +54,13 @@ home.get('/', async (c) => {
 
               {/* H1 — 3-Line Emotional Headline */}
               <h1 class="reveal" style="transition-delay:0.5s">
-                <span class="block text-white/40 mb-1" style="font-size:clamp(2rem,5.5vw,4.2rem);line-height:1.08;letter-spacing:-0.04em;font-weight:800">
+                <span class="block text-white/40 mb-1" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
                   {MESSAGING.heroLine1}
                 </span>
-                <span class="block text-white/60 mb-2" style="font-size:clamp(2rem,5.5vw,4.2rem);line-height:1.08;letter-spacing:-0.04em;font-weight:800">
+                <span class="block text-white/60 mb-2" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
                   {MESSAGING.heroLine2}
                 </span>
-                <span class="block gradient-text-electric" style="font-size:clamp(2.3rem,6.5vw,5rem);line-height:1.02;letter-spacing:-0.05em;font-weight:900">
+                <span class="block gradient-text-electric" style="font-size:clamp(1.7rem,4.5vw,3.5rem);line-height:1.05;letter-spacing:-0.05em;font-weight:900;white-space:nowrap">
                   {MESSAGING.heroAccent}
                 </span>
               </h1>
@@ -254,10 +254,10 @@ home.get('/', async (c) => {
               <span class="w-8 h-px bg-[#00E5FF]"></span> CLINIC TOUR
             </span>
             <h2 class="text-white text-2xl md:text-4xl lg:text-5xl font-bold leading-tight mb-3" style="text-shadow:0 2px 20px rgba(0,0,0,0.5)">
-              직접 보시면<br class="md:hidden" /> <span class="gradient-text-electric">더 안심됩니다.</span>
+              서울365치과의 <span class="gradient-text-electric">진료 환경</span>
             </h2>
             <p class="text-white/40 text-sm md:text-base max-w-lg mb-6" style="text-shadow:0 1px 10px rgba(0,0,0,0.5)">
-              서울365치과의 진료 환경을 영상으로 먼저 확인하세요.
+              대표원장님의 진료 철학을 영상으로 확인하세요.
             </p>
           </div>
 
@@ -500,7 +500,7 @@ home.get('/', async (c) => {
               /* 폴백: DB에 데이터가 없을 때 기본 표시 */
               [
                 { title: '전체임플란트 – 상악 전체 수복', tag: '전체임플란트', doctor: '박준규 대표원장' },
-                { title: '올온X – 하악 즉시로딩', tag: '올온X', doctor: '박준규 대표원장' },
+                { title: '디지털풀아치 – 하악 즉시로딩', tag: '디지털풀아치', doctor: '박준규 대표원장' },
                 { title: '인비절라인 – 성인 투명교정', tag: '교정', doctor: '하누리 원장' },
               ].map(cs => (
                 <a href="/cases/gallery" class="premium-card overflow-hidden group tilt-card electric-card-border block" data-cursor-hover>
@@ -836,7 +836,7 @@ home.get('/', async (c) => {
           "@context": "https://schema.org",
           "@type": "VideoObject",
           "name": "서울365치과 소개 영상 - 진료 환경 클리닉 투어",
-          "description": "서울365치과의 진료 환경을 영상으로 먼저 확인하세요. 400평 규모, 6개 독립 수술실, 에어샤워 시스템, 자체 기공실.",
+          "description": "서울365치과의 진료 환경. 대표원장님의 진료 철학을 영상으로 확인하세요. 400평 규모, 6개 독립 수술실, 에어샤워 시스템, 자체 기공실.",
           "thumbnailUrl": "https://img.youtube.com/vi/gB_yiatcwAc/maxresdefault.jpg",
           "uploadDate": "2024-01-01",
           "contentUrl": "https://www.youtube.com/watch?v=gB_yiatcwAc",
@@ -894,7 +894,7 @@ home.get('/', async (c) => {
           "name": "서울365치과 진료 서비스",
           "itemListElement": [
             { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" }, "priceCurrency": "KRW", "description": "자체 기공실 MUA 즉시로딩", "url": "https://seoul365dc.kr/treatments/full-implant" },
-            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "올온X 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dc.kr/treatments/all-on-x" },
+            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "디지털풀아치(올온X) 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dc.kr/treatments/all-on-x" },
             { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "수면진료" }, "priceCurrency": "KRW", "description": "잠깐 잠들었다 깨면 치료 완료", "url": "https://seoul365dc.kr/treatments/sedation" },
             { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "치아교정" }, "priceCurrency": "KRW", "description": "인비절라인 투명교정", "url": "https://seoul365dc.kr/treatments/orthodontics" },
           ]
@@ -926,7 +926,7 @@ home.get('/', async (c) => {
           "name": "서울365치과 치과 질환 및 치료 안내",
           "url": "https://seoul365dc.kr",
           "about": [
-            { "@type": "MedicalCondition", "name": "무치악(치아 상실)", "associatedAnatomy": { "@type": "AnatomicalStructure", "name": "구강" }, "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "전체임플란트" }, { "@type": "MedicalProcedure", "name": "올온X" }] },
+            { "@type": "MedicalCondition", "name": "무치악(치아 상실)", "associatedAnatomy": { "@type": "AnatomicalStructure", "name": "구강" }, "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "전체임플란트" }, { "@type": "MedicalProcedure", "name": "디지털풀아치(올온X)" }] },
             { "@type": "MedicalCondition", "name": "부정교합", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "인비절라인" }, { "@type": "MedicalProcedure", "name": "교정치료" }] },
             { "@type": "MedicalCondition", "name": "치과 공포증(치과 불안)", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "수면진료" }, { "@type": "MedicalProcedure", "name": "무통마취" }] },
             { "@type": "MedicalCondition", "name": "치수염(충치)", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "신경치료" }, { "@type": "MedicalProcedure", "name": "보존치료" }] },
