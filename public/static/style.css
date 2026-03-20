@@ -9,15 +9,11 @@
 
 /* === VIDEO SECTION RESPONSIVE === */
 .video-section-responsive {
-  aspect-ratio: 16 / 9;
-  max-height: 80vh;
-  min-height: 500px;
+  height: clamp(450px, 56.25vw, 80vh);  /* 16:9 = 56.25vw 기반, 최대 80vh */
 }
 @media (max-width: 767px) {
   .video-section-responsive {
-    aspect-ratio: 16 / 9;
-    min-height: 300px;     /* 최소 높이 보장 */
-    max-height: 70vh;      /* 너무 크지 않게 */
+    height: clamp(280px, 56.25vw, 70vh);
   }
 }
 
