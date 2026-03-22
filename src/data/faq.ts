@@ -46,11 +46,9 @@ export const pricingCategories = [
 
 export const pricingData: PricingItem[] = [
   // ── 임플란트 치료 ──
-  { treatment: 'CT 촬영', price: '5만원', insurance: '비급여', category: '임플란트' },
   { treatment: '네비게이션 가이드', price: '10만원', insurance: '비급여', category: '임플란트' },
   { treatment: '네비게이션 hole', price: '5만원', insurance: '비급여', category: '임플란트' },
-  { treatment: '수면마취 (의식하진정요법)', price: '20만원', insurance: '비급여', category: '임플란트' },
-  { treatment: 'MUA', price: '10만원', insurance: '비급여', category: '임플란트' },
+  { treatment: 'MUA', price: '10~30만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트 (+임시치아)', price: '94만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트', price: '84만원', insurance: '65세 건보 적용 가능', category: '임플란트' },
   { treatment: '오스템 프리미엄 SOI (+임시치아)', price: '109만원', insurance: '비급여', category: '임플란트' },
@@ -188,6 +186,6 @@ export const pricingSummary: PricingItem[] = [
   { treatment: '오스템 프리미엄 SOI', price: '99만원~', insurance: '비급여', category: '임플란트' },
   { treatment: '스트라우만 임플란트', price: '109만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
   { treatment: '레진 충치치료', price: '8~20만원', insurance: '비급여', category: '보존', note: '부위·범위에 따라 변동' },
-  { treatment: 'MUA', price: '10만원', insurance: '비급여', category: '임플란트' },
+  { treatment: 'MUA', price: '10~30만원', insurance: '비급여', category: '임플란트' },
   { treatment: '지르코니아 크라운', price: '50~60만원', insurance: '비급여', category: '보철' },
 ];
