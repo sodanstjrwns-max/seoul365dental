@@ -197,7 +197,7 @@ seoRoutes.get('/sitemap.xml', async (c) => {
 
   // --- 핵심 치료 slug (priority 0.9) ---
   const highPriorityTreatments = new Set([
-    'full-implant', 'all-on-x', 'implant', 'orthodontics', 'invisalign',
+    'full-implant', 'digital-full-arch', 'implant', 'orthodontics', 'invisalign',
     'sedation', 'cosmetic', 'pediatric',
   ]);
 

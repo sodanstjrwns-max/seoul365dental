@@ -148,7 +148,7 @@ export const PERSONAS = {
     empathy: '드시고 싶은 것을 마음껏 드시지 못하는 그 답답함, 저희가 압니다.',
     solution: '서울대 출신 임플란트 전문 원장이 CT 정밀 진단 후 맞춤 치료 계획을 세웁니다. 뼈가 부족한 경우에도 골이식과 병행하여 진행 가능합니다.',
     cta: '무료 CT 촬영으로 정밀 진단 받아보세요.',
-    treatmentSlugs: ['full-implant', 'all-on-x', 'implant'],
+    treatmentSlugs: ['full-implant', 'digital-full-arch', 'implant'],
   },
   B: {
     name: '페르소나 B',
@@ -188,7 +188,7 @@ export const TREATMENT_EMPATHY: Record<string, {
     heroSub: '뼈가 부족해도, 전신 질환이 있어도 — 서울대 출신 전문의가 방법을 찾습니다.',
     personaRef: 'A',
   },
-  'all-on-x': {
+  'digital-full-arch': {
     heroTagline: '틀니의 불편함,\n이제 끝내실 수 있습니다.',
     heroSub: '전체 치아를 4~6개의 임플란트로 고정. 수술 당일부터 씹는 기능이 회복됩니다.',
     personaRef: 'A',

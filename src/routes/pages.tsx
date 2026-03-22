@@ -67,7 +67,7 @@ pageRoutes.get('/reservation', (c) => {
                 <label class="block text-sm font-semibold text-gray-700 mb-2">관심 치료</label>
                 <select name="treatment" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm text-gray-600">
                   <option value="">선택해주세요</option>
-                  <option>전체임플란트</option><option>디지털풀아치(올온X) 임플란트</option><option>일반 임플란트</option>
+                  <option>전체임플란트</option><option>디지털풀아치 임플란트</option><option>일반 임플란트</option>
                   <option>치아교정</option><option>인비절라인</option><option>수면진료</option>
                   <option>심미치료</option><option>충치/신경치료</option><option>기타</option>
                 </select>

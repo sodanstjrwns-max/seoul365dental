@@ -133,7 +133,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     },
     "slogan": MESSAGING.brandSlogan,
     "knowsAbout": [
-      "임플란트", "전체임플란트", "디지털풀아치", "올온X", "치아교정", "인비절라인",
+      "임플란트", "전체임플란트", "디지털풀아치", "전체 치아 복원 임플란트", "치아교정", "인비절라인",
       "수면진료", "무통마취", "심미치료", "충치치료", "신경치료",
       "소아치과", "자체기공실", "즉시로딩", "MUA",
     ],
@@ -295,7 +295,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       "itemListElement": [
         { "@type": "OfferCatalog", "name": "임플란트 센터", "itemListElement": [
           { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" } },
-          { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "디지털풀아치(올온X) 임플란트" } },
+          { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "디지털풀아치 임플란트" } },
           { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "일반 임플란트" } },
         ] },
         { "@type": "OfferCatalog", "name": "교정 센터", "itemListElement": [
@@ -405,7 +405,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* === PRIMARY SEO META === */}
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
-        <meta name="keywords" content="인천치과, 구월동치과, 임플란트, 치아교정, 인비절라인, 수면진료, 전체임플란트, 디지털풀아치, 올온X, 서울365치과, 인천임플란트, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 소아치과, 심미치료, 신경치료, 서울대치과" />
+        <meta name="keywords" content="인천치과, 구월동치과, 임플란트, 치아교정, 인비절라인, 수면진료, 전체임플란트, 디지털풀아치, 전체 치아 복원 임플란트, 디지털 임플란트, 서울365치과, 인천임플란트, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 소아치과, 심미치료, 신경치료, 서울대치과" />
         <link rel="canonical" href={canonicalUrl} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />

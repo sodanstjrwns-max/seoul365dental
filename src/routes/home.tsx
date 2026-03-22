@@ -11,7 +11,7 @@ const home = new Hono<{ Bindings: Bindings }>()
 
 home.get('/', async (c) => {
   const topTreatments = treatments.filter(t =>
-    ['full-implant','all-on-x','orthodontics','sedation','cosmetic','implant'].includes(t.slug)
+    ['full-implant','digital-full-arch','orthodontics','sedation','cosmetic','implant'].includes(t.slug)
   );
 
   // ===== DB에서 최신 비포애프터 케이스 가져오기 =====
@@ -891,7 +891,7 @@ home.get('/', async (c) => {
           "name": "서울365치과 진료 서비스",
           "itemListElement": [
             { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" }, "priceCurrency": "KRW", "description": "자체 기공실 MUA 즉시로딩", "url": "https://seoul365dc.kr/treatments/full-implant" },
-            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "디지털풀아치(올온X) 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dc.kr/treatments/all-on-x" },
+            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "디지털풀아치 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dc.kr/treatments/digital-full-arch" },
             { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "수면진료" }, "priceCurrency": "KRW", "description": "잠깐 잠들었다 깨면 치료 완료", "url": "https://seoul365dc.kr/treatments/sedation" },
             { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "치아교정" }, "priceCurrency": "KRW", "description": "인비절라인 투명교정", "url": "https://seoul365dc.kr/treatments/orthodontics" },
           ]
@@ -923,7 +923,7 @@ home.get('/', async (c) => {
           "name": "서울365치과 치과 질환 및 치료 안내",
           "url": "https://seoul365dc.kr",
           "about": [
-            { "@type": "MedicalCondition", "name": "무치악(치아 상실)", "associatedAnatomy": { "@type": "AnatomicalStructure", "name": "구강" }, "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "전체임플란트" }, { "@type": "MedicalProcedure", "name": "디지털풀아치(올온X)" }] },
+            { "@type": "MedicalCondition", "name": "무치악(치아 상실)", "associatedAnatomy": { "@type": "AnatomicalStructure", "name": "구강" }, "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "전체임플란트" }, { "@type": "MedicalProcedure", "name": "디지털풀아치" }] },
             { "@type": "MedicalCondition", "name": "부정교합", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "인비절라인" }, { "@type": "MedicalProcedure", "name": "교정치료" }] },
             { "@type": "MedicalCondition", "name": "치과 공포증(치과 불안)", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "수면진료" }, { "@type": "MedicalProcedure", "name": "무통마취" }] },
             { "@type": "MedicalCondition", "name": "치수염(충치)", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "신경치료" }, { "@type": "MedicalProcedure", "name": "보존치료" }] },

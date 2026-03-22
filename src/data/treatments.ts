@@ -46,7 +46,7 @@ export const treatments: Treatment[] = [
     ],
     types: [
       { name: '컨벤셔널 3피스 전체임플란트', desc: '개별 임플란트를 식립하여 가장 자연치아에 가까운 결과를 제공합니다. 가장 오래 검증된 방법입니다.' },
-      { name: '디지털풀아치(올온X) 전체임플란트', desc: '최소 4~6개의 임플란트로 전악을 회복합니다. 뼈이식 없이도 가능한 경우가 많습니다.' },
+      { name: '디지털풀아치 전체임플란트', desc: '최소 4~6개의 임플란트로 전악을 회복합니다. 뼈이식 없이도 가능한 경우가 많습니다.' },
       { name: 'MUA 즉시로딩 전체임플란트', desc: '수술 당일 임시 치아를 장착하여 바로 기능 회복이 가능합니다.' },
     ],
     whyUs: [
@@ -113,15 +113,15 @@ export const treatments: Treatment[] = [
       { name: '지르코니아 보철', desc: '금속 없는 세라믹 보철. 강도와 심미성 모두 우수.', grade: '최종 보철' },
       { name: 'MUA(Multi-Unit Abutment)', desc: '즉시로딩을 위한 연결 부품. 자체 기공실 즉시 제작.', grade: '연결 파트' },
     ],
-    relatedSlugs: ['all-on-x', 'implant', 'sedation', 'denture'],
+    relatedSlugs: ['digital-full-arch', 'implant', 'sedation', 'denture'],
   },
   {
-    slug: 'all-on-x',
-    name: '디지털풀아치(올온X) 임플란트',
+    slug: 'digital-full-arch',
+    name: '디지털풀아치 임플란트',
     category: '전문센터',
     h1: '디지털풀아치 임플란트 – 최소 식립으로 전악 회복',
-    metaTitle: '디지털풀아치(올온X) 임플란트 | 서울365치과 - 최소 식립 전악 회복',
-    metaDesc: '최소 4~6개 식립으로 전악 회복. 디지털풀아치(올온X) 전체임플란트 전문.',
+    metaTitle: '디지털풀아치 임플란트 | 서울365치과 - 전체 치아 복원',
+    metaDesc: '최소 4~6개 식립으로 전악 회복. 디지털풀아치 전체임플란트 전문.',
     heroTitle: '최소 4개 식립으로, 전체 치아를 되찾습니다',
     heroSub: '뼈이식 없이도 가능한 디지털풀아치, 서울대 전문의가 직접 시술합니다.',
     icon: 'fa-teeth-open',
@@ -133,8 +133,8 @@ export const treatments: Treatment[] = [
       '비용 부담을 줄이고 싶으신 분',
     ],
     types: [
-      { name: '올온4 (All-on-4)', desc: '4개의 임플란트로 전악을 지지합니다. 하악에 주로 적용됩니다.' },
-      { name: '올온6 (All-on-6)', desc: '6개의 임플란트로 더 안정적인 지지력을 확보합니다.' },
+      { name: 'All-on-4', desc: '4개의 임플란트로 전악을 지지합니다. 하악에 주로 적용됩니다.' },
+      { name: 'All-on-6', desc: '6개의 임플란트로 더 안정적인 지지력을 확보합니다.' },
     ],
     whyUs: [
       { title: '서울대 전문의 직접 시술', desc: '풍부한 경험의 전문의가 수술부터 보철까지 책임집니다.', icon: 'fa-user-doctor' },
@@ -152,13 +152,13 @@ export const treatments: Treatment[] = [
     ],
     doctorSlug: 'park-junkyu',
     faq: [
-      { q: '올온4와 올온6의 차이는?', a: '올온4는 4개, 올온6은 6개의 임플란트로 전악을 지지합니다. 뼈 상태에 따라 적합한 방법이 달라지며, 정밀 진단 후 추천드립니다.' },
+      { q: 'All-on-4와 All-on-6의 차이는?', a: 'All-on-4는 4개, All-on-6은 6개의 임플란트로 전악을 지지합니다. 뼈 상태에 따라 적합한 방법이 달라지며, 정밀 진단 후 추천드립니다.' },
       { q: '뼈이식 없이 가능한가요?', a: '디지털풀아치의 장점은 경사 식립을 통해 기존 뼈를 최대한 활용하는 것입니다. 많은 경우 뼈이식 없이 가능합니다.' },
       { q: '비용은 얼마나 드나요?', a: '서울365치과 기준 All-on-4(오스템) 550만원, All-on-6(오스템) 700만원입니다. 수면마취 20만원, CT 5만원, 네비게이션 가이드 10만원은 별도입니다. 분할 결제 옵션도 가능하며, 정밀 진단 후 정확한 견적을 안내드립니다.' },
       { q: '틀니와 디지털풀아치의 차이는?', a: '틀니는 탈착식이고 씹는 힘이 30~40% 수준인 반면, 디지털풀아치는 고정식으로 자연치아의 85% 이상 씹는 힘을 회복합니다. 뼈 흡수 방지 효과도 있습니다.' },
     ],
     detailSections: [
-      { title: '디지털풀아치(올온X) 임플란트란?', content: '디지털풀아치(All-on-X)는 최소 4~6개의 임플란트를 전략적으로 식립하여 전체 치아를 회복하는 방법입니다. 후방 임플란트를 경사 식립하여 기존 뼈를 최대한 활용하므로, 뼈이식 없이도 시술이 가능한 경우가 많습니다.', icon: 'fa-circle-info' },
+      { title: '디지털풀아치 임플란트란?', content: '디지털풀아치는 최소 4~6개의 임플란트를 전략적으로 식립하여 전체 치아를 회복하는 방법입니다. 후방 임플란트를 경사 식립하여 기존 뼈를 최대한 활용하므로, 뼈이식 없이도 시술이 가능한 경우가 많습니다.', icon: 'fa-circle-info' },
       { title: '경사 식립의 원리', content: '후방 임플란트를 30~45도 경사로 식립하면 더 긴 임플란트를 사용할 수 있어 초기 안정성이 높아집니다. 이를 통해 뼈이식의 필요성을 줄이고 치료 기간도 단축됩니다.', icon: 'fa-ruler-combined' },
     ],
     warnings: [
@@ -172,7 +172,7 @@ export const treatments: Treatment[] = [
       '3~6개월: 임시 보철 사용 기간. 정기 내원으로 경과 확인.',
       '최종 보철 장착 후 6개월마다 정기 검진.',
     ],
-    comparisonHeaders: ['항목', '올온4', '올온6', '컨벤셔널(개별)'],
+    comparisonHeaders: ['항목', 'All-on-4', 'All-on-6', '컨벤셔널(개별)'],
     comparisonTable: [
       { item: '식립 수', values: ['4개', '6개', '8~14개'] },
       { item: '뼈이식', values: ['대부분 불필요', '일부 불필요', '필요한 경우 많음'] },
@@ -181,8 +181,8 @@ export const treatments: Treatment[] = [
       { item: '안정성', values: ['우수', '매우 우수', '가장 우수'] },
     ],
     patientCases: [
-      { title: '65세 남성 — 하악 올온4', desc: '심한 골 흡수에도 뼈이식 없이 경사 식립으로 완료. 당일 임시 치아 장착.', tag: '올온4' },
-      { title: '72세 여성 — 상악 올온6', desc: '상악동 근접 부위를 경사 식립으로 해결. 수면진료로 편안하게 수술.', tag: '올온6' },
+      { title: '65세 남성 — 하악 All-on-4', desc: '심한 골 흡수에도 뼈이식 없이 경사 식립으로 완료. 당일 임시 치아 장착.', tag: 'All-on-4' },
+      { title: '72세 여성 — 상악 All-on-6', desc: '상악동 근접 부위를 경사 식립으로 해결. 수면진료로 편안하게 수술.', tag: 'All-on-6' },
     ],
     materials: [
       { name: '오스템 TS III SA', desc: '경사 식립에 적합한 높은 초기 안정성.', grade: '국산 프리미엄' },
@@ -268,7 +268,7 @@ export const treatments: Treatment[] = [
       { name: '스트라우만 BLX', desc: '세계 1위 브랜드, 높은 초기 안정성.', grade: '수입 프리미엄' },
       { name: '메가젠 Anyone', desc: '가성비 우수한 국산 임플란트.', grade: '국산 프리미엄' },
     ],
-    relatedSlugs: ['full-implant', 'all-on-x', 'crown', 'sedation'],
+    relatedSlugs: ['full-implant', 'digital-full-arch', 'crown', 'sedation'],
   },
   {
     slug: 'orthodontics',
@@ -623,7 +623,7 @@ export const treatments: Treatment[] = [
       { name: '플루마제닐(Flumazenil)', desc: '미다졸람의 길항제. 진정 효과를 신속하게 역전시켜 안전한 회복을 돕습니다.', grade: '길항제(안전)' },
       { name: '모니터링 장비', desc: '혈압, 맥박, SpO₂, ECG 실시간 측정.', grade: '안전 장비' },
     ],
-    relatedSlugs: ['full-implant', 'all-on-x', 'wisdom-tooth', 'implant'],
+    relatedSlugs: ['full-implant', 'digital-full-arch', 'wisdom-tooth', 'implant'],
   },
   // 일반/보존 치료
   {
@@ -1135,7 +1135,7 @@ export const treatments: Treatment[] = [
       { name: '아크릴 의치', desc: '가장 보편적인 틀니 재료.', grade: '표준' },
       { name: '금속 프레임(코발트크롬)', desc: '얇고 단단한 프레임. 부분 틀니에 사용.', grade: '프리미엄' },
     ],
-    relatedSlugs: ['full-implant', 'all-on-x', 'implant', 'bridge'],
+    relatedSlugs: ['full-implant', 'digital-full-arch', 'implant', 'bridge'],
   },
   {
     slug: 'emergency', name: '응급치료', category: '특수',
