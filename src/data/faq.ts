@@ -51,8 +51,6 @@ export const pricingData: PricingItem[] = [
   { treatment: '오스템 임플란트', price: '84만원', insurance: '65세 건보 적용 가능', category: '임플란트' },
   { treatment: '오스템 프리미엄 SOI', price: '99만원', insurance: '비급여', category: '임플란트' },
   { treatment: '스트라우만 (이벤트)', price: '119만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
-  { treatment: '교합조정', price: '1만원', insurance: '비급여', category: '임플란트' },
-  { treatment: '치아 삭제', price: '1만원', insurance: '비급여', category: '임플란트' },
   { treatment: 'IPT 레진 필링', price: '4만원', insurance: '비급여', category: '임플란트' },
   { treatment: '커스텀 어버트먼트 (보험)', price: '5만원', insurance: '급여', category: '임플란트' },
   { treatment: '네비게이션 hole', price: '5만원', insurance: '비급여', category: '임플란트' },
