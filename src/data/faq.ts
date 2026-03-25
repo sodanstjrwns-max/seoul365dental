@@ -1,7 +1,7 @@
 export const mainFaq = [
   {
     q: '임플란트 비용은 얼마인가요?',
-    a: '서울365치과 기준 이벤트 59만원~, 메가젠 74만원, 오스템 84만원, 오스템 프리미엄 SOI 99만원, 스트라우만(이벤트) 109만원입니다. 65세 이상은 2개까지 건강보험 적용 가능합니다.',
+    a: '서울365치과 기준 이벤트 59만원~, 메가젠 74만원, 오스템 84만원, 오스템 프리미엄 SOI 99만원, 스트라우만(이벤트) 119만원입니다. 65세 이상은 2개까지 건강보험 적용 가능합니다.',
   },
   {
     q: '임플란트 수명은 얼마나 되나요?',
@@ -50,7 +50,7 @@ export const pricingData: PricingItem[] = [
   { treatment: '메가젠 임플란트', price: '74만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트', price: '84만원', insurance: '65세 건보 적용 가능', category: '임플란트' },
   { treatment: '오스템 프리미엄 SOI', price: '99만원', insurance: '비급여', category: '임플란트' },
-  { treatment: '스트라우만 (이벤트)', price: '109만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
+  { treatment: '스트라우만 (이벤트)', price: '119만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
   { treatment: '교합조정', price: '1만원', insurance: '비급여', category: '임플란트' },
   { treatment: '치아 삭제', price: '1만원', insurance: '비급여', category: '임플란트' },
   { treatment: 'IPT 레진 필링', price: '4만원', insurance: '비급여', category: '임플란트' },
@@ -172,7 +172,7 @@ export const pricingSummary: PricingItem[] = [
   { treatment: '메가젠 임플란트', price: '74만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트', price: '84만원', insurance: '65세 건보 적용 가능', category: '임플란트' },
   { treatment: '오스템 프리미엄 SOI', price: '99만원', insurance: '비급여', category: '임플란트' },
-  { treatment: '스트라우만 (이벤트)', price: '109만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
+  { treatment: '스트라우만 (이벤트)', price: '119만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
   { treatment: '레진 충치치료', price: '8~20만원', insurance: '비급여', category: '보존', note: '수복이 필요한 부위와 크기에 따라' },
   { treatment: 'MUA', price: '10~30만원', insurance: '비급여', category: '임플란트' },
   { treatment: '지르코니아 크라운', price: '50~60만원', insurance: '비급여', category: '보철' },
