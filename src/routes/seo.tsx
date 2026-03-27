@@ -228,7 +228,7 @@ const renderUrl = (base: string, p: any) => `  <url>
 const sitemapHeaders = {
   'Content-Type': 'application/xml; charset=utf-8',
   'Cache-Control': 'public, max-age=3600, s-maxage=7200',
-  'X-Robots-Tag': 'noindex',
+  // X-Robots-Tag: noindex 제거 — Google이 사이트맵을 정상 처리하도록
 };
 
 // ── 1) SITEMAP INDEX (master) ──
