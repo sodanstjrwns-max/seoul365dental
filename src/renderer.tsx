@@ -838,9 +838,12 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               document.querySelectorAll('.floating-btn').forEach(function(el) {
                 if (el.parentElement) el.parentElement.style.display = 'none';
               });
-              // Hide custom cursor
+              // Hide custom cursor and restore default cursor everywhere
               var cd = document.getElementById('cursor-dot'); if (cd) cd.style.display = 'none';
               var cr = document.getElementById('cursor-ring'); if (cr) cr.style.display = 'none';
+              var adminCursorFix = document.createElement('style');
+              adminCursorFix.textContent = 'body, body *, body *::before, body *::after { cursor: auto !important; } a, button, select, [role=button] { cursor: pointer !important; } input, textarea { cursor: text !important; }';
+              document.head.appendChild(adminCursorFix);
               // Hide scroll progress
               var sp = document.getElementById('scroll-progress'); if (sp) sp.style.display = 'none';
               // Ensure body scroll works

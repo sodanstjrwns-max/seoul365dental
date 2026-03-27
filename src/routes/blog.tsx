@@ -275,6 +275,7 @@ blogRoutes.get('/admin/blog', async (c) => {
           // Remove cursor effects
           var cd = document.getElementById('cursor-dot'); if (cd) cd.style.display = 'none';
           var cr = document.getElementById('cursor-ring'); if (cr) cr.style.display = 'none';
+          document.body.style.cursor = 'auto';
           // Remove scroll progress bar
           var sp = document.getElementById('scroll-progress'); if (sp) sp.style.display = 'none';
           document.body.style.overflow = 'auto';
