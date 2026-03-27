@@ -112,6 +112,10 @@ home.get('/', async (c) => {
                   <i class="fa-solid fa-calendar-check group-hover:scale-110 transition-transform"></i>
                   <span>지금 상담 예약하기</span>
                 </a>
+                <a href={CLINIC.naverBooking} target="_blank" rel="noopener noreferrer nofollow" class="btn-premium btn-magnetic text-[0.9rem] px-8 py-4 group" style="background:#03C75A;color:#fff;border-color:#03C75A" data-cursor-hover>
+                  <i class="fa-solid fa-n group-hover:scale-110 transition-transform"></i>
+                  <span>네이버 예약</span>
+                </a>
                 <a href="tel:032-432-0365" class="btn-premium btn-premium-white btn-magnetic text-[0.9rem] px-8 py-4 group" data-cursor-hover>
                   <i class="fa-solid fa-phone group-hover:animate-bounce"></i>
                   <span>032-432-0365</span>
