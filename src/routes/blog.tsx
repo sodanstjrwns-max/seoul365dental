@@ -21,7 +21,7 @@ blogRoutes.get('/admin/blog', async (c) => {
   return c.render(
     <>
       {/* Admin Header */}
-      <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-white/5">
+      <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center">
@@ -103,7 +103,7 @@ blogRoutes.get('/admin/blog', async (c) => {
       </section>
 
       {/* Editor Modal — Full screen */}
-      <div id="editorModal" class="hidden fixed inset-0 z-[60] bg-gray-900">
+      <div id="editorModal" class="hidden fixed inset-0 z-[10001] bg-gray-900">
         <div class="h-full flex flex-col">
           {/* Editor Header */}
           <div class="flex items-center justify-between px-5 py-3 bg-gray-900 border-b border-white/5">
@@ -246,7 +246,7 @@ blogRoutes.get('/admin/blog', async (c) => {
       </div>
 
       {/* Image Gallery Modal */}
-      <div id="galleryModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center p-4">
+      <div id="galleryModal" class="hidden fixed inset-0 z-[10002] flex items-center justify-center p-4">
         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="closeImageGallery()"></div>
         <div class="relative bg-gray-900 border border-white/10 rounded-2xl w-full max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
           <div class="flex items-center justify-between px-5 py-3 border-b border-white/5">
@@ -261,9 +261,29 @@ blogRoutes.get('/admin/blog', async (c) => {
 
       {/* Blog Editor Scripts */}
       <script dangerouslySetInnerHTML={{__html: `
+        // ── Hide interfering layout elements on admin blog page ─────
+        (function hideLayoutForAdmin() {
+          // Hide preloader immediately on admin pages
+          var pl = document.getElementById('preloader');
+          if (pl) { pl.classList.add('hidden'); pl.style.display = 'none'; }
+          // Hide main header/footer/mobile CTA to prevent z-index conflicts
+          var mh = document.getElementById('main-header');
+          if (mh) mh.style.display = 'none';
+          document.querySelectorAll('footer, .mobile-cta-bar').forEach(function(el) { el.style.display = 'none'; });
+          // Hide floating CTA buttons
+          document.querySelectorAll('.floating-btn').forEach(function(el) { el.parentElement.style.display = 'none'; });
+          // Remove cursor effects
+          var cd = document.getElementById('cursor-dot'); if (cd) cd.style.display = 'none';
+          var cr = document.getElementById('cursor-ring'); if (cr) cr.style.display = 'none';
+          // Remove scroll progress bar
+          var sp = document.getElementById('scroll-progress'); if (sp) sp.style.display = 'none';
+          document.body.style.overflow = 'auto';
+        })();
+
         // ── Editor open/close ─────────────────────────
         function openEditor(data) {
           document.getElementById('editorModal').classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
           resetCoverImage();
           if (data) {
             document.getElementById('editorTitle').textContent = '글 수정';
@@ -296,7 +316,10 @@ blogRoutes.get('/admin/blog', async (c) => {
             updatePreview();
           }
         }
-        function closeEditor() { document.getElementById('editorModal').classList.add('hidden'); }
+        function closeEditor() {
+          document.getElementById('editorModal').classList.add('hidden');
+          document.body.style.overflow = 'auto';
+        }
 
         // ── Cover Image ────────────────────────────────
         function resetCoverImage() {
@@ -511,18 +534,37 @@ blogRoutes.get('/admin/blog', async (c) => {
 
         // ── Load / Save / Delete ────────────────────
         async function loadPost(id) {
+          console.log('[Blog] loadPost called, id:', id);
           try {
             const res = await fetch('/api/admin/blog/' + id);
+            console.log('[Blog] loadPost response status:', res.status);
+            if (!res.ok) {
+              const text = await res.text();
+              alert('서버 오류 (' + res.status + '): ' + (text.substring(0, 200) || '응답 없음'));
+              return;
+            }
             const json = await res.json();
-            if (json.ok) openEditor(json.post);
-          } catch(e) { alert('불러오기 실패: ' + e.message); }
+            if (json.ok) {
+              openEditor(json.post);
+            } else {
+              alert(json.error || '글을 불러올 수 없습니다.');
+            }
+          } catch(e) {
+            console.error('[Blog] loadPost error:', e);
+            alert('불러오기 실패: ' + e.message);
+          }
         }
 
         async function savePost(publish) {
+          console.log('[Blog] savePost called, publish:', publish);
           const id = document.getElementById('postId').value;
           const title = document.getElementById('postTitle').value;
           const content = document.getElementById('postContent').value;
           if (!title || !content) { alert('제목과 본문을 입력하세요.'); return; }
+
+          // Disable buttons during save to prevent double-click
+          var btns = document.querySelectorAll('#editorModal button');
+          btns.forEach(function(b) { b.disabled = true; });
 
           const data = {
             title, content,
@@ -536,11 +578,23 @@ blogRoutes.get('/admin/blog', async (c) => {
           try {
             const url = id ? '/api/admin/blog/' + id : '/api/admin/blog';
             const method = id ? 'PUT' : 'POST';
+            console.log('[Blog] Sending', method, url);
             const res = await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+            console.log('[Blog] Response status:', res.status);
+            if (!res.ok) {
+              const text = await res.text();
+              alert('서버 오류 (' + res.status + '): ' + (text.substring(0, 200) || '응답 없음'));
+              btns.forEach(function(b) { b.disabled = false; });
+              return;
+            }
             const json = await res.json();
             if (json.ok) { window.location.reload(); }
-            else { alert(json.error || '오류'); }
-          } catch(e) { alert('저장 실패: ' + e.message); }
+            else { alert(json.error || '오류가 발생했습니다.'); }
+          } catch(e) {
+            console.error('[Blog] Save error:', e);
+            alert('저장 실패: ' + e.message);
+          }
+          btns.forEach(function(b) { b.disabled = false; });
         }
 
         async function deletePost(id) {

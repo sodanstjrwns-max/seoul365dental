@@ -137,7 +137,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
   return c.render(
     <>
       {/* Admin Header */}
-      <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-white/5">
+      <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center">
@@ -380,7 +380,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
       </section>
 
       {/* Case Modal */}
-      <div id="caseModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div id="caseModal" class="hidden fixed inset-0 z-[10001] flex items-center justify-center p-4">
         <div class="fixed inset-0 bg-black/70 backdrop-blur-sm" onclick="document.getElementById('caseModal').classList.add('hidden')"></div>
         <div class="relative bg-gray-900 border border-white/10 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 md:p-8">
           <div class="flex items-center justify-between mb-6">
@@ -713,7 +713,7 @@ adminRoutes.get('/admin/consultations', async (c) => {
   return c.render(
     <>
       {/* Admin Header */}
-      <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-white/5">
+      <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center hover:bg-[#0066FF]/30 transition">
@@ -832,7 +832,7 @@ adminRoutes.get('/admin/notices', async (c) => {
   return c.render(
     <>
       {/* Admin Header */}
-      <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-white/5">
+      <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center hover:bg-[#0066FF]/30 transition">
@@ -917,7 +917,7 @@ adminRoutes.get('/admin/notices', async (c) => {
       </section>
 
       {/* Notice Modal */}
-      <div id="noticeModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+      <div id="noticeModal" class="hidden fixed inset-0 z-[10001] flex items-center justify-center p-4">
         <div class="fixed inset-0 bg-black/70 backdrop-blur-sm" onclick="document.getElementById('noticeModal').classList.add('hidden')"></div>
         <div class="relative bg-gray-900 border border-white/10 rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 md:p-8">
           <div class="flex items-center justify-between mb-6">
@@ -1180,7 +1180,7 @@ adminRoutes.get('/admin/members', async (c) => {
   return c.render(
     <>
       {/* Admin Header */}
-      <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-white/5">
+      <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center">
@@ -1393,7 +1393,7 @@ adminRoutes.get('/admin/seo', async (c) => {
   return c.render(
     <>
       {/* Admin Header */}
-      <div class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-white/5">
+      <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <a href="/admin/dashboard" class="text-white/40 hover:text-white/70 transition"><i class="fa-solid fa-arrow-left mr-1"></i></a>

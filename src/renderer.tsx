@@ -821,6 +821,33 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === SCRIPTS === */}
         <script dangerouslySetInnerHTML={{__html: `
+          // ── Admin page layout cleanup ──────────────────
+          (function() {
+            if (window.location.pathname.startsWith('/admin')) {
+              // Hide preloader immediately
+              var pl = document.getElementById('preloader');
+              if (pl) { pl.classList.add('hidden'); pl.style.display = 'none'; }
+              // Hide main site header (admin has its own header)
+              var mh = document.getElementById('main-header');
+              if (mh) mh.style.display = 'none';
+              // Hide footer
+              document.querySelectorAll('footer').forEach(function(el) { el.style.display = 'none'; });
+              // Hide mobile CTA bar
+              document.querySelectorAll('.mobile-cta-bar').forEach(function(el) { el.style.display = 'none'; });
+              // Hide desktop floating buttons
+              document.querySelectorAll('.floating-btn').forEach(function(el) {
+                if (el.parentElement) el.parentElement.style.display = 'none';
+              });
+              // Hide custom cursor
+              var cd = document.getElementById('cursor-dot'); if (cd) cd.style.display = 'none';
+              var cr = document.getElementById('cursor-ring'); if (cr) cr.style.display = 'none';
+              // Hide scroll progress
+              var sp = document.getElementById('scroll-progress'); if (sp) sp.style.display = 'none';
+              // Ensure body scroll works
+              document.body.style.overflow = 'auto';
+            }
+          })();
+
           // Clinic Open/Close Status — Dynamic
           (function() {
             const hours = {
