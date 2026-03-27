@@ -788,8 +788,23 @@ blogRoutes.get('/blog/:slug', async (c) => {
         <meta itemprop="dateModified" content={post.updated_at} />
         <meta itemprop="author" content="서울365치과" />
 
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
+        {/* Cover Image — Full width hero */}
+        {post.cover_image && (
+          <div class="max-w-5xl mx-auto px-5 md:px-8 mb-8">
+            <div class="relative rounded-2xl overflow-hidden shadow-lg">
+              <img
+                src={post.cover_image}
+                alt={post.title}
+                class="w-full h-[280px] md:h-[400px] object-cover"
+                itemprop="image"
+                loading="eager"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
+          </div>
+        )}
 
+        <div class="max-w-4xl mx-auto px-5 md:px-8">
 
           {/* Header */}
           <header class="mb-10">
@@ -877,6 +892,44 @@ blogRoutes.get('/blog/:slug', async (c) => {
           )}
         </div>
       </article>
+
+      {/* Image Lightbox overlay */}
+      <div id="imgLightbox" class="hidden fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out" onclick="this.classList.add('hidden')">
+        <img id="lbImg" src="" alt="" class="max-w-full max-h-[90vh] rounded-xl shadow-2xl object-contain" />
+        <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white text-xl flex items-center justify-center transition" onclick="event.stopPropagation(); document.getElementById('imgLightbox').classList.add('hidden')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      {/* Blog image lightbox script */}
+      <script dangerouslySetInnerHTML={{__html: `
+        (function(){
+          var lb = document.getElementById('imgLightbox');
+          var lbImg = document.getElementById('lbImg');
+          if(!lb || !lbImg) return;
+          // Intercept clicks on article figure images
+          document.querySelectorAll('[itemprop="articleBody"] figure a').forEach(function(a){
+            a.addEventListener('click', function(e){
+              e.preventDefault();
+              lbImg.src = this.href || this.querySelector('img').src;
+              lb.classList.remove('hidden');
+            });
+          });
+          // Also handle cover image click
+          var coverImg = document.querySelector('[itemprop="image"]');
+          if(coverImg){
+            coverImg.style.cursor = 'zoom-in';
+            coverImg.addEventListener('click', function(){
+              lbImg.src = this.src;
+              lb.classList.remove('hidden');
+            });
+          }
+          // ESC to close
+          document.addEventListener('keydown', function(e){
+            if(e.key === 'Escape') lb.classList.add('hidden');
+          });
+        })();
+      `}} />
     </>,
     {
       title: `${post.title} | 서울365치과 블로그`,
@@ -894,6 +947,7 @@ blogRoutes.get('/blog/:slug', async (c) => {
           "description": post.excerpt || post.title,
           "datePublished": post.created_at,
           "dateModified": post.updated_at,
+          ...(post.cover_image ? { "image": post.cover_image } : {}),
           "author": { "@type": "Organization", "name": "서울365치과", "url": "https://seoul365dc.kr" },
           "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
           "mainEntityOfPage": `https://seoul365dc.kr/blog/${post.slug}`,

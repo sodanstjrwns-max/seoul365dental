@@ -72,10 +72,11 @@ export async function initUserTables(db: D1Database) {
 export function renderContent(md: string): string {
   let html = md
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    // Images: ![alt](url) — must come before heading/paragraph replacements
-    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<figure class="my-6"><img src="$2" alt="$1" class="w-full rounded-xl shadow-sm" loading="lazy" /><figcaption class="text-center text-xs text-gray-400 mt-2">$1</figcaption></figure>')
-    // Remove empty figcaptions
-    .replace(/<figcaption class="text-center text-xs text-gray-400 mt-2"><\/figcaption>/g, '')
+    // Images: ![alt](url) — renders with click-to-expand and nice styling
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
+      const caption = alt && alt !== '이미지' ? `<figcaption class="text-center text-xs text-gray-400 mt-2">${alt}</figcaption>` : '';
+      return `<figure class="my-8"><a href="${url}" target="_blank" rel="noopener" class="block rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-zoom-in"><img src="${url}" alt="${alt || ''}" class="w-full rounded-xl" loading="lazy" /></a>${caption}</figure>`;
+    })
     // Links: [text](url)
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#0066FF] underline hover:text-[#0052cc]" target="_blank" rel="noopener">$1</a>')
     .replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-gray-900 mt-8 mb-3">$1</h3>')
