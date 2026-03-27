@@ -5,7 +5,7 @@
 import { Hono } from 'hono'
 import { renderer, setCurrentSeoSettings } from './renderer'
 import type { Bindings } from './lib/types'
-import { getAllSeoSettings } from './lib/db'
+import { getAllSeoSettings, getSetting, initSettingsTable } from './lib/db'
 
 // Route modules
 import home from './routes/home'
@@ -18,6 +18,24 @@ import blogRoutes from './routes/blog'
 import seoRoutes from './routes/seo'
 
 const app = new Hono<{ Bindings: Bindings }>()
+
+// ── IndexNow Key File (.txt) — Must be FIRST before any other route ──
+// Hono's /:param.txt pattern is unreliable; handle .txt requests at top level
+app.get('/:filename{.+\\.txt$}', async (c) => {
+  const filename = c.req.param('filename');
+  const key = filename.replace('.txt', '');
+  try {
+    await initSettingsTable(c.env.DB);
+    const indexNowKey = await getSetting(c.env.DB, 'INDEXNOW_KEY', c.env.INDEXNOW_KEY || '');
+    if (indexNowKey && key === indexNowKey) {
+      return new Response(indexNowKey, {
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      });
+    }
+  } catch {}
+  // Not an IndexNow key — fall through to 404
+  return c.notFound();
+})
 
 // ── Global Middleware ─────────────────────────────────────
 app.use('*', async (c, next) => {

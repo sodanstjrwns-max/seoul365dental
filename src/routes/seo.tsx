@@ -570,12 +570,10 @@ Host: https://seoul365dc.kr
 // ============================================================
 
 // IndexNow key file endpoint (required by protocol)
-seoRoutes.get('/:key.txt', async (c) => {
-  const key = c.req.param('key');
+// Matches /<hex-key>.txt pattern — must use wildcard because Hono's /:param.txt is unreliable
+seoRoutes.get('/indexnow-key-file', async (c) => {
   const indexNowKey = await getSetting(c.env.DB, 'INDEXNOW_KEY', c.env.INDEXNOW_KEY || '');
-  if (!indexNowKey || key !== indexNowKey) {
-    return c.notFound();
-  }
+  if (!indexNowKey) return c.notFound();
   return new Response(indexNowKey, {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   });
