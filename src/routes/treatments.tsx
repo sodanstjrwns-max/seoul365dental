@@ -405,7 +405,7 @@ treatmentRoutes.get('/treatments/:slug', (c) => {
       )}
 
       {/* FAQ */}
-      <section class="section-lg bg-white" itemscope itemtype="https://schema.org/FAQPage">
+      <section class="section-lg bg-white">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-3 block">FAQ</span>
@@ -413,13 +413,13 @@ treatmentRoutes.get('/treatments/:slug', (c) => {
           </div>
           <div class="space-y-3 stagger-children">
             {t.faq.map(faq => (
-              <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+              <div class="faq-item">
                 <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
-                  <h3 class="font-semibold text-gray-800 text-[0.9rem] pr-4" itemprop="name">{faq.q}</h3>
+                  <h3 class="font-semibold text-gray-800 text-[0.9rem] pr-4">{faq.q}</h3>
                   <i class="fa-solid fa-chevron-down text-gray-300 text-sm faq-icon flex-shrink-0"></i>
                 </button>
-                <div class="hidden px-6 pb-5" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                  <p class="text-gray-500 text-[0.9rem] leading-relaxed" itemprop="text">{faq.a}</p>
+                <div class="hidden px-6 pb-5">
+                  <p class="text-gray-500 text-[0.9rem] leading-relaxed">{faq.a}</p>
                 </div>
               </div>
             ))}
@@ -564,6 +564,7 @@ treatmentRoutes.get('/treatments/:slug', (c) => {
         // FAQPage (treatment-specific)
         ...(t.faq ? [{
           "@context": "https://schema.org", "@type": "FAQPage",
+          "name": `${t.name} 자주 묻는 질문`,
           "mainEntity": t.faq.map((f: any) => ({
             "@type": "Question", "name": f.q,
             "acceptedAnswer": { "@type": "Answer", "text": f.a }

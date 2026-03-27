@@ -637,7 +637,7 @@ home.get('/', async (c) => {
       </section>
 
       {/* ===== S10: FAQ PREVIEW ===== */}
-      <section class="section-lg bg-mesh relative overflow-hidden" itemscope itemtype="https://schema.org/FAQPage" aria-label="자주 묻는 질문">
+      <section class="section-lg bg-mesh relative overflow-hidden" aria-label="자주 묻는 질문">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">FAQ</span>
@@ -646,13 +646,13 @@ home.get('/', async (c) => {
 
           <div class="space-y-3 stagger-children">
             {mainFaq.map(faq => (
-              <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+              <div class="faq-item">
                 <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
-                  <h3 class="font-semibold text-gray-800 text-[0.95rem] pr-4" itemprop="name">{faq.q}</h3>
+                  <h3 class="font-semibold text-gray-800 text-[0.95rem] pr-4">{faq.q}</h3>
                   <i class="fa-solid fa-chevron-down text-gray-300 text-sm faq-icon flex-shrink-0"></i>
                 </button>
-                <div class="hidden px-6 pb-5" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                  <p class="text-gray-500 text-[0.9rem] leading-relaxed" itemprop="text">{faq.a}</p>
+                <div class="hidden px-6 pb-5">
+                  <p class="text-gray-500 text-[0.9rem] leading-relaxed">{faq.a}</p>
                 </div>
               </div>
             ))}
@@ -883,6 +883,7 @@ home.get('/', async (c) => {
         {
           "@context": "https://schema.org",
           "@type": "FAQPage",
+          "name": "서울365치과 자주 묻는 질문",
           "mainEntity": mainFaq.map((f: any) => ({
             "@type": "Question", "name": f.q,
             "acceptedAnswer": { "@type": "Answer", "text": f.a }
@@ -894,10 +895,10 @@ home.get('/', async (c) => {
           "@type": "OfferCatalog",
           "name": "서울365치과 진료 서비스",
           "itemListElement": [
-            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" }, "priceCurrency": "KRW", "description": "자체 기공실 MUA 즉시로딩", "url": "https://seoul365dc.kr/treatments/full-implant" },
-            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "디지털풀아치 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dc.kr/treatments/digital-full-arch" },
-            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "수면진료" }, "priceCurrency": "KRW", "description": "잠깐 잠들었다 깨면 치료 완료", "url": "https://seoul365dc.kr/treatments/sedation" },
-            { "@type": "Offer", "itemOffered": { "@type": "MedicalProcedure", "name": "치아교정" }, "priceCurrency": "KRW", "description": "인비절라인 투명교정", "url": "https://seoul365dc.kr/treatments/orthodontics" },
+            { "@type": "Offer", "name": "전체임플란트", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" }, "priceCurrency": "KRW", "description": "자체 기공실 MUA 즉시로딩", "url": "https://seoul365dc.kr/treatments/full-implant" },
+            { "@type": "Offer", "name": "디지털풀아치 임플란트", "itemOffered": { "@type": "MedicalProcedure", "name": "디지털풀아치 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dc.kr/treatments/digital-full-arch" },
+            { "@type": "Offer", "name": "수면진료", "itemOffered": { "@type": "MedicalProcedure", "name": "수면진료" }, "priceCurrency": "KRW", "description": "잠깐 잠들었다 깨면 치료 완료", "url": "https://seoul365dc.kr/treatments/sedation" },
+            { "@type": "Offer", "name": "치아교정", "itemOffered": { "@type": "MedicalProcedure", "name": "치아교정" }, "priceCurrency": "KRW", "description": "인비절라인 투명교정", "url": "https://seoul365dc.kr/treatments/orthodontics" },
           ]
         },
         // Article — clinic columns (AEO: rich snippet for blog-like content)

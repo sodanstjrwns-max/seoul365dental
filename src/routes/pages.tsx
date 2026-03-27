@@ -476,18 +476,18 @@ pageRoutes.get('/faq', (c) => {
         </div>
       </section>
 
-      <section class="section-lg bg-mesh" itemscope itemtype="https://schema.org/FAQPage">
+      <section class="section-lg bg-mesh">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <h2 class="text-xl font-bold text-gray-900 mb-8 reveal">임플란트·교정·수면진료 궁금증 해결</h2>
           <div class="space-y-3 stagger-children">
             {allFaq.map(faq => (
-              <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+              <div class="faq-item">
                 <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
-                  <h3 class="font-semibold text-gray-800 text-[0.95rem] pr-4" itemprop="name">{faq.q}</h3>
+                  <h3 class="font-semibold text-gray-800 text-[0.95rem] pr-4">{faq.q}</h3>
                   <i class="fa-solid fa-chevron-down text-gray-300 text-sm faq-icon flex-shrink-0"></i>
                 </button>
-                <div class="hidden px-6 pb-5" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                  <p class="text-gray-500 text-[0.9rem] leading-relaxed" itemprop="text">{faq.a}</p>
+                <div class="hidden px-6 pb-5">
+                  <p class="text-gray-500 text-[0.9rem] leading-relaxed">{faq.a}</p>
                 </div>
               </div>
             ))}
@@ -515,6 +515,7 @@ pageRoutes.get('/faq', (c) => {
         {
           "@context": "https://schema.org",
           "@type": "FAQPage",
+          "name": "서울365치과 자주 묻는 질문",
           "mainEntity": allFaq.map(f => ({
             "@type": "Question",
             "name": f.q,
