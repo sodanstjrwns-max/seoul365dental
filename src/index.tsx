@@ -39,6 +39,11 @@ app.get('/:filename{.+\\.txt$}', async (c, next) => {
   return c.notFound();
 })
 
+// ── Naver Search Advisor HTML Verification File ──
+app.get('/naverc88e4f49632c4e687edac6645aeef061.html', (c) => {
+  return c.html('naverc88e4f49632c4e687edac6645aeef061');
+})
+
 // ── Global Middleware ─────────────────────────────────────
 app.use('*', async (c, next) => {
   await next();
