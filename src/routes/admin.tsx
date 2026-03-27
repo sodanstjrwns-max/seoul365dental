@@ -362,7 +362,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                           )}
                         </td>
                         <td class="px-5 py-3 text-right">
-                          <button onclick={`editCase(${JSON.stringify(cs).replace(/"/g, '&quot;')})`} class="text-white/30 hover:text-[#0066FF] transition p-1.5" title="수정">
+                          <button onclick={`loadCase(${cs.id})`} class="text-white/30 hover:text-[#0066FF] transition p-1.5" title="수정">
                             <i class="fa-solid fa-pen-to-square"></i>
                           </button>
                           <button onclick={`deleteCase(${cs.id})`} class="text-white/30 hover:text-red-400 transition p-1.5 ml-1" title="삭제">
@@ -569,46 +569,63 @@ adminRoutes.get('/admin/dashboard', async (c) => {
           placeholder.classList.remove('hidden');
         }
 
-        function editCase(cs) {
-          document.getElementById('caseModal').classList.remove('hidden');
-          document.getElementById('modalTitle').textContent = '케이스 수정';
-          document.getElementById('caseId').value = cs.id;
-          document.getElementById('treatmentSlug').value = cs.treatment_slug;
-          document.getElementById('caseTag').value = cs.tag;
-          document.getElementById('caseTitle').value = cs.title;
-          document.getElementById('caseDoctorName').value = cs.doctor_name;
-          document.getElementById('caseAge').value = cs.patient_age || '';
-          document.getElementById('caseGender').value = cs.patient_gender || '';
-          document.getElementById('caseDesc').value = cs.description || '';
-          document.getElementById('caseDuration').value = cs.duration || '';
-          document.getElementById('caseSortOrder').value = cs.sort_order || 0;
-          document.getElementById('casePublished').checked = !!cs.is_published;
+        async function loadCase(id) {
+          console.log('[Cases] loadCase called, id:', id);
+          try {
+            const res = await fetch('/api/admin/cases/' + id);
+            if (!res.ok) {
+              alert('서버 오류 (' + res.status + ')');
+              return;
+            }
+            const json = await res.json();
+            if (!json.ok) {
+              alert(json.error || '케이스를 불러올 수 없습니다.');
+              return;
+            }
+            var cs = json.caseData;
+            document.getElementById('caseModal').classList.remove('hidden');
+            document.getElementById('modalTitle').textContent = '케이스 수정';
+            document.getElementById('caseId').value = cs.id;
+            document.getElementById('treatmentSlug').value = cs.treatment_slug;
+            document.getElementById('caseTag').value = cs.tag;
+            document.getElementById('caseTitle').value = cs.title;
+            document.getElementById('caseDoctorName').value = cs.doctor_name;
+            document.getElementById('caseAge').value = cs.patient_age || '';
+            document.getElementById('caseGender').value = cs.patient_gender || '';
+            document.getElementById('caseDesc').value = cs.description || '';
+            document.getElementById('caseDuration').value = cs.duration || '';
+            document.getElementById('caseSortOrder').value = cs.sort_order || 0;
+            document.getElementById('casePublished').checked = !!cs.is_published;
 
-          // Before image (R2 URL)
-          if (cs.before_image) {
-            document.getElementById('beforePreview').src = cs.before_image;
-            document.getElementById('beforePreview').classList.remove('hidden');
-            document.getElementById('beforeData').value = cs.before_image;
-            document.getElementById('beforePlaceholder').classList.add('hidden');
-            document.getElementById('beforeRemoveBtn').classList.remove('hidden');
-          } else {
-            document.getElementById('beforePreview').classList.add('hidden');
-            document.getElementById('beforeData').value = '';
-            document.getElementById('beforePlaceholder').classList.remove('hidden');
-            document.getElementById('beforeRemoveBtn').classList.add('hidden');
-          }
-          // After image (R2 URL)
-          if (cs.after_image) {
-            document.getElementById('afterPreview').src = cs.after_image;
-            document.getElementById('afterPreview').classList.remove('hidden');
-            document.getElementById('afterData').value = cs.after_image;
-            document.getElementById('afterPlaceholder').classList.add('hidden');
-            document.getElementById('afterRemoveBtn').classList.remove('hidden');
-          } else {
-            document.getElementById('afterPreview').classList.add('hidden');
-            document.getElementById('afterData').value = '';
-            document.getElementById('afterPlaceholder').classList.remove('hidden');
-            document.getElementById('afterRemoveBtn').classList.add('hidden');
+            // Before image (R2 URL)
+            if (cs.before_image) {
+              document.getElementById('beforePreview').src = cs.before_image;
+              document.getElementById('beforePreview').classList.remove('hidden');
+              document.getElementById('beforeData').value = cs.before_image;
+              document.getElementById('beforePlaceholder').classList.add('hidden');
+              document.getElementById('beforeRemoveBtn').classList.remove('hidden');
+            } else {
+              document.getElementById('beforePreview').classList.add('hidden');
+              document.getElementById('beforeData').value = '';
+              document.getElementById('beforePlaceholder').classList.remove('hidden');
+              document.getElementById('beforeRemoveBtn').classList.add('hidden');
+            }
+            // After image (R2 URL)
+            if (cs.after_image) {
+              document.getElementById('afterPreview').src = cs.after_image;
+              document.getElementById('afterPreview').classList.remove('hidden');
+              document.getElementById('afterData').value = cs.after_image;
+              document.getElementById('afterPlaceholder').classList.add('hidden');
+              document.getElementById('afterRemoveBtn').classList.remove('hidden');
+            } else {
+              document.getElementById('afterPreview').classList.add('hidden');
+              document.getElementById('afterData').value = '';
+              document.getElementById('afterPlaceholder').classList.remove('hidden');
+              document.getElementById('afterRemoveBtn').classList.add('hidden');
+            }
+          } catch(e) {
+            console.error('[Cases] loadCase error:', e);
+            alert('불러오기 실패: ' + e.message);
           }
         }
 
@@ -1074,6 +1091,15 @@ adminRoutes.delete('/api/admin/notices/:id', async (c) => {
 })
 
 // --- CRUD API: Cases ---
+// GET single case for editing
+adminRoutes.get('/api/admin/cases/:id', async (c) => {
+  await initAdminTables(c.env.DB);
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+  const caseData = await c.env.DB.prepare('SELECT * FROM before_after_cases WHERE id = ?').bind(c.req.param('id')).first();
+  return caseData ? c.json({ ok: true, caseData }) : c.json({ ok: false, error: '없음' }, 404);
+})
+
 adminRoutes.post('/api/admin/cases', async (c) => {
   await initAdminTables(c.env.DB);
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
