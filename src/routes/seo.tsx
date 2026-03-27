@@ -189,104 +189,24 @@ seoRoutes.get('/terms', (c) => {
 })
 
 // ============================================================
-// SITEMAP.XML — Dynamic SEO Sitemap v3.0
+// SITEMAP SYSTEM v4.0 — Sitemap Index + Sub-Sitemaps
+// Google/Bing/Naver 최적화: 카테고리별 분리, 실시간 lastmod
 // ============================================================
-seoRoutes.get('/sitemap.xml', async (c) => {
-  const base = 'https://seoul365dc.kr';
-  const today = new Date().toISOString().split('T')[0];
 
-  // --- 핵심 치료 slug (priority 0.9) ---
-  const highPriorityTreatments = new Set([
-    'full-implant', 'digital-full-arch', 'implant', 'orthodontics', 'invisalign',
-    'sedation', 'cosmetic', 'pediatric',
-  ]);
+// XML escape helper
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
-  // --- Static Pages ---
-  const staticPages = [
-    {
-      loc: '', priority: '1.0', changefreq: 'daily', lastmod: today,
-      images: [
-        { url: `${base}/static/og-image.png`, title: '서울365치과 메인 이미지', caption: '인천 구월동 서울대 출신 5인 전문의 치과' },
-        { url: `${base}/static/dr-park.jpg`, title: '박준규 대표원장', caption: '서울대 통합치의학과 전문의' },
-      ],
-      video: {
-        url: 'https://www.youtube.com/watch?v=gB_yiatcwAc',
-        title: '서울365치과 소개 영상',
-        thumbnail: 'https://img.youtube.com/vi/gB_yiatcwAc/maxresdefault.jpg',
-        description: '서울365치과 진료 환경 및 첨단 장비, 감염관리 시스템 클리닉 투어 영상',
-      },
-    },
-    { loc: '/treatments', priority: '0.9', changefreq: 'weekly', lastmod: '2026-03-01' },
-    {
-      loc: '/doctors', priority: '0.9', changefreq: 'monthly', lastmod: '2026-02-01',
-      images: [
-        { url: `${base}/static/team-photo.jpg`, title: '서울365치과 의료진 단체사진', caption: '서울대 출신 5인 원장 — 인천 구월동' },
-        { url: `${base}/static/dr-park-profile.jpg`, title: '박준규 대표원장 프로필', caption: '서울대 통합치의학과 전문의' },
-      ],
-    },
-    { loc: '/info', priority: '0.8', changefreq: 'monthly', lastmod: '2026-03-01' },
-    { loc: '/reservation', priority: '0.8', changefreq: 'monthly', lastmod: '2026-02-01' },
-    { loc: '/blog', priority: '0.8', changefreq: 'daily', lastmod: today },
-    { loc: '/faq', priority: '0.7', changefreq: 'monthly', lastmod: '2026-03-01' },
-    { loc: '/cases/gallery', priority: '0.6', changefreq: 'weekly', lastmod: today },
-    { loc: '/privacy', priority: '0.2', changefreq: 'yearly', lastmod: '2026-01-01' },
-    { loc: '/terms', priority: '0.2', changefreq: 'yearly', lastmod: '2026-01-01' },
-  ];
-
-  // --- Treatment Pages (priority split by importance) ---
-  const treatmentPages = treatments.map(t => ({
-    loc: `/treatments/${t.slug}`,
-    priority: highPriorityTreatments.has(t.slug) ? '0.9' : '0.7',
-    changefreq: 'monthly' as const,
-    lastmod: '2026-03-01',
-    images: [
-      { url: `${base}/static/og-image.png`, title: `${t.name} | 서울365치과`, caption: t.metaDesc || `인천 구월동 서울365치과 ${t.name} 안내` },
-    ],
-  }));
-
-  // --- Doctor Pages (all with images) ---
-  const doctorPages = doctors.map(d => ({
-    loc: `/doctors/${d.slug}`,
-    priority: d.slug === 'park-junkyu' ? '0.8' : '0.7',
-    changefreq: 'monthly' as const,
-    lastmod: '2026-02-01',
-    images: [
-      {
-        url: `${base}/static/dr-${d.slug.split('-').pop()}-profile.jpg`,
-        title: `${d.name} ${d.title}`,
-        caption: d.metaDesc,
-      },
-    ],
-  }));
-
-  // --- Dynamic Blog Posts ---
-  let blogPages: { loc: string; priority: string; changefreq: string; lastmod: string }[] = [];
-  try {
-    await initBlogTables(c.env.DB);
-    const blogResult = await c.env.DB.prepare(
-      'SELECT slug, updated_at, created_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 200'
-    ).all();
-    blogPages = (blogResult.results || []).map((p: any) => ({
-      loc: `/blog/${p.slug}`,
-      priority: '0.6',
-      changefreq: 'weekly',
-      lastmod: (p.updated_at || p.created_at || today).substring(0, 10),
-    }));
-  } catch {}
-
-  const allPages = [...staticPages, ...treatmentPages, ...doctorPages, ...blogPages];
-
-  // XML escape helper
-  const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+// Common XML header for sub-sitemaps
+const urlsetOpen = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
-        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-${allPages.map((p: any) => `  <url>
+        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">`;
+
+// Render a single <url> entry
+const renderUrl = (base: string, p: any) => `  <url>
     <loc>${base}${p.loc}</loc>
-    <lastmod>${p.lastmod || today}</lastmod>
+    <lastmod>${p.lastmod}</lastmod>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
     <xhtml:link rel="alternate" hreflang="ko-KR" href="${base}${p.loc}" />
@@ -303,16 +223,159 @@ ${allPages.map((p: any) => `  <url>
       <video:content_loc>${esc(p.video.url)}</video:content_loc>
       <video:family_friendly>yes</video:family_friendly>
     </video:video>` : ''}
-  </url>`).join('\n')}
-</urlset>`;
+  </url>`;
 
-  return new Response(xml, {
-    headers: {
-      'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600, s-maxage=7200',
-      'X-Robots-Tag': 'noindex',
+const sitemapHeaders = {
+  'Content-Type': 'application/xml; charset=utf-8',
+  'Cache-Control': 'public, max-age=3600, s-maxage=7200',
+  'X-Robots-Tag': 'noindex',
+};
+
+// ── 1) SITEMAP INDEX (master) ──
+seoRoutes.get('/sitemap.xml', async (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+
+  // Check blog last update for dynamic lastmod
+  let blogLastmod = today;
+  try {
+    await initBlogTables(c.env.DB);
+    const r = await c.env.DB.prepare(
+      'SELECT MAX(COALESCE(updated_at, created_at)) as last_date FROM blog_posts WHERE is_published = 1'
+    ).first<{ last_date: string }>();
+    if (r?.last_date) blogLastmod = r.last_date.substring(0, 10);
+  } catch {}
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${base}/sitemap-pages.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-treatments.xml</loc>
+    <lastmod>2026-03-27</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-doctors.xml</loc>
+    <lastmod>2026-03-01</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-blog.xml</loc>
+    <lastmod>${blogLastmod}</lastmod>
+  </sitemap>
+</sitemapindex>`;
+
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── 2) SITEMAP — Core Pages ──
+seoRoutes.get('/sitemap-pages.xml', (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+
+  const pages = [
+    {
+      loc: '', priority: '1.0', changefreq: 'daily', lastmod: today,
+      images: [
+        { url: `${base}/static/og-image.png`, title: '서울365치과 메인 이미지', caption: '인천 구월동 서울대 출신 5인 전문의 치과' },
+        { url: `${base}/static/dr-park.jpg`, title: '박준규 대표원장', caption: '서울대 통합치의학과 전문의' },
+      ],
+      video: {
+        url: 'https://www.youtube.com/watch?v=gB_yiatcwAc',
+        title: '서울365치과 소개 영상',
+        thumbnail: 'https://img.youtube.com/vi/gB_yiatcwAc/maxresdefault.jpg',
+        description: '서울365치과 진료 환경 및 첨단 장비, 감염관리 시스템 클리닉 투어 영상',
+      },
     },
-  });
+    { loc: '/treatments', priority: '0.9', changefreq: 'weekly', lastmod: '2026-03-27' },
+    {
+      loc: '/doctors', priority: '0.9', changefreq: 'monthly', lastmod: '2026-03-01',
+      images: [
+        { url: `${base}/static/team-photo.jpg`, title: '서울365치과 의료진 단체사진', caption: '서울대 출신 5인 원장 — 인천 구월동' },
+        { url: `${base}/static/dr-park-profile.jpg`, title: '박준규 대표원장 프로필', caption: '서울대 통합치의학과 전문의' },
+      ],
+    },
+    { loc: '/info', priority: '0.8', changefreq: 'monthly', lastmod: '2026-03-01' },
+    { loc: '/reservation', priority: '0.8', changefreq: 'monthly', lastmod: '2026-03-01' },
+    { loc: '/blog', priority: '0.8', changefreq: 'daily', lastmod: today },
+    { loc: '/faq', priority: '0.7', changefreq: 'monthly', lastmod: '2026-03-01' },
+    { loc: '/cases/gallery', priority: '0.6', changefreq: 'weekly', lastmod: today },
+    { loc: '/notices', priority: '0.5', changefreq: 'weekly', lastmod: today },
+    { loc: '/privacy', priority: '0.2', changefreq: 'yearly', lastmod: '2026-03-14' },
+    { loc: '/terms', priority: '0.2', changefreq: 'yearly', lastmod: '2026-03-14' },
+  ];
+
+  const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── 3) SITEMAP — Treatment Pages ──
+seoRoutes.get('/sitemap-treatments.xml', (c) => {
+  const base = 'https://seoul365dc.kr';
+
+  const highPriority = new Set([
+    'full-implant', 'digital-full-arch', 'implant', 'orthodontics', 'invisalign',
+    'sedation', 'cosmetic', 'pediatric',
+  ]);
+
+  const pages = treatments.map(t => ({
+    loc: `/treatments/${t.slug}`,
+    priority: highPriority.has(t.slug) ? '0.9' : '0.7',
+    changefreq: 'monthly' as const,
+    lastmod: '2026-03-27',
+    images: [
+      { url: `${base}/static/og-image.png`, title: `${t.name} | 서울365치과`, caption: t.metaDesc || `인천 구월동 서울365치과 ${t.name} 안내` },
+    ],
+  }));
+
+  const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── 4) SITEMAP — Doctor Pages ──
+seoRoutes.get('/sitemap-doctors.xml', (c) => {
+  const base = 'https://seoul365dc.kr';
+
+  const pages = doctors.map(d => ({
+    loc: `/doctors/${d.slug}`,
+    priority: d.slug === 'park-junkyu' ? '0.8' : '0.7',
+    changefreq: 'monthly' as const,
+    lastmod: '2026-03-01',
+    images: [
+      {
+        url: `${base}/static/dr-${d.slug.split('-').pop()}-profile.jpg`,
+        title: `${d.name} ${d.title}`,
+        caption: d.metaDesc,
+      },
+    ],
+  }));
+
+  const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── 5) SITEMAP — Blog Posts (Dynamic from DB) ──
+seoRoutes.get('/sitemap-blog.xml', async (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+
+  let blogPages: any[] = [];
+  try {
+    await initBlogTables(c.env.DB);
+    const blogResult = await c.env.DB.prepare(
+      'SELECT slug, title, excerpt, updated_at, created_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 1000'
+    ).all();
+    blogPages = (blogResult.results || []).map((p: any) => ({
+      loc: `/blog/${p.slug}`,
+      priority: '0.6',
+      changefreq: 'weekly',
+      lastmod: (p.updated_at || p.created_at || today).substring(0, 10),
+    }));
+  } catch {}
+
+  const xml = `${urlsetOpen}\n${blogPages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
 })
 
 // ============================================================
@@ -551,6 +614,10 @@ Disallow: /
 
 # ─── SITEMAP ───
 Sitemap: https://seoul365dc.kr/sitemap.xml
+Sitemap: https://seoul365dc.kr/sitemap-pages.xml
+Sitemap: https://seoul365dc.kr/sitemap-treatments.xml
+Sitemap: https://seoul365dc.kr/sitemap-doctors.xml
+Sitemap: https://seoul365dc.kr/sitemap-blog.xml
 
 # ─── HOST (Yandex directive) ───
 Host: https://seoul365dc.kr

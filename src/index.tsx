@@ -21,8 +21,10 @@ const app = new Hono<{ Bindings: Bindings }>()
 
 // ── IndexNow Key File (.txt) — Must be FIRST before any other route ──
 // Hono's /:param.txt pattern is unreliable; handle .txt requests at top level
-app.get('/:filename{.+\\.txt$}', async (c) => {
+app.get('/:filename{.+\\.txt$}', async (c, next) => {
   const filename = c.req.param('filename');
+  // robots.txt는 seoRoutes에서 처리 → 여기서 스킵
+  if (filename === 'robots.txt') return next();
   const key = filename.replace('.txt', '');
   try {
     await initSettingsTable(c.env.DB);
@@ -51,7 +53,7 @@ app.use('*', async (c, next) => {
 app.use('*', async (c, next) => {
   // Skip for API and static routes
   const path = c.req.path;
-  if (path.startsWith('/api/') || path.startsWith('/static/') || path === '/robots.txt' || path === '/sitemap.xml') {
+  if (path.startsWith('/api/') || path.startsWith('/static/') || path === '/robots.txt' || path.startsWith('/sitemap')) {
     return next();
   }
   try {
