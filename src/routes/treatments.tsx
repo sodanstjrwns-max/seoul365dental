@@ -3,6 +3,7 @@ import type { Bindings } from '../lib/types'
 import { CLINIC } from '../data/clinic'
 import { treatments, getTreatmentBySlug, treatmentCategories } from '../data/treatments'
 import { TREATMENT_EMPATHY } from '../data/brand'
+import { initAdminTables } from '../lib/db'
 
 const treatmentRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -134,11 +135,21 @@ treatmentRoutes.get('/treatments', (c) => {
 // ============================================================
 // TREATMENT DETAIL
 // ============================================================
-treatmentRoutes.get('/treatments/:slug', (c) => {
+treatmentRoutes.get('/treatments/:slug', async (c) => {
   const slug = c.req.param('slug');
   const t = getTreatmentBySlug(slug);
   if (!t) return c.notFound();
   const empathy = TREATMENT_EMPATHY[slug];
+
+  // Fetch published Before/After cases for this treatment from DB
+  let dbCases: any[] = [];
+  try {
+    await initAdminTables(c.env.DB);
+    const result = await c.env.DB.prepare(
+      'SELECT id, treatment_slug, title, patient_age, patient_gender, tag, doctor_name, description, duration, before_image, after_image, sort_order, view_count, created_at FROM before_after_cases WHERE is_published = 1 AND treatment_slug = ? ORDER BY sort_order DESC, created_at DESC'
+    ).bind(slug).all();
+    dbCases = result.results || [];
+  } catch {}
 
   return c.render(
     <>
@@ -360,8 +371,176 @@ treatmentRoutes.get('/treatments/:slug', (c) => {
         </section>
       ) : null}
 
-      {/* Patient Cases */}
-      {t.patientCases && t.patientCases.length > 0 && (
+      {/* Before & After Cases from DB */}
+      {dbCases.length > 0 && (
+        <section class="section-lg bg-white">
+          <div class="max-w-5xl mx-auto px-5 md:px-8">
+            <div class="text-center mb-14 reveal">
+              <span class="section-eyebrow text-[#0066FF] mb-3 block">BEFORE &amp; AFTER</span>
+              <h2 class="section-sub-headline text-gray-900">{t.name} 실제 치료 사례</h2>
+              <p class="text-gray-400 text-sm mt-3">실제 환자분의 치료 전후 사진입니다. 클릭하여 상세히 확인하세요.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children" id="txCasesGrid">
+              {dbCases.map((cs: any, idx: number) => (
+                <div class="premium-card overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300 tx-case-card" onclick={`openTxCaseModal(${idx})`}>
+                  {/* Thumbnail — Before/After split */}
+                  <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
+                    {cs.before_image && cs.after_image ? (
+                      <div class="absolute inset-0 flex">
+                        <div class="w-1/2 overflow-hidden border-r-2 border-white relative">
+                          <img src={cs.before_image} alt="Before" class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%" loading="lazy" />
+                          <span class="absolute top-2.5 left-2.5 text-[0.55rem] font-bold tracking-widest uppercase text-white bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded">Before</span>
+                        </div>
+                        <div class="w-1/2 overflow-hidden relative">
+                          <img src={cs.after_image} alt="After" class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%;margin-left:-100%" loading="lazy" />
+                          <span class="absolute top-2.5 right-2.5 text-[0.55rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/70 backdrop-blur-sm px-2 py-0.5 rounded">After</span>
+                        </div>
+                      </div>
+                    ) : cs.after_image ? (
+                      <img src={cs.after_image} alt="After" class="w-full h-full object-cover" loading="lazy" />
+                    ) : cs.before_image ? (
+                      <img src={cs.before_image} alt="Before" class="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div class="w-full h-full flex items-center justify-center">
+                        <i class="fa-solid fa-images text-gray-200 text-3xl"></i>
+                      </div>
+                    )}
+                    {/* Hover overlay */}
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                      <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm rounded-full w-11 h-11 flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-expand text-[#0066FF]"></i>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Card Info */}
+                  <div class="p-4">
+                    <div class="flex items-center gap-2 mb-1.5">
+                      <span class="text-[0.65rem] bg-[#0066FF]/8 text-[#0066FF] px-2 py-0.5 rounded-full font-semibold">{cs.tag}</span>
+                      {cs.duration && <span class="text-[0.6rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-[0.85rem] group-hover:text-[#0066FF] transition-colors line-clamp-1">{cs.title}</h3>
+                    <p class="text-[0.75rem] text-gray-400 mt-1">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender && cs.patient_gender !== '선택안함' ? ` ${cs.patient_gender}` : ''}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div class="text-center mt-8 reveal">
+              <a href="/cases/gallery" class="inline-flex items-center gap-2 text-[#0066FF] hover:text-[#0052cc] font-semibold text-sm transition" data-cursor-hover>
+                전체 치료 사례 보기 <i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+            </div>
+            <p class="text-[0.7rem] text-gray-300 text-center mt-6">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
+          </div>
+        </section>
+      )}
+
+      {/* Treatment Case Modal */}
+      {dbCases.length > 0 && (
+        <>
+          <div id="txCaseModal" class="fixed inset-0 z-[100] hidden" onclick="closeTxCaseModal(event)">
+            <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+            <div class="relative z-10 flex items-center justify-center min-h-screen p-4 md:p-8">
+              <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                {/* Modal Header */}
+                <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                  <div class="flex items-center gap-2">
+                    <span id="txModalTag" class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold"></span>
+                    <span id="txModalDuration" class="text-[0.65rem] text-gray-400"></span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button onclick="navTxCase(-1)" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition" title="이전 사례"><i class="fa-solid fa-chevron-left text-gray-500 text-sm"></i></button>
+                    <button onclick="navTxCase(1)" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition" title="다음 사례"><i class="fa-solid fa-chevron-right text-gray-500 text-sm"></i></button>
+                    <button onclick="closeTxCaseModal()" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-red-100 hover:text-red-500 flex items-center justify-center transition ml-1" title="닫기"><i class="fa-solid fa-xmark text-gray-500 text-sm"></i></button>
+                  </div>
+                </div>
+                {/* Before/After Comparison */}
+                <div class="p-6">
+                  <div class="grid grid-cols-2 gap-3 mb-6">
+                    <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
+                      <img id="txModalBefore" src="" alt="Before" class="w-full h-full object-cover" />
+                      <span class="absolute top-3 left-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded-lg">Before</span>
+                    </div>
+                    <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
+                      <img id="txModalAfter" src="" alt="After" class="w-full h-full object-cover" />
+                      <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/80 backdrop-blur-sm px-3 py-1 rounded-lg">After</span>
+                    </div>
+                  </div>
+                  <h2 id="txModalTitle" class="text-xl font-bold text-gray-900 mb-3"></h2>
+                  <p id="txModalDesc" class="text-gray-600 text-sm leading-relaxed mb-4"></p>
+                  <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500 bg-gray-50 rounded-xl px-5 py-4">
+                    <span id="txModalDoctor"><i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i></span>
+                    <span id="txModalPatient"><i class="fa-solid fa-user text-[#0066FF]/60 mr-1.5"></i></span>
+                    <span id="txModalDur"><i class="fa-regular fa-clock text-[#0066FF]/60 mr-1.5"></i></span>
+                  </div>
+                  <div class="mt-6 text-center">
+                    <p class="text-gray-400 text-xs mb-3">비슷한 고민을 가지고 계신가요?</p>
+                    <a href="/reservation" class="inline-flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052cc] text-white font-bold text-sm px-6 py-3 rounded-xl transition">
+                      <i class="fa-solid fa-calendar-check text-xs"></i> 무료 상담 예약
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script dangerouslySetInnerHTML={{__html: `
+            var txCases = ${JSON.stringify(dbCases.map((cs: any) => ({
+              id: cs.id, title: cs.title, tag: cs.tag, duration: cs.duration || '',
+              description: cs.description || '', doctor_name: cs.doctor_name || '',
+              patient_age: cs.patient_age || '', patient_gender: cs.patient_gender || '',
+              before_image: cs.before_image || '', after_image: cs.after_image || '',
+            })))};
+            var txCurrentIdx = 0;
+
+            function openTxCaseModal(idx) {
+              txCurrentIdx = idx;
+              renderTxModal();
+              document.getElementById('txCaseModal').classList.remove('hidden');
+              document.body.style.overflow = 'hidden';
+              var c = txCases[idx];
+              if (c && c.id) fetch('/api/cases/' + c.id + '/view', { method: 'POST' }).catch(function(){});
+            }
+
+            function closeTxCaseModal(e) {
+              if (e && e.target && e.target.closest && e.target.closest('[onclick="event.stopPropagation()"]')) return;
+              document.getElementById('txCaseModal').classList.add('hidden');
+              document.body.style.overflow = '';
+            }
+
+            function navTxCase(dir) {
+              txCurrentIdx = (txCurrentIdx + dir + txCases.length) % txCases.length;
+              renderTxModal();
+            }
+
+            function renderTxModal() {
+              var c = txCases[txCurrentIdx];
+              if (!c) return;
+              document.getElementById('txModalTag').textContent = c.tag;
+              document.getElementById('txModalDuration').textContent = c.duration || '';
+              document.getElementById('txModalBefore').src = c.before_image || '';
+              document.getElementById('txModalAfter').src = c.after_image || '';
+              document.getElementById('txModalTitle').textContent = c.title;
+              document.getElementById('txModalDesc').textContent = c.description || '상세 설명이 없습니다.';
+              document.getElementById('txModalDoctor').innerHTML = '<i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i>담당: ' + c.doctor_name;
+              var patientText = (c.patient_age || '') + (c.patient_gender && c.patient_gender !== '선택안함' ? ' ' + c.patient_gender : '');
+              document.getElementById('txModalPatient').innerHTML = '<i class="fa-solid fa-user text-[#0066FF]/60 mr-1.5"></i>' + patientText;
+              document.getElementById('txModalDur').innerHTML = '<i class="fa-regular fa-clock text-[#0066FF]/60 mr-1.5"></i>' + (c.duration || '-');
+              document.getElementById('txModalDur').style.display = c.duration ? '' : 'none';
+              document.getElementById('txModalPatient').style.display = patientText.trim() ? '' : 'none';
+            }
+
+            document.addEventListener('keydown', function(e) {
+              if (document.getElementById('txCaseModal').classList.contains('hidden')) return;
+              if (e.key === 'Escape') closeTxCaseModal();
+              if (e.key === 'ArrowLeft') navTxCase(-1);
+              if (e.key === 'ArrowRight') navTxCase(1);
+            });
+          `}} />
+        </>
+      )}
+
+      {/* Static Patient Cases fallback (when no DB cases) */}
+      {dbCases.length === 0 && t.patientCases && t.patientCases.length > 0 && (
         <section class="section-lg bg-white">
           <div class="max-w-4xl mx-auto px-5 md:px-8">
             <div class="text-center mb-14 reveal">
