@@ -1,7 +1,7 @@
 export const mainFaq = [
   {
     q: '임플란트 비용은 얼마인가요?',
-    a: '서울365치과 기준 이벤트 59만원~, 메가젠 69만원, 오스템 89만원, 오스템 프리미엄 SOI 104만원, 스트라우만(이벤트) 119만원입니다. 65세 이상은 2개까지 건강보험 적용 가능합니다.',
+    a: '서울365치과 기준 이벤트 59만원~, 메가젠 79만원, 오스템 89만원, 오스템 프리미엄 SOI 104만원, 스트라우만(이벤트) 119만원입니다. 65세 이상은 2개까지 건강보험 적용 가능합니다.',
   },
   {
     q: '임플란트 수명은 얼마나 되나요?',
@@ -47,7 +47,7 @@ export const pricingCategories = [
 export const pricingData: PricingItem[] = [
   // ── 임플란트 치료 (저렴한 순) ──
   { treatment: '오스템 임플란트 (이벤트)', price: '59만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
-  { treatment: '메가젠 임플란트', price: '69만원', insurance: '비급여', category: '임플란트' },
+  { treatment: '메가젠 임플란트', price: '79만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트', price: '89만원', insurance: '65세 건보 적용 가능', category: '임플란트' },
   { treatment: '오스템 프리미엄 SOI', price: '104만원', insurance: '비급여', category: '임플란트' },
   { treatment: '스트라우만 (이벤트)', price: '119만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
@@ -147,7 +147,7 @@ export const pricingData: PricingItem[] = [
 // 대표 수가 요약 (홈/pricing 간략 표시용) — 가격순 정렬, 이벤트 표시
 export const pricingSummary: PricingItem[] = [
   { treatment: '임플란트 (이벤트)', price: '59만원~', insurance: '비급여', category: '임플란트', note: '이벤트' },
-  { treatment: '메가젠 임플란트', price: '69만원', insurance: '비급여', category: '임플란트' },
+  { treatment: '메가젠 임플란트', price: '79만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트', price: '89만원', insurance: '65세 건보 적용 가능', category: '임플란트' },
   { treatment: '오스템 프리미엄 SOI', price: '104만원', insurance: '비급여', category: '임플란트' },
   { treatment: '스트라우만 (이벤트)', price: '119만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
