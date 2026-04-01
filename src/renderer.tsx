@@ -521,7 +521,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* === PRELOADER === */}
         <div id="preloader" class="preloader" aria-hidden="true">
           <div class="preloader-logo">
-            <i class="fa-solid fa-tooth text-white text-2xl"></i>
+            <img src="/static/logo.png" alt="서울365치과" class="w-12 h-12 object-contain" />
           </div>
           <p class="text-white/20 text-xs font-semibold tracking-[0.3em] uppercase mt-5">Seoul 365 Dental</p>
           <div class="preloader-bar">
@@ -541,9 +541,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           <nav class="max-w-[1400px] mx-auto px-5 md:px-8 h-[72px] flex items-center justify-between" role="navigation" aria-label="메인 네비게이션">
             {/* Logo */}
             <a href="/" class="flex items-center gap-2.5 group relative z-10" aria-label="서울365치과 홈으로 이동">
-              <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#00E5FF] flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-[#0066FF]/30 logo-pulse">
-                <i class="fa-solid fa-tooth text-white text-sm" aria-hidden="true"></i>
-              </div>
+              <img src="/static/logo.png" alt="서울365치과" class="header-logo w-10 h-10 object-contain transition-all duration-500 group-hover:scale-110" />
               <div class="flex flex-col leading-none">
                 <span class="logo-text text-[1.05rem] font-extrabold tracking-tight text-gray-900">서울365치과</span>
                 <span class="logo-text text-[0.6rem] font-medium text-gray-400 tracking-[0.15em] mt-0.5">SEOUL 365 DENTAL</span>
@@ -601,15 +599,15 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           </nav>
 
           {/* Mobile Menu */}
-          <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 right-0 glass-white border-t border-gray-100/50" role="navigation" aria-label="모바일 네비게이션">
+          <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 right-0 bg-navy/95 backdrop-blur-xl border-t border-white/10" role="navigation" aria-label="모바일 네비게이션">
             <div class="max-w-[1400px] mx-auto px-5 py-4 space-y-0.5">
               {/* Mobile Status Badge */}
               <div class="flex items-center gap-2 px-4 py-2 mb-2">
-                <div class="flex items-center gap-1.5 text-[0.75rem] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full" id="mobile-clinic-status">
-                  <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                <div class="flex items-center gap-1.5 text-[0.75rem] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full" id="mobile-clinic-status">
+                  <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
                   <span>진료중</span>
                 </div>
-                <a href={CLINIC.phoneTel} class="text-[0.8rem] font-medium text-gray-500">
+                <a href={CLINIC.phoneTel} class="text-[0.8rem] font-medium text-white/50">
                   <i class="fa-solid fa-phone text-[0.65rem] mr-1" aria-hidden="true"></i>{CLINIC.phone}
                 </a>
               </div>
@@ -623,26 +621,26 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 { href: '/notices', label: '공지사항', icon: 'fa-bullhorn' },
                 { href: '/info', label: '내원안내', icon: 'fa-hospital' },
               ].map(item => (
-                <a href={item.href} class="flex items-center gap-3 py-3.5 px-4 text-gray-700 font-medium text-[0.95rem] rounded-2xl hover:bg-primary/5 transition-colors">
-                  <i class={`fa-solid ${item.icon} text-primary/60 w-5 text-center text-sm`} aria-hidden="true"></i>
+                <a href={item.href} class="flex items-center gap-3 py-3.5 px-4 text-white/80 font-medium text-[0.95rem] rounded-2xl hover:bg-white/5 transition-colors">
+                  <i class={`fa-solid ${item.icon} text-[#00E5FF]/60 w-5 text-center text-sm`} aria-hidden="true"></i>
                   {item.label}
                 </a>
               ))}
               <div class="pt-3 pb-1 space-y-2">
                 <div id="mobile-auth-nav" class="grid grid-cols-2 gap-2">
-                  <a href="/login" class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center">
+                  <a href="/login" class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center text-white/70 border-white/20">
                     <i class="fa-solid fa-right-to-bracket text-[0.7rem]" aria-hidden="true"></i> 로그인
                   </a>
-                  <a href="/register" class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center">
+                  <a href="/register" class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center text-white/70 border-white/20">
                     <i class="fa-solid fa-user-plus text-[0.7rem]" aria-hidden="true"></i> 회원가입
                   </a>
                 </div>
                 <div id="mobile-auth-user" class="hidden text-center py-2">
-                  <span id="mobile-user-name" class="text-sm font-medium text-gray-600"></span>
-                  <button id="mobile-logout-btn" class="ml-2 text-sm text-gray-400 hover:text-red-500">로그아웃</button>
+                  <span id="mobile-user-name" class="text-sm font-medium text-white/70"></span>
+                  <button id="mobile-logout-btn" class="ml-2 text-sm text-white/40 hover:text-red-400">로그아웃</button>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                  <a href={CLINIC.phoneTel} class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center">
+                  <a href={CLINIC.phoneTel} class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center text-white/70 border-white/20">
                     <i class="fa-solid fa-phone text-[0.7rem]" aria-hidden="true"></i> 전화상담
                   </a>
                   <a href="/reservation" class="btn-premium btn-premium-fill text-[0.82rem] py-3 justify-center">
@@ -669,9 +667,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               {/* Brand */}
               <div class="md:col-span-4">
                 <a href="/" class="flex items-center gap-2.5 mb-6" aria-label="서울365치과 홈">
-                  <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#00E5FF] flex items-center justify-center">
-                    <i class="fa-solid fa-tooth text-white text-sm" aria-hidden="true"></i>
-                  </div>
+                  <img src="/static/logo.png" alt="서울365치과" class="w-10 h-10 object-contain" />
                   <div class="flex flex-col leading-none">
                     <span class="text-[1.05rem] font-extrabold text-white tracking-tight">서울365치과</span>
                     <span class="text-[0.6rem] font-medium text-white/25 tracking-[0.15em] mt-0.5">SEOUL 365 DENTAL</span>
