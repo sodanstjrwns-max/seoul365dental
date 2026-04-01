@@ -60,7 +60,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "telephone": "+82-32-432-0365",
     "email": "seoul365dental@gmail.com",
     "image": ogImage,
-    "logo": "https://seoul365dc.kr/static/logo.png",
+    "logo": "https://seoul365dc.kr/static/logo-v2.png",
     "priceRange": "₩₩~₩₩₩",
     "currenciesAccepted": "KRW",
     "paymentAccepted": "현금, 신용카드, 카카오페이",
@@ -223,7 +223,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "url": "https://seoul365dc.kr",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://seoul365dc.kr/static/logo.png",
+      "url": "https://seoul365dc.kr/static/logo-v2.png",
       "width": 512,
       "height": 512
     },
@@ -314,7 +314,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "@id": "https://seoul365dc.kr/#brand",
     "name": "서울365치과",
     "alternateName": ["Seoul 365 Dental", "서울삼육오치과"],
-    "logo": "https://seoul365dc.kr/static/logo.png",
+    "logo": "https://seoul365dc.kr/static/logo-v2.png",
     "slogan": MESSAGING.brandSlogan,
     "description": "치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원.",
     "url": "https://seoul365dc.kr",
@@ -530,7 +530,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           <nav class="max-w-[1400px] mx-auto px-5 md:px-8 h-[72px] flex items-center justify-between" role="navigation" aria-label="메인 네비게이션">
             {/* Logo */}
             <a href="/" class="flex items-center gap-2.5 group relative z-10" aria-label="서울365치과 홈으로 이동">
-              <img src="/static/logo.png" alt="서울365치과" class="header-logo w-10 h-10 object-contain transition-all duration-500 group-hover:scale-110" />
+              <img src="/static/logo-v2.png" alt="서울365치과" class="header-logo w-10 h-10 object-contain transition-all duration-500 group-hover:scale-110" />
               <div class="flex flex-col leading-none">
                 <span class="logo-text text-[1.05rem] font-extrabold tracking-tight text-gray-900">서울365치과</span>
                 <span class="logo-text text-[0.6rem] font-medium text-gray-400 tracking-[0.15em] mt-0.5">SEOUL 365 DENTAL</span>
@@ -656,7 +656,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               {/* Brand */}
               <div class="md:col-span-4">
                 <a href="/" class="flex items-center gap-2.5 mb-6" aria-label="서울365치과 홈">
-                  <img src="/static/logo.png" alt="서울365치과" class="w-10 h-10 object-contain" />
+                  <img src="/static/logo-v2.png" alt="서울365치과" class="w-10 h-10 object-contain" />
                   <div class="flex flex-col leading-none">
                     <span class="text-[1.05rem] font-extrabold text-white tracking-tight">서울365치과</span>
                     <span class="text-[0.6rem] font-medium text-white/25 tracking-[0.15em] mt-0.5">SEOUL 365 DENTAL</span>
