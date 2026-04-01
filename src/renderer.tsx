@@ -466,7 +466,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === PRECONNECT === */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-        <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
 
@@ -477,39 +476,11 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <link rel="preload" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" as="style" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'" />
 
-        {/* === CRITICAL INLINE CSS — instant paint before Tailwind loads === */}
-        <style dangerouslySetInnerHTML={{__html: `
-          body{margin:0;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;background:#fff;color:#111827;-webkit-font-smoothing:antialiased}
-          .header-premium{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(4,11,24,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);height:72px}
-          .header-premium nav{max-width:1400px;margin:0 auto;padding:0 20px;height:72px;display:flex;align-items:center;justify-content:between}
-          .hero-section{min-height:100vh;display:flex;align-items:center;background:linear-gradient(135deg,#040B18 0%,#0A1628 50%,#040B18 100%)}
-          img{max-width:100%}a{text-decoration:none;color:inherit}
-          .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
-        `}} />
-
-        {/* === CSS + JS LIBS === */}
-        <script src="https://cdn.tailwindcss.com"></script>
+        {/* === CSS LIBS (FontAwesome non-blocking) === */}
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
         <noscript><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" /></noscript>
 
-        <script dangerouslySetInnerHTML={{__html: `
-          tailwind.config = {
-            theme: {
-              extend: {
-                colors: {
-                  primary: { DEFAULT: '#0066FF', bright: '#2979FF', dark: '#0050CC', light: '#E3F0FF', lighter: '#F0F7FF' },
-                  navy: { DEFAULT: '#040B18', light: '#0A1628', lighter: '#111827' },
-                  accent: '#00E5FF',
-                  cyan: '#00E5FF',
-                },
-                fontFamily: {
-                  sans: ['Pretendard Variable', 'Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', 'Helvetica Neue', 'sans-serif'],
-                },
-              }
-            }
-          }
-        `}} />
-
+        {/* === MAIN STYLESHEET (Tailwind + custom, built at compile time) === */}
         <link href="/static/style.css" rel="stylesheet" />
 
         {/* === STRUCTURED DATA (JSON-LD) === */}
