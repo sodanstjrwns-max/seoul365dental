@@ -466,15 +466,21 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === PRECONNECT === */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+        <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
 
-        {/* === FONTS === */}
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+        {/* === CRITICAL: Preload cursor logo for instant display === */}
+        <link rel="preload" href="/static/cursor-logo.png" as="image" type="image/png" />
+
+        {/* === FONTS (non-blocking) === */}
+        <link rel="preload" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" as="style" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'" />
 
         {/* === CSS + JS LIBS === */}
         <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
+        <noscript><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" /></noscript>
 
         <script dangerouslySetInnerHTML={{__html: `
           tailwind.config = {
@@ -524,9 +530,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* === SCROLL PROGRESS === */}
         <div id="scroll-progress" class="scroll-progress" role="progressbar" aria-label="페이지 스크롤 진행률"></div>
 
-        {/* === CUSTOM CURSOR (Desktop only) === */}
-        <div id="cursor-dot" class="cursor-dot hidden lg:block" aria-hidden="true"></div>
-        <div id="cursor-ring" class="cursor-ring hidden lg:block" aria-hidden="true"></div>
+        {/* === CUSTOM CURSOR (Desktop only — inline style, no Tailwind dependency) === */}
+        <div id="cursor-dot" class="cursor-dot" style="display:none" aria-hidden="true"></div>
+        <div id="cursor-ring" class="cursor-ring" style="display:none" aria-hidden="true"></div>
 
         {/* === PREMIUM HEADER === */}
         <header id="main-header" class="header-premium" role="banner">
@@ -877,29 +883,42 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             setInterval(updateStatus, 60000);
           })();
 
-          // Custom Cursor (Desktop only)
-          if (window.innerWidth > 1024) {
+          // Custom Cursor (Desktop only — shows SNU crest mark)
+          if (window.innerWidth > 1024 && window.matchMedia('(pointer:fine)').matches) {
             const dot = document.getElementById('cursor-dot');
             const ring = document.getElementById('cursor-ring');
-            let mx = 0, my = 0, rx = 0, ry = 0;
+            if (dot && ring) {
+              // Preload cursor image
+              const preImg = new Image(); preImg.src = '/static/cursor-logo.png';
+              let mx = -100, my = -100, rx = -100, ry = -100;
+              let visible = false;
 
-            document.addEventListener('mousemove', (e) => {
-              mx = e.clientX; my = e.clientY;
-              if (dot) { dot.style.left = mx + 'px'; dot.style.top = my + 'px'; }
-            });
+              document.addEventListener('mousemove', (e) => {
+                mx = e.clientX; my = e.clientY;
+                dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+                if (!visible) {
+                  visible = true;
+                  dot.style.display = 'block';
+                  ring.style.display = 'block';
+                }
+              });
 
-            function animateRing() {
-              rx += (mx - rx) * 0.12;
-              ry += (my - ry) * 0.12;
-              if (ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
-              requestAnimationFrame(animateRing);
+              function animateRing() {
+                rx += (mx - rx) * 0.12;
+                ry += (my - ry) * 0.12;
+                ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+                requestAnimationFrame(animateRing);
+              }
+              animateRing();
+
+              document.querySelectorAll('a, button, [data-cursor-hover], input, textarea, select').forEach(el => {
+                el.addEventListener('mouseenter', () => { dot.classList.add('hovering'); ring.classList.add('hovering'); });
+                el.addEventListener('mouseleave', () => { dot.classList.remove('hovering'); ring.classList.remove('hovering'); });
+              });
             }
-            animateRing();
-
-            document.querySelectorAll('a, button, [data-cursor-hover], input, textarea, select').forEach(el => {
-              el.addEventListener('mouseenter', () => { dot?.classList.add('hovering'); ring?.classList.add('hovering'); });
-              el.addEventListener('mouseleave', () => { dot?.classList.remove('hovering'); ring?.classList.remove('hovering'); });
-            });
+          } else {
+            // Mobile/touch — ensure default cursor
+            document.body.style.cursor = 'auto';
           }
 
           // Scroll Progress
