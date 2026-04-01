@@ -518,17 +518,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           메인 콘텐츠로 바로가기
         </a>
 
-        {/* === PRELOADER === */}
-        <div id="preloader" class="preloader" aria-hidden="true">
-          <div class="preloader-logo">
-            <img src="/static/logo.png" alt="서울365치과" class="w-12 h-12 object-contain" />
-          </div>
-          <p class="text-white/20 text-xs font-semibold tracking-[0.3em] uppercase mt-5">Seoul 365 Dental</p>
-          <div class="preloader-bar">
-            <div class="preloader-bar-inner"></div>
-          </div>
-        </div>
-
         {/* === SCROLL PROGRESS === */}
         <div id="scroll-progress" class="scroll-progress" role="progressbar" aria-label="페이지 스크롤 진행률"></div>
 
@@ -820,9 +809,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           // ── Admin page layout cleanup ──────────────────
           (function() {
             if (window.location.pathname.startsWith('/admin')) {
-              // Hide preloader immediately
-              var pl = document.getElementById('preloader');
-              if (pl) { pl.classList.add('hidden'); pl.style.display = 'none'; }
               // Hide main site header (admin has its own header)
               var mh = document.getElementById('main-header');
               if (mh) mh.style.display = 'none';
@@ -887,14 +873,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             updateStatus();
             setInterval(updateStatus, 60000);
           })();
-
-          // Preloader
-          window.addEventListener('load', () => {
-            setTimeout(() => {
-              document.getElementById('preloader')?.classList.add('hidden');
-              document.body.style.overflow = '';
-            }, 1600);
-          });
 
           // Custom Cursor (Desktop only)
           if (window.innerWidth > 1024) {
