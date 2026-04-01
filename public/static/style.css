@@ -60,40 +60,39 @@ body {
   --electric-gradient-reverse: linear-gradient(135deg, #00E5FF, #0066FF);
 }
 
-/* === CUSTOM CURSOR — ELECTRIC === */
+/* === CUSTOM CURSOR — SNU CREST === */
 .cursor-dot {
   position: fixed;
-  width: 8px; height: 8px;
-  background: var(--blue);
-  border-radius: 50%;
+  width: 28px; height: 28px;
+  background: url('/static/logo-v2.png') center/contain no-repeat;
+  border-radius: 0;
   pointer-events: none;
   z-index: 9999;
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
-              width 0.3s, height 0.3s, background 0.3s;
-  mix-blend-mode: difference;
+              width 0.3s, height 0.3s, opacity 0.3s;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 16px var(--blue-glow), 0 0 40px rgba(0, 102, 255, 0.2);
+  opacity: 0.85;
+  filter: drop-shadow(0 0 6px rgba(0, 102, 255, 0.4));
 }
 .cursor-ring {
   position: fixed;
-  width: 40px; height: 40px;
-  border: 1.5px solid rgba(0, 102, 255, 0.4);
+  width: 48px; height: 48px;
+  border: 1.5px solid rgba(0, 102, 255, 0.25);
   border-radius: 50%;
   pointer-events: none;
   z-index: 9998;
   transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
               height 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.3s, background 0.3s;
+              border-color 0.3s, opacity 0.3s;
   transform: translate(-50%, -50%);
 }
 .cursor-dot.hovering {
-  width: 60px; height: 60px;
-  background: rgba(0, 102, 255, 0.08);
-  mix-blend-mode: normal;
-  box-shadow: 0 0 40px var(--blue-glow), 0 0 80px rgba(0, 229, 255, 0.15);
+  width: 40px; height: 40px;
+  opacity: 1;
+  filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.5));
 }
 .cursor-ring.hovering {
-  width: 60px; height: 60px;
+  width: 56px; height: 56px;
   border-color: var(--cyan);
 }
 
