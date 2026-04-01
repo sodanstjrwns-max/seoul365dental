@@ -63,16 +63,16 @@ body {
 /* === CUSTOM CURSOR — SNU CREST === */
 .cursor-dot {
   position: fixed;
-  width: 28px; height: 28px;
-  background: url('/static/logo-v2.png') center/contain no-repeat;
-  border-radius: 0;
+  width: 32px; height: 32px;
+  background: url('/static/cursor-logo.png') center/contain no-repeat;
+  border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
               width 0.3s, height 0.3s, opacity 0.3s;
   transform: translate(-50%, -50%);
-  opacity: 0.85;
-  filter: drop-shadow(0 0 6px rgba(0, 102, 255, 0.4));
+  opacity: 0.92;
+  filter: drop-shadow(0 0 8px rgba(0, 102, 255, 0.5));
 }
 .cursor-ring {
   position: fixed;
@@ -87,9 +87,9 @@ body {
   transform: translate(-50%, -50%);
 }
 .cursor-dot.hovering {
-  width: 40px; height: 40px;
+  width: 44px; height: 44px;
   opacity: 1;
-  filter: drop-shadow(0 0 12px rgba(0, 229, 255, 0.5));
+  filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.6));
 }
 .cursor-ring.hovering {
   width: 56px; height: 56px;
