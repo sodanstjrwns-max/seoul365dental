@@ -36,7 +36,7 @@ export interface PricingItem {
 export const pricingCategories = [
   { key: '임플란트', label: '임플란트 치료', icon: 'fa-tooth' },
   { key: '보철', label: '보철 치료', icon: 'fa-crown' },
-  { key: '틀니', label: '틀니 치료', icon: 'fa-teeth-open' },
+
   { key: '보존', label: '보존 치료 (충치·레진·인레이)', icon: 'fa-shield-halved' },
   { key: '소아', label: '소아 치료', icon: 'fa-child' },
   { key: '교정', label: '교정 치료', icon: 'fa-teeth' },
@@ -69,6 +69,8 @@ export const pricingData: PricingItem[] = [
   { treatment: 'SINUS-C (상악동거상 대)', price: '150만원', insurance: '비급여', category: '임플란트' },
   { treatment: '구치 Pontic', price: '50만원', insurance: '비급여', category: '임플란트' },
   { treatment: '전치 Pontic', price: '60만원', insurance: '비급여', category: '임플란트' },
+  { treatment: 'All-on-4 (오스템)', price: '550만원', insurance: '비급여', category: '임플란트', note: '전악 고정식' },
+  { treatment: 'All-on-6 (오스템)', price: '700만원', insurance: '비급여', category: '임플란트', note: '전악 고정식' },
 
   // ── 보철 치료 (저렴한 순) ──
   { treatment: 'MTA', price: '5만원', insurance: '비급여', category: '보철' },
@@ -83,18 +85,7 @@ export const pricingData: PricingItem[] = [
   { treatment: 'PFM 크라운 (전치부)', price: '60만원', insurance: '비급여', category: '보철' },
   { treatment: 'A type 골드 크라운', price: '90만원', insurance: '비급여', category: '보철' },
 
-  // ── 틀니 치료 (저렴한 순) ──
-  { treatment: 'Flipper', price: '10만원', insurance: '비급여', category: '틀니' },
-  { treatment: '틀니 수리 (relining)', price: '10만원', insurance: '비급여', category: '틀니' },
-  { treatment: '틀니 개상 (rebasing)', price: '30만원', insurance: '비급여', category: '틀니' },
-  { treatment: '임시 틀니', price: '30만원', insurance: '비급여', category: '틀니' },
-  { treatment: '부분 틀니', price: '200만원', insurance: '65세 건보 적용 가능', category: '틀니' },
-  { treatment: '전체 틀니 (상악)', price: '250만원', insurance: '65세 건보 적용 가능', category: '틀니' },
-  { treatment: '전체 틀니 (하악)', price: '500만원', insurance: '65세 건보 적용 가능', category: '틀니' },
-  { treatment: '오버덴쳐 (임플란트 틀니)', price: '300만원', insurance: '비급여', category: '틀니' },
-  { treatment: '하이브리드 덴처', price: '300만원', insurance: '비급여', category: '틀니' },
-  { treatment: 'All-on-4 (오스템)', price: '550만원', insurance: '비급여', category: '틀니' },
-  { treatment: 'All-on-6 (오스템)', price: '700만원', insurance: '비급여', category: '틀니' },
+
 
   // ── 보존 치료 (저렴한 순) ──
   { treatment: 'CA', price: '6만원', insurance: '비급여', category: '보존' },
