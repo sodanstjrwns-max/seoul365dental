@@ -29,8 +29,94 @@ function animateCounters(){document.querySelectorAll('[data-count]').forEach(fun
 var counterObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){animateCounters();counterObserver.disconnect()}})},{threshold:0.3});
 var counterEl=document.querySelector('[data-counter-section]');if(counterEl)counterObserver.observe(counterEl);
 
-// Hero particles — ELECTRIC BLUE
-(function(){var canvas=document.getElementById('hero-particles');if(!canvas)return;var ctx=canvas.getContext('2d');var w,h,particles=[];function resize(){w=canvas.width=canvas.parentElement.offsetWidth;h=canvas.height=canvas.parentElement.offsetHeight}resize();window.addEventListener('resize',resize);for(var i=0;i<70;i++){particles.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*2+0.5,dx:(Math.random()-0.5)*0.5,dy:(Math.random()-0.5)*0.5,o:Math.random()*0.5+0.15,c:Math.random()>0.3?'0,102,255':'0,229,255'})}var mouseX=-999,mouseY=-999;canvas.parentElement.addEventListener('mousemove',function(e){var rect=canvas.parentElement.getBoundingClientRect();mouseX=e.clientX-rect.left;mouseY=e.clientY-rect.top});function draw(){ctx.clearRect(0,0,w,h);particles.forEach(function(p){p.x+=p.dx;p.y+=p.dy;if(p.x<0)p.x=w;if(p.x>w)p.x=0;if(p.y<0)p.y=h;if(p.y>h)p.y=0;var dmx=p.x-mouseX,dmy=p.y-mouseY,dm=Math.sqrt(dmx*dmx+dmy*dmy);if(dm<120){p.x+=(dmx/dm)*2;p.y+=(dmy/dm)*2}ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba('+p.c+','+p.o+')';ctx.fill();if(p.r>1.2){ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,Math.PI*2);ctx.fillStyle='rgba('+p.c+','+(p.o*0.1)+')';ctx.fill()}});for(var i=0;i<particles.length;i++){for(var j=i+1;j<particles.length;j++){var dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<140){ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.strokeStyle='rgba(0,102,255,'+(0.08*(1-dist/140))+')';ctx.lineWidth=0.5;ctx.stroke()}}}requestAnimationFrame(draw)}draw()})();
+// Hero — Premium Constellation + Aurora
+(function(){
+var canvas=document.getElementById('hero-particles');if(!canvas)return;
+var ctx=canvas.getContext('2d');var w,h,t=0;
+var dpr=Math.min(window.devicePixelRatio||1,2);
+function resize(){w=canvas.parentElement.offsetWidth;h=canvas.parentElement.offsetHeight;canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(dpr,0,0,dpr,0,0)}
+resize();window.addEventListener('resize',resize);
+
+// Constellation nodes — sparse, elegant
+var nodes=[];var N=Math.min(Math.floor(w*h/25000),50);
+for(var i=0;i<N;i++){nodes.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.2+0.3,vx:(Math.random()-0.5)*0.15,vy:(Math.random()-0.5)*0.15,phase:Math.random()*Math.PI*2,speed:0.003+Math.random()*0.005})}
+
+// Floating light motes — very subtle
+var motes=[];for(var i=0;i<25;i++){motes.push({x:Math.random()*w,y:Math.random()*h,vy:-0.08-Math.random()*0.15,r:Math.random()*0.8+0.2,o:Math.random()*0.15+0.03,phase:Math.random()*Math.PI*2})}
+
+var mx=-9999,my=-9999,tmx=-9999,tmy=-9999;
+canvas.parentElement.addEventListener('mousemove',function(e){var r=canvas.parentElement.getBoundingClientRect();tmx=e.clientX-r.left;tmy=e.clientY-r.top});
+canvas.parentElement.addEventListener('mouseleave',function(){tmx=-9999;tmy=-9999});
+
+function draw(){
+t+=0.016;
+// Smooth mouse lerp
+mx+=(tmx-mx)*0.04;my+=(tmy-my)*0.04;
+ctx.clearRect(0,0,w,h);
+
+// Layer 1: Mouse aurora glow — soft radial gradient that follows cursor
+if(mx>0&&mx<w&&my>0&&my<h){
+  var ag=ctx.createRadialGradient(mx,my,0,mx,my,280);
+  ag.addColorStop(0,'rgba(0,102,255,0.06)');
+  ag.addColorStop(0.4,'rgba(0,180,255,0.025)');
+  ag.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=ag;ctx.fillRect(0,0,w,h);
+  // Second layer — warmer accent
+  var ag2=ctx.createRadialGradient(mx+60,my-40,0,mx+60,my-40,180);
+  ag2.addColorStop(0,'rgba(0,229,255,0.03)');
+  ag2.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=ag2;ctx.fillRect(0,0,w,h);
+}
+
+// Layer 2: Constellation nodes
+for(var i=0;i<nodes.length;i++){
+  var n=nodes[i];
+  n.x+=n.vx;n.y+=n.vy;
+  if(n.x<-20)n.x=w+20;if(n.x>w+20)n.x=-20;
+  if(n.y<-20)n.y=h+20;if(n.y>h+20)n.y=-20;
+  // Pulse opacity
+  var pulse=0.25+Math.sin(t*n.speed*60+n.phase)*0.15;
+  // Mouse proximity brightening
+  var dx=n.x-mx,dy=n.y-my,dm=Math.sqrt(dx*dx+dy*dy);
+  if(dm<200)pulse+=0.3*(1-dm/200);
+  // Gentle repulsion
+  if(dm<150&&dm>1){n.x+=dx/dm*0.3;n.y+=dy/dm*0.3}
+  // Draw node with soft glow
+  ctx.beginPath();ctx.arc(n.x,n.y,n.r+0.3,0,Math.PI*2);
+  ctx.fillStyle='rgba(180,210,255,'+Math.min(pulse,0.7)+')';ctx.fill();
+  // Outer halo
+  if(n.r>0.8){ctx.beginPath();ctx.arc(n.x,n.y,n.r*4,0,Math.PI*2);ctx.fillStyle='rgba(0,102,255,'+(pulse*0.06)+')';ctx.fill()}
+}
+
+// Layer 3: Constellation lines — only connect nearby nodes, very faint
+ctx.lineWidth=0.4;
+for(var i=0;i<nodes.length;i++){
+  for(var j=i+1;j<nodes.length;j++){
+    var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=dx*dx+dy*dy;
+    if(d<22000){
+      var dist=Math.sqrt(d);var alpha=0.04*(1-dist/148);
+      // Brighten lines near mouse
+      var midX=(nodes[i].x+nodes[j].x)/2,midY=(nodes[i].y+nodes[j].y)/2;
+      var md=Math.sqrt((midX-mx)*(midX-mx)+(midY-my)*(midY-my));
+      if(md<200)alpha+=0.06*(1-md/200);
+      ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);
+      ctx.strokeStyle='rgba(100,160,255,'+Math.min(alpha,0.15)+')';ctx.stroke();
+    }
+  }
+}
+
+// Layer 4: Rising light motes — like dust in sunlight
+for(var i=0;i<motes.length;i++){
+  var m=motes[i];
+  m.y+=m.vy;m.x+=Math.sin(t*0.5+m.phase)*0.12;
+  if(m.y<-10){m.y=h+10;m.x=Math.random()*w}
+  var mo=m.o*(0.5+Math.sin(t*1.5+m.phase)*0.5);
+  ctx.beginPath();ctx.arc(m.x,m.y,m.r,0,Math.PI*2);
+  ctx.fillStyle='rgba(200,220,255,'+mo+')';ctx.fill();
+}
+
+requestAnimationFrame(draw)}
+draw()})();
 
 // Operating status v2
 (function(){function updateStatus(){var now=new Date(),day=now.getDay(),h=now.getHours(),m=now.getMinutes(),t=h*60+m;var text='',open=false;if(day>=1&&day<=4){open=t>=600&&t<1260;text=open?'진료중 · 21시까지':'진료 종료'}else if(day===5){open=t>=600&&t<1140;text=open?'진료중 · 19시까지':'진료 종료'}else if(day===6){open=t>=600&&t<840;text=open?'진료중 · 14시까지':'진료 종료'}else{open=t>=840&&t<1080;text=open?'진료중 · 18시까지':'진료 종료'}document.querySelectorAll('[data-status]').forEach(function(el){el.innerHTML=open?'<span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span><span class="font-semibold">'+text+'</span>':'<span class="w-2 h-2 bg-gray-500 rounded-full"></span><span class="text-white/40">'+text+'</span>'})}updateStatus();setInterval(updateStatus,60000)})();
