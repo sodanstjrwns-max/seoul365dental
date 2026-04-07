@@ -395,24 +395,24 @@ home.get('/', async (c) => {
           {/* All 5 Doctors — Equal Cards */}
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5 stagger-children">
             {doctors.map((doc, i) => (
-              <a href={`/doctors/${doc.slug}`} class="block group tilt-card text-center relative overflow-hidden" style="background:rgba(0,102,255,0.05);border-radius:1.75rem;border:1px solid rgba(0,102,255,0.1);transition:all 0.5s" data-cursor-hover>
+              <a href={`/doctors/${doc.slug}`} class="block group tilt-card relative overflow-hidden" style="background:rgba(0,102,255,0.05);border-radius:1.75rem;border:1px solid rgba(0,102,255,0.1);transition:all 0.5s" data-cursor-hover>
                 {/* Lead badge */}
                 {i === 0 && <div class="absolute top-3 left-3 z-20 bg-[#0066FF] text-white text-[0.6rem] font-bold px-2.5 py-1 rounded-full">LEAD</div>}
-                {/* Photo area */}
-                <div class="relative pt-8 pb-2 px-4">
-                  <div class="w-28 h-28 md:w-32 md:h-32 rounded-full mx-auto overflow-hidden border-2 border-[#0066FF]/15 group-hover:border-[#0066FF]/40 transition-all duration-500" style="box-shadow:0 0 30px rgba(0,102,255,0.1)">
-                    <img
-                      src={doc.photo}
-                      alt={`${doc.name} ${doc.title} - 서울365치과`}
-                      title={`서울365치과 ${doc.name} ${doc.title}`}
-                      class="w-full h-full object-cover object-[center_15%] group-hover:scale-105 transition-transform duration-700"
-                      loading="lazy"
-                      onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
-                    />
-                  </div>
+                {/* Photo area with unified background */}
+                <div class="relative overflow-hidden" style={`background:linear-gradient(135deg, rgba(0,102,255,0.15) 0%, rgba(0,180,255,0.08) 50%, rgba(0,229,255,0.05) 100%);border-radius:1.75rem 1.75rem 0 0;padding-top:110%`}>
+                  <img
+                    src={doc.photo}
+                    alt={`${doc.name} ${doc.title} - 서울365치과`}
+                    title={`서울365치과 ${doc.name} ${doc.title}`}
+                    class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                    onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
+                  />
+                  {/* Bottom gradient fade to card bg */}
+                  <div class="absolute bottom-0 left-0 right-0 h-1/4" style="background:linear-gradient(to top, rgba(0,102,255,0.05) 0%, transparent 100%)"></div>
                 </div>
                 {/* Info */}
-                <div class="px-4 pb-6 pt-3">
+                <div class="px-4 pb-5 pt-3 text-center">
                   <h3 class="font-bold text-white text-lg">{doc.name}</h3>
                   <p class="text-[#00E5FF] text-xs font-semibold mt-1">{doc.title}</p>
                   <div class="flex flex-wrap justify-center gap-1.5 mt-3">
@@ -420,9 +420,7 @@ home.get('/', async (c) => {
                       <span class="text-[0.65rem] bg-white/[0.06] text-white/50 px-2.5 py-0.5 rounded-full border border-white/[0.06]">{s}</span>
                     ))}
                   </div>
-                  <p class="text-white/20 text-[0.65rem] mt-3 line-clamp-1">{doc.education[0]}</p>
-                  {doc.credentials[0] && <p class="text-[#0066FF]/50 text-[0.65rem] mt-1 line-clamp-1">{doc.credentials[0]}</p>}
-                  <div class="mt-4 text-[0.7rem] text-white/30 group-hover:text-[#0066FF] transition-colors">
+                  <div class="mt-3 text-[0.7rem] text-white/30 group-hover:text-[#0066FF] transition-colors">
                     프로필 보기 <i class="fa-solid fa-arrow-right text-[0.6rem] ml-0.5 group-hover:translate-x-1 transition-transform inline-block"></i>
                   </div>
                 </div>

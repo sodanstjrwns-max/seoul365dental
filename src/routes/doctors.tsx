@@ -27,64 +27,40 @@ doctorRoutes.get('/doctors', (c) => {
 
       <section class="section-lg bg-mesh">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          {/* Lead doctor */}
-          <div class="premium-card overflow-hidden mb-10 reveal-3d">
-            <div class="md:flex">
-              <div class="md:w-2/5 bg-gradient-to-br from-[#0066FF]/10 to-[#00E5FF]/[0.02] p-10 flex items-center justify-center min-h-[360px]">
-                <div class="text-center">
-                  <div class="w-40 h-40 rounded-full mx-auto mb-5 overflow-hidden border-2 border-[#0066FF]/15" style="box-shadow:0 0 30px rgba(0,102,255,0.1)">
-                    <img 
-                      src={doctors[0].photo} 
-                      alt={`${doctors[0].name} ${doctors[0].titleShort} 프로필 사진`}
-                      class="w-full h-full object-cover object-[center_20%]" 
-                      loading="lazy"
-                      onerror={`this.onerror=null;this.src='${doctors[0].photoFallback}'`}
-                    />
-                  </div>
-                  <h2 class="text-2xl font-bold text-gray-900">서울365치과 의료진</h2>
-                  <p class="text-[#0066FF] font-semibold text-sm mt-1">통합치의학과 전문의</p>
-                  <div class="flex flex-wrap justify-center gap-2 mt-4">
-                    {doctors[0].specialties.map(s => <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-3 py-1 rounded-full font-medium">{s}</span>)}
-                  </div>
-                </div>
-              </div>
-              <div class="md:w-3/5 p-8 md:p-10">
-                <blockquote class="text-lg text-gray-600 italic border-l-3 border-[#0066FF] pl-5 mb-8 leading-relaxed" style="border-left-width:3px">
-                  "{doctors[0].philosophy}"
-                </blockquote>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
-                  <div>
-                    <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-[#0066FF] text-sm"></i> 학력</h3>
-                    <ul class="space-y-2">{doctors[0].education.map(e => <li class="text-gray-500 flex items-start gap-2"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2 flex-shrink-0"></span>{e}</li>)}</ul>
-                  </div>
-                  <div>
-                    <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2"><i class="fa-solid fa-certificate text-[#0066FF] text-sm"></i> 자격</h3>
-                    <ul class="space-y-2">{doctors[0].credentials.slice(0,3).map(e => <li class="text-gray-500 flex items-start gap-2"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2 flex-shrink-0"></span>{e}</li>)}</ul>
-                  </div>
-                </div>
-                <a href="/doctors/park-junkyu" class="btn-premium btn-premium-fill mt-8 text-sm px-6 py-3" data-cursor-hover>프로필 상세 보기</a>
-              </div>
-            </div>
-          </div>
-
-          {/* Other doctors */}
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 stagger-children">
-            {doctors.slice(1).map(doc => (
-              <a href={`/doctors/${doc.slug}`} class="glass-card p-6 block md:flex gap-5 items-start group" data-cursor-hover>
-                <div class="w-20 h-20 rounded-full overflow-hidden border border-[#0066FF]/10 flex-shrink-0 mx-auto md:mx-0 mb-4 md:mb-0 group-hover:border-[#0066FF]/25 transition-colors" style="box-shadow:0 0 15px rgba(0,102,255,0.06)">
-                  <img 
-                    src={doc.photo} 
-                    alt={`${doc.name} ${doc.titleShort} 프로필 사진`}
-                    class="w-full h-full object-cover object-[center_20%]" 
+          {/* All 5 Doctors — Equal Cards */}
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 stagger-children">
+            {doctors.map((doc, i) => (
+              <a href={`/doctors/${doc.slug}`} class="premium-card block group overflow-hidden relative" style="border-radius:1.5rem" data-cursor-hover>
+                {/* Lead badge */}
+                {i === 0 && <div class="absolute top-4 left-4 z-20 bg-[#0066FF] text-white text-[0.6rem] font-bold px-2.5 py-1 rounded-full shadow-lg">LEAD</div>}
+                {/* Photo area with unified background */}
+                <div class="relative overflow-hidden" style="background:linear-gradient(135deg, #e8f0fe 0%, #d4e4fc 50%, #c5d9f8 100%);padding-top:110%">
+                  <img
+                    src={doc.photo}
+                    alt={`${doc.name} ${doc.title} 프로필 사진 - 서울365치과`}
+                    title={`서울365치과 ${doc.name} ${doc.title}`}
+                    class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                     loading="lazy"
                     onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
                   />
+                  {/* Bottom gradient for text readability */}
+                  <div class="absolute bottom-0 left-0 right-0 h-1/3" style="background:linear-gradient(to top, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 100%)"></div>
                 </div>
-                <div class="text-center md:text-left">
-                  <h2 class="font-bold text-gray-900 text-lg">{doc.name} <span class="text-gray-400 font-normal text-sm">{doc.title}</span></h2>
-                  <p class="text-sm text-gray-400 mt-1">{doc.specialties.join(' · ')}</p>
-                  <p class="text-sm text-gray-500 mt-3 italic leading-relaxed">"{doc.philosophy.split('.')[0]}."</p>
-                  <span class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-semibold mt-3 link-underline">프로필 보기 <i class="fa-solid fa-arrow-right text-xs"></i></span>
+                {/* Info */}
+                <div class="p-5 pt-3 text-center">
+                  <h2 class="font-bold text-gray-900 text-xl">{doc.name}</h2>
+                  <p class="text-[#0066FF] text-sm font-semibold mt-1">{doc.title}</p>
+                  <div class="flex flex-wrap justify-center gap-1.5 mt-3">
+                    {doc.specialties.slice(0, 3).map(s => (
+                      <span class="text-[0.65rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-medium">{s}</span>
+                    ))}
+                  </div>
+                  <p class="text-gray-400 text-xs mt-3 line-clamp-1">{doc.education[0]}</p>
+                  {doc.credentials[0] && <p class="text-[#0066FF]/60 text-xs mt-1 line-clamp-1">{doc.credentials[0]}</p>}
+                  <p class="text-gray-400 text-[0.75rem] mt-3 italic line-clamp-2 leading-relaxed">"{doc.philosophy.split('.')[0]}."</p>
+                  <div class="mt-4 text-sm text-[#0066FF] font-semibold group-hover:gap-2 transition-all flex items-center justify-center gap-1.5">
+                    프로필 보기 <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                  </div>
                 </div>
               </a>
             ))}
@@ -210,7 +186,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
 
           <div class="md:flex items-center gap-8 reveal" style="transition-delay:0.4s">
-            <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#0066FF]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(0,102,255,0.15)">
+            <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#0066FF]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(0,102,255,0.15);background:linear-gradient(135deg, #e8f0fe 0%, #d4e4fc 50%, #c5d9f8 100%)">
               <img 
                 src={doc.photo} 
                 alt={`${doc.name} ${doc.titleShort} 프로필 사진`}
