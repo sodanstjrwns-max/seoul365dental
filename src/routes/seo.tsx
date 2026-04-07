@@ -164,7 +164,30 @@ seoRoutes.get('/privacy', (c) => {
         </div>
       </div>
     </section>,
-    { title: '개인정보처리방침 | 서울365치과', canonical: 'https://seoul365dc.kr/privacy' }
+    {
+      title: '개인정보처리방침 | 서울365치과',
+      description: '서울365치과의원 개인정보처리방침. 수집 항목, 이용 목적, 보유 기간, 파기 절차 등을 안내합니다.',
+      canonical: 'https://seoul365dc.kr/privacy',
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "개인정보처리방침", "item": "https://seoul365dc.kr/privacy" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "개인정보처리방침",
+          "url": "https://seoul365dc.kr/privacy",
+          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
+          "inLanguage": "ko-KR",
+          "dateModified": "2026-03-14",
+          "description": "서울365치과의원 개인정보처리방침"
+        }
+      ]
+    }
   )
 })
 
@@ -184,7 +207,29 @@ seoRoutes.get('/terms', (c) => {
         </div>
       </div>
     </section>,
-    { title: '이용약관 | 서울365치과', canonical: 'https://seoul365dc.kr/terms' }
+    {
+      title: '이용약관 | 서울365치과',
+      description: '서울365치과의원 이용약관. 서비스 이용, 면책사항, 저작권에 대한 안내입니다.',
+      canonical: 'https://seoul365dc.kr/terms',
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "이용약관", "item": "https://seoul365dc.kr/terms" }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "이용약관",
+          "url": "https://seoul365dc.kr/terms",
+          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
+          "inLanguage": "ko-KR",
+          "description": "서울365치과의원 이용약관"
+        }
+      ]
+    }
   )
 })
 

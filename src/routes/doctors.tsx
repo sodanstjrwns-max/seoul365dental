@@ -209,13 +209,14 @@ doctorRoutes.get('/doctors/:slug', (c) => {
 
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
+          <h2 class="sr-only">프로필 상세</h2>
           {/* Story-type Introduction */}
           {story ? (
             <div class="mb-14 reveal">
               <div class="premium-card p-8 md:p-10">
-                <h2 class="font-bold text-gray-900 text-lg mb-6 flex items-center gap-2">
+                <h3 class="font-bold text-gray-900 text-lg mb-6 flex items-center gap-2">
                   <i class="fa-solid fa-book-open text-[#0066FF]"></i> 소개
-                </h2>
+                </h3>
                 <div class="text-gray-600 text-[0.95rem] leading-[1.9] space-y-4">
                   {story.storyIntro.split('\n\n').map(paragraph => (
                     <p>{paragraph}</p>
@@ -242,25 +243,25 @@ doctorRoutes.get('/doctors/:slug', (c) => {
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 stagger-children">
             <div class="glass-card p-7">
-              <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-[#0066FF]"></i> 학력</h2>
+              <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-[#0066FF]"></i> 학력</h3>
               <ul class="space-y-2.5">{doc.education.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
             </div>
 
             {doc.credentials.length > 0 && (
               <div class="glass-card p-7">
-                <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-certificate text-[#0066FF]"></i> 자격/전문의</h2>
+                <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-certificate text-[#0066FF]"></i> 자격/전문의</h3>
                 <ul class="space-y-2.5">{doc.credentials.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
               </div>
             )}
 
             <div class="glass-card p-7">
-              <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-briefcase text-[#0066FF]"></i> 경력</h2>
+              <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-briefcase text-[#0066FF]"></i> 경력</h3>
               <ul class="space-y-2.5">{doc.career.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
             </div>
 
             {doc.societies.length > 0 && (
               <div class="glass-card p-7">
-                <h2 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-users text-[#0066FF]"></i> 학회</h2>
+                <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-users text-[#0066FF]"></i> 학회</h3>
                 <ul class="space-y-2.5">{doc.societies.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
               </div>
             )}
@@ -268,7 +269,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
 
           {/* Treatment Links */}
           <div class="mt-12 reveal">
-            <h2 class="font-bold text-gray-900 text-lg mb-5 flex items-center gap-2"><i class="fa-solid fa-stethoscope text-[#0066FF]"></i> 담당 치료</h2>
+            <h3 class="font-bold text-gray-900 text-lg mb-5 flex items-center gap-2"><i class="fa-solid fa-stethoscope text-[#0066FF]"></i> 담당 치료</h3>
             <div class="flex flex-wrap gap-3">
               {doc.treatmentLinks.map(link => {
                 const treat = getTreatmentBySlug(link.split('/').pop()!);

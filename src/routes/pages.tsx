@@ -602,6 +602,25 @@ pageRoutes.get('/cases/gallery', async (c) => {
         title: '치료 사례 | 서울365치과 Before & After',
         description: '서울365치과 치료 사례. 회원 로그인 후 열람 가능합니다.',
         canonical: 'https://seoul365dc.kr/cases/gallery',
+        jsonLd: [
+          {
+            "@context": "https://schema.org", "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+              { "@type": "ListItem", "position": 2, "name": "치료사례", "item": "https://seoul365dc.kr/cases/gallery" }
+            ]
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "서울365치과 치료 사례",
+            "description": "서울365치과 임플란트, 교정, 심미치료 Before & After 갤러리.",
+            "url": "https://seoul365dc.kr/cases/gallery",
+            "isAccessibleForFree": false,
+            "conditionsOfAccess": "회원 로그인 필요",
+            "inLanguage": "ko-KR"
+          }
+        ]
       }
     )
   }
@@ -1278,16 +1297,16 @@ pageRoutes.get('/encyclopedia', (c) => {
       <section class="section-lg bg-white">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           {terms.map((cat, ci) => (
-            <div id={`cat-${ci}`} class="scroll-mt-24 mb-16 reveal">
-              <div class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#0066FF]/10">
+            <article id={`cat-${ci}`} class="scroll-mt-24 mb-16 reveal">
+              <h3 class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#0066FF]/10">
                 <span class="text-xs font-bold text-[#0066FF] bg-[#0066FF]/5 px-3 py-1 rounded-full">{cat.cat}</span>
-                <span class="text-xs text-gray-400">{cat.items.length}개 용어</span>
-              </div>
+                <span class="text-xs text-gray-400 font-normal">{cat.items.length}개 용어</span>
+              </h3>
               <dl class="space-y-5">
                 {cat.items.map((item) => (
                   <div class="group">
                     <dt class="flex items-baseline gap-2 mb-1.5">
-                      <span class="font-bold text-gray-900 text-[0.95rem]">{item.term}</span>
+                      <h4 class="font-bold text-gray-900 text-[0.95rem] m-0">{item.term}</h4>
                       <span class="text-xs text-[#0066FF]/60 font-medium">{item.en}</span>
                     </dt>
                     <dd class="text-gray-600 text-[0.85rem] leading-[1.9] pl-0">
@@ -1301,7 +1320,7 @@ pageRoutes.get('/encyclopedia', (c) => {
                   </div>
                 ))}
               </dl>
-            </div>
+            </article>
           ))}
         </div>
       </section>
@@ -1353,7 +1372,23 @@ pageRoutes.get('/encyclopedia', (c) => {
           "inLanguage": "ko-KR",
           "lastReviewed": new Date().toISOString().split('T')[0],
           "reviewedBy": { "@type": "Physician", "name": "박준규", "worksFor": { "@id": "https://seoul365dc.kr/#dentist" } },
-          "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", "dt"] }
+          "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", "h3", "dt"] },
+          "mainEntity": {
+            "@type": "DefinedTermSet",
+            "name": "치과 용어 사전",
+            "description": `치과 진료에서 자주 사용되는 ${totalTerms}개 핵심 용어를 12개 분야로 분류한 용어 사전입니다.`,
+            "inLanguage": "ko-KR",
+            "hasDefinedTerm": terms.flatMap(cat =>
+              cat.items.slice(0, 5).map(item => ({
+                "@type": "DefinedTerm",
+                "name": item.term,
+                "alternateName": item.en,
+                "description": item.def,
+                "inDefinedTermSet": "https://seoul365dc.kr/encyclopedia",
+                ...(item.link ? { "url": `https://seoul365dc.kr${item.link}` } : {})
+              }))
+            )
+          }
         }
       ]
     }
