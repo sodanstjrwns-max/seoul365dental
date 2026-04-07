@@ -68,32 +68,95 @@ export async function initUserTables(db: D1Database) {
   _userTablesReady = true;
 }
 
-// Lightweight markdown renderer
+// SEO-optimized markdown renderer (H-tag IDs, figure/figcaption, numbered lists, H4 support)
+function slugifyHeading(text: string): string {
+  return text.replace(/[^\w\uAC00-\uD7AF\u3131-\u3163\u3041-\u30FF\s-]/g, '').replace(/\s+/g, '-').toLowerCase().substring(0, 60);
+}
+
 export function renderContent(md: string): string {
   let html = md
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    // Images: ![alt](url) — renders with click-to-expand and nice styling
+    // Images: ![alt](url) — semantic figure with figcaption for SEO
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
       const caption = alt && alt !== '이미지' ? `<figcaption class="text-center text-xs text-gray-400 mt-2">${alt}</figcaption>` : '';
       return `<figure class="my-8"><a href="${url}" target="_blank" rel="noopener" class="block rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-zoom-in"><img src="${url}" alt="${alt || ''}" class="w-full rounded-xl" loading="lazy" /></a>${caption}</figure>`;
     })
-    // Links: [text](url)
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-[#0066FF] underline hover:text-[#0052cc]" target="_blank" rel="noopener">$1</a>')
-    .replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-gray-900 mt-8 mb-3">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold text-gray-900 mt-10 mb-4">$1</h2>')
-    .replace(/^# (.+)$/gm, '<h1 class="text-2xl font-bold text-gray-900 mt-12 mb-5">$1</h1>')
+    // Links: [text](url) — internal links without target blank
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
+      const isInternal = url.startsWith('/');
+      return isInternal
+        ? `<a href="${url}" class="text-[#0066FF] underline hover:text-[#0052cc]">${text}</a>`
+        : `<a href="${url}" class="text-[#0066FF] underline hover:text-[#0052cc]" target="_blank" rel="noopener">${text}</a>`;
+    })
+    // Headings with auto-generated IDs for TOC linking
+    .replace(/^#### (.+)$/gm, (_, t) => `<h4 id="${slugifyHeading(t)}" class="text-base font-bold text-gray-800 mt-6 mb-2">${t}</h4>`)
+    .replace(/^### (.+)$/gm, (_, t) => `<h3 id="${slugifyHeading(t)}" class="text-lg font-bold text-gray-900 mt-8 mb-3">${t}</h3>`)
+    .replace(/^## (.+)$/gm, (_, t) => `<h2 id="${slugifyHeading(t)}" class="text-xl font-bold text-gray-900 mt-10 mb-4">${t}</h2>`)
+    .replace(/^# (.+)$/gm, (_, t) => `<h1 id="${slugifyHeading(t)}" class="text-2xl font-bold text-gray-900 mt-12 mb-5">${t}</h1>`)
     .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-[#0066FF]/20 pl-4 py-2 my-4 text-gray-500 italic bg-[#0066FF]/[0.03] rounded-r-lg">$1</blockquote>')
     .replace(/^---$/gm, '<hr class="my-8 border-gray-100"/>')
+    // Numbered lists
+    .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 text-gray-600 list-item-numbered">$1</li>')
+    // Unordered lists
     .replace(/^- (.+)$/gm, '<li class="ml-4 text-gray-600">$1</li>')
-    .replace(/(<li.*<\/li>\n?)+/g, (m) => `<ul class="list-disc space-y-1 my-4">${m}</ul>`)
-    .replace(/^(?!<[hulfba]|<hr|<li|<strong|<em|<img|<figure)(.+)$/gm, '<p class="text-gray-600 leading-relaxed mb-4">$1</p>')
+    // Wrap consecutive <li> in <ul>/<ol>
+    .replace(/((?:<li class="ml-4 text-gray-600 list-item-numbered">.*<\/li>\n?)+)/g, (m) => `<ol class="list-decimal space-y-1 my-4 pl-4">${m.replace(/ list-item-numbered/g, '')}</ol>`)
+    .replace(/((?:<li class="ml-4 text-gray-600">.*<\/li>\n?)+)/g, (m) => `<ul class="list-disc space-y-1 my-4">${m}</ul>`)
+    // Paragraphs (avoid wrapping existing HTML)
+    .replace(/^(?!<[hulfba]|<hr|<li|<strong|<em|<img|<figure|<ol)(.+)$/gm, '<p class="text-gray-600 leading-relaxed mb-4">$1</p>')
     .replace(/<p class="text-gray-600 leading-relaxed mb-4"><\/p>/g, '');
   // XSS defense
   html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
   html = html.replace(/\bon\w+\s*=\s*["'][^"']*["']/gi, '');
   return html;
+}
+
+// Extract FAQ pairs from markdown content for JSON-LD FAQPage schema
+export function extractFAQs(md: string): Array<{question: string, answer: string}> {
+  const faqs: Array<{question: string, answer: string}> = [];
+  const lines = md.split('\n');
+  let currentQ = '';
+  let currentA = '';
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    const qMatch = line.match(/^\*\*Q\.\s*(.+?)\*\*$/);
+    if (qMatch) {
+      if (currentQ && currentA) faqs.push({ question: currentQ, answer: currentA.trim() });
+      currentQ = qMatch[1];
+      currentA = '';
+    } else if (currentQ) {
+      const aMatch = line.match(/^A\.\s*(.+)$/);
+      if (aMatch) {
+        currentA += aMatch[1] + ' ';
+      } else if (line && !line.startsWith('#') && !line.startsWith('**Q.')) {
+        currentA += line + ' ';
+      } else if (line.startsWith('#') || line.startsWith('**Q.')) {
+        if (currentQ && currentA) faqs.push({ question: currentQ, answer: currentA.trim() });
+        currentQ = '';
+        currentA = '';
+        // Re-check if this line is a new Q
+        const newQ = line.match(/^\*\*Q\.\s*(.+?)\*\*$/);
+        if (newQ) { currentQ = newQ[1]; }
+      }
+    }
+  }
+  if (currentQ && currentA) faqs.push({ question: currentQ, answer: currentA.trim() });
+  return faqs;
+}
+
+// Extract heading structure for TOC (H2 + H3)
+export function extractHeadings(md: string): Array<{level: number, text: string, id: string}> {
+  const headings: Array<{level: number, text: string, id: string}> = [];
+  const lines = md.split('\n');
+  for (const line of lines) {
+    const m2 = line.match(/^## (.+)$/);
+    const m3 = line.match(/^### (.+)$/);
+    if (m2) headings.push({ level: 2, text: m2[1], id: slugifyHeading(m2[1]) });
+    else if (m3) headings.push({ level: 3, text: m3[1], id: slugifyHeading(m3[1]) });
+  }
+  return headings;
 }
 
 // Init site_settings table (for admin-configurable SEO/analytics settings)
