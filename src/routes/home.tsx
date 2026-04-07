@@ -392,53 +392,40 @@ home.get('/', async (c) => {
             <p class="section-body text-white/30 mt-5 max-w-xl mx-auto">각 분야별 전문의가 협력하여 최적의 치료를 제공합니다.</p>
           </div>
 
-          {/* Lead Doctor — Electric Card */}
-          <div class="p-0 overflow-hidden mb-8 reveal-3d" style="background:rgba(0,102,255,0.06);border-radius:1.75rem;border:1px solid rgba(0,102,255,0.12)">
-            <div class="md:flex">
-              <div class="md:w-2/5 p-10 flex items-center justify-center min-h-[340px] relative" style="background:linear-gradient(135deg,rgba(0,102,255,0.2),rgba(0,102,255,0.05),transparent)">
-                <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(4,11,24,0.8),transparent)"></div>
-                <div class="text-center relative z-10">
-                  <div class="w-36 h-36 rounded-full mx-auto mb-5 overflow-hidden border-2 border-[#0066FF]/20 pulse-ring" style="box-shadow:0 0 40px rgba(0,102,255,0.2)">
-                    <img src="/static/dr-park-profile.jpg" alt={`${doctors[0].name} ${doctors[0].title} - 서울365치과`} title={`서울365치과 ${doctors[0].name} ${doctors[0].title}`} class="w-full h-full object-cover object-[center_20%]" loading="lazy" />
+          {/* All 5 Doctors — Equal Cards */}
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5 stagger-children">
+            {doctors.map((doc, i) => (
+              <a href={`/doctors/${doc.slug}`} class="block group tilt-card text-center relative overflow-hidden" style="background:rgba(0,102,255,0.05);border-radius:1.75rem;border:1px solid rgba(0,102,255,0.1);transition:all 0.5s" data-cursor-hover>
+                {/* Lead badge */}
+                {i === 0 && <div class="absolute top-3 left-3 z-20 bg-[#0066FF] text-white text-[0.6rem] font-bold px-2.5 py-1 rounded-full">LEAD</div>}
+                {/* Photo area */}
+                <div class="relative pt-8 pb-2 px-4">
+                  <div class="w-28 h-28 md:w-32 md:h-32 rounded-full mx-auto overflow-hidden border-2 border-[#0066FF]/15 group-hover:border-[#0066FF]/40 transition-all duration-500" style="box-shadow:0 0 30px rgba(0,102,255,0.1)">
+                    <img
+                      src={doc.photo}
+                      alt={`${doc.name} ${doc.title} - 서울365치과`}
+                      title={`서울365치과 ${doc.name} ${doc.title}`}
+                      class="w-full h-full object-cover object-[center_15%] group-hover:scale-105 transition-transform duration-700"
+                      loading="lazy"
+                      onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
+                    />
                   </div>
-                  <h3 class="text-2xl font-bold text-white">{doctors[0].name}</h3>
-                  <p class="text-[#00E5FF] text-sm font-semibold mt-1">{doctors[0].title}</p>
-                  <div class="flex flex-wrap justify-center gap-2 mt-4">
-                    {doctors[0].specialties.slice(0,3).map(s => (
-                      <span class="text-[0.7rem] bg-white/[0.06] text-white/60 px-3 py-1 rounded-full border border-white/[0.06]">{s}</span>
+                </div>
+                {/* Info */}
+                <div class="px-4 pb-6 pt-3">
+                  <h3 class="font-bold text-white text-lg">{doc.name}</h3>
+                  <p class="text-[#00E5FF] text-xs font-semibold mt-1">{doc.title}</p>
+                  <div class="flex flex-wrap justify-center gap-1.5 mt-3">
+                    {doc.specialties.slice(0, 2).map(s => (
+                      <span class="text-[0.65rem] bg-white/[0.06] text-white/50 px-2.5 py-0.5 rounded-full border border-white/[0.06]">{s}</span>
                     ))}
                   </div>
+                  <p class="text-white/20 text-[0.65rem] mt-3 line-clamp-1">{doc.education[0]}</p>
+                  {doc.credentials[0] && <p class="text-[#0066FF]/50 text-[0.65rem] mt-1 line-clamp-1">{doc.credentials[0]}</p>}
+                  <div class="mt-4 text-[0.7rem] text-white/30 group-hover:text-[#0066FF] transition-colors">
+                    프로필 보기 <i class="fa-solid fa-arrow-right text-[0.6rem] ml-0.5 group-hover:translate-x-1 transition-transform inline-block"></i>
+                  </div>
                 </div>
-              </div>
-              <div class="md:w-3/5 p-8 md:p-10 flex flex-col justify-center" style="background:rgba(4,11,24,0.5)">
-                <blockquote class="text-lg text-white/60 italic border-l-2 border-[#0066FF]/60 pl-5 mb-6 leading-relaxed">
-                  "{doctors[0].philosophy.split('.')[0]}."
-                </blockquote>
-                <ul class="space-y-2.5 text-sm text-white/40">
-                  {doctors[0].education.slice(0,2).map(e => (
-                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-graduation-cap text-[#0066FF]/70 text-xs mt-1"></i>{e}</li>
-                  ))}
-                  {doctors[0].credentials.slice(0,2).map(e => (
-                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-certificate text-[#00E5FF]/70 text-xs mt-1"></i>{e}</li>
-                  ))}
-                </ul>
-                <a href="/doctors/park-junkyu" class="btn-premium btn-premium-white mt-8 self-start text-sm px-6 py-3" data-cursor-hover>
-                  프로필 보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Other Doctors */}
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 stagger-children">
-            {doctors.slice(1).map(doc => (
-              <a href={`/doctors/${doc.slug}`} class="p-6 text-center block group tilt-card" style="background:rgba(0,102,255,0.04);border-radius:1.75rem;border:1px solid rgba(0,102,255,0.1);transition:all 0.5s" data-cursor-hover>
-                <div class="w-20 h-20 rounded-full bg-white/[0.04] border border-white/[0.06] mx-auto mb-4 flex items-center justify-center group-hover:border-[#0066FF]/30 group-hover:bg-[#0066FF]/[0.08] transition-all duration-500">
-                  <i class="fa-solid fa-user-doctor text-2xl text-white/20 group-hover:text-[#0066FF]/60 transition-colors"></i>
-                </div>
-                <h3 class="font-bold text-white text-[0.95rem]">{doc.name}</h3>
-                <p class="text-white/35 text-xs mt-0.5">{doc.titleShort}</p>
-                <p class="text-white/25 text-[0.7rem] mt-2">{doc.specialties.slice(0,2).join(' · ')}</p>
               </a>
             ))}
           </div>
