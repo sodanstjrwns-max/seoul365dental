@@ -33,7 +33,13 @@ doctorRoutes.get('/doctors', (c) => {
               <div class="md:w-2/5 bg-gradient-to-br from-[#0066FF]/10 to-[#00E5FF]/[0.02] p-10 flex items-center justify-center min-h-[360px]">
                 <div class="text-center">
                   <div class="w-40 h-40 rounded-full mx-auto mb-5 overflow-hidden border-2 border-[#0066FF]/15" style="box-shadow:0 0 30px rgba(0,102,255,0.1)">
-                    <img src="/static/dr-park-profile.jpg" alt="박준규 대표원장" class="w-full h-full object-cover object-[center_20%]" loading="lazy" />
+                    <img 
+                      src={doctors[0].photo} 
+                      alt={`${doctors[0].name} ${doctors[0].titleShort} 프로필 사진`}
+                      class="w-full h-full object-cover object-[center_20%]" 
+                      loading="lazy"
+                      onerror={`this.onerror=null;this.src='${doctors[0].photoFallback}'`}
+                    />
                   </div>
                   <h2 class="text-2xl font-bold text-gray-900">서울365치과 의료진</h2>
                   <p class="text-[#0066FF] font-semibold text-sm mt-1">통합치의학과 전문의</p>
@@ -65,8 +71,14 @@ doctorRoutes.get('/doctors', (c) => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5 stagger-children">
             {doctors.slice(1).map(doc => (
               <a href={`/doctors/${doc.slug}`} class="glass-card p-6 block md:flex gap-5 items-start group" data-cursor-hover>
-                <div class="w-20 h-20 rounded-full bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0 mx-auto md:mx-0 mb-4 md:mb-0 group-hover:bg-[#0066FF]/15 transition-colors">
-                  <i class="fa-solid fa-user-doctor text-2xl text-[#0066FF]/40 group-hover:text-[#0066FF]/60 transition-colors"></i>
+                <div class="w-20 h-20 rounded-full overflow-hidden border border-[#0066FF]/10 flex-shrink-0 mx-auto md:mx-0 mb-4 md:mb-0 group-hover:border-[#0066FF]/25 transition-colors" style="box-shadow:0 0 15px rgba(0,102,255,0.06)">
+                  <img 
+                    src={doc.photo} 
+                    alt={`${doc.name} ${doc.titleShort} 프로필 사진`}
+                    class="w-full h-full object-cover object-[center_20%]" 
+                    loading="lazy"
+                    onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
+                  />
                 </div>
                 <div class="text-center md:text-left">
                   <h2 class="font-bold text-gray-900 text-lg">{doc.name} <span class="text-gray-400 font-normal text-sm">{doc.title}</span></h2>
@@ -118,6 +130,7 @@ doctorRoutes.get('/doctors', (c) => {
               "@type": "Physician",
               "name": doc.name,
               "jobTitle": doc.title,
+              "image": `https://seoul365dc.kr${doc.photo}`,
               "medicalSpecialty": doc.specialties,
               "description": doc.philosophy.split('.')[0] + '.',
               "worksFor": { "@id": "https://seoul365dc.kr/#dentist" },
@@ -146,6 +159,7 @@ doctorRoutes.get('/doctors', (c) => {
             "@type": "Physician",
             "name": doc.name,
             "jobTitle": doc.title,
+            "image": `https://seoul365dc.kr${doc.photo}`,
             "medicalSpecialty": doc.specialties,
             "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" },
             "url": `https://seoul365dc.kr/doctors/${doc.slug}`,
@@ -196,15 +210,15 @@ doctorRoutes.get('/doctors/:slug', (c) => {
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
 
           <div class="md:flex items-center gap-8 reveal" style="transition-delay:0.4s">
-            {slug === 'park-junkyu' ? (
-              <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#0066FF]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(0,102,255,0.15)">
-                <img src="/static/dr-park-profile.jpg" alt={doc.name} class="w-full h-full object-cover object-[center_20%]" loading="lazy" />
-              </div>
-            ) : (
-              <div class="w-32 h-32 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0">
-                <i class="fa-solid fa-user-doctor text-5xl text-white/20"></i>
-              </div>
-            )}
+            <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#0066FF]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(0,102,255,0.15)">
+              <img 
+                src={doc.photo} 
+                alt={`${doc.name} ${doc.titleShort} 프로필 사진`}
+                class="w-full h-full object-cover object-[center_20%]" 
+                loading="eager"
+                onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
+              />
+            </div>
             <div class="text-center md:text-left">
               <h1 class="text-3xl md:text-4xl font-bold text-white">{doc.h1}</h1>
               {story && (
@@ -316,7 +330,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
           "@id": `https://seoul365dc.kr/doctors/${doc.slug}#physician`,
           "name": doc.name, "jobTitle": doc.title,
           "description": doc.philosophy,
-          "image": doc.slug === 'park-junkyu' ? 'https://seoul365dc.kr/static/dr-park-profile.jpg' : undefined,
+          "image": `https://seoul365dc.kr${doc.photo}`,
           "medicalSpecialty": doc.specialties,
           "alumniOf": doc.education.map((edu: string) => ({
             "@type": "EducationalOrganization",
@@ -370,6 +384,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
           "@type": "Person",
           "name": doc.name,
           "jobTitle": doc.title,
+          "image": `https://seoul365dc.kr${doc.photo}`,
           "worksFor": { "@id": "https://seoul365dc.kr/#dentist" },
           "alumniOf": { "@type": "CollegeOrUniversity", "name": "서울대학교 치과대학" },
           "nationality": { "@type": "Country", "name": "KR" },
