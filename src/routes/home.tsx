@@ -398,18 +398,16 @@ home.get('/', async (c) => {
               <a href={`/doctors/${doc.slug}`} class="block group tilt-card relative overflow-hidden" style="background:rgba(0,102,255,0.05);border-radius:1.75rem;border:1px solid rgba(0,102,255,0.1);transition:all 0.5s" data-cursor-hover>
                 {/* Lead badge */}
                 {i === 0 && <div class="absolute top-3 left-3 z-20 bg-[#0066FF] text-white text-[0.6rem] font-bold px-2.5 py-1 rounded-full">LEAD</div>}
-                {/* Photo area with unified background */}
-                <div class="relative overflow-hidden" style={`background:linear-gradient(135deg, rgba(0,102,255,0.15) 0%, rgba(0,180,255,0.08) 50%, rgba(0,229,255,0.05) 100%);border-radius:1.75rem 1.75rem 0 0;padding-top:110%`}>
+                {/* Photo area with solid unified background */}
+                <div class="relative overflow-hidden" style="background:#1a2a4a;border-radius:1.75rem 1.75rem 0 0;padding-top:120%">
                   <img
                     src={doc.photo}
                     alt={`${doc.name} ${doc.title} - 서울365치과`}
                     title={`서울365치과 ${doc.name} ${doc.title}`}
-                    class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                    class="absolute inset-0 w-full h-full object-contain object-bottom group-hover:scale-105 transition-transform duration-700"
                     loading="lazy"
                     onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
                   />
-                  {/* Bottom gradient fade to card bg */}
-                  <div class="absolute bottom-0 left-0 right-0 h-1/4" style="background:linear-gradient(to top, rgba(0,102,255,0.05) 0%, transparent 100%)"></div>
                 </div>
                 {/* Info */}
                 <div class="px-4 pb-5 pt-3 text-center">
