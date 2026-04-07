@@ -1245,189 +1245,139 @@ pageRoutes.get('/notices/:id', async (c) => {
 
 // ─── 치과 백과사전 ────────────────────────────────────
 pageRoutes.get('/encyclopedia', (c) => {
+  const terms = [
+    { cat: '임플란트', items: [
+      { term: '임플란트', en: 'Dental Implant', def: '상실된 치아를 대체하는 인공 치아. 티타늄 픽스쳐(인공 치근)를 잇몸뼈에 식립하고, 지대주와 크라운을 연결하는 3단계 구조입니다.', link: '/treatments/implant' },
+      { term: '픽스쳐', en: 'Fixture', def: '잇몸뼈에 심는 나사 모양의 티타늄 인공 치근. 뼈와 결합(골유착)하여 보철물을 지지하는 기둥 역할을 합니다.' },
+      { term: '골유착', en: 'Osseointegration', def: '티타늄 픽스쳐와 잇몸뼈가 결합하는 과정. 통상 2~6개월 소요되며, 임플란트 성공의 핵심 단계입니다.' },
+      { term: '어버트먼트', en: 'Abutment', def: '픽스쳐와 크라운을 연결하는 중간 구조물(지대주). 각도와 높이를 조절하여 보철물이 자연스럽게 안착하도록 합니다.' },
+      { term: '전체임플란트', en: 'Full-Arch Implant', def: '위턱 또는 아래턱 전체를 한 번에 회복하는 시술. All-on-4, All-on-6 공법으로 최소 4~6개 픽스쳐로 전악을 지지합니다.', link: '/treatments/full-implant' },
+      { term: 'All-on-4', en: 'All-on-4', def: '4개의 임플란트로 전악 보철을 지지하는 공법. 후방 픽스쳐를 경사 식립하여 골이식 없이 진행할 수 있습니다.' },
+      { term: '즉시로딩', en: 'Immediate Loading', def: '임플란트 수술 당일 임시 보철을 장착하여 저작 기능을 즉시 회복하는 기술. MUA(Multi-Unit Abutment)를 사용합니다.' },
+      { term: 'MUA', en: 'Multi-Unit Abutment', def: '즉시로딩 시 사용하는 특수 지대주. 여러 임플란트를 하나의 보철물로 연결할 때 각도를 보정합니다.' },
+      { term: '네비게이션 임플란트', en: 'Guided Surgery', def: 'CBCT 데이터로 3D 가이드를 제작해 최소 절개·최소 출혈로 식립하는 디지털 수술법입니다.' },
+      { term: 'GBR', en: 'Guided Bone Regeneration', def: '골이식술. 잇몸뼈가 부족한 부위에 골이식재와 차폐막을 사용하여 뼈를 재생시키는 시술입니다.' },
+      { term: '상악동거상술', en: 'Sinus Lift', def: '윗턱 어금니 부위의 뼈가 부족할 때 상악동(코 옆 빈 공간) 바닥을 들어 올려 골이식하는 수술입니다.' },
+      { term: 'CBCT', en: 'Cone Beam CT', def: '치과 전용 3차원 콘빔 컴퓨터 단층촬영. 일반 X-ray보다 정밀하게 뼈의 양과 신경 위치를 파악합니다.' },
+    ]},
+    { cat: '교정', items: [
+      { term: '부정교합', en: 'Malocclusion', def: '윗니와 아랫니가 올바르게 맞물리지 않는 상태. 1급·2급·3급으로 분류하며, 심미성과 저작 기능 모두에 영향을 줍니다.', link: '/treatments/orthodontics' },
+      { term: '인비절라인', en: 'Invisalign', def: 'SmartTrack 소재의 투명 얼라이너를 2주마다 교체하며 치아를 이동시키는 교정법. 탈착 가능하여 식사·칫솔질이 자유롭습니다.', link: '/treatments/invisalign' },
+      { term: '클리피씨', en: 'Clippy-C', def: '자가결찰 세라믹 브래킷. 치아색과 유사하여 심미적이며, 마찰력이 낮아 치아 이동이 효율적입니다.' },
+      { term: 'ClinCheck', en: 'ClinCheck', def: '인비절라인 전용 3D 시뮬레이션 소프트웨어. 교정 시작 전 치아 이동 과정과 최종 결과를 미리 확인할 수 있습니다.' },
+      { term: 'iTero', en: 'iTero Scanner', def: '디지털 구강 스캐너. 인상재(본뜨기) 없이 구강 내부를 3D 스캔하여 정밀한 교정 계획을 수립합니다.' },
+      { term: '혼합치열기', en: 'Mixed Dentition', def: '유치와 영구치가 함께 존재하는 만 7~12세 시기. 소아교정의 최적 개입 시기입니다.', link: '/treatments/pediatric' },
+      { term: '유지장치', en: 'Retainer', def: '교정 완료 후 치아가 원래 위치로 돌아가지 않도록 고정하는 장치. 고정식과 가철식이 있습니다.' },
+    ]},
+    { cat: '보존·근관', items: [
+      { term: '충치', en: 'Dental Caries', def: '구강 세균이 당분을 분해하면서 생성한 산(酸)에 의해 치아 경조직이 파괴되는 질환. 법랑질→상아질→치수 순으로 진행됩니다.', link: '/treatments/cavity' },
+      { term: '레진', en: 'Composite Resin', def: '치아색 복합 레진으로 충치 부위를 수복하는 재료. 심미적이고, 소범위 충치에 가장 많이 사용됩니다.', link: '/treatments/resin' },
+      { term: '인레이', en: 'Inlay', def: '충치 범위가 넓을 때 본을 떠서 맞춤 제작하는 수복물. 치아 교두(꼭대기) 안쪽만 채우면 인레이, 교두까지 덮으면 온레이입니다.', link: '/treatments/inlay' },
+      { term: '크라운', en: 'Crown', def: '치아 전체를 감싸는 보철물. 신경치료 후나 치질이 많이 손상된 치아를 보호하며, 지르코니아·세라믹·PFM 소재가 있습니다.', link: '/treatments/crown' },
+      { term: '신경치료', en: 'Root Canal Treatment', def: '치수(신경·혈관)가 감염·괴사된 경우 감염 조직을 제거하고 근관을 세척·충전하는 시술입니다.', link: '/treatments/root-canal' },
+      { term: '재신경치료', en: 'Retreatment', def: '기존 신경치료가 불완전하거나 재감염된 경우 기존 충전물을 제거하고 다시 소독·충전하는 시술입니다.', link: '/treatments/retreatment' },
+      { term: '치근단절제술', en: 'Apicoectomy', def: '신경치료로 해결되지 않는 치근 끝 염증을 외과적으로 절제하는 수술. 자연치아를 최대한 보존하기 위한 마지막 수단입니다.', link: '/treatments/apicoectomy' },
+      { term: 'MTA', en: 'Mineral Trioxide Aggregate', def: '신경치료에 사용되는 생체 적합성 높은 충전 재료. 우수한 밀봉력과 항균성으로 치근단 수복에 활용됩니다.' },
+      { term: '세렉', en: 'CEREC', def: 'CAD/CAM 기술로 구강스캔→설계→밀링을 당일 완료하는 시스템. 인레이·크라운을 하루 만에 장착할 수 있습니다.' },
+    ]},
+    { cat: '심미·미백', items: [
+      { term: '라미네이트', en: 'Veneer', def: '치아 전면에 0.3~0.5mm 두께의 세라믹을 부착하여 색상·형태·간격을 개선하는 시술입니다.', link: '/treatments/cosmetic' },
+      { term: '지르코니아', en: 'Zirconia', def: '고강도 세라믹 소재. 금속 없이도 높은 강도를 자랑하며, 자연치아와 유사한 색감을 구현합니다. 금속 알레르기 환자에게 적합합니다.' },
+      { term: 'IPS e.max', en: 'IPS e.max', def: '리튬디실리케이트 소재의 고강도 세라믹. 투명도가 높아 앞니 보철과 라미네이트에 널리 사용됩니다.' },
+      { term: '치아미백', en: 'Teeth Whitening', def: '과산화수소 또는 과산화요소로 법랑질 내 착색 물질을 분해하는 시술. 전문가 미백(In-office)과 자가 미백(Home)이 있습니다.', link: '/treatments/whitening' },
+      { term: 'DSD', en: 'Digital Smile Design', def: '디지털 스마일 디자인. 시술 전 최종 결과를 3D로 시뮬레이션하여 환자와 함께 계획을 세우는 기술입니다.' },
+    ]},
+    { cat: '수면·마취', items: [
+      { term: '수면진료', en: 'Conscious Sedation', def: '정맥 내 진정제를 투여하여 반의식 상태에서 치료하는 방법. 불안·공포를 느끼지 않고 치료 과정을 거의 기억하지 못합니다.', link: '/treatments/sedation' },
+      { term: '치과 공포증', en: 'Dental Phobia', def: '치과 치료에 대한 극심한 두려움. 성인의 약 15~20%가 경험하며, 수면진료를 통해 편안한 치료가 가능합니다.' },
+      { term: '무통마취', en: 'Painless Anesthesia', def: '컴퓨터 제어 마취기로 약액 주입 속도·압력을 정밀 조절하여 마취 시 통증을 최소화하는 기술입니다.' },
+      { term: '프로포폴', en: 'Propofol', def: '수면진료에 사용되는 초단시간 작용 정맥마취제. 빠른 유도와 회복이 장점이며, 전문의 감시 하에 투여됩니다.' },
+      { term: '산소포화도', en: 'SpO₂', def: '혈중 산소 농도 수치. 수면진료 중 펄스옥시미터로 실시간 모니터링하여 환자 안전을 확보합니다.' },
+    ]},
+    { cat: '잇몸·외과', items: [
+      { term: '치주질환', en: 'Periodontal Disease', def: '치태·치석에 의해 잇몸 조직과 잇몸뼈가 파괴되는 질환. 치은염(초기)과 치주염(진행)으로 구분됩니다.', link: '/treatments/gum-treatment' },
+      { term: '스케일링', en: 'Scaling', def: '치석과 치태를 제거하는 잇몸 건강 기본 치료. 연 1회 건강보험 적용이 됩니다.', link: '/treatments/scaling' },
+      { term: 'SRP', en: 'Scaling & Root Planing', def: '치근활택술. 잇몸 아래 치석까지 제거하고 치근 표면을 매끈하게 다듬어 세균 부착을 방지합니다.' },
+      { term: '사랑니', en: 'Wisdom Tooth', def: '제3대구치. 매복(뼈 속에 묻힘)되어 주변 치아에 충치·염증을 유발할 수 있어 예방적 발치가 권장됩니다.', link: '/treatments/wisdom-tooth' },
+      { term: '매복치', en: 'Impacted Tooth', def: '잇몸이나 뼈 속에 완전히 또는 부분적으로 묻혀 정상 맹출하지 못한 치아. 수평 매복이 가장 흔합니다.' },
+      { term: '하치조신경', en: 'Inferior Alveolar Nerve', def: '아래턱을 지나는 감각 신경. 사랑니 발치·임플란트 시 손상을 피하기 위해 CBCT로 사전 확인합니다.' },
+      { term: '턱관절 장애', en: 'TMD', def: '악관절 디스크 변위, 근막통증 등으로 인한 개구 장애·관절음·안면 통증. 스플린트, 물리치료 등으로 관리합니다.', link: '/treatments/tmj' },
+      { term: '이갈이', en: 'Bruxism', def: '수면 중 또는 주간에 무의식적으로 이를 가는 습관. 치아 마모, 턱관절 통증을 유발하며, 나이트가드로 보호합니다.', link: '/treatments/bruxism' },
+      { term: '나이트가드', en: 'Night Guard', def: '이갈이·이 악물기 방지용 맞춤형 구강 보호 장치. 취침 시 착용하여 치아와 턱관절을 보호합니다.' },
+    ]},
+    { cat: '보철', items: [
+      { term: '브릿지', en: 'Bridge', def: '빠진 치아 양옆의 건강한 치아를 기둥으로 삼아 인공 치아를 연결하는 고정식 보철물입니다.', link: '/treatments/bridge' },
+      { term: 'PFM', en: 'Porcelain Fused to Metal', def: '금속 위에 도자기(포세린)를 소성한 크라운. 강도와 심미성을 겸비하지만 금속 비침이 있을 수 있습니다.' },
+      { term: '틀니', en: 'Denture', def: '다수의 치아를 상실한 경우 사용하는 가철식(탈착식) 보철물. 전체 틀니와 부분 틀니로 나뉩니다.' },
+    ]},
+    { cat: '예방·기타', items: [
+      { term: '불소도포', en: 'Fluoride Application', def: '치아 표면에 고농도 불소를 도포하여 법랑질을 강화하고 충치를 예방하는 시술. 소아에게 특히 효과적입니다.', link: '/treatments/prevention' },
+      { term: '실란트', en: 'Sealant', def: '어금니 씹는 면의 홈(소와·열구)을 레진으로 메워 충치를 예방하는 시술. 영구 어금니 맹출 후 즉시 적용이 권장됩니다.' },
+      { term: '파노라마', en: 'Panoramic X-ray', def: '턱 전체를 한 장에 촬영하는 치과 기본 방사선 사진. 전반적인 치아·뼈 상태를 한눈에 파악합니다.' },
+      { term: '치태', en: 'Plaque', def: '치아 표면에 형성되는 세균막. 양치질로 제거하지 않으면 48시간 내 치석으로 석회화됩니다.' },
+      { term: '치석', en: 'Calculus', def: '치태가 석회화(굳어진 것)된 것. 칫솔로는 제거 불가하며, 스케일링으로만 제거할 수 있습니다.' },
+    ]},
+  ]
+
+  const totalTerms = terms.reduce((sum, cat) => sum + cat.items.length, 0)
+
   return c.render(
     <>
       {/* Hero */}
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
           <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">치과 백과사전</h1>
-          <p class="text-white/50 text-lg reveal" style="transition-delay:0.6s">치과 진료에 대해 알아두면 좋은 핵심 지식을 정리했습니다.</p>
+          <p class="text-white/50 text-lg reveal" style="transition-delay:0.6s">치과에서 자주 쓰이는 {totalTerms}개 핵심 용어를 쉽게 풀어드립니다.</p>
         </div>
       </section>
 
-      {/* Table of Contents */}
+      {/* Category Index */}
       <section class="section-md bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           <div class="text-center mb-10 reveal">
-            <span class="section-eyebrow text-[#0066FF] mb-3 block">INDEX</span>
-            <h2 class="section-sub-headline text-gray-900">목차</h2>
+            <span class="section-eyebrow text-[#0066FF] mb-3 block">CATEGORIES</span>
+            <h2 class="section-sub-headline text-gray-900">총 {totalTerms}개 용어 · {terms.length}개 분야</h2>
           </div>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 stagger-children">
-            <a href="#sec-implant" class="glass-card px-5 py-4 flex items-center gap-3 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
-              <i class="fa-solid fa-tooth text-[#0066FF]"></i>
-              <span class="font-medium text-gray-700 group-hover:text-[#0066FF] transition-colors text-[0.9rem]">임플란트</span>
-            </a>
-            <a href="#sec-ortho" class="glass-card px-5 py-4 flex items-center gap-3 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
-              <i class="fa-solid fa-teeth text-[#0066FF]"></i>
-              <span class="font-medium text-gray-700 group-hover:text-[#0066FF] transition-colors text-[0.9rem]">치아교정</span>
-            </a>
-            <a href="#sec-conserv" class="glass-card px-5 py-4 flex items-center gap-3 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
-              <i class="fa-solid fa-shield-halved text-[#0066FF]"></i>
-              <span class="font-medium text-gray-700 group-hover:text-[#0066FF] transition-colors text-[0.9rem]">보존·근관치료</span>
-            </a>
-            <a href="#sec-cosmetic" class="glass-card px-5 py-4 flex items-center gap-3 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
-              <i class="fa-solid fa-star text-[#0066FF]"></i>
-              <span class="font-medium text-gray-700 group-hover:text-[#0066FF] transition-colors text-[0.9rem]">심미·미백</span>
-            </a>
-            <a href="#sec-sedation" class="glass-card px-5 py-4 flex items-center gap-3 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
-              <i class="fa-solid fa-bed text-[#0066FF]"></i>
-              <span class="font-medium text-gray-700 group-hover:text-[#0066FF] transition-colors text-[0.9rem]">수면·마취</span>
-            </a>
-            <a href="#sec-perio" class="glass-card px-5 py-4 flex items-center gap-3 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
-              <i class="fa-solid fa-hand-holding-medical text-[#0066FF]"></i>
-              <span class="font-medium text-gray-700 group-hover:text-[#0066FF] transition-colors text-[0.9rem]">잇몸·외과</span>
-            </a>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 stagger-children">
+            {terms.map((cat, i) => (
+              <a href={`#cat-${i}`} class="glass-card px-4 py-3 flex items-center justify-between hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
+                <span class="font-medium text-gray-700 group-hover:text-[#0066FF] transition-colors text-[0.85rem]">{cat.cat}</span>
+                <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{cat.items.length}</span>
+              </a>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 본문 */}
+      {/* Dictionary Body */}
       <section class="section-lg bg-white">
-        <div class="max-w-3xl mx-auto px-5 md:px-8 space-y-16">
-
-          {/* 임플란트 */}
-          <article id="sec-implant" class="scroll-mt-24 reveal" itemscope itemtype="https://schema.org/MedicalWebPage">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-10 h-10 rounded-xl bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-tooth text-[#0066FF]"></i>
+        <div class="max-w-4xl mx-auto px-5 md:px-8">
+          {terms.map((cat, ci) => (
+            <div id={`cat-${ci}`} class="scroll-mt-24 mb-16 reveal">
+              <div class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#0066FF]/10">
+                <span class="text-xs font-bold text-[#0066FF] bg-[#0066FF]/5 px-3 py-1 rounded-full">{cat.cat}</span>
+                <span class="text-xs text-gray-400">{cat.items.length}개 용어</span>
               </div>
-              <h2 class="font-bold text-gray-900 text-xl" itemprop="name">임플란트 (Dental Implant)</h2>
+              <dl class="space-y-5">
+                {cat.items.map((item) => (
+                  <div class="group">
+                    <dt class="flex items-baseline gap-2 mb-1.5">
+                      <span class="font-bold text-gray-900 text-[0.95rem]">{item.term}</span>
+                      <span class="text-xs text-[#0066FF]/60 font-medium">{item.en}</span>
+                    </dt>
+                    <dd class="text-gray-600 text-[0.85rem] leading-[1.9] pl-0">
+                      {item.def}
+                      {item.link && (
+                        <a href={item.link} class="inline-flex items-center gap-1 ml-2 text-xs text-[#0066FF] hover:underline">
+                          자세히 보기 <i class="fa-solid fa-arrow-right text-[0.6rem]"></i>
+                        </a>
+                      )}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
             </div>
-            <div class="text-gray-600 text-[0.9rem] leading-[2] space-y-4" itemprop="text">
-              <p>임플란트는 상실된 자연 치아를 대체하는 인공 치아 시술입니다. 티타늄 소재의 인공 치근(픽스쳐)을 잇몸뼈에 심고, 그 위에 지대주(어버트먼트)와 보철물(크라운)을 연결하는 3단계 구조로 이루어집니다. 잇몸뼈와 티타늄이 결합하는 골유착(Osseointegration) 과정이 핵심이며, 통상 2~6개월이 소요됩니다.</p>
-              <p><strong>전체임플란트</strong>는 다수의 치아를 한꺼번에 회복하는 시술로, All-on-4·All-on-6 공법이 대표적입니다. 최소 4~6개의 픽스쳐로 전악(위턱 또는 아래턱 전체)을 지지하며, 잔존 골량이 부족한 환자도 경사 식립(Tilted Implant)을 통해 뼈이식 없이 진행할 수 있습니다. <strong>즉시로딩(Immediate Loading)</strong>은 수술 당일 임시 보철을 장착해 저작 기능을 즉시 회복하는 기술이며, MUA(Multi-Unit Abutment)를 사용합니다.</p>
-              <p><strong>네비게이션 임플란트</strong>는 CBCT(콘빔CT) 데이터를 기반으로 3D 가이드를 제작해 최소 절개, 최소 출혈로 식립하는 디지털 가이드 수술법입니다. 수술 시간이 단축되고 회복이 빠릅니다. 골이식이 필요한 경우에는 GBR(Guided Bone Regeneration), 상악동거상술(Sinus Lift) 등이 병행될 수 있습니다.</p>
-              <p>임플란트의 수명은 관리에 따라 10~30년 이상 유지됩니다. 성공률은 전세계적으로 95% 이상이며, 시술 후 정기 검진(6개월~1년 주기)과 올바른 구강 위생 관리가 장기 성공의 핵심입니다. 65세 이상 환자의 경우 건강보험이 적용되어 본인 부담금이 크게 줄어듭니다. 당뇨, 골다공증 등 전신질환이 있어도 혈당 조절이 안정적이라면 시술이 가능하며, 사전 혈액검사와 전신 평가를 통해 안전하게 진행합니다.</p>
-              <div class="flex flex-wrap gap-2 mt-4">
-                <a href="/treatments/implant" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">임플란트 진료 안내 →</a>
-                <a href="/treatments/full-implant" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">전체임플란트 →</a>
-                <a href="/treatments/digital-full-arch" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">디지털풀아치 →</a>
-              </div>
-            </div>
-          </article>
-
-          <hr class="border-gray-100" />
-
-          {/* 치아교정 */}
-          <article id="sec-ortho" class="scroll-mt-24 reveal" itemscope itemtype="https://schema.org/MedicalWebPage">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-10 h-10 rounded-xl bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-teeth text-[#0066FF]"></i>
-              </div>
-              <h2 class="font-bold text-gray-900 text-xl" itemprop="name">치아교정 (Orthodontics)</h2>
-            </div>
-            <div class="text-gray-600 text-[0.9rem] leading-[2] space-y-4" itemprop="text">
-              <p>치아교정은 부정교합(Malocclusion)을 바로잡아 심미성과 저작 기능을 개선하는 치료입니다. 교정 장치에 따라 메탈 브래킷, 세라믹(클리피씨), 투명교정(인비절라인)으로 나뉩니다.</p>
-              <p><strong>인비절라인(Invisalign)</strong>은 SmartTrack 소재의 투명 정렬장치(얼라이너)를 2주마다 교체하며 치아를 이동시킵니다. 3D ClinCheck 시뮬레이션으로 교정 전·후 결과를 미리 확인할 수 있고, 탈착이 가능해 식사와 칫솔질에 제약이 없습니다. 디지털 구강스캔(iTero)을 통해 치아 이동 계획을 정밀하게 설계합니다.</p>
-              <p><strong>소아·청소년 교정</strong>은 성장기의 골격 발달을 활용하여 최적의 시기에 개입하는 것이 핵심입니다. 유치에서 영구치로 교환되는 혼합치열기(만 7~12세)가 1차 교정의 적기이며, 악골 성장을 유도하는 기능성 장치와 공간유지장치를 활용합니다.</p>
-              <p>교정 치료 기간은 증상의 난이도에 따라 6개월~2년 6개월이 일반적입니다. <strong>클리피씨(Clippy-C)</strong>는 자가결찰 세라믹 브래킷으로, 치아색과 유사해 심미적이면서도 마찰력이 적어 치아 이동이 효율적입니다. 성인 교정의 경우 치주(잇몸) 상태를 먼저 안정시킨 후 진행하며, 턱관절 문제가 동반된 환자는 교합 분석과 스플린트 치료를 병행합니다.</p>
-              <div class="flex flex-wrap gap-2 mt-4">
-                <a href="/treatments/orthodontics" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">치아교정 안내 →</a>
-                <a href="/treatments/invisalign" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">인비절라인 →</a>
-                <a href="/treatments/pediatric" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">소아치과 →</a>
-              </div>
-            </div>
-          </article>
-
-          <hr class="border-gray-100" />
-
-          {/* 보존/근관치료 */}
-          <article id="sec-conserv" class="scroll-mt-24 reveal" itemscope itemtype="https://schema.org/MedicalWebPage">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-10 h-10 rounded-xl bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-shield-halved text-[#0066FF]"></i>
-              </div>
-              <h2 class="font-bold text-gray-900 text-xl" itemprop="name">보존치료와 신경치료</h2>
-            </div>
-            <div class="text-gray-600 text-[0.9rem] leading-[2] space-y-4" itemprop="text">
-              <p><strong>충치(우식증, Dental Caries)</strong>는 구강 내 세균이 음식물의 당분을 분해하면서 생성하는 산(酸)에 의해 치아 경조직(법랑질→상아질→치수)이 파괴되는 질환입니다. 초기에는 레진 충전으로 간단히 수복하고, 범위가 넓으면 인레이·온레이, 더 진행되면 크라운으로 치아 전체를 감싸 보호합니다.</p>
-              <p><strong>신경치료(근관치료, Root Canal Treatment)</strong>는 충치나 외상으로 치수(신경·혈관 조직)가 감염·괴사된 경우, 감염 조직을 제거하고 근관을 세척·성형한 뒤 생체 적합 재료(MTA, 거타퍼차)로 충전하는 시술입니다. 미세현미경을 사용하면 육안으로 보이지 않는 부근관, 만곡 근관까지 정밀하게 치료할 수 있습니다.</p>
-              <p><strong>재신경치료</strong>는 기존 신경치료가 불완전했거나 재감염된 경우 시행합니다. 이전 충전물을 제거하고 새로 소독·충전하며, 통상적인 방법으로 해결되지 않으면 치근단절제술(Apicoectomy)로 치근 끝의 감염 조직을 외과적으로 제거합니다.</p>
-              <p>보존치료에서 가장 중요한 원칙은 <strong>'자연치아 보존'</strong>입니다. 건강한 치아 조직을 최대한 살리면서 손상된 부분만 정밀하게 제거하고 수복합니다. 세렉(CEREC) 시스템을 활용하면 구강스캔 → CAD 설계 → CAM 밀링을 당일 완료하여 인레이·크라운을 하루 만에 장착할 수 있어 내원 횟수를 줄일 수 있습니다. 자체 기공실이 있는 병원에서는 보철물의 색상·형태를 환자에게 직접 맞춰 조정할 수 있어 만족도가 높습니다.</p>
-              <div class="flex flex-wrap gap-2 mt-4">
-                <a href="/treatments/cavity" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">충치치료 →</a>
-                <a href="/treatments/root-canal" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">신경치료 →</a>
-                <a href="/treatments/retreatment" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">재신경치료 →</a>
-                <a href="/treatments/crown" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">크라운 →</a>
-              </div>
-            </div>
-          </article>
-
-          <hr class="border-gray-100" />
-
-          {/* 심미/미백 */}
-          <article id="sec-cosmetic" class="scroll-mt-24 reveal" itemscope itemtype="https://schema.org/MedicalWebPage">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-10 h-10 rounded-xl bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-star text-[#0066FF]"></i>
-              </div>
-              <h2 class="font-bold text-gray-900 text-xl" itemprop="name">심미치료와 미백</h2>
-            </div>
-            <div class="text-gray-600 text-[0.9rem] leading-[2] space-y-4" itemprop="text">
-              <p><strong>라미네이트(Veneer)</strong>는 치아 전면에 0.3~0.5mm 두께의 세라믹을 부착하여 색상, 형태, 간격을 개선하는 시술입니다. 최소 삭제로 자연치아 구조를 보존하면서 심미적 결과를 얻을 수 있습니다. IPS e.max 등 고강도 리튬디실리케이트 소재를 사용하며, <strong>세렉(CEREC) 원데이</strong> 시스템을 활용하면 CAD/CAM 기술로 당일 보철 제작·장착이 가능합니다.</p>
-              <p><strong>치아미백</strong>은 과산화수소(Hydrogen Peroxide) 또는 과산화요소(Carbamide Peroxide) 성분으로 법랑질 내부의 착색 물질을 산화·분해하는 시술입니다. 전문가 미백(In-office)은 고농도 약제와 광활성화 장비를 사용해 1~2회 방문으로 즉각적인 효과를 얻으며, 자가 미백(Home Bleaching)은 개인 맞춤 트레이에 저농도 약제를 넣어 2~4주간 착용합니다.</p>
-              <p><strong>올세라믹 크라운</strong>은 금속 없이 세라믹만으로 제작한 보철물로, 자연 치아와 거의 동일한 투명도와 색감을 재현합니다. 지르코니아(Zirconia) 소재는 강도가 높아 어금니에도 적합하며, 금속 알레르기가 있는 환자에게 안전합니다. 최근에는 디지털 스마일 디자인(DSD)으로 시술 전 최종 결과를 미리 시뮬레이션하여 환자와 함께 계획을 세울 수 있습니다.</p>
-              <div class="flex flex-wrap gap-2 mt-4">
-                <a href="/treatments/cosmetic" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">심미치료 →</a>
-                <a href="/treatments/whitening" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">미백 →</a>
-              </div>
-            </div>
-          </article>
-
-          <hr class="border-gray-100" />
-
-          {/* 수면진료/마취 */}
-          <article id="sec-sedation" class="scroll-mt-24 reveal" itemscope itemtype="https://schema.org/MedicalWebPage">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-10 h-10 rounded-xl bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-bed text-[#0066FF]"></i>
-              </div>
-              <h2 class="font-bold text-gray-900 text-xl" itemprop="name">수면진료와 무통마취</h2>
-            </div>
-            <div class="text-gray-600 text-[0.9rem] leading-[2] space-y-4" itemprop="text">
-              <p><strong>수면진료(의식하진정법, Conscious Sedation)</strong>는 정맥 내 진정제(미다졸람, 프로포폴 등)를 투여하여 반의식 상태에서 치과 치료를 진행하는 방법입니다. 환자는 의료진의 지시에 반응할 수 있지만 불안과 공포를 느끼지 않으며, 치료 과정을 거의 기억하지 못합니다. 생체 징후(혈압, 심박수, 산소포화도)를 실시간 모니터링하며, 치과 공포증(Dental Phobia) 환자나 장시간 수술에 적용됩니다.</p>
-              <p><strong>무통마취</strong>는 컴퓨터 제어 마취기(Computer-Controlled Local Anesthesia)를 사용하여 약액 주입 속도와 압력을 정밀하게 조절함으로써 마취 시 통증을 최소화합니다. 표면마취 후 극세침(33G)으로 진행하기 때문에 바늘이 들어가는 순간의 찌릿한 통증도 크게 줄어듭니다.</p>
-              <p>수면진료 후에는 약물 효과가 완전히 소실될 때까지(보통 30분~1시간) 회복실에서 안정을 취합니다. 시술 당일은 자가 운전이 불가하므로 보호자 동반이 권장됩니다. 수면진료는 치과 공포증 외에도 구역반사가 심한 환자, 장시간 소요되는 임플란트·발치·교정 시술에 폭넓게 적용됩니다. 어린이의 경우에는 소량의 진정제로 안전하게 진행하며, 모든 과정에서 산소포화도와 심전도를 실시간 모니터링합니다.</p>
-              <div class="flex flex-wrap gap-2 mt-4">
-                <a href="/treatments/sedation" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">수면진료 →</a>
-              </div>
-            </div>
-          </article>
-
-          <hr class="border-gray-100" />
-
-          {/* 잇몸/외과 */}
-          <article id="sec-perio" class="scroll-mt-24 reveal" itemscope itemtype="https://schema.org/MedicalWebPage">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-10 h-10 rounded-xl bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0">
-                <i class="fa-solid fa-hand-holding-medical text-[#0066FF]"></i>
-              </div>
-              <h2 class="font-bold text-gray-900 text-xl" itemprop="name">잇몸치료와 구강외과</h2>
-            </div>
-            <div class="text-gray-600 text-[0.9rem] leading-[2] space-y-4" itemprop="text">
-              <p><strong>치주질환(잇몸병, Periodontal Disease)</strong>은 치태(Plaque)와 치석(Calculus)에 의해 잇몸 조직과 잇몸뼈가 파괴되는 질환입니다. 초기에는 스케일링과 치근활택술(SRP: Scaling and Root Planing)로 관리하고, 진행된 경우 치주소파술이나 치주 판막수술을 시행합니다. 6개월마다 정기 스케일링이 예방의 핵심입니다.</p>
-              <p><strong>사랑니 발치</strong>는 제3대구치가 매복(Impacted)되어 주변 치아에 충치, 잇몸 염증, 치아 흡수 등을 유발할 때 시행합니다. 파노라마·CBCT 촬영으로 하치조신경(IAN)과의 거리를 사전에 확인하며, 완전 매복·수평 매복의 경우 치조골 삭제 후 분할 발치합니다.</p>
-              <p><strong>턱관절 장애(TMD)</strong>는 악관절 디스크 변위, 근막통증 증후군 등으로 인한 개구 장애, 관절음, 안면 통증을 포함합니다. 교합 안정 장치(스플린트), 물리치료, 행동 교정 등 보존적 치료가 우선이며, 이갈이(Bruxism)에는 나이트가드를 처방합니다.</p>
-              <p>잇몸 건강은 전신 건강과 밀접한 관련이 있습니다. 치주질환을 방치하면 심혈관질환, 당뇨 악화, 조산 위험 증가 등 전신 합병증으로 이어질 수 있습니다. 정기 스케일링(연 1~2회)은 건강보험이 적용되므로 비용 부담이 적으며, 치실·치간 칫솔·구강세정기를 활용한 일상적인 자가 관리가 치주질환 예방의 기본입니다. 사랑니는 20세 전후에 CBCT 촬영으로 매복 여부와 신경 위치를 확인한 뒤 적절한 시기에 발치하는 것이 합병증을 줄이는 최선의 방법입니다.</p>
-              <div class="flex flex-wrap gap-2 mt-4">
-                <a href="/treatments/scaling" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">스케일링 →</a>
-                <a href="/treatments/gum-treatment" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">잇몸치료 →</a>
-                <a href="/treatments/wisdom-tooth" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">사랑니발치 →</a>
-                <a href="/treatments/tmj" class="text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full hover:bg-[#0066FF]/10 transition">턱관절 →</a>
-              </div>
-            </div>
-          </article>
-
+          ))}
         </div>
       </section>
 
@@ -1454,8 +1404,8 @@ pageRoutes.get('/encyclopedia', (c) => {
       </section>
     </>,
     {
-      title: '치과 백과사전 | 서울365치과',
-      description: '임플란트, 치아교정, 충치, 신경치료, 심미치료, 수면진료, 잇몸치료 등 치과 진료에 대한 종합 백과사전. 서울365치과가 쉽게 설명합니다.',
+      title: '치과 백과사전 | 서울365치과 — 치과 용어 사전',
+      description: `치과에서 자주 쓰이는 ${totalTerms}개 핵심 용어를 쉽게 풀어드립니다. 임플란트, 교정, 충치, 신경치료, 심미, 수면진료, 잇몸치료 등 치과 용어 사전. 서울365치과.`,
       canonical: 'https://seoul365dc.kr/encyclopedia',
       jsonLd: [
         {
@@ -1470,7 +1420,7 @@ pageRoutes.get('/encyclopedia', (c) => {
           "@context": "https://schema.org",
           "@type": "MedicalWebPage",
           "name": "치과 백과사전",
-          "description": "임플란트, 치아교정, 충치, 신경치료, 심미치료, 수면진료, 잇몸치료 등 치과 진료에 대한 종합 백과사전.",
+          "description": `치과에서 자주 쓰이는 ${totalTerms}개 핵심 용어를 쉽게 풀어드립니다.`,
           "url": "https://seoul365dc.kr/encyclopedia",
           "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
           "about": { "@id": "https://seoul365dc.kr/#dentist" },
@@ -1478,7 +1428,7 @@ pageRoutes.get('/encyclopedia', (c) => {
           "inLanguage": "ko-KR",
           "lastReviewed": new Date().toISOString().split('T')[0],
           "reviewedBy": { "@type": "Physician", "name": "박준규", "worksFor": { "@id": "https://seoul365dc.kr/#dentist" } },
-          "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", "article"] }
+          "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", "dt"] }
         }
       ]
     }
