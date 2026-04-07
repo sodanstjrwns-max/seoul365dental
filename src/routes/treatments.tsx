@@ -46,6 +46,20 @@ treatmentRoutes.get('/treatments', (c) => {
           ))}
         </div>
       </section>
+
+      {/* 백과사전 링크 */}
+      <section class="section-md bg-white">
+        <div class="max-w-2xl mx-auto px-5 md:px-8 text-center reveal">
+          <a href="/encyclopedia" class="glass-card p-8 block group hover:border-[#0066FF]/30 transition-all" data-cursor-hover>
+            <i class="fa-solid fa-book-medical text-[#0066FF] text-2xl mb-4"></i>
+            <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-[#0066FF] transition-colors">치과 백과사전</h3>
+            <p class="text-gray-400 text-sm">임플란트, 교정, 충치, 신경치료 등 치과 진료에 대한 핵심 지식을 한눈에 확인하세요.</p>
+            <span class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-medium mt-4 group-hover:gap-2.5 transition-all">
+              자세히 보기 <i class="fa-solid fa-arrow-right text-xs"></i>
+            </span>
+          </a>
+        </div>
+      </section>
     </>,
     {
       title: '전체 진료 안내 | 서울365치과 인천 구월동',
