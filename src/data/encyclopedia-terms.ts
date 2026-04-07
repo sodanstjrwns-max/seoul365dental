@@ -1,0 +1,263 @@
+// 치과 백과사전 용어 데이터 — 약 200개 용어, 12개 카테고리
+export interface TermItem {
+  term: string
+  en: string
+  def: string
+  link?: string
+}
+export interface TermCategory {
+  cat: string
+  items: TermItem[]
+}
+
+export const terms: TermCategory[] = [
+  // ──── 1. 임플란트 (20) ────
+  { cat: '임플란트', items: [
+    { term: '임플란트', en: 'Dental Implant', def: '상실된 치아를 대체하는 인공 치아. 티타늄 픽스쳐를 잇몸뼈에 식립하고, 지대주와 크라운을 연결하는 3단계 구조입니다.', link: '/treatments/implant' },
+    { term: '픽스쳐', en: 'Fixture', def: '잇몸뼈에 심는 나사 모양의 티타늄 인공 치근. 뼈와 결합(골유착)하여 보철물을 지지합니다.' },
+    { term: '골유착', en: 'Osseointegration', def: '티타늄 픽스쳐와 잇몸뼈가 결합하는 과정. 통상 2~6개월 소요되며, 임플란트 성공의 핵심 단계입니다.' },
+    { term: '어버트먼트', en: 'Abutment', def: '픽스쳐와 크라운을 연결하는 중간 구조물(지대주). 각도와 높이를 조절하여 보철물이 자연스럽게 안착하도록 합니다.' },
+    { term: '전체임플란트', en: 'Full-Arch Implant', def: '위턱 또는 아래턱 전체를 한 번에 회복하는 시술. All-on-4, All-on-6 공법으로 최소 4~6개 픽스쳐로 전악을 지지합니다.', link: '/treatments/full-implant' },
+    { term: 'All-on-4', en: 'All-on-4', def: '4개의 임플란트로 전악 보철을 지지하는 공법. 후방 픽스쳐를 경사 식립하여 골이식 없이 진행할 수 있습니다.' },
+    { term: '즉시로딩', en: 'Immediate Loading', def: '임플란트 수술 당일 임시 보철을 장착하여 저작 기능을 즉시 회복하는 기술. MUA를 사용합니다.' },
+    { term: 'MUA', en: 'Multi-Unit Abutment', def: '즉시로딩 시 사용하는 특수 지대주. 여러 임플란트를 하나의 보철물로 연결할 때 각도를 보정합니다.' },
+    { term: '네비게이션 임플란트', en: 'Guided Surgery', def: 'CBCT 데이터로 3D 가이드를 제작해 최소 절개·최소 출혈로 식립하는 디지털 수술법입니다.' },
+    { term: 'GBR', en: 'Guided Bone Regeneration', def: '골이식술. 잇몸뼈가 부족한 부위에 골이식재와 차폐막을 사용하여 뼈를 재생시키는 시술입니다.' },
+    { term: '상악동거상술', en: 'Sinus Lift', def: '윗턱 어금니 부위 뼈가 부족할 때 상악동 바닥을 들어 올려 골이식하는 수술입니다.' },
+    { term: 'CBCT', en: 'Cone Beam CT', def: '치과 전용 3차원 콘빔 CT. 일반 X-ray보다 정밀하게 뼈의 양과 신경 위치를 파악합니다.' },
+    { term: '디지털풀아치', en: 'Digital Full-Arch', def: '디지털 구강스캔과 CAD/CAM으로 설계·제작하는 전악 임플란트 보철. 정밀도가 높고 적합도가 우수합니다.', link: '/treatments/digital-full-arch' },
+    { term: '경사 식립', en: 'Tilted Implant', def: '잔존 골량이 부족한 부위에서 픽스쳐를 비스듬히 식립하는 기법. 뼈이식 없이 전체임플란트를 가능하게 합니다.' },
+    { term: '임시 보철', en: 'Provisional Prosthesis', def: '최종 보철 완성 전 임시로 장착하는 보철. 심미성과 저작 기능을 유지하며 잇몸 형태를 다듬습니다.' },
+    { term: '차폐막', en: 'Membrane', def: 'GBR 시 골이식재 위에 덮어 연조직 침투를 차단하고 뼈 재생을 유도하는 생체 적합 막입니다.' },
+    { term: '골이식재', en: 'Bone Graft Material', def: '자가골·동종골·이종골·합성골 등을 사용하여 부족한 잇몸뼈를 보충하는 이식 재료입니다.' },
+    { term: '힐링 어버트먼트', en: 'Healing Abutment', def: '픽스쳐 식립 후 잇몸 치유 기간 동안 장착하는 임시 지대주. 잇몸이 올바른 형태로 회복되도록 유도합니다.' },
+    { term: '초기 고정력', en: 'Primary Stability', def: '임플란트 식립 직후 뼈에 기계적으로 고정되는 힘. 35Ncm 이상이면 즉시로딩이 가능한 수준입니다.' },
+    { term: '임플란트 주위염', en: 'Peri-implantitis', def: '임플란트 주변 잇몸과 뼈에 발생하는 염증. 자연 치주염과 유사하며, 방치 시 임플란트 탈락 원인이 됩니다.' },
+    { term: '발치 후 즉시 식립', en: 'Immediate Placement', def: '자연 치아 발치 직후 같은 부위에 임플란트를 바로 식립하는 방법. 치료 기간을 대폭 단축합니다.' },
+    { term: '오스템', en: 'Osstem', def: '국산 임플란트 대표 브랜드. 세계 시장 점유율 상위권이며 가성비와 임상 데이터가 풍부합니다.' },
+  ]},
+
+  // ──── 2. 교정 (18) ────
+  { cat: '교정', items: [
+    { term: '부정교합', en: 'Malocclusion', def: '윗니와 아랫니가 올바르게 맞물리지 않는 상태. 1급·2급·3급으로 분류하며 심미성과 저작 기능 모두에 영향을 줍니다.', link: '/treatments/orthodontics' },
+    { term: '인비절라인', en: 'Invisalign', def: 'SmartTrack 소재의 투명 얼라이너를 2주마다 교체하며 치아를 이동시키는 교정법. 탈착 가능하여 생활이 편리합니다.', link: '/treatments/invisalign' },
+    { term: '클리피씨', en: 'Clippy-C', def: '자가결찰 세라믹 브래킷. 치아색과 유사하여 심미적이며, 마찰력이 낮아 치아 이동이 효율적입니다.' },
+    { term: 'ClinCheck', en: 'ClinCheck', def: '인비절라인 전용 3D 시뮬레이션 소프트웨어. 교정 전 치아 이동 과정과 최종 결과를 미리 확인할 수 있습니다.' },
+    { term: 'iTero', en: 'iTero Scanner', def: '디지털 구강 스캐너. 인상재 없이 구강 내부를 3D 스캔하여 정밀한 교정 계획을 수립합니다.' },
+    { term: '혼합치열기', en: 'Mixed Dentition', def: '유치와 영구치가 함께 존재하는 만 7~12세 시기. 소아교정의 최적 개입 시기입니다.', link: '/treatments/pediatric' },
+    { term: '유지장치', en: 'Retainer', def: '교정 완료 후 치아가 원래 위치로 돌아가지 않도록 고정하는 장치. 고정식과 가철식이 있습니다.' },
+    { term: '메탈 브래킷', en: 'Metal Bracket', def: '스테인리스 스틸 소재의 교정 장치. 가장 전통적인 방식으로 교정력이 강하고 비용이 경제적입니다.' },
+    { term: '교합', en: 'Occlusion', def: '윗니와 아랫니가 맞닿는 상태. 불안정하면 턱관절 장애, 두통, 치아 마모 등이 발생할 수 있습니다.' },
+    { term: '공간유지장치', en: 'Space Maintainer', def: '유치가 조기 탈락했을 때 영구치가 나올 공간을 확보하기 위해 장착하는 소아용 장치입니다.' },
+    { term: '설측교정', en: 'Lingual Orthodontics', def: '치아 안쪽(설면)에 브래킷을 부착하는 교정. 외부에서 보이지 않아 심미성이 우수하지만 적응 기간이 필요합니다.' },
+    { term: '악교정 수술', en: 'Orthognathic Surgery', def: '심한 골격성 부정교합을 교정하기 위해 턱뼈를 절골·이동시키는 외과적 수술입니다.' },
+    { term: '미니스크류', en: 'Mini-Screw', def: '교정용 임시 앵커리지 장치(TAD). 잇몸뼈에 소형 나사를 식립하여 치아 이동의 고정원으로 사용합니다.' },
+    { term: '과개교합', en: 'Deep Bite', def: '윗앞니가 아랫앞니를 과도하게 덮는 교합. 아래 잇몸 손상이나 턱관절 문제를 유발할 수 있습니다.' },
+    { term: '반대교합', en: 'Crossbite', def: '아랫니가 윗니보다 앞으로 나온 상태(일명 주걱턱). 성장기에 조기 교정이 중요합니다.' },
+    { term: '개방교합', en: 'Open Bite', def: '윗니와 아랫니가 맞닿지 않아 앞쪽이 열린 교합. 혀 습관이 원인인 경우가 많습니다.' },
+    { term: '교정용 와이어', en: 'Archwire', def: '브래킷에 끼워 치아 이동을 유도하는 금속 와이어. NiTi(니켈-티타늄) 합금이 주로 사용됩니다.' },
+    { term: '어태치먼트', en: 'Attachment', def: '인비절라인 교정 시 치아 표면에 부착하는 작은 레진 돌기. 얼라이너의 교정력 전달을 보조합니다.' },
+    { term: '급속교정', en: 'Accelerated Orthodontics', def: '미세 천공(Micro-Osteoperforation) 등으로 치조골 대사를 활성화하여 교정 기간을 30~50% 단축하는 기법입니다.' },
+    { term: '투명교정', en: 'Clear Aligner', def: '투명한 플라스틱 장치로 치아를 이동시키는 교정법의 총칭. 인비절라인 외 다양한 브랜드가 있습니다.' },
+  ]},
+
+  // ──── 3. 보존·근관 (18) ────
+  { cat: '보존·근관', items: [
+    { term: '충치', en: 'Dental Caries', def: '구강 세균이 당분을 분해하면서 생성한 산에 의해 치아 경조직이 파괴되는 질환입니다.', link: '/treatments/cavity' },
+    { term: '레진', en: 'Composite Resin', def: '치아색 복합 레진으로 충치 부위를 수복하는 재료. 심미적이고 소범위 충치에 가장 많이 사용됩니다.', link: '/treatments/resin' },
+    { term: '인레이', en: 'Inlay', def: '충치 범위가 넓을 때 맞춤 제작하는 수복물. 교두 안쪽만 채우면 인레이, 교두까지 덮으면 온레이입니다.', link: '/treatments/inlay' },
+    { term: '온레이', en: 'Onlay', def: '인레이보다 넓은 범위를 덮는 수복물. 치아 교두 하나 이상을 포함하며, 크라운보다 치질 삭제량이 적습니다.' },
+    { term: '크라운', en: 'Crown', def: '치아 전체를 감싸는 보철물. 신경치료 후나 치질이 많이 손상된 치아를 보호합니다.', link: '/treatments/crown' },
+    { term: '신경치료', en: 'Root Canal Treatment', def: '치수가 감염·괴사된 경우 감염 조직을 제거하고 근관을 세척·충전하는 시술입니다.', link: '/treatments/root-canal' },
+    { term: '재신경치료', en: 'Retreatment', def: '기존 신경치료가 불완전하거나 재감염된 경우 기존 충전물을 제거하고 다시 소독·충전합니다.', link: '/treatments/retreatment' },
+    { term: '치근단절제술', en: 'Apicoectomy', def: '신경치료로 해결되지 않는 치근 끝 염증을 외과적으로 절제하는 수술입니다.', link: '/treatments/apicoectomy' },
+    { term: 'MTA', en: 'Mineral Trioxide Aggregate', def: '신경치료에 사용되는 생체 적합성 높은 충전 재료. 우수한 밀봉력과 항균성을 가집니다.' },
+    { term: '세렉', en: 'CEREC', def: 'CAD/CAM 기술로 구강스캔→설계→밀링을 당일 완료하는 시스템. 하루 만에 보철을 장착할 수 있습니다.' },
+    { term: '법랑질', en: 'Enamel', def: '치아 가장 바깥을 덮는 흰색 경조직. 인체에서 가장 단단한 조직이지만 산에 약해 충치가 시작됩니다.' },
+    { term: '상아질', en: 'Dentin', def: '법랑질 아래의 황색 경조직. 충치가 상아질에 도달하면 시린 증상이 나타납니다.' },
+    { term: '치수', en: 'Dental Pulp', def: '치아 내부의 신경·혈관 조직. 충치가 치수까지 진행되면 극심한 통증이 발생합니다.' },
+    { term: '거타퍼차', en: 'Gutta-Percha', def: '신경치료 시 소독한 근관을 밀봉하는 고무 계열 충전재. 생체 적합성이 높습니다.' },
+    { term: '근관', en: 'Root Canal', def: '치아 뿌리 내부의 관(管). 신경과 혈관이 지나는 통로이며, 감염 시 신경치료의 대상이 됩니다.' },
+    { term: '러버댐', en: 'Rubber Dam', def: '치료 부위만 노출시키고 나머지를 차단하는 고무막. 타액 오염을 방지하여 신경치료 성공률을 높입니다.' },
+    { term: 'GIC', en: 'Glass Ionomer Cement', def: '글래스아이오노머 시멘트. 불소를 방출하여 2차 충치를 예방하며, 유치 수복이나 라이닝에 사용됩니다.' },
+    { term: '와동', en: 'Cavity Preparation', def: '충치 부위를 삭제하고 수복물이 잘 유지되도록 형태를 만드는 과정입니다.' },
+    { term: '치수 복조술', en: 'Pulp Capping', def: '치수가 노출되었을 때 MTA 등을 덮어 신경을 살리는 시술. 신경치료를 피할 수 있는 보존적 방법입니다.' },
+  ]},
+
+  // ──── 4. 심미·미백 (14) ────
+  { cat: '심미·미백', items: [
+    { term: '라미네이트', en: 'Veneer', def: '치아 전면에 0.3~0.5mm 두께의 세라믹을 부착하여 색상·형태·간격을 개선하는 시술입니다.', link: '/treatments/cosmetic' },
+    { term: '지르코니아', en: 'Zirconia', def: '고강도 세라믹 소재. 금속 없이도 높은 강도를 자랑하며 자연치아와 유사한 색감을 구현합니다.' },
+    { term: 'IPS e.max', en: 'IPS e.max', def: '리튬디실리케이트 소재의 고강도 세라믹. 투명도가 높아 앞니 보철과 라미네이트에 널리 사용됩니다.' },
+    { term: '치아미백', en: 'Teeth Whitening', def: '과산화수소로 법랑질 내 착색 물질을 분해하는 시술. 전문가 미백과 자가 미백이 있습니다.', link: '/treatments/whitening' },
+    { term: 'DSD', en: 'Digital Smile Design', def: '시술 전 최종 결과를 3D로 시뮬레이션하여 환자와 함께 스마일 라인을 계획하는 기술입니다.' },
+    { term: '올세라믹', en: 'All-Ceramic', def: '금속 프레임 없이 세라믹만으로 제작한 크라운·브릿지. 자연치아 같은 투명도를 재현합니다.' },
+    { term: '과산화수소', en: 'Hydrogen Peroxide', def: '미백 시술의 주요 활성 성분. 법랑질 내 착색 분자를 산화·분해하여 치아를 밝게 만듭니다.' },
+    { term: '잇몸 성형', en: 'Gum Contouring', def: '거미 스마일 등 불균형한 잇몸 라인을 레이저나 전기 소작으로 다듬어 스마일 라인을 개선합니다.' },
+    { term: '레진 본딩', en: 'Resin Bonding', def: '복합 레진을 직접 치아에 적층하여 형태·색상을 수정하는 시술. 최소 삭제로 당일 완료 가능합니다.' },
+    { term: '쉐이드 가이드', en: 'Shade Guide', def: '치아 색상을 비교·선정하는 표준 색상표. 보철·미백 시 원하는 색조를 정확히 재현하는 데 사용합니다.' },
+    { term: '전문가 미백', en: 'In-Office Whitening', def: '병원에서 고농도 미백제와 LED/레이저를 사용하는 1회 시술. 약 1시간으로 즉각적인 변화를 확인합니다.' },
+    { term: '자가 미백', en: 'Home Whitening', def: '맞춤 트레이에 저농도 미백젤을 넣어 자택에서 2~4주간 시행하는 미백. 점진적이고 자극이 적습니다.' },
+    { term: '스마일 라인', en: 'Smile Line', def: '웃을 때 보이는 윗니 끝과 아랫입술의 곡선 관계. 심미 치료의 핵심 기준선입니다.' },
+    { term: '치아 다이아몬드', en: 'Tooth Gem', def: '치아 표면에 부착하는 작은 보석 장식. 법랑질 손상 없이 접착제로 고정하며 원할 때 제거 가능합니다.' },
+    { term: '듀얼 미백', en: 'Dual Whitening', def: '전문가 미백과 자가 미백을 병행하는 방법. 단독 시행보다 미백 효과가 우수하고 오래 지속됩니다.' },
+  ]},
+
+  // ──── 5. 수면·마취 (12) ────
+  { cat: '수면·마취', items: [
+    { term: '수면진료', en: 'Conscious Sedation', def: '정맥 내 진정제를 투여하여 반의식 상태에서 치료하는 방법. 불안 없이 치료를 받을 수 있습니다.', link: '/treatments/sedation' },
+    { term: '치과 공포증', en: 'Dental Phobia', def: '치과 치료에 대한 극심한 두려움. 성인의 약 15~20%가 경험하며 수면진료로 극복할 수 있습니다.' },
+    { term: '무통마취', en: 'Painless Anesthesia', def: '컴퓨터 제어 마취기로 약액 주입 속도·압력을 정밀 조절하여 마취 시 통증을 최소화합니다.' },
+    { term: '프로포폴', en: 'Propofol', def: '수면진료에 사용되는 초단시간 작용 정맥마취제. 빠른 유도와 회복이 장점입니다.' },
+    { term: '산소포화도', en: 'SpO₂', def: '혈중 산소 농도 수치. 수면진료 중 펄스옥시미터로 실시간 모니터링합니다.' },
+    { term: '미다졸람', en: 'Midazolam', def: '벤조디아제핀 계열 진정제. 불안 해소와 건망 효과가 있어 시술 기억을 최소화합니다.' },
+    { term: '표면마취', en: 'Topical Anesthesia', def: '주사 전 잇몸 점막에 도포하는 국소마취 젤. 바늘이 들어가는 순간의 찌릿함을 줄여줍니다.' },
+    { term: '구역반사', en: 'Gag Reflex', def: '구강 내 이물감에 의한 반사적 구역질. 수면진료를 병행하면 편안하게 치료할 수 있습니다.' },
+    { term: '침윤마취', en: 'Infiltration Anesthesia', def: '치료 부위 잇몸에 직접 마취액을 주입하는 가장 일반적인 국소마취법입니다.' },
+    { term: '전달마취', en: 'Nerve Block', def: '신경 줄기 근처에 마취액을 주입하여 넓은 영역을 마취하는 방법. 아래턱 치료에 주로 사용됩니다.' },
+    { term: '아산화질소', en: 'Nitrous Oxide', def: '웃음가스(N₂O). 흡입 진정법으로 가벼운 불안을 해소하며, 소아와 경미한 공포 환자에게 적용합니다.' },
+    { term: '펄스옥시미터', en: 'Pulse Oximeter', def: '손가락에 장착하여 산소포화도와 맥박을 실시간 측정하는 모니터링 기기입니다.' },
+    { term: 'BIS 모니터', en: 'BIS Monitor', def: '뇌파(EEG)를 분석하여 진정 깊이를 수치화하는 장비. 수면진료 중 과진정·각성을 실시간 관리합니다.' },
+  ]},
+
+  // ──── 6. 잇몸·외과 (18) ────
+  { cat: '잇몸·외과', items: [
+    { term: '치주질환', en: 'Periodontal Disease', def: '치태·치석에 의해 잇몸과 잇몸뼈가 파괴되는 질환. 치은염과 치주염으로 구분됩니다.', link: '/treatments/gum-treatment' },
+    { term: '스케일링', en: 'Scaling', def: '치석과 치태를 제거하는 기본 잇몸 치료. 연 1회 건강보험 적용됩니다.', link: '/treatments/scaling' },
+    { term: 'SRP', en: 'Scaling & Root Planing', def: '치근활택술. 잇몸 아래 치석까지 제거하고 치근 표면을 매끈하게 다듬어 세균 부착을 방지합니다.' },
+    { term: '사랑니', en: 'Wisdom Tooth', def: '제3대구치. 매복되어 주변에 충치·염증을 유발할 수 있어 예방적 발치가 권장됩니다.', link: '/treatments/wisdom-tooth' },
+    { term: '매복치', en: 'Impacted Tooth', def: '잇몸이나 뼈 속에 완전히 또는 부분적으로 묻혀 정상 맹출하지 못한 치아입니다.' },
+    { term: '하치조신경', en: 'Inferior Alveolar Nerve', def: '아래턱을 지나는 감각 신경. 사랑니 발치·임플란트 시 CBCT로 위치를 사전 확인합니다.' },
+    { term: '턱관절 장애', en: 'TMD', def: '악관절 디스크 변위, 근막통증 등으로 인한 개구 장애·관절음·안면 통증입니다.', link: '/treatments/tmj' },
+    { term: '이갈이', en: 'Bruxism', def: '무의식적으로 이를 가는 습관. 치아 마모와 턱관절 통증을 유발하며 나이트가드로 보호합니다.', link: '/treatments/bruxism' },
+    { term: '나이트가드', en: 'Night Guard', def: '이갈이·이 악물기 방지용 맞춤형 구강 보호 장치. 취침 시 착용합니다.' },
+    { term: '치은염', en: 'Gingivitis', def: '잇몸에만 국한된 초기 염증. 양치 시 출혈이 주증상이며 스케일링으로 회복 가능합니다.' },
+    { term: '치주염', en: 'Periodontitis', def: '치은염이 진행되어 잇몸뼈까지 파괴된 상태. 치아 동요가 나타나며 적극적인 치료가 필요합니다.' },
+    { term: '분할 발치', en: 'Sectional Extraction', def: '매복 사랑니를 통째로 빼기 어려울 때 치아를 여러 조각으로 나누어 제거하는 외과적 발치법입니다.' },
+    { term: '치조골', en: 'Alveolar Bone', def: '치아를 둘러싸고 지지하는 턱뼈. 치주질환이나 발치 후 흡수되며, 임플란트 식립의 기반입니다.' },
+    { term: '치주낭', en: 'Periodontal Pocket', def: '치아와 잇몸 사이가 병적으로 깊어진 공간. 깊이 4mm 이상이면 치주질환 진행으로 판단합니다.' },
+    { term: '플랩 수술', en: 'Flap Surgery', def: '잇몸을 절개·들어올려 뼈 표면의 치석과 염증 조직을 직접 제거하는 치주 외과 수술입니다.' },
+    { term: '치은이식술', en: 'Gingival Graft', def: '퇴축된 잇몸을 구개(입천장) 조직으로 이식하여 노출된 치근을 덮는 수술입니다.' },
+    { term: '구내염', en: 'Stomatitis', def: '구강 점막에 발생하는 염증·궤양. 아프타성 구내염이 가장 흔하며 통상 1~2주 내 자연 치유됩니다.' },
+    { term: '건조소켓', en: 'Dry Socket', def: '발치 후 혈병(피딱지)이 탈락하여 뼈가 노출되는 합병증. 극심한 통증이 특징이며 추가 처치가 필요합니다.' },
+    { term: '발치', en: 'Extraction', def: '치아를 뽑는 시술. 단순 발치와 외과적 발치(절개·골삭제)로 나뉘며, 잔존 치근 제거도 포함합니다.' },
+  ]},
+
+  // ──── 7. 보철 (16) ────
+  { cat: '보철', items: [
+    { term: '브릿지', en: 'Bridge', def: '빠진 치아 양옆의 건강한 치아를 기둥으로 삼아 인공 치아를 연결하는 고정식 보철물입니다.', link: '/treatments/bridge' },
+    { term: 'PFM', en: 'Porcelain Fused to Metal', def: '금속 위에 도자기를 소성한 크라운. 강도와 심미성을 겸비하지만 금속 비침이 있을 수 있습니다.' },
+    { term: '틀니', en: 'Denture', def: '다수의 치아를 상실한 경우 사용하는 가철식 보철물. 전체 틀니와 부분 틀니로 나뉩니다.' },
+    { term: '임플란트 오버덴쳐', en: 'Implant Overdenture', def: '2~4개 임플란트로 틀니를 고정하는 방식. 유지력이 뛰어나고 저작 효율이 크게 향상됩니다.' },
+    { term: '자체 기공실', en: 'In-house Lab', def: '병원 내 보철 제작 시설. 기공사와 직접 소통하여 색상·형태를 정밀 맞춤하고 제작 기간을 단축합니다.' },
+    { term: '금 크라운', en: 'Gold Crown', def: '금합금으로 제작한 크라운. 생체 적합성과 내구성이 우수하며 어금니에 많이 사용됩니다.' },
+    { term: '부분 틀니', en: 'Partial Denture', def: '일부 치아만 상실한 경우 사용하는 가철식 보철. 클래스프(걸쇠)로 잔존 치아에 고정합니다.' },
+    { term: '총의치', en: 'Complete Denture', def: '한 악궁의 모든 치아를 상실한 경우 사용하는 전체 틀니. 흡착력으로 유지됩니다.' },
+    { term: 'CAD/CAM', en: 'CAD/CAM', def: '컴퓨터 설계(CAD)와 컴퓨터 가공(CAM)으로 보철물을 제작하는 디지털 기술입니다.' },
+    { term: '디지털 인상', en: 'Digital Impression', def: '구강 스캐너로 3D 데이터를 채득하는 방법. 기존 인상재(본뜨기)보다 정확하고 환자가 편안합니다.' },
+    { term: '포스트', en: 'Post', def: '신경치료 후 치질이 많이 남지 않은 치아에 삽입하는 기둥. 크라운을 지지하는 보강재 역할을 합니다.' },
+    { term: '클래스프', en: 'Clasp', def: '부분 틀니를 잔존 치아에 고정하는 금속 걸쇠. 탄성으로 유지력을 제공합니다.' },
+    { term: '코핑', en: 'Coping', def: '크라운 내부의 핵심 구조물(내관). 지르코니아·금속 등으로 제작하며 그 위에 도재를 축성합니다.' },
+    { term: '프로비져널', en: 'Provisional Crown', def: '최종 보철 장착 전 임시로 사용하는 크라운. 심미·기능·잇몸 안정화 역할을 합니다.' },
+    { term: '바이트', en: 'Bite Registration', def: '윗니와 아랫니의 교합 관계를 기록하는 과정. 보철물이 정확히 맞물리도록 하는 데 필수적입니다.' },
+    { term: '매립형 의치', en: 'Implant-Retained Denture', def: '임플란트에 볼 어태치먼트나 바 구조물을 연결하여 고정하는 의치. 탈착이 가능하면서도 안정적입니다.' },
+    { term: '연결 관계', en: 'Pontic', def: '브릿지에서 상실 치아를 대체하는 인공 치아 부분. 양옆 기둥 치아(지대치) 사이에 위치합니다.' },
+    { term: '서베이드 크라운', en: 'Surveyed Crown', def: '부분 틀니의 걸쇠(클래스프)가 잘 유지되도록 형태를 설계한 크라운. 틀니 계획 시 미리 제작합니다.' },
+  ]},
+
+  // ──── 8. 예방·구강위생 (16) ────
+  { cat: '예방·구강위생', items: [
+    { term: '불소도포', en: 'Fluoride Application', def: '고농도 불소를 치아 표면에 도포하여 법랑질을 강화하고 충치를 예방하는 시술입니다.', link: '/treatments/prevention' },
+    { term: '실란트', en: 'Sealant', def: '어금니 씹는 면의 홈을 레진으로 메워 충치를 예방하는 시술. 영구 어금니 맹출 후 즉시 적용이 권장됩니다.' },
+    { term: '파노라마', en: 'Panoramic X-ray', def: '턱 전체를 한 장에 촬영하는 기본 방사선 사진. 전반적인 치아·뼈 상태를 한눈에 파악합니다.' },
+    { term: '치태', en: 'Plaque', def: '치아 표면에 형성되는 세균막. 48시간 내 치석으로 석회화되므로 매일 양치가 중요합니다.' },
+    { term: '치석', en: 'Calculus', def: '치태가 석회화된 것. 칫솔로는 제거 불가하며 스케일링으로만 제거할 수 있습니다.' },
+    { term: '치실', en: 'Dental Floss', def: '치아 사이 좁은 틈의 치태를 제거하는 실. 칫솔이 닿지 않는 인접면 관리에 필수적입니다.' },
+    { term: '치간칫솔', en: 'Interdental Brush', def: '치아 사이 넓은 공간을 청소하는 작은 솔. 임플란트·브릿지 주변 관리에 효과적입니다.' },
+    { term: '구강세정기', en: 'Water Flosser', def: '물줄기로 치아 사이와 잇몸 주변을 세정하는 기기. 교정 장치 착용자에게 유용합니다.' },
+    { term: '교합조정', en: 'Occlusal Adjustment', def: '불균형한 교합을 미세하게 다듬어 특정 치아에 가해지는 과도한 힘을 분산시키는 시술입니다.' },
+    { term: '바스법', en: 'Bass Method', def: '잇몸 경계에 칫솔모를 45° 각도로 대고 진동하는 칫솔질 방법. 치주질환 예방에 가장 효과적입니다.' },
+    { term: '혀 클리너', en: 'Tongue Cleaner', def: '혀 표면의 설태(백태)를 제거하는 기구. 구취(입 냄새) 감소에 효과적입니다.' },
+    { term: '구취', en: 'Halitosis', def: '입 냄새. 원인의 약 90%는 구강 내 세균·설태·치주질환이며, 구강 위생 관리로 개선됩니다.' },
+    { term: '자일리톨', en: 'Xylitol', def: '충치 유발 세균(뮤탄스균)이 대사할 수 없는 천연 감미료. 식후 자일리톨 껌은 충치 예방에 도움됩니다.' },
+    { term: '정기검진', en: 'Regular Check-up', def: '6개월마다 받는 구강 검진. 충치·치주질환을 조기 발견하여 치료 범위와 비용을 줄일 수 있습니다.' },
+    { term: '치면세균막 검사', en: 'Plaque Disclosing Test', def: '착색제로 치태를 시각화하는 검사. 양치가 잘 안 되는 부위를 확인하여 칫솔질 교육에 활용합니다.' },
+    { term: '구강 건조증', en: 'Xerostomia', def: '침 분비 감소로 입이 마르는 증상. 충치·잇몸질환 위험이 높아지며 인공타액으로 관리합니다.' },
+    { term: '칫솔 교체 주기', en: 'Toothbrush Replacement', def: '칫솔모가 벌어지기 전, 보통 2~3개월마다 교체를 권장합니다. 감기 후에도 즉시 교체합니다.' },
+    { term: '프로바이오틱스', en: 'Oral Probiotics', def: '구강 내 유익균 균형을 유지하는 유산균 제제. 충치·잇몸질환·구취 예방에 보조적으로 활용됩니다.' },
+  ]},
+
+  // ──── 9. 소아치과 (14) ────
+  { cat: '소아치과', items: [
+    { term: '유치', en: 'Primary Tooth', def: '젖니. 생후 6개월부터 맹출하여 만 6세경부터 영구치로 교체됩니다. 총 20개입니다.', link: '/treatments/pediatric' },
+    { term: '영구치', en: 'Permanent Tooth', def: '유치 뒤를 잇는 성인 치아. 만 6~13세에 순차적으로 맹출하며 사랑니 포함 총 32개입니다.' },
+    { term: '맹출', en: 'Eruption', def: '치아가 잇몸을 뚫고 구강 내로 나오는 과정. 맹출 순서와 시기는 성장 발달의 지표가 됩니다.' },
+    { term: '우유병 충치', en: 'Baby Bottle Caries', def: '젖병을 물고 잠드는 습관으로 발생하는 영유아 충치. 앞니부터 광범위하게 진행됩니다.' },
+    { term: '기성 크라운', en: 'Stainless Steel Crown', def: '소아 유치에 사용하는 미리 만들어진 금속 크라운(SSC). 큰 충치나 신경치료 후 유치를 보호합니다.' },
+    { term: '치아 외상', en: 'Dental Trauma', def: '넘어짐·충돌 등으로 치아가 흔들리거나 빠지는 손상. 30분 이내 재식(다시 심기)하면 생존율이 높습니다.' },
+    { term: '손가락 빨기', en: 'Thumb Sucking', def: '만 4세 이후 지속 시 부정교합 유발. 개방교합·상악 돌출 등의 원인이 되므로 교정이 필요합니다.' },
+    { term: '구강 습관', en: 'Oral Habits', def: '혀 내밀기, 구호흡, 손가락 빨기 등 치열 발달에 영향을 주는 습관. 조기 차단이 중요합니다.' },
+    { term: '과잉치', en: 'Supernumerary Tooth', def: '정상 치아 수보다 많이 존재하는 치아. 상악 정중부에 가장 흔하며 영구치 맹출을 방해합니다.' },
+    { term: '선천성 결손치', en: 'Congenitally Missing Tooth', def: '발생 단계에서 치배가 형성되지 않아 영구치가 나지 않는 경우. 하악 소구치에서 가장 흔합니다.' },
+    { term: '유치 수복', en: 'Primary Tooth Restoration', def: '유치에 발생한 충치를 GIC·복합레진·SSC 등으로 수복하는 치료. 영구치 공간 유지에 중요합니다.' },
+    { term: '유치 발치', en: 'Primary Tooth Extraction', def: '자연 탈락 시기가 지났거나 심한 감염이 있는 유치를 제거하는 시술. 후속 공간유지가 필요합니다.' },
+    { term: '소아 수면진료', en: 'Pediatric Sedation', def: '치과 공포가 심한 소아에게 적용하는 진정법. 아산화질소 흡입이나 경구 진정제가 주로 사용됩니다.' },
+    { term: '구강근기능 훈련', en: 'Myofunctional Therapy', def: '혀·입술·볼 근육의 올바른 자세와 기능을 훈련하는 치료. 구호흡·혀 내밀기 습관을 교정합니다.' },
+    { term: '치아 나이', en: 'Dental Age', def: '치아 발달(맹출·석회화) 단계로 평가하는 생물학적 나이. 소아 성장 발달 판단에 활용됩니다.' },
+  ]},
+
+  // ──── 10. 디지털 치과 (14) ────
+  { cat: '디지털 치과', items: [
+    { term: '구강 스캐너', en: 'Intraoral Scanner', def: '구강 내부를 3D 디지털 데이터로 변환하는 장비. 기존 인상재(본뜨기) 대비 정밀하고 환자가 편안합니다.' },
+    { term: 'CAD/CAM 보철', en: 'CAD/CAM Prosthetics', def: '컴퓨터 설계·가공으로 보철물을 제작하는 기술. 정밀도가 높고 당일 완료도 가능합니다.' },
+    { term: '3D 프린팅', en: '3D Printing', def: '디지털 설계를 기반으로 교정 모델, 수술 가이드, 임시 보철 등을 적층 방식으로 제조합니다.' },
+    { term: '디지털 교합 분석', en: 'Digital Occlusion Analysis', def: 'T-Scan 등 전자 센서로 교합 강도와 접촉 순서를 정량 분석하여 교합 조정에 활용합니다.' },
+    { term: '치과 현미경', en: 'Dental Microscope', def: '최대 25배 확대가 가능한 수술 현미경. 신경치료·미세 수술의 정확도를 비약적으로 높입니다.' },
+    { term: '레이저 치료', en: 'Dental Laser', def: '특정 파장의 레이저로 잇몸 절개, 살균, 미백 등을 시행하는 기술. 출혈이 적고 회복이 빠릅니다.' },
+    { term: '디지털 워크플로', en: 'Digital Workflow', def: '진단(CBCT·스캔)→설계(CAD)→제작(CAM·3D프린팅)→시술까지 전 과정을 디지털로 처리하는 체계입니다.' },
+    { term: 'STL 파일', en: 'STL File', def: '3D 모델의 표면을 삼각 메쉬로 표현한 파일 형식. 치과에서 보철·교정 장치 제작에 사용됩니다.' },
+    { term: '가상 교합기', en: 'Virtual Articulator', def: '환자의 턱 운동을 소프트웨어로 재현하여 보철 설계 시 교합 간섭을 사전에 확인하는 디지털 도구입니다.' },
+    { term: '얼굴 스캔', en: 'Face Scan', def: '3D 카메라로 환자의 얼굴을 스캔하여 구강 데이터와 중첩. 심미 치료 시 전체 조화를 계획합니다.' },
+    { term: '치과 AI', en: 'Dental AI', def: '인공지능이 X-ray·CBCT 이미지를 분석하여 충치·치주질환·병소를 자동 탐지하는 진단 보조 기술입니다.' },
+    { term: '밀링 머신', en: 'Milling Machine', def: '세라믹·지르코니아 블록을 깎아 보철물을 제작하는 CNC 장비. CEREC 시스템의 핵심입니다.' },
+    { term: 'DICOM', en: 'DICOM', def: '의료 영상 표준 파일 형식. CBCT 데이터를 다른 소프트웨어(임플란트 가이드, 교정 분석 등)와 공유할 때 사용합니다.' },
+    { term: '디지털 미소 분석', en: 'Digital Smile Analysis', def: '환자의 얼굴 사진·동영상을 분석하여 이상적인 치아 비율과 스마일 라인을 수치화하는 기술입니다.' },
+  ]},
+
+  // ──── 11. 치과 재료 (14) ────
+  { cat: '치과 재료', items: [
+    { term: '티타늄', en: 'Titanium', def: '임플란트 픽스쳐의 주 소재. 생체 적합성이 우수하고 뼈와 결합(골유착)하는 특성이 있습니다.' },
+    { term: '복합 레진', en: 'Composite Resin', def: '치아색 수복 재료. 유기질 매트릭스와 무기질 필러로 구성되며 접착 기술로 치아에 결합합니다.' },
+    { term: '아말감', en: 'Amalgam', def: '수은·은·주석 합금의 치과 수복 재료. 내구성이 우수하나 심미성 문제로 사용이 감소하는 추세입니다.' },
+    { term: '세라믹', en: 'Dental Ceramic', def: '도자기 계열 보철 재료. 자연치아와 유사한 색상·투명도를 재현하며 생체 친화적입니다.' },
+    { term: '금합금', en: 'Gold Alloy', def: '금을 주성분으로 한 치과용 합금. 생체 적합성, 내식성, 내구성이 모두 우수한 전통적 보철 재료입니다.' },
+    { term: '불소 바니시', en: 'Fluoride Varnish', def: '치아에 도포하는 고농도 불소 제제. 법랑질 재광화를 촉진하고 초기 충치 진행을 억제합니다.' },
+    { term: '인상재', en: 'Impression Material', def: '치아 본을 뜨는 재료. 알지네이트(간편용), 실리콘(정밀용) 등이 있으며 디지털 스캔으로 대체 추세입니다.' },
+    { term: '시멘트', en: 'Dental Cement', def: '크라운·브릿지를 치아에 접착하는 재료. 레진 시멘트, GIC 시멘트 등 용도에 따라 선택합니다.' },
+    { term: '본딩제', en: 'Bonding Agent', def: '치아와 수복 재료(레진) 사이를 화학적으로 결합시키는 접착제. 세대별로 기술이 발전하고 있습니다.' },
+    { term: 'PMMA', en: 'PMMA', def: '아크릴 레진. 임시 보철, 틀니 의치상, 교정 유지장치 등 다양한 치과 기구 제작에 사용됩니다.' },
+    { term: '왁스', en: 'Dental Wax', def: '보철물 설계 시 원형(왁스업)을 만드는 재료. 주조 과정의 첫 단계이며 디지털로 대체되는 추세입니다.' },
+    { term: '석고', en: 'Dental Stone', def: '인상을 뜬 후 모형을 만드는 재료. 경도에 따라 일반 석고와 경석고(다이스톤)로 나뉩니다.' },
+    { term: '생체 세라믹', en: 'Bioactive Ceramic', def: 'MTA, 바이오세라믹 실러 등 생체 활성 물질. 치수 보호와 근관 충전에 사용되며 조직 재생을 촉진합니다.' },
+    { term: '탄소섬유 포스트', en: 'Carbon Fiber Post', def: '신경치료 후 치아 내부에 삽입하는 보강재. 금속 포스트 대비 치근 파절 위험이 낮습니다.' },
+    { term: '레진 블록', en: 'Resin Block', def: 'CAD/CAM 밀링 전용 레진 소재. 세라믹보다 탄성이 있어 충격 흡수가 좋고 임시 보철에 많이 사용됩니다.' },
+  ]},
+
+  // ──── 12. 치과 보험·비용 (12) ────
+  { cat: '보험·비용', items: [
+    { term: '건강보험', en: 'National Health Insurance', def: '국민건강보험공단에서 운영하는 의료보험. 치과 급여 항목에 해당하면 본인부담금만 납부합니다.' },
+    { term: '급여', en: 'Insurance-Covered', def: '건강보험이 적용되는 진료 항목. 스케일링(연 1회), 충치 치료, 발치, 신경치료 등이 포함됩니다.' },
+    { term: '비급여', en: 'Non-Covered', def: '건강보험이 적용되지 않는 진료. 임플란트(65세 미만), 교정, 미백, 라미네이트 등이 해당됩니다.' },
+    { term: '본인부담금', en: 'Co-payment', def: '건강보험 적용 시 환자가 직접 부담하는 금액. 보통 총 진료비의 30~50%입니다.' },
+    { term: '노인 임플란트', en: 'Senior Implant Benefit', def: '만 65세 이상 환자에게 평생 2개까지 임플란트 건강보험을 적용하는 제도. 본인부담 30%입니다.' },
+    { term: '치과 실비보험', en: 'Dental Indemnity Insurance', def: '민간 보험사의 실손의료비보험 중 치과 항목. 급여 본인부담금과 일부 비급여를 보상합니다.' },
+    { term: '진단서', en: 'Medical Certificate', def: '의사가 발급하는 공식 진단 문서. 보험 청구, 병가 증명 등에 필요하며 발급 수수료가 부과됩니다.' },
+    { term: '치료 계획서', en: 'Treatment Plan', def: '진단 결과를 바탕으로 필요한 치료 항목·순서·예상 비용을 정리한 문서. 상담 시 제공됩니다.' },
+    { term: '의료비 세액공제', en: 'Medical Expense Tax Deduction', def: '연간 의료비 지출액 중 일정 금액을 소득세에서 공제하는 제도. 치과 진료비도 포함됩니다.' },
+    { term: '무이자 할부', en: 'Interest-Free Installment', def: '고가 진료 시 카드사 제휴를 통해 무이자로 분할 납부하는 결제 방식입니다.' },
+    { term: '건강보험 임플란트', en: 'Insurance-Covered Implant', def: '만 65세 이상, 무치악 부분에 한해 2개까지 보험 적용되는 임플란트 제도입니다.' },
+    { term: '치과 검진', en: 'Dental Screening', def: '국가건강검진 항목 중 구강 검진. 만 20세 이상 대상자에게 2년마다 무료 제공됩니다.' },
+  ]},
+]
+
+export const totalTerms = terms.reduce((sum, cat) => sum + cat.items.length, 0)
