@@ -63,8 +63,8 @@ export const doctors: Doctor[] = [
     name: '최다빈',
     title: '원장',
     titleShort: '원장',
-    photo: '/static/dr-choi-dabin-profile.jpg',
-    photoFallback: '/static/dr-choi-dabin-profile.svg',
+    photo: '/static/dr-choi-dabin-profile.png',
+    photoFallback: '/static/dr-choi-dabin-profile.jpg',
     philosophy: '환자분의 불안한 마음을 먼저 헤아리고, 꼼꼼한 설명으로 신뢰를 드리겠습니다.',
     education: [
       '서울대학교 치과대학 졸업',
@@ -89,7 +89,7 @@ export const doctors: Doctor[] = [
     name: '정문희',
     title: '원장 (보존과 전문의)',
     titleShort: '원장',
-    photo: '/static/dr-jung-munhee-profile.jpg',
+    photo: '/static/dr-jung-munhee-profile.png',
     photoFallback: '/static/dr-jung-munhee-profile.svg',
     philosophy: '자연치아를 살리는 것이 최선의 치료입니다. 포기하지 않고 끝까지 치료합니다.',
     education: [
@@ -117,7 +117,7 @@ export const doctors: Doctor[] = [
     name: '상세훈',
     title: '원장',
     titleShort: '원장',
-    photo: '/static/dr-sang-sehoon-profile.jpg',
+    photo: '/static/dr-sang-sehoon-profile.png',
     photoFallback: '/static/dr-sang-sehoon-profile.svg',
     philosophy: '정확한 진단이 좋은 치료의 시작입니다. 환자분과 함께 최적의 치료를 찾겠습니다.',
     education: [
@@ -143,7 +143,7 @@ export const doctors: Doctor[] = [
     name: '하누리',
     title: '원장 (교정과 전문의)',
     titleShort: '원장',
-    photo: '/static/dr-ha-nuri-profile.jpg',
+    photo: '/static/dr-ha-nuri-profile.png',
     photoFallback: '/static/dr-ha-nuri-profile.svg',
     philosophy: '아름다운 미소는 건강한 교합에서 시작됩니다. 기능과 심미 모두를 고려한 교정 치료를 약속드립니다.',
     education: [
