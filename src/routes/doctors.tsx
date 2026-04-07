@@ -33,13 +33,13 @@ doctorRoutes.get('/doctors', (c) => {
               <a href={`/doctors/${doc.slug}`} class="premium-card block group overflow-hidden relative" style="border-radius:1.5rem" data-cursor-hover>
                 {/* Lead badge */}
                 {i === 0 && <div class="absolute top-4 left-4 z-20 bg-[#0066FF] text-white text-[0.6rem] font-bold px-2.5 py-1 rounded-full shadow-lg">LEAD</div>}
-                {/* Photo area with solid unified background */}
-                <div class="relative overflow-hidden" style="background:#dbe8f8;padding-top:120%">
+                {/* Photo area */}
+                <div class="relative overflow-hidden" style="background:#c8ced8;padding-top:120%">
                   <img
                     src={doc.photo}
                     alt={`${doc.name} ${doc.title} 프로필 사진 - 서울365치과`}
                     title={`서울365치과 ${doc.name} ${doc.title}`}
-                    class="absolute inset-0 w-full h-full object-contain object-bottom group-hover:scale-105 transition-transform duration-700"
+                    class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                     loading="lazy"
                     onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
                   />
@@ -184,11 +184,11 @@ doctorRoutes.get('/doctors/:slug', (c) => {
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
 
           <div class="md:flex items-center gap-8 reveal" style="transition-delay:0.4s">
-            <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#0066FF]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(0,102,255,0.15);background:#dbe8f8">
+            <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#0066FF]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(0,102,255,0.15);background:#c8ced8">
               <img 
                 src={doc.photo} 
                 alt={`${doc.name} ${doc.titleShort} 프로필 사진`}
-                class="w-full h-full object-contain object-bottom" 
+                class="w-full h-full object-cover object-top" 
                 loading="eager"
                 onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
               />
