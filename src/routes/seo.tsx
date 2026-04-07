@@ -165,8 +165,8 @@ seoRoutes.get('/privacy', (c) => {
       </div>
     </section>,
     {
-      title: '개인정보처리방침 | 서울365치과',
-      description: '서울365치과의원 개인정보처리방침. 수집 항목, 이용 목적, 보유 기간, 파기 절차 등을 안내합니다.',
+      title: '개인정보처리방침 | 서울365치과의원 - 개인정보 보호',
+      description: '서울365치과의원 개인정보처리방침. 수집 항목, 이용 목적, 보유 기간, 파기 절차, 정보주체 권리 등을 안내합니다. 개인정보보호법 준수.',
       canonical: 'https://seoul365dc.kr/privacy',
       jsonLd: [
         {
@@ -208,8 +208,8 @@ seoRoutes.get('/terms', (c) => {
       </div>
     </section>,
     {
-      title: '이용약관 | 서울365치과',
-      description: '서울365치과의원 이용약관. 서비스 이용, 면책사항, 저작권에 대한 안내입니다.',
+      title: '이용약관 | 서울365치과의원 - 서비스 이용 조건',
+      description: '서울365치과의원 이용약관. 웹사이트 서비스 이용, 면책사항, 저작권, 개인정보 처리에 대한 상세 안드입니다.',
       canonical: 'https://seoul365dc.kr/terms',
       jsonLd: [
         {
@@ -346,6 +346,7 @@ seoRoutes.get('/sitemap-pages.xml', (c) => {
     { loc: '/blog', priority: '0.8', changefreq: 'daily', lastmod: today },
     { loc: '/faq', priority: '0.7', changefreq: 'monthly', lastmod: '2026-03-01' },
     { loc: '/cases/gallery', priority: '0.6', changefreq: 'weekly', lastmod: today },
+    { loc: '/encyclopedia', priority: '0.7', changefreq: 'monthly', lastmod: '2026-04-07' },
     { loc: '/notices', priority: '0.5', changefreq: 'weekly', lastmod: today },
     { loc: '/privacy', priority: '0.2', changefreq: 'yearly', lastmod: '2026-03-14' },
     { loc: '/terms', priority: '0.2', changefreq: 'yearly', lastmod: '2026-03-14' },

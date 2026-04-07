@@ -152,6 +152,17 @@ doctorRoutes.get('/doctors', (c) => {
           })),
           "numberOfEmployees": { "@type": "QuantitativeValue", "value": 5, "unitText": "원장" },
         },
+        // Speakable for AEO (doctors page)
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "의료진 소개 | 서울365치과",
+          "url": "https://seoul365dc.kr/doctors",
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h2", "blockquote", ".hero-sub"]
+          }
+        },
         // EducationalOrganization — alma mater emphasis (AEO)
         {
           "@context": "https://schema.org",
@@ -389,6 +400,17 @@ doctorRoutes.get('/doctors/:slug', (c) => {
           "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
           "inLanguage": "ko-KR",
           "datePublished": "2024-01-01",
+        },
+        // Speakable for AEO (doctor detail page)
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": doc.metaTitle,
+          "url": `https://seoul365dc.kr/doctors/${doc.slug}`,
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h3", "blockquote", ".hero-sub"]
+          }
         },
         // Occupation schema — structured job data
         {

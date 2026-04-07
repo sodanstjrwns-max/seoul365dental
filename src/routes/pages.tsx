@@ -130,8 +130,8 @@ pageRoutes.get('/reservation', (c) => {
       </section>
     </>,
     {
-      title: '상담 예약 | 서울365치과',
-      description: '서울365치과 상담 예약. 전화(032-432-0365), 카카오톡, 네이버 예약. 365일·야간21시. 인천 구월동.',
+      title: '상담 예약 | 서울365치과 인천 구월동 - 전화·카카오톡·네이버 예약',
+      description: '서울365치과 상담 예약. 전화(032-432-0365), 카카오톡, 네이버 예약, 온라인 상담 신청. 365일·야간21시 운영. 인천 구월동 예술회관역 5번 출구. 내원 전 무료 상담 가능.',
       canonical: 'https://seoul365dc.kr/reservation',
       jsonLd: [
         {
@@ -194,6 +194,17 @@ pageRoutes.get('/reservation', (c) => {
           },
           "agent": { "@type": "Person", "name": "환자" },
           "object": { "@type": "MedicalClinic", "name": "서울365치과의원" },
+        },
+        // Speakable for AEO (reservation page)
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "상담 예약 | 서울365치과",
+          "url": "https://seoul365dc.kr/reservation",
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h2", ".hero-sub"]
+          }
         },
         // Service — consultation service details
         {
@@ -441,6 +452,17 @@ pageRoutes.get('/info', (c) => {
           "geo": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
           "hasMap": "https://www.google.com/maps?q=37.4482,126.7042",
         },
+        // Speakable for AEO (info page)
+        {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          "name": "내원안내 | 서울365치과",
+          "url": "https://seoul365dc.kr/info",
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "h2", "h3", ".hero-sub"]
+          }
+        },
         {
           "@context": "https://schema.org",
           "@type": "HowTo",
@@ -599,8 +621,8 @@ pageRoutes.get('/cases/gallery', async (c) => {
         </section>
       </>,
       {
-        title: '치료 사례 | 서울365치과 Before & After',
-        description: '서울365치과 치료 사례. 회원 로그인 후 열람 가능합니다.',
+        title: '치료 사례 Before & After | 서울365치과 인천 구월동',
+        description: '서울365치과 실제 치료 사례 Before & After 갤러리. 임플란트·교정·심미치료 전후 사진. 회원 로그인 후 열람 가능합니다.',
         canonical: 'https://seoul365dc.kr/cases/gallery',
         jsonLd: [
           {
