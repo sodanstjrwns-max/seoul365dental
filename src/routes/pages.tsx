@@ -483,15 +483,44 @@ pageRoutes.get('/info', (c) => {
 })
 
 // ============================================================
-// FAQ
+// FAQ — 전체 치료 FAQ 통합 페이지 (474개+)
 // ============================================================
 pageRoutes.get('/faq', (c) => {
-  const allFaq = [
+  // 카테고리 정의 (순서 및 아이콘)
+  const categories = [
+    { key: 'all', label: '전체', icon: 'fa-list' },
+    { key: 'general', label: '일반 안내', icon: 'fa-circle-info' },
+    { key: '전문센터', label: '전문센터', icon: 'fa-hospital', sub: '임플란트 · 교정 · 수면진료 · 소아 · 심미' },
+    { key: '일반/보존', label: '보존치료', icon: 'fa-shield-halved', sub: '충치 · 레진 · 인레이 · 크라운 · 신경치료 · 미백' },
+    { key: '잇몸/외과', label: '잇몸/외과', icon: 'fa-scissors', sub: '스케일링 · 잇몸 · 사랑니 · 턱관절 · 이갈이' },
+    { key: '특수', label: '특수치료', icon: 'fa-star-of-life', sub: '임플란트재수술 · 브릿지 · 응급 · 예방' },
+  ];
+
+  // 일반 안내 FAQ
+  const generalFaq = [
     ...mainFaq,
     { q: '예약은 어떻게 하나요?', a: '전화(032-432-0365), 카카오톡, 네이버 예약 모두 가능합니다.' },
     { q: '응급 상황에 방문해도 되나요?', a: '네, 365일 진료하므로 갑작스러운 치통이나 외상 시 바로 내원하세요.' },
     { q: '분할 결제가 가능한가요?', a: '네, 카드 분할 결제가 가능합니다.' },
     { q: '첫 방문 시 무엇을 준비해야 하나요?', a: '신분증과 건강보험증을 지참해 주세요.' },
+    { q: '위치가 어디인가요?', a: '인천 남동구 구월동 이토타워 내 위치합니다. 인천 1호선 예술회관역 도보 5분 거리입니다.' },
+    { q: '진료 시간은 어떻게 되나요?', a: '평일(월~목) 09:30~21:00, 금요일 09:30~18:00, 토·일·공휴일 14:00~18:00 (점심시간 없이 연속 진료).' },
+  ];
+
+  // 치료별 FAQ를 카테고리로 그룹핑
+  const treatmentsByCategory: Record<string, typeof treatments> = {};
+  for (const t of treatments) {
+    if (!treatmentsByCategory[t.category]) treatmentsByCategory[t.category] = [];
+    treatmentsByCategory[t.category].push(t);
+  }
+
+  // 전체 FAQ 수 계산
+  const totalFaqCount = generalFaq.length + treatments.reduce((sum, t) => sum + t.faq.length, 0);
+
+  // JSON-LD용: 일반 FAQ + 각 치료별 첫 2개씩 (SEO에 충분하되 페이지 크기 합리적으로)
+  const allFaqFlat = [
+    ...generalFaq,
+    ...treatments.flatMap(t => t.faq.slice(0, 2)),
   ];
 
   return c.render(
@@ -499,36 +528,237 @@ pageRoutes.get('/faq', (c) => {
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
           <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">자주 묻는 질문</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">궁금하신 점을 먼저 확인해 보세요.</p>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">
+            25개 진료과목, {totalFaqCount}개의 FAQ를 한눈에 확인하세요.
+          </p>
         </div>
       </section>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-3xl mx-auto px-5 md:px-8">
-          <h2 class="text-xl font-bold text-gray-900 mb-8 reveal">임플란트·교정·수면진료 궁금증 해결</h2>
-          <div class="space-y-3 stagger-children">
-            {allFaq.map(faq => (
-              <div class="faq-item">
-                <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
-                  <h3 class="font-semibold text-gray-800 text-[0.95rem] pr-4">{faq.q}</h3>
-                  <i class="fa-solid fa-chevron-down text-gray-300 text-sm faq-icon flex-shrink-0"></i>
-                </button>
-                <div class="hidden px-6 pb-5">
-                  <p class="text-gray-500 text-[0.9rem] leading-relaxed">{faq.a}</p>
-                </div>
-              </div>
-            ))}
+      {/* 검색 바 */}
+      <section class="bg-white border-b border-gray-100 sticky top-[64px] z-30" style="backdrop-filter:blur(12px);background:rgba(255,255,255,0.92)">
+        <div class="max-w-4xl mx-auto px-5 md:px-8 py-4">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 text-sm"></i>
+            <input
+              type="text"
+              id="faq-search"
+              placeholder="궁금한 내용을 검색하세요 (예: 임플란트 비용, 미백 통증, 사랑니...)"
+              class="w-full pl-11 pr-10 py-3.5 border border-gray-200 rounded-xl text-[0.9rem] focus:outline-none focus:border-[#0066FF] focus:ring-2 focus:ring-[#0066FF]/10 transition-all"
+            />
+            <button id="faq-search-clear" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 hidden" data-cursor-hover>
+              <i class="fa-solid fa-xmark"></i>
+            </button>
           </div>
-          <div class="text-center mt-10 reveal">
-            <p class="text-gray-400 mb-4">더 궁금하신 점이 있으신가요?</p>
-            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>상담 예약하기</a>
+          <div id="faq-search-count" class="text-xs text-gray-400 mt-2 hidden"></div>
+        </div>
+      </section>
+
+      {/* 카테고리 탭 */}
+      <section class="bg-white border-b border-gray-100">
+        <div class="max-w-4xl mx-auto px-5 md:px-8">
+          <div class="flex gap-1 overflow-x-auto scrollbar-hide py-3" id="faq-tabs">
+            {categories.map((cat, i) => (
+              <button
+                class={`faq-tab flex-shrink-0 px-4 py-2.5 rounded-lg text-[0.82rem] font-medium transition-all whitespace-nowrap ${i === 0 ? 'bg-[#0066FF] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'}`}
+                data-tab={cat.key}
+                data-cursor-hover
+              >
+                <i class={`fa-solid ${cat.icon} mr-1.5 text-[0.75rem]`}></i>
+                {cat.label}
+              </button>
+            ))}
           </div>
         </div>
       </section>
+
+      {/* FAQ 본문 */}
+      <section class="section-lg bg-mesh">
+        <div class="max-w-4xl mx-auto px-5 md:px-8">
+
+          {/* 일반 안내 섹션 */}
+          <div class="faq-category-section" data-category="general">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0066FF]/10 to-[#00E5FF]/10 flex items-center justify-center">
+                <i class="fa-solid fa-circle-info text-[#0066FF] text-sm"></i>
+              </div>
+              <div>
+                <h2 class="text-lg font-bold text-gray-900">일반 안내</h2>
+                <p class="text-xs text-gray-400">예약 · 진료시간 · 결제 · 주차</p>
+              </div>
+              <span class="ml-auto text-xs text-gray-300 font-medium">{generalFaq.length}개</span>
+            </div>
+            <div class="space-y-2 mb-10">
+              {generalFaq.map(faq => (
+                <div class="faq-item faq-searchable" data-category="general">
+                  <button class="faq-toggle w-full text-left px-5 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
+                    <h3 class="font-semibold text-gray-800 text-[0.9rem] pr-4">{faq.q}</h3>
+                    <i class="fa-solid fa-chevron-down text-gray-300 text-xs faq-icon flex-shrink-0"></i>
+                  </button>
+                  <div class="hidden px-5 pb-4">
+                    <p class="text-gray-500 text-[0.85rem] leading-relaxed">{faq.a}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 카테고리별 치료 FAQ */}
+          {['전문센터', '일반/보존', '잇몸/외과', '특수'].map(catKey => {
+            const catInfo = categories.find(c => c.key === catKey)!;
+            const catTreatments = treatmentsByCategory[catKey] || [];
+            const catFaqCount = catTreatments.reduce((sum, t) => sum + t.faq.length, 0);
+
+            return (
+              <div class="faq-category-section" data-category={catKey}>
+                <div class="flex items-center gap-3 mb-6">
+                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0066FF]/10 to-[#00E5FF]/10 flex items-center justify-center">
+                    <i class={`fa-solid ${catInfo.icon} text-[#0066FF] text-sm`}></i>
+                  </div>
+                  <div>
+                    <h2 class="text-lg font-bold text-gray-900">{catInfo.label}</h2>
+                    <p class="text-xs text-gray-400">{catInfo.sub}</p>
+                  </div>
+                  <span class="ml-auto text-xs text-gray-300 font-medium">{catFaqCount}개</span>
+                </div>
+
+                {catTreatments.map(t => (
+                  <div class="mb-8 faq-treatment-group" data-treatment={t.slug} data-category={catKey}>
+                    {/* 치료 제목 */}
+                    <div class="flex items-center gap-2.5 mb-3 px-1">
+                      <i class={`fa-solid ${t.icon} text-[#0066FF]/60 text-sm`}></i>
+                      <h3 class="text-[0.95rem] font-bold text-gray-800">{t.name}</h3>
+                      <span class="text-xs text-gray-300 font-medium">({t.faq.length})</span>
+                      <a href={`/treatments/${t.slug}`} class="ml-auto text-xs text-[#0066FF]/50 hover:text-[#0066FF] transition-colors" data-cursor-hover>
+                        상세보기 <i class="fa-solid fa-arrow-right text-[0.6rem]"></i>
+                      </a>
+                    </div>
+                    {/* FAQ 리스트 */}
+                    <div class="space-y-2 mb-2">
+                      {t.faq.map(faq => (
+                        <div class="faq-item faq-searchable" data-category={catKey} data-treatment={t.slug}>
+                          <button class="faq-toggle w-full text-left px-5 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
+                            <h3 class="font-semibold text-gray-800 text-[0.88rem] pr-4">{faq.q}</h3>
+                            <i class="fa-solid fa-chevron-down text-gray-300 text-xs faq-icon flex-shrink-0"></i>
+                          </button>
+                          <div class="hidden px-5 pb-4">
+                            <p class="text-gray-500 text-[0.85rem] leading-relaxed">{faq.a}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+
+          {/* 검색 결과 없음 */}
+          <div id="faq-no-results" class="hidden text-center py-16">
+            <i class="fa-solid fa-magnifying-glass text-gray-200 text-4xl mb-4"></i>
+            <p class="text-gray-400 font-medium">검색 결과가 없습니다</p>
+            <p class="text-gray-300 text-sm mt-1">다른 키워드로 검색해 보세요</p>
+          </div>
+
+          {/* 하단 CTA */}
+          <div class="text-center mt-12 reveal">
+            <p class="text-gray-400 mb-4">원하시는 답변을 찾지 못하셨나요?</p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+              <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>
+                <i class="fa-solid fa-calendar-check mr-2"></i>상담 예약하기
+              </a>
+              <a href="tel:032-432-0365" class="btn-premium" data-cursor-hover>
+                <i class="fa-solid fa-phone mr-2"></i>032-432-0365
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ 검색/탭 스크립트 */}
+      <script dangerouslySetInnerHTML={{ __html: `
+        (function(){
+          const searchInput = document.getElementById('faq-search');
+          const searchClear = document.getElementById('faq-search-clear');
+          const searchCount = document.getElementById('faq-search-count');
+          const noResults = document.getElementById('faq-no-results');
+          const tabs = document.querySelectorAll('.faq-tab');
+          const sections = document.querySelectorAll('.faq-category-section');
+          const items = document.querySelectorAll('.faq-searchable');
+          const groups = document.querySelectorAll('.faq-treatment-group');
+          let activeTab = 'all';
+
+          // Tab click
+          tabs.forEach(tab => {
+            tab.addEventListener('click', function(){
+              activeTab = this.dataset.tab;
+              tabs.forEach(t => { t.classList.remove('bg-[#0066FF]','text-white','shadow-sm'); t.classList.add('text-gray-500'); });
+              this.classList.add('bg-[#0066FF]','text-white','shadow-sm');
+              this.classList.remove('text-gray-500');
+              applyFilter();
+            });
+          });
+
+          // Search
+          let debounce;
+          searchInput.addEventListener('input', function(){
+            clearTimeout(debounce);
+            debounce = setTimeout(applyFilter, 150);
+            searchClear.classList.toggle('hidden', !this.value);
+          });
+          searchClear.addEventListener('click', function(){
+            searchInput.value = '';
+            searchClear.classList.add('hidden');
+            searchCount.classList.add('hidden');
+            applyFilter();
+          });
+
+          function applyFilter(){
+            const query = searchInput.value.trim().toLowerCase();
+            const isSearch = query.length > 0;
+            let visibleCount = 0;
+
+            items.forEach(item => {
+              const cat = item.dataset.category;
+              const text = item.textContent.toLowerCase();
+              const matchTab = activeTab === 'all' || cat === activeTab;
+              const matchSearch = !isSearch || text.includes(query);
+              const show = matchTab && matchSearch;
+              item.style.display = show ? '' : 'none';
+              if (show) visibleCount++;
+            });
+
+            // Show/hide category sections
+            sections.forEach(sec => {
+              const cat = sec.dataset.category;
+              const matchTab = activeTab === 'all' || cat === activeTab;
+              if (!matchTab) { sec.style.display = 'none'; return; }
+              const hasVisible = sec.querySelectorAll('.faq-searchable:not([style*="display: none"])').length > 0;
+              sec.style.display = hasVisible ? '' : 'none';
+            });
+
+            // Show/hide treatment groups
+            groups.forEach(g => {
+              const hasVisible = g.querySelectorAll('.faq-searchable:not([style*="display: none"])').length > 0;
+              g.style.display = hasVisible ? '' : 'none';
+            });
+
+            // Search count
+            if (isSearch) {
+              searchCount.textContent = visibleCount + '개의 FAQ가 검색되었습니다';
+              searchCount.classList.remove('hidden');
+            } else {
+              searchCount.classList.add('hidden');
+            }
+
+            // No results
+            noResults.classList.toggle('hidden', visibleCount > 0 || !isSearch);
+          }
+        })();
+      `}} />
     </>,
     {
-      title: 'FAQ | 서울365치과 자주 묻는 질문',
-      description: '서울365치과 FAQ. 임플란트 비용, 수면진료, 교정 나이제한, 예약 방법, 365일 진료 안내. 032-432-0365',
+      title: 'FAQ | 서울365치과 자주 묻는 질문 (' + totalFaqCount + '개)',
+      description: '서울365치과 FAQ ' + totalFaqCount + '개. 임플란트 비용, 교정, 수면진료, 충치, 신경치료, 사랑니, 미백, 잇몸치료 등 25개 진료과목 FAQ를 한눈에. 인천 구월동. 032-432-0365',
       canonical: 'https://seoul365dc.kr/faq',
       jsonLd: [
         {
@@ -543,31 +773,12 @@ pageRoutes.get('/faq', (c) => {
           "@context": "https://schema.org",
           "@type": "FAQPage",
           "name": "서울365치과 자주 묻는 질문",
-          "mainEntity": allFaq.map(f => ({
+          "mainEntity": allFaqFlat.map(f => ({
             "@type": "Question",
             "name": f.q,
             "acceptedAnswer": { "@type": "Answer", "text": f.a }
           }))
         },
-        // QAPage — alternative for AEO engines
-        {
-          "@context": "https://schema.org",
-          "@type": "QAPage",
-          "name": "서울365치과 자주 묻는 질문",
-          "mainEntity": allFaq.map(f => ({
-            "@type": "Question",
-            "name": f.q,
-            "answerCount": 1,
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": f.a,
-              "author": { "@type": "Organization", "name": "서울365치과의원" },
-              "dateCreated": "2026-01-01",
-              "upvoteCount": 10,
-            }
-          }))
-        },
-        // Speakable for FAQ page
         {
           "@context": "https://schema.org",
           "@type": "WebPage",
@@ -575,7 +786,7 @@ pageRoutes.get('/faq', (c) => {
           "url": "https://seoul365dc.kr/faq",
           "speakable": {
             "@type": "SpeakableSpecification",
-            "cssSelector": ["h1", "h3[itemprop='name']", "p[itemprop='text']"]
+            "cssSelector": ["h1", "h3", ".faq-searchable p"]
           },
         },
       ]
