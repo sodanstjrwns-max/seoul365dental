@@ -136,6 +136,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       "임플란트", "전체임플란트", "디지털풀아치", "전체 치아 복원 임플란트", "치아교정", "인비절라인",
       "수면진료", "무통마취", "심미치료", "충치치료", "신경치료",
       "소아치과", "자체기공실", "즉시로딩", "MUA",
+      "인천치과", "구월동치과", "남동구치과", "인천임플란트", "인천치아교정",
+      "인천수면치과", "인천야간치과", "인천소아치과", "인천전체임플란트",
     ],
     // Speakable for AEO (AI engines extracting quick answers)
     "speakable": {
@@ -405,7 +407,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* === PRIMARY SEO META === */}
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
-        <meta name="keywords" content="인천치과, 구월동치과, 임플란트, 치아교정, 인비절라인, 수면진료, 전체임플란트, 디지털풀아치, 전체 치아 복원 임플란트, 디지털 임플란트, 서울365치과, 인천임플란트, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 소아치과, 심미치료, 신경치료, 서울대치과" />
+        <meta name="keywords" content="인천치과, 구월동치과, 남동구치과, 인천임플란트, 구월동임플란트, 인천치아교정, 인비절라인, 수면진료, 전체임플란트, 디지털풀아치, 인천전체임플란트, 서울365치과, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 인천소아치과, 심미치료, 신경치료, 서울대치과, 인천수면치과, 간석동치과, 만수동치과, 논현동치과, 인천서구치과, 부평치과, 인천남동구임플란트, 구월동교정, 인천라미네이트, 인천충치치료, 인천야간치과, 인천응급치과" />
         <link rel="canonical" href={canonicalUrl} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />

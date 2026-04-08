@@ -74,7 +74,17 @@ function slugifyHeading(text: string): string {
 }
 
 export function renderContent(md: string): string {
-  let html = md
+  // Pre-process: Auto-promote standalone bold lines to H2 headings (SEO enhancement)
+  // Lines that are ONLY **text** with no other content → treat as H2 subheadings
+  // This catches blog posts that used **bold** instead of ## for section titles
+  let processed = md.replace(/^(\*\*([^*\n]+)\*\*)$/gm, (match, full, text) => {
+    const trimmed = text.trim();
+    // Skip very short text (likely inline emphasis) or Q&A patterns
+    if (trimmed.length < 4 || trimmed.startsWith('Q.') || trimmed.startsWith('A.')) return match;
+    return `## ${trimmed}`;
+  });
+
+  let html = processed
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     // Images: ![alt](url) — semantic figure with figcaption for SEO
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
@@ -147,14 +157,25 @@ export function extractFAQs(md: string): Array<{question: string, answer: string
 }
 
 // Extract heading structure for TOC (H2 + H3)
+// Also detects standalone **bold** lines as implicit H2 (matches renderContent logic)
 export function extractHeadings(md: string): Array<{level: number, text: string, id: string}> {
   const headings: Array<{level: number, text: string, id: string}> = [];
   const lines = md.split('\n');
   for (const line of lines) {
     const m2 = line.match(/^## (.+)$/);
     const m3 = line.match(/^### (.+)$/);
-    if (m2) headings.push({ level: 2, text: m2[1], id: slugifyHeading(m2[1]) });
-    else if (m3) headings.push({ level: 3, text: m3[1], id: slugifyHeading(m3[1]) });
+    // Detect standalone bold lines → implicit H2
+    const mBold = line.match(/^\*\*([^*\n]+)\*\*$/);
+    if (m2) {
+      headings.push({ level: 2, text: m2[1], id: slugifyHeading(m2[1]) });
+    } else if (m3) {
+      headings.push({ level: 3, text: m3[1], id: slugifyHeading(m3[1]) });
+    } else if (mBold) {
+      const text = mBold[1].trim();
+      if (text.length >= 4 && !text.startsWith('Q.') && !text.startsWith('A.')) {
+        headings.push({ level: 2, text, id: slugifyHeading(text) });
+      }
+    }
   }
   return headings;
 }

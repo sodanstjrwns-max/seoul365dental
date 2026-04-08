@@ -127,7 +127,15 @@ treatmentRoutes.get('/treatments', (c) => {
           "description": "서울365치과에서 제공하는 전체 치과 진료 안내. 임플란트, 교정, 수면진료, 심미치료, 소아치과 등.",
           "provider": { "@id": "https://seoul365dc.kr/#dentist" },
           "serviceType": "치과 진료",
-          "areaServed": { "@type": "City", "name": "인천광역시" },
+          "areaServed": [
+            { "@type": "City", "name": "인천광역시" },
+            { "@type": "AdministrativeArea", "name": "인천 남동구" },
+            { "@type": "AdministrativeArea", "name": "인천 구월동" },
+            { "@type": "AdministrativeArea", "name": "인천 부평구" },
+            { "@type": "AdministrativeArea", "name": "인천 서구" },
+            { "@type": "AdministrativeArea", "name": "인천 미추홀구" },
+            { "@type": "AdministrativeArea", "name": "인천 연수구" },
+          ],
           "hasOfferCatalog": {
             "@type": "OfferCatalog",
             "name": "진료 카테고리",
@@ -716,7 +724,11 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
           "description": t.metaDesc,
           "provider": { "@id": "https://seoul365dc.kr/#dentist" },
           "serviceType": "치과 진료",
-          "areaServed": { "@type": "City", "name": "인천광역시" },
+          "areaServed": [
+            { "@type": "City", "name": "인천광역시" },
+            { "@type": "AdministrativeArea", "name": "인천 남동구" },
+            { "@type": "AdministrativeArea", "name": "인천 구월동" },
+          ],
           "hasOfferCatalog": {
             "@type": "OfferCatalog",
             "name": `${t.name} 종류`,

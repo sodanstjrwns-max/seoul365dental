@@ -213,7 +213,11 @@ pageRoutes.get('/reservation', (c) => {
           "name": "서울365치과 상담 서비스",
           "serviceType": "치과 상담",
           "provider": { "@id": "https://seoul365dc.kr/#dentist" },
-          "areaServed": { "@type": "City", "name": "인천광역시" },
+          "areaServed": [
+            { "@type": "City", "name": "인천광역시" },
+            { "@type": "AdministrativeArea", "name": "인천 남동구" },
+            { "@type": "AdministrativeArea", "name": "인천 구월동" },
+          ],
           "serviceOutput": {
             "@type": "Thing",
             "name": "맞춤 치료 계획",
