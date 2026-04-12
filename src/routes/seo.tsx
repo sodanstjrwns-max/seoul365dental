@@ -359,6 +359,7 @@ seoRoutes.get('/sitemap-pages.xml', (c) => {
 // ── 3) SITEMAP — Treatment Pages ──
 seoRoutes.get('/sitemap-treatments.xml', (c) => {
   const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
 
   const highPriority = new Set([
     'full-implant', 'digital-full-arch', 'implant', 'orthodontics', 'invisalign',
@@ -369,7 +370,7 @@ seoRoutes.get('/sitemap-treatments.xml', (c) => {
     loc: `/treatments/${t.slug}`,
     priority: highPriority.has(t.slug) ? '0.9' : '0.7',
     changefreq: 'monthly' as const,
-    lastmod: '2026-03-27',
+    lastmod: t.slug === 'invisalign' ? today : '2026-03-27',
     images: [
       { url: `${base}/static/og-image.png`, title: `${t.name} | 서울365치과`, caption: t.metaDesc || `인천 구월동 서울365치과 ${t.name} 안내` },
     ],

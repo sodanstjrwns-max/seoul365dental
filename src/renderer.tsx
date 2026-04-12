@@ -13,8 +13,8 @@ let _currentSeoSettings: Record<string, string> = {};
 export function setCurrentSeoSettings(s: Record<string, string>) { _currentSeoSettings = s; }
 
 export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd }) => {
-  const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·교정·수면진료 365일 야간진료`;
-  const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·교정·수면진료. 032-432-0365`;
+  const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료`;
+  const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·인비절라인 투명교정·수면진료 전문. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
   const ogImage = 'https://seoul365dc.kr/static/og-image.png';
 
@@ -55,7 +55,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "@id": "https://seoul365dc.kr/#dentist",
     "name": "서울365치과의원",
     "alternateName": "Seoul 365 Dental Clinic",
-    "description": "인천 구월동 서울대 출신 5인 전문의 협진 치과. 365일 진료, 자체 기공실, 수면진료, 무통마취. 임플란트·교정·심미치료 전문.",
+    "description": "인천 구월동 서울대 출신 5인 전문의 협진 치과. 365일 진료, 자체 기공실, 수면진료, 무통마취. 임플란트·인비절라인·교정·심미치료 전문.",
     "url": "https://seoul365dc.kr",
     "telephone": "+82-32-432-0365",
     "email": "seoul365dental@gmail.com",
@@ -134,10 +134,11 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "slogan": MESSAGING.brandSlogan,
     "knowsAbout": [
       "임플란트", "전체임플란트", "디지털풀아치", "전체 치아 복원 임플란트", "치아교정", "인비절라인",
+      "인비절라인 투명교정", "인비절라인 인증의", "인천 인비절라인", "투명교정",
       "수면진료", "무통마취", "심미치료", "충치치료", "신경치료",
       "소아치과", "자체기공실", "즉시로딩", "MUA",
       "인천치과", "구월동치과", "남동구치과", "인천임플란트", "인천치아교정",
-      "인천수면치과", "인천야간치과", "인천소아치과", "인천전체임플란트",
+      "인천수면치과", "인천야간치과", "인천소아치과", "인천전체임플란트", "인천투명교정",
     ],
     // Speakable for AEO (AI engines extracting quick answers)
     "speakable": {
@@ -259,8 +260,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       { "@type": "SiteNavigationElement", "position": 4, "name": "치료사례", "url": "https://seoul365dc.kr/cases/gallery" },
       { "@type": "SiteNavigationElement", "position": 5, "name": "블로그", "url": "https://seoul365dc.kr/blog" },
       { "@type": "SiteNavigationElement", "position": 6, "name": "FAQ", "url": "https://seoul365dc.kr/faq" },
-      { "@type": "SiteNavigationElement", "position": 7, "name": "내원안내", "url": "https://seoul365dc.kr/info" },
-      { "@type": "SiteNavigationElement", "position": 8, "name": "상담예약", "url": "https://seoul365dc.kr/reservation" },
+      { "@type": "SiteNavigationElement", "position": 7, "name": "인비절라인", "url": "https://seoul365dc.kr/treatments/invisalign" },
+      { "@type": "SiteNavigationElement", "position": 8, "name": "내원안내", "url": "https://seoul365dc.kr/info" },
+      { "@type": "SiteNavigationElement", "position": 9, "name": "상담예약", "url": "https://seoul365dc.kr/reservation" },
     ]
   };
 
@@ -285,6 +287,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "availableService": [
       { "@type": "MedicalTherapy", "name": "임플란트", "medicineSystem": "WesternConventional" },
       { "@type": "MedicalTherapy", "name": "치아교정", "medicineSystem": "WesternConventional" },
+      { "@type": "MedicalTherapy", "name": "인비절라인 투명교정", "medicineSystem": "WesternConventional" },
       { "@type": "MedicalTherapy", "name": "수면진료", "medicineSystem": "WesternConventional" },
       { "@type": "MedicalTherapy", "name": "신경치료", "medicineSystem": "WesternConventional" },
       { "@type": "MedicalTherapy", "name": "심미치료", "medicineSystem": "WesternConventional" },
@@ -388,7 +391,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "@id": "https://seoul365dc.kr/#health-topics",
     "about": [
       { "@type": "MedicalCondition", "name": "치아 상실", "possibleTreatment": { "@type": "MedicalProcedure", "name": "임플란트" } },
-      { "@type": "MedicalCondition", "name": "부정교합", "possibleTreatment": { "@type": "MedicalProcedure", "name": "치아교정" } },
+      { "@type": "MedicalCondition", "name": "부정교합", "possibleTreatment": [{ "@type": "MedicalProcedure", "name": "인비절라인 투명교정" }, { "@type": "MedicalProcedure", "name": "치아교정" }] },
       { "@type": "MedicalCondition", "name": "치과 공포증", "possibleTreatment": { "@type": "MedicalProcedure", "name": "수면진료" } },
       { "@type": "MedicalCondition", "name": "충치", "possibleTreatment": { "@type": "MedicalProcedure", "name": "보존치료" } },
       { "@type": "MedicalCondition", "name": "치수염", "possibleTreatment": { "@type": "MedicalProcedure", "name": "신경치료" } },
@@ -407,7 +410,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* === PRIMARY SEO META === */}
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
-        <meta name="keywords" content="인천치과, 구월동치과, 남동구치과, 인천임플란트, 구월동임플란트, 인천치아교정, 인비절라인, 수면진료, 전체임플란트, 디지털풀아치, 인천전체임플란트, 서울365치과, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 인천소아치과, 심미치료, 신경치료, 서울대치과, 인천수면치과, 간석동치과, 만수동치과, 논현동치과, 인천서구치과, 부평치과, 인천남동구임플란트, 구월동교정, 인천라미네이트, 인천충치치료, 인천야간치과, 인천응급치과" />
+        <meta name="keywords" content="인천치과, 구월동치과, 남동구치과, 인천임플란트, 구월동임플란트, 인천치아교정, 인비절라인, 인천인비절라인, 구월동인비절라인, 투명교정, 인천투명교정, 인비절라인비용, 인비절라인가격, 수면진료, 전체임플란트, 디지털풀아치, 인천전체임플란트, 서울365치과, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 인천소아치과, 심미치료, 신경치료, 서울대치과, 인천수면치과, 간석동치과, 만수동치과, 논현동치과, 인천서구치과, 부평치과, 인천남동구임플란트, 구월동교정, 인천라미네이트, 인천충치치료, 인천야간치과, 인천응급치과" />
         <link rel="canonical" href={canonicalUrl} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />

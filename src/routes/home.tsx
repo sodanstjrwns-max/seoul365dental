@@ -11,7 +11,7 @@ const home = new Hono<{ Bindings: Bindings }>()
 
 home.get('/', async (c) => {
   const topTreatments = treatments.filter(t =>
-    ['full-implant','digital-full-arch','orthodontics','sedation','cosmetic','implant'].includes(t.slug)
+    ['full-implant','digital-full-arch','orthodontics','invisalign','sedation','cosmetic','implant'].includes(t.slug)
   );
 
   // ===== DB에서 최신 비포애프터 케이스 가져오기 =====
@@ -780,8 +780,8 @@ home.get('/', async (c) => {
       </section>
     </>,
     {
-      title: '서울365치과 | 인천 구월동 임플란트·교정·수면진료 365일 야간진료',
-      description: '인천 구월동 서울365치과. 서울대 5인 전문의, 365일·야간21시 진료. 수면진료·자체 기공실. 032-432-0365',
+      title: '서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료',
+      description: '인천 구월동 서울365치과. 서울대 5인 전문의, 365일·야간21시 진료. 인비절라인 인증의 직접 진료, 수면진료·자체 기공실. 032-432-0365',
       canonical: 'https://seoul365dc.kr',
       jsonLd: [
         // BreadcrumbList
@@ -881,7 +881,8 @@ home.get('/', async (c) => {
             { "@type": "Offer", "name": "전체임플란트", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" }, "priceCurrency": "KRW", "description": "자체 기공실 MUA 즉시로딩", "url": "https://seoul365dc.kr/treatments/full-implant" },
             { "@type": "Offer", "name": "디지털풀아치 임플란트", "itemOffered": { "@type": "MedicalProcedure", "name": "디지털풀아치 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dc.kr/treatments/digital-full-arch" },
             { "@type": "Offer", "name": "수면진료", "itemOffered": { "@type": "MedicalProcedure", "name": "수면진료" }, "priceCurrency": "KRW", "description": "잠깐 잠들었다 깨면 치료 완료", "url": "https://seoul365dc.kr/treatments/sedation" },
-            { "@type": "Offer", "name": "치아교정", "itemOffered": { "@type": "MedicalProcedure", "name": "치아교정" }, "priceCurrency": "KRW", "description": "인비절라인 투명교정", "url": "https://seoul365dc.kr/treatments/orthodontics" },
+            { "@type": "Offer", "name": "치아교정", "itemOffered": { "@type": "MedicalProcedure", "name": "치아교정" }, "priceCurrency": "KRW", "description": "교정과 전문의 직접 진료", "url": "https://seoul365dc.kr/treatments/orthodontics" },
+            { "@type": "Offer", "name": "인비절라인 투명교정", "itemOffered": { "@type": "MedicalProcedure", "name": "인비절라인" }, "priceCurrency": "KRW", "price": "7000000", "description": "인비절라인 인증의 직접 진료, 3D ClinCheck 시뮬레이션", "url": "https://seoul365dc.kr/treatments/invisalign" },
           ]
         },
         // Article — clinic columns (AEO: rich snippet for blog-like content)

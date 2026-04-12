@@ -250,6 +250,10 @@ pageRoutes.get('/reservation', (c) => {
 pageRoutes.get('/pricing', (c) => c.redirect('/info#pricing', 301))
 pageRoutes.get('/directions', (c) => c.redirect('/info', 301))
 
+// SEO: 인비절라인 단축 URL — 검색엔진 & 광고용 직접 진입점
+pageRoutes.get('/invisalign', (c) => c.redirect('/treatments/invisalign', 301))
+pageRoutes.get('/투명교정', (c) => c.redirect('/treatments/invisalign', 301))
+
 pageRoutes.get('/info', (c) => {
   return c.render(
     <>
