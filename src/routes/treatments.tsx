@@ -584,23 +584,124 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
         </section>
       )}
 
-      {/* Materials */}
+      {/* Materials / Fixture Guide */}
       {t.materials && t.materials.length > 0 && (
-        <section class="section-lg bg-mesh">
-          <div class="max-w-4xl mx-auto px-5 md:px-8">
+        <section class="section-lg bg-mesh" itemScope itemType="https://schema.org/ItemList">
+          <meta itemProp="name" content={`${t.name} 사용 재료 및 픽스처`} />
+          <div class="max-w-5xl mx-auto px-5 md:px-8">
             <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#0066FF] mb-3 block">MATERIALS</span>
-              <h2 class="section-sub-headline text-gray-900">사용 재료 및 장비</h2>
+              <span class="section-eyebrow text-[#0066FF] mb-3 block">
+                {['implant','full-implant','digital-full-arch','implant-revision'].includes(t.slug) ? 'FIXTURE GUIDE' : 'MATERIALS'}
+              </span>
+              <h2 class="section-sub-headline text-gray-900">
+                {['implant','full-implant','digital-full-arch','implant-revision'].includes(t.slug) ? '임플란트 픽스처 안내' : '사용 재료 및 장비'}
+              </h2>
+              {['implant','full-implant','digital-full-arch'].includes(t.slug) && (
+                <p class="text-gray-500 text-[0.9rem] mt-4 max-w-2xl mx-auto">CT 정밀 진단 후 뼈 상태·위치·예산에 맞는 최적의 픽스처를 추천드립니다.</p>
+              )}
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
-              {t.materials.map(m => (
-                <div class="glass-card p-5 flex flex-col">
-                  {m.grade && <span class="text-[0.7rem] font-semibold text-[#0066FF] uppercase tracking-wider mb-2">{m.grade}</span>}
-                  <h3 class="font-bold text-gray-900 text-[0.95rem] mb-1.5">{m.name}</h3>
-                  <p class="text-gray-500 text-[0.85rem] leading-relaxed">{m.desc}</p>
-                </div>
-              ))}
-            </div>
+
+            {/* 픽스처 상세 필드가 있는 경우: 확장된 카드 레이아웃 */}
+            {t.materials.some(m => m.price || m.origin || m.surface) ? (
+              <div class="space-y-6 stagger-children">
+                {t.materials.map((m, idx) => (
+                  <div class="glass-card overflow-hidden" itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+                    <meta itemProp="position" content={String(idx + 1)} />
+                    <div itemProp="item" itemScope itemType="https://schema.org/Product">
+                      {/* 헤더 */}
+                      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-5 pb-0 sm:pb-5 gap-3 border-b border-gray-100">
+                        <div class="flex items-start gap-3">
+                          <div class="w-10 h-10 rounded-xl bg-[#0066FF]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class={`fa-solid ${m.grade?.includes('수입') ? 'fa-globe' : m.grade?.includes('보철') || m.grade?.includes('연결') ? 'fa-crown' : 'fa-shield-halved'} text-[#0066FF] text-sm`} aria-hidden="true"></i>
+                          </div>
+                          <div>
+                            {m.grade && <span class="text-[0.65rem] font-bold text-[#0066FF] uppercase tracking-wider block mb-0.5">{m.grade}</span>}
+                            <h3 class="font-bold text-gray-900 text-[1.05rem]" itemProp="name">{m.name}</h3>
+                            {m.origin && <span class="text-gray-400 text-[0.75rem]">{m.origin}</span>}
+                          </div>
+                        </div>
+                        {m.price && (
+                          <div class="sm:text-right flex-shrink-0">
+                            <span class="text-[1.15rem] font-extrabold text-[#0066FF]" itemProp="offers" itemScope itemType="https://schema.org/Offer">
+                              <meta itemProp="priceCurrency" content="KRW" />
+                              <span itemProp="price">{m.price}</span>
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 본문 */}
+                      <div class="p-5">
+                        <p class="text-gray-600 text-[0.88rem] leading-relaxed mb-4" itemProp="description">{m.desc}</p>
+                        
+                        {/* 스펙 그리드 */}
+                        {(m.surface || m.connection || m.feature || m.bestFor) && (
+                          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            {m.surface && (
+                              <div class="flex items-start gap-2 bg-gray-50 rounded-lg px-3.5 py-2.5">
+                                <i class="fa-solid fa-layer-group text-gray-400 text-[0.7rem] mt-1 flex-shrink-0" aria-hidden="true"></i>
+                                <div>
+                                  <span class="text-[0.68rem] font-semibold text-gray-400 uppercase block">표면처리</span>
+                                  <span class="text-gray-700 text-[0.82rem] font-medium">{m.surface}</span>
+                                </div>
+                              </div>
+                            )}
+                            {m.connection && (
+                              <div class="flex items-start gap-2 bg-gray-50 rounded-lg px-3.5 py-2.5">
+                                <i class="fa-solid fa-link text-gray-400 text-[0.7rem] mt-1 flex-shrink-0" aria-hidden="true"></i>
+                                <div>
+                                  <span class="text-[0.68rem] font-semibold text-gray-400 uppercase block">연결방식</span>
+                                  <span class="text-gray-700 text-[0.82rem] font-medium">{m.connection}</span>
+                                </div>
+                              </div>
+                            )}
+                            {m.feature && (
+                              <div class="flex items-start gap-2 bg-gray-50 rounded-lg px-3.5 py-2.5">
+                                <i class="fa-solid fa-star text-gray-400 text-[0.7rem] mt-1 flex-shrink-0" aria-hidden="true"></i>
+                                <div>
+                                  <span class="text-[0.68rem] font-semibold text-gray-400 uppercase block">주요 특징</span>
+                                  <span class="text-gray-700 text-[0.82rem] font-medium">{m.feature}</span>
+                                </div>
+                              </div>
+                            )}
+                            {m.bestFor && (
+                              <div class="flex items-start gap-2 bg-[#0066FF]/5 rounded-lg px-3.5 py-2.5">
+                                <i class="fa-solid fa-user-check text-[#0066FF]/60 text-[0.7rem] mt-1 flex-shrink-0" aria-hidden="true"></i>
+                                <div>
+                                  <span class="text-[0.68rem] font-semibold text-[#0066FF]/60 uppercase block">추천 대상</span>
+                                  <span class="text-gray-700 text-[0.82rem] font-medium">{m.bestFor}</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              /* 기존 간단한 카드 레이아웃 (비임플란트 페이지) */
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
+                {t.materials.map(m => (
+                  <div class="glass-card p-5 flex flex-col">
+                    {m.grade && <span class="text-[0.7rem] font-semibold text-[#0066FF] uppercase tracking-wider mb-2">{m.grade}</span>}
+                    <h3 class="font-bold text-gray-900 text-[0.95rem] mb-1.5">{m.name}</h3>
+                    <p class="text-gray-500 text-[0.85rem] leading-relaxed">{m.desc}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 픽스처 페이지 안내 문구 */}
+            {['implant','full-implant','digital-full-arch'].includes(t.slug) && (
+              <div class="mt-8 text-center reveal">
+                <p class="text-gray-400 text-[0.8rem]">
+                  <i class="fa-solid fa-circle-info mr-1.5" aria-hidden="true"></i>
+                  모든 픽스처는 식약처 인증 정품만 사용하며, 보증서를 발급해 드립니다. 정확한 비용은 CT 진단 후 안내됩니다.
+                </p>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -775,18 +876,29 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
             "acceptedAnswer": { "@type": "Answer", "text": f.a }
           }))
         }] : []),
-        // MedicalDevice — equipment used for this treatment
-        {
-          "@context": "https://schema.org",
-          "@type": "MedicalDevice",
-          "name": `${t.name} 진료 장비`,
-          "description": `서울365치과 ${t.name} 진료에 사용되는 의료 장비`,
-          "manufacturer": [
-            { "@type": "Organization", "name": "오스템 임플란트" },
-            { "@type": "Organization", "name": "3Shape" },
-          ],
-          "purpose": `${t.name} 치료를 위한 정밀 진단 및 수술`,
-        },
+        // MedicalDevice — equipment & fixtures used for this treatment
+        ...(t.materials && t.materials.some(m => m.price || m.origin) ? 
+          t.materials.filter(m => m.price).map(m => ({
+            "@context": "https://schema.org",
+            "@type": "MedicalDevice",
+            "name": m.name,
+            "description": m.desc,
+            ...(m.origin ? { "manufacturer": { "@type": "Organization", "name": m.origin } } : {}),
+            ...(m.surface ? { "material": m.surface } : {}),
+            "purpose": `${t.name} 치료용 임플란트 픽스처`,
+            ...(m.price ? { "offers": { "@type": "Offer", "priceCurrency": "KRW", "price": m.price, "availability": "https://schema.org/InStock" } } : {}),
+          })) : [{
+            "@context": "https://schema.org",
+            "@type": "MedicalDevice",
+            "name": `${t.name} 진료 장비`,
+            "description": `서울365치과 ${t.name} 진료에 사용되는 의료 장비`,
+            "manufacturer": [
+              { "@type": "Organization", "name": "오스템 임플란트" },
+              { "@type": "Organization", "name": "3Shape" },
+            ],
+            "purpose": `${t.name} 치료를 위한 정밀 진단 및 수술`,
+          }]
+        ),
         // MedicalIndication — who should get this treatment
         {
           "@context": "https://schema.org",
