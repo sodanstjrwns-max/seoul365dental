@@ -820,7 +820,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
           <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">치료 사례 Before &amp; After</h1>
           <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">
-            {isLoggedIn ? '실제 치료 사례로 결과를 확인하세요.' : '카드를 클릭하여 상세 사례를 확인하세요. (로그인 필요)'}
+            {isLoggedIn ? '실제 치료 전후 사례를 확인하세요.' : 'Before 사진을 확인하고, After는 로그인 후 열람 가능합니다.'}
           </p>
         </div>
       </section>
@@ -833,7 +833,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
             </div>
           ) : (
             <div class="flex items-center justify-between mb-8 reveal">
-              <p class="text-sm text-gray-400"><i class="fa-solid fa-lock text-[#0066FF]/50 mr-1.5"></i> 카드 상세 보기는 <a href="/login" class="text-[#0066FF] font-semibold underline">로그인</a> 후 이용 가능합니다.</p>
+              <p class="text-sm text-gray-400"><i class="fa-solid fa-lock text-[#0066FF]/50 mr-1.5"></i> After 사진 열람은 <a href="/login" class="text-[#0066FF] font-semibold underline">로그인</a> 후 가능합니다.</p>
               <div class="flex gap-2">
                 <a href="/login" class="text-xs px-3 py-1.5 rounded-lg bg-[#0066FF] text-white font-bold hover:bg-[#0052cc] transition">로그인</a>
                 <a href="/register" class="text-xs px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition">회원가입</a>
@@ -863,31 +863,25 @@ pageRoutes.get('/cases/gallery', async (c) => {
                 {dbCases.map((cs: any, idx: number) => (
                   <div class="premium-card overflow-hidden tilt-card electric-card-border case-card cursor-pointer group" data-tag={cs.tag} onclick={isLoggedIn ? `openCaseModal(${idx})` : `showLoginRequired()`}>
                     <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
-                      {cs.before_image && cs.after_image ? (
-                        <div class="absolute inset-0 flex ba-slider" data-id={cs.id}>
-                          <div class="w-1/2 overflow-hidden border-r-2 border-white relative">
-                            <img src={cs.before_image} alt="Before" class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%" />
-                            <span class="absolute top-3 left-3 text-[0.6rem] font-bold tracking-widest uppercase text-white bg-black/40 px-2 py-0.5 rounded">Before</span>
-                          </div>
-                          <div class="w-1/2 overflow-hidden relative">
-                            <img src={cs.after_image} alt="After" class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%;margin-left:-100%" />
-                            <span class="absolute top-3 right-3 text-[0.6rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/70 px-2 py-0.5 rounded">After</span>
-                          </div>
-                        </div>
+                      {/* Before 사진만 전체 표시 */}
+                      {cs.before_image ? (
+                        <img src={cs.before_image} alt={`${cs.title} 치료 전`} class="absolute inset-0 w-full h-full object-cover" />
                       ) : (
-                        <div class="absolute inset-0 flex">
-                          <div class="w-1/2 flex items-center justify-center bg-gray-100/80 border-r border-gray-200/50">
-                            {cs.before_image ? <img src={cs.before_image} alt="Before" class="w-full h-full object-cover" /> : <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>}
-                          </div>
-                          <div class="w-1/2 flex items-center justify-center bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.02]">
-                            {cs.after_image ? <img src={cs.after_image} alt="After" class="w-full h-full object-cover" /> : <span class="text-[#0066FF]/30 text-sm font-bold tracking-widest uppercase">After</span>}
-                          </div>
+                        <div class="absolute inset-0 flex items-center justify-center bg-gray-100">
+                          <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
                         </div>
                       )}
+                      {/* Before 라벨 */}
+                      <span class="absolute top-3 left-3 text-[0.6rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-lg z-10">Before</span>
+                      {/* After 잠금 오버레이 (우하단) */}
+                      <div class="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 bg-black/50 backdrop-blur-sm text-white text-[0.65rem] font-bold px-3 py-1.5 rounded-lg">
+                        <i class={`fa-solid ${isLoggedIn ? 'fa-eye' : 'fa-lock'} text-[0.55rem]`}></i>
+                        <span>{isLoggedIn ? 'After 보기' : 'After 잠금'}</span>
+                      </div>
                       {/* Hover overlay */}
                       <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                         <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
-                          <i class="fa-solid fa-expand text-[#0066FF] text-lg"></i>
+                          <i class={`fa-solid ${isLoggedIn ? 'fa-expand' : 'fa-lock'} text-[#0066FF] text-lg`}></i>
                         </div>
                       </div>
                     </div>
@@ -1057,9 +1051,9 @@ pageRoutes.get('/cases/gallery', async (c) => {
             <div class="w-16 h-16 rounded-full bg-[#0066FF]/10 mx-auto mb-5 flex items-center justify-center">
               <i class="fa-solid fa-lock text-2xl text-[#0066FF]/50"></i>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">회원 전용 콘텐츠</h3>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">After 사진 열람</h3>
             <p class="text-gray-500 text-sm mb-6 leading-relaxed">
-              치료 사례 상세 보기는<br/>로그인 후 이용하실 수 있습니다.
+              치료 후(After) 사진 확인은<br/>로그인 후 이용하실 수 있습니다.
             </p>
             <div class="flex flex-col sm:flex-row gap-3 justify-center">
               <a href="/login" class="btn-premium btn-premium-fill px-7 py-3" data-cursor-hover>

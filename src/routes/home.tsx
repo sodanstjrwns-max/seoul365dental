@@ -573,26 +573,25 @@ home.get('/', async (c) => {
               baCases.map((cs: any) => (
                 <div onclick="checkLoginAndGo()" class="premium-card overflow-hidden group tilt-card electric-card-border block cursor-pointer" data-cursor-hover>
                   <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
-                    <div class="absolute inset-0 flex">
-                      <div class="w-1/2 relative overflow-hidden border-r border-gray-200/50">
-                        {cs.before_image ? (
-                          <img src={cs.before_image} alt={`서울365치과 ${cs.title || cs.tag} 치료 전 사진`} title={`${cs.title || cs.tag} Before`} class="w-full h-full object-cover" loading="lazy" />
-                        ) : (
-                          <div class="w-full h-full flex items-center justify-center bg-gray-100/80">
-                            <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
-                          </div>
-                        )}
-                        <div class="absolute bottom-2 left-2 bg-black/50 text-white text-[0.6rem] px-2 py-0.5 rounded-full font-bold tracking-wider">BEFORE</div>
+                    {/* Before 사진만 전체 표시 */}
+                    {cs.before_image ? (
+                      <img src={cs.before_image} alt={`서울365치과 ${cs.title || cs.tag} 치료 전 사진`} title={`${cs.title || cs.tag} Before`} class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div class="absolute inset-0 flex items-center justify-center bg-gray-100">
+                        <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
                       </div>
-                      <div class="w-1/2 relative overflow-hidden">
-                        {cs.after_image ? (
-                          <img src={cs.after_image} alt={`서울365치과 ${cs.title || cs.tag} 치료 후 사진`} title={`${cs.title || cs.tag} After`} class="w-full h-full object-cover" loading="lazy" />
-                        ) : (
-                          <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.02]">
-                            <span class="text-[#0066FF]/30 text-sm font-bold tracking-widest uppercase">After</span>
-                          </div>
-                        )}
-                        <div class="absolute bottom-2 left-2 bg-[#0066FF]/80 text-white text-[0.6rem] px-2 py-0.5 rounded-full font-bold tracking-wider">AFTER</div>
+                    )}
+                    {/* Before 라벨 */}
+                    <span class="absolute top-3 left-3 text-[0.6rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-lg z-10">Before</span>
+                    {/* After 잠금 오버레이 */}
+                    <div class="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 bg-black/50 backdrop-blur-sm text-white text-[0.65rem] font-bold px-3 py-1.5 rounded-lg">
+                      <i class="fa-solid fa-lock text-[0.55rem]"></i>
+                      <span>After 잠금</span>
+                    </div>
+                    {/* Hover overlay */}
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                      <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-lock text-[#0066FF] text-lg"></i>
                       </div>
                     </div>
                   </div>
@@ -614,13 +613,13 @@ home.get('/', async (c) => {
               ].map(cs => (
                 <div onclick="checkLoginAndGo()" class="premium-card overflow-hidden group tilt-card electric-card-border block cursor-pointer" data-cursor-hover>
                   <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
-                    <div class="absolute inset-0 flex">
-                      <div class="w-1/2 flex items-center justify-center bg-gray-100/80 border-r border-gray-200/50 group-hover:bg-gray-50 transition-colors">
-                        <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
-                      </div>
-                      <div class="w-1/2 flex items-center justify-center bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.02] group-hover:from-[#0066FF]/10 transition-all">
-                        <span class="text-[#0066FF]/30 text-sm font-bold tracking-widest uppercase">After</span>
-                      </div>
+                    <div class="absolute inset-0 flex items-center justify-center bg-gray-100/80">
+                      <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
+                    </div>
+                    <span class="absolute top-3 left-3 text-[0.6rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-lg z-10">Before</span>
+                    <div class="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 bg-black/50 backdrop-blur-sm text-white text-[0.65rem] font-bold px-3 py-1.5 rounded-lg">
+                      <i class="fa-solid fa-lock text-[0.55rem]"></i>
+                      <span>After 잠금</span>
                     </div>
                   </div>
                   <div class="p-5">
@@ -652,9 +651,9 @@ home.get('/', async (c) => {
             <div class="w-16 h-16 rounded-full bg-[#0066FF]/10 mx-auto mb-5 flex items-center justify-center">
               <i class="fa-solid fa-lock text-2xl text-[#0066FF]/50"></i>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">회원 전용 콘텐츠</h3>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">After 사진 열람</h3>
             <p class="text-gray-500 text-sm mb-6 leading-relaxed">
-              치료 사례 상세 보기는<br/>로그인 후 이용하실 수 있습니다.
+              치료 후(After) 사진 확인은<br/>로그인 후 이용하실 수 있습니다.
             </p>
             <div class="flex flex-col sm:flex-row gap-3 justify-center">
               <a href="/login" class="btn-premium btn-premium-fill px-7 py-3" data-cursor-hover>
