@@ -571,7 +571,7 @@ home.get('/', async (c) => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
             {baCases.length > 0 ? (
               baCases.map((cs: any) => (
-                <a href="/cases/gallery" class="premium-card overflow-hidden group tilt-card electric-card-border block" data-cursor-hover>
+                <div onclick="checkLoginAndGo()" class="premium-card overflow-hidden group tilt-card electric-card-border block cursor-pointer" data-cursor-hover>
                   <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
                     <div class="absolute inset-0 flex">
                       <div class="w-1/2 relative overflow-hidden border-r border-gray-200/50">
@@ -603,7 +603,7 @@ home.get('/', async (c) => {
                     <h3 class="font-bold text-gray-900 text-[0.95rem] group-hover:text-[#0066FF] transition-colors">{cs.title}</h3>
                     <p class="text-xs text-gray-400 mt-1">담당: {cs.doctor_name}</p>
                   </div>
-                </a>
+                </div>
               ))
             ) : (
               /* 폴백: DB에 데이터가 없을 때 기본 표시 */
@@ -612,7 +612,7 @@ home.get('/', async (c) => {
                 { title: '디지털풀아치 – 하악 즉시로딩', tag: '디지털풀아치', doctor: '박준규 대표원장' },
                 { title: '인비절라인 – 성인 투명교정', tag: '교정', doctor: '하누리 원장' },
               ].map(cs => (
-                <a href="/cases/gallery" class="premium-card overflow-hidden group tilt-card electric-card-border block" data-cursor-hover>
+                <div onclick="checkLoginAndGo()" class="premium-card overflow-hidden group tilt-card electric-card-border block cursor-pointer" data-cursor-hover>
                   <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
                     <div class="absolute inset-0 flex">
                       <div class="w-1/2 flex items-center justify-center bg-gray-100/80 border-r border-gray-200/50 group-hover:bg-gray-50 transition-colors">
@@ -630,17 +630,72 @@ home.get('/', async (c) => {
                     <h3 class="font-bold text-gray-900 text-[0.95rem] group-hover:text-[#0066FF] transition-colors">{cs.title}</h3>
                     <p class="text-xs text-gray-400 mt-1">담당: {cs.doctor}</p>
                   </div>
-                </a>
+                </div>
               ))
             )}
           </div>
 
           <p class="text-[0.72rem] text-gray-300 text-center mt-10">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
           <div class="text-center mt-4 reveal">
-            <a href="/cases/gallery" class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-semibold link-underline" data-cursor-hover>전체 사례 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
+            <a href="javascript:void(0)" onclick="checkLoginAndGo()" class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-semibold link-underline" data-cursor-hover>전체 사례 보기 <i class="fa-solid fa-arrow-right text-xs"></i></a>
           </div>
         </div>
       </section>
+
+      {/* ===== 로그인 필요 모달 (Before/After 클릭 시) ===== */}
+      <div id="login-required-modal" class="fixed inset-0 z-[9998] hidden" style="background:rgba(0,0,0,0.55);backdrop-filter:blur(4px)">
+        <div class="flex items-center justify-center min-h-screen p-4">
+          <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center relative transform transition-all" id="login-required-box">
+            <button onclick="document.getElementById('login-required-modal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition">
+              <i class="fa-solid fa-xmark text-gray-400"></i>
+            </button>
+            <div class="w-16 h-16 rounded-full bg-[#0066FF]/10 mx-auto mb-5 flex items-center justify-center">
+              <i class="fa-solid fa-lock text-2xl text-[#0066FF]/50"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">회원 전용 콘텐츠</h3>
+            <p class="text-gray-500 text-sm mb-6 leading-relaxed">
+              치료 사례 상세 보기는<br/>로그인 후 이용하실 수 있습니다.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+              <a href="/login" class="btn-premium btn-premium-fill px-7 py-3" data-cursor-hover>
+                <i class="fa-solid fa-right-to-bracket mr-1"></i> 로그인
+              </a>
+              <a href="/register" class="btn-premium btn-premium-outline px-7 py-3" data-cursor-hover>
+                <i class="fa-solid fa-user-plus mr-1"></i> 회원가입
+              </a>
+            </div>
+            <p class="text-xs text-gray-300 mt-5">가입은 30초면 충분합니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        function checkLoginAndGo() {
+          fetch('/api/auth/me')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data.ok && data.user) {
+                window.location.href = '/cases/gallery';
+              } else {
+                document.getElementById('login-required-modal').classList.remove('hidden');
+              }
+            })
+            .catch(function() {
+              document.getElementById('login-required-modal').classList.remove('hidden');
+            });
+        }
+        // Close on overlay click
+        document.getElementById('login-required-modal').addEventListener('click', function(e) {
+          if (e.target === this) this.classList.add('hidden');
+        });
+        // Close on ESC
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            var m = document.getElementById('login-required-modal');
+            if (m && !m.classList.contains('hidden')) m.classList.add('hidden');
+          }
+        });
+      `}} />
 
       {/* ===== S8: REVIEWS — ELECTRIC INFINITE SCROLL ===== */}
       <section class="section-lg bg-mesh relative overflow-hidden" aria-label="환자 후기">

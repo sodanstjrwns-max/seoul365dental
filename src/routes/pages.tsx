@@ -803,70 +803,9 @@ pageRoutes.get('/faq', (c) => {
 // ============================================================
 pageRoutes.get('/cases/gallery', async (c) => {
   const user = await getCurrentUser(c.env.DB, c.req.header('cookie'));
+  const isLoggedIn = !!user;
 
-  // Not logged in → show login prompt
-  if (!user) {
-    return c.render(
-      <>
-        <section class="treatment-hero">
-          <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-            <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">치료 사례 Before &amp; After</h1>
-            <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">실제 치료 사례를 확인하시려면 로그인이 필요합니다.</p>
-          </div>
-        </section>
-
-        <section class="section-lg bg-mesh">
-          <div class="max-w-lg mx-auto px-5 md:px-8 text-center">
-            <div class="premium-card p-10 reveal-3d">
-              <div class="w-20 h-20 rounded-full bg-[#0066FF]/10 mx-auto mb-6 flex items-center justify-center">
-                <i class="fa-solid fa-lock text-3xl text-[#0066FF]/50"></i>
-              </div>
-              <h2 class="text-xl font-bold text-gray-900 mb-3">회원 전용 콘텐츠</h2>
-              <p class="text-gray-500 text-[0.9rem] leading-relaxed mb-8">
-                실제 치료 Before &amp; After 사례는<br/>
-                회원 로그인 후 열람하실 수 있습니다.
-              </p>
-              <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <a href="/login" class="btn-premium btn-premium-fill px-8 py-3.5" data-cursor-hover>
-                  <i class="fa-solid fa-right-to-bracket"></i> 로그인
-                </a>
-                <a href="/register" class="btn-premium btn-premium-outline px-8 py-3.5" data-cursor-hover>
-                  <i class="fa-solid fa-user-plus"></i> 회원가입
-                </a>
-              </div>
-              <p class="text-xs text-gray-300 mt-6">가입은 30초면 충분합니다.</p>
-            </div>
-          </div>
-        </section>
-      </>,
-      {
-        title: '치료 사례 Before & After | 서울365치과 인천 구월동',
-        description: '서울365치과 실제 치료 사례 Before & After 갤러리. 임플란트·교정·심미치료 전후 사진. 회원 로그인 후 열람 가능합니다.',
-        canonical: 'https://seoul365dc.kr/cases/gallery',
-        jsonLd: [
-          {
-            "@context": "https://schema.org", "@type": "BreadcrumbList",
-            "itemListElement": [
-              { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
-              { "@type": "ListItem", "position": 2, "name": "치료사례", "item": "https://seoul365dc.kr/cases/gallery" }
-            ]
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "서울365치과 치료 사례",
-            "description": "서울365치과 임플란트, 교정, 심미치료 Before & After 갤러리.",
-            "url": "https://seoul365dc.kr/cases/gallery",
-            "isAccessibleForFree": false,
-            "conditionsOfAccess": "회원 로그인 필요",
-            "inLanguage": "ko-KR"
-          }
-        ]
-      }
-    )
-  }
-
-  // Fetch published cases from DB
+  // Fetch published cases from DB (always — cards are shown even without login)
   let dbCases: any[] = [];
   try {
     await initAdminTables(c.env.DB);
@@ -874,21 +813,33 @@ pageRoutes.get('/cases/gallery', async (c) => {
     dbCases = result.results || [];
   } catch {}
 
-  // Logged in → show gallery
+  // Show gallery (cards visible to all, detail modal requires login)
   return c.render(
     <>
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
           <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">치료 사례 Before &amp; After</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">실제 치료 사례로 결과를 확인하세요.</p>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">
+            {isLoggedIn ? '실제 치료 사례로 결과를 확인하세요.' : '카드를 클릭하여 상세 사례를 확인하세요. (로그인 필요)'}
+          </p>
         </div>
       </section>
 
       <section class="section-lg bg-mesh">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="flex items-center justify-between mb-8 reveal">
-            <p class="text-sm text-gray-400"><i class="fa-solid fa-user-check text-[#0066FF] mr-1.5"></i> <span class="font-medium text-gray-600">{user.name}</span>님, 환영합니다.</p>
-          </div>
+          {isLoggedIn ? (
+            <div class="flex items-center justify-between mb-8 reveal">
+              <p class="text-sm text-gray-400"><i class="fa-solid fa-user-check text-[#0066FF] mr-1.5"></i> <span class="font-medium text-gray-600">{user!.name}</span>님, 환영합니다.</p>
+            </div>
+          ) : (
+            <div class="flex items-center justify-between mb-8 reveal">
+              <p class="text-sm text-gray-400"><i class="fa-solid fa-lock text-[#0066FF]/50 mr-1.5"></i> 카드 상세 보기는 <a href="/login" class="text-[#0066FF] font-semibold underline">로그인</a> 후 이용 가능합니다.</p>
+              <div class="flex gap-2">
+                <a href="/login" class="text-xs px-3 py-1.5 rounded-lg bg-[#0066FF] text-white font-bold hover:bg-[#0052cc] transition">로그인</a>
+                <a href="/register" class="text-xs px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition">회원가입</a>
+              </div>
+            </div>
+          )}
 
           {dbCases.length === 0 ? (
             <div class="text-center py-20">
@@ -910,7 +861,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
 
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children" id="casesGrid">
                 {dbCases.map((cs: any, idx: number) => (
-                  <div class="premium-card overflow-hidden tilt-card electric-card-border case-card cursor-pointer group" data-tag={cs.tag} onclick={`openCaseModal(${idx})`}>
+                  <div class="premium-card overflow-hidden tilt-card electric-card-border case-card cursor-pointer group" data-tag={cs.tag} onclick={isLoggedIn ? `openCaseModal(${idx})` : `showLoginRequired()`}>
                     <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
                       {cs.before_image && cs.after_image ? (
                         <div class="absolute inset-0 flex ba-slider" data-id={cs.id}>
@@ -1089,6 +1040,47 @@ pageRoutes.get('/cases/gallery', async (c) => {
             if (tag === 'all' || card.dataset.tag === tag) { card.style.display = ''; } else { card.style.display = 'none'; }
           });
         }
+
+        function showLoginRequired() {
+          var m = document.getElementById('loginRequiredModal');
+          if (m) m.classList.remove('hidden');
+        }
+      `}} />
+
+      {/* 로그인 필요 모달 (비로그인 시 카드 클릭) */}
+      <div id="loginRequiredModal" class="fixed inset-0 z-[100] hidden" onclick="if(event.target===this)this.classList.add('hidden')" style="background:rgba(0,0,0,0.55);backdrop-filter:blur(4px)">
+        <div class="flex items-center justify-center min-h-screen p-4">
+          <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center relative" onclick="event.stopPropagation()">
+            <button onclick="document.getElementById('loginRequiredModal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition">
+              <i class="fa-solid fa-xmark text-gray-400"></i>
+            </button>
+            <div class="w-16 h-16 rounded-full bg-[#0066FF]/10 mx-auto mb-5 flex items-center justify-center">
+              <i class="fa-solid fa-lock text-2xl text-[#0066FF]/50"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">회원 전용 콘텐츠</h3>
+            <p class="text-gray-500 text-sm mb-6 leading-relaxed">
+              치료 사례 상세 보기는<br/>로그인 후 이용하실 수 있습니다.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+              <a href="/login" class="btn-premium btn-premium-fill px-7 py-3" data-cursor-hover>
+                <i class="fa-solid fa-right-to-bracket mr-1"></i> 로그인
+              </a>
+              <a href="/register" class="btn-premium btn-premium-outline px-7 py-3" data-cursor-hover>
+                <i class="fa-solid fa-user-plus mr-1"></i> 회원가입
+              </a>
+            </div>
+            <p class="text-xs text-gray-300 mt-5">가입은 30초면 충분합니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            var m = document.getElementById('loginRequiredModal');
+            if (m && !m.classList.contains('hidden')) m.classList.add('hidden');
+          }
+        });
       `}} />
     </>,
     {
@@ -1447,7 +1439,7 @@ pageRoutes.get('/notices/:id', async (c) => {
   try {
     await c.env.DB.prepare('UPDATE notices SET view_count = view_count + 1 WHERE id = ? AND is_published = 1').bind(id).run();
     notice = await c.env.DB.prepare(
-      'SELECT id, title, content, category, is_pinned, view_count, created_at FROM notices WHERE id = ? AND is_published = 1'
+      'SELECT id, title, content, category, is_pinned, view_count, image, created_at FROM notices WHERE id = ? AND is_published = 1'
     ).bind(id).first();
   } catch {}
 
@@ -1486,6 +1478,11 @@ pageRoutes.get('/notices/:id', async (c) => {
       <section class="section-lg bg-mesh">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="premium-card p-8 md:p-10">
+            {notice.image && (
+              <div class="mb-6 rounded-2xl overflow-hidden">
+                <img src={notice.image} alt={notice.title} class="w-full rounded-2xl" loading="lazy" />
+              </div>
+            )}
             <div class="text-gray-600 leading-relaxed text-[0.95rem]" dangerouslySetInnerHTML={{__html: contentHtml}}></div>
           </div>
           <div class="text-center mt-10">

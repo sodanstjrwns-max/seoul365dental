@@ -911,7 +911,10 @@ adminRoutes.get('/admin/notices', async (c) => {
                           </div>
                         </td>
                         <td class="px-5 py-3 text-purple-300 text-xs">{n.category}</td>
-                        <td class="px-5 py-3 text-white font-medium">{n.title}</td>
+                        <td class="px-5 py-3 text-white font-medium">
+                          {n.image && <i class="fa-solid fa-image text-purple-400/50 text-[0.65rem] mr-1.5" title="이미지 첨부"></i>}
+                          {n.title}
+                        </td>
                         <td class="px-5 py-3 hidden md:table-cell">
                           {n.is_popup ? (
                             <span class="inline-flex items-center gap-1 text-xs text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-full"><i class="fa-solid fa-window-restore text-[0.6rem]"></i>팝업 ON</span>
@@ -988,6 +991,25 @@ adminRoutes.get('/admin/notices', async (c) => {
               <textarea id="noticeContent" rows={10} required class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-purple-400/50 placeholder-white/20 resize-none font-mono text-sm" placeholder="공지사항 내용을 입력하세요..."></textarea>
               <p class="text-white/15 text-xs mt-1">줄바꿈은 그대로 반영됩니다.</p>
             </div>
+            {/* 이미지 업로드 */}
+            <div>
+              <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider"><i class="fa-solid fa-image text-purple-400/50 mr-1"></i>이미지 첨부</label>
+              <input type="hidden" id="noticeImage" value="" />
+              <input type="file" id="noticeImageFile" accept="image/*" class="hidden" />
+              <div id="noticeImageDropZone" class="w-full border-2 border-dashed border-white/10 rounded-xl hover:border-purple-400/30 transition cursor-pointer overflow-hidden" onclick="document.getElementById('noticeImageFile').click()">
+                <img id="noticeImagePreview" src="" class="hidden w-full max-h-48 object-cover" />
+                <div id="noticeImagePlaceholder" class="flex flex-col items-center justify-center gap-2 py-6">
+                  <i class="fa-solid fa-cloud-arrow-up text-xl text-white/15"></i>
+                  <span class="text-white/20 text-sm">이미지를 업로드하세요 (선택사항)</span>
+                  <span class="text-white/10 text-xs">R2 업로드 · 용량 제한 없음</span>
+                </div>
+                <div id="noticeImageUploading" class="hidden flex items-center justify-center gap-2 py-6">
+                  <i class="fa-solid fa-spinner fa-spin text-purple-400"></i>
+                  <span class="text-purple-400 text-sm">업로드 중...</span>
+                </div>
+              </div>
+              <button type="button" id="noticeImageRemoveBtn" onclick="event.stopPropagation(); removeNoticeImage()" class="hidden mt-2 text-xs text-red-400 hover:text-red-300 transition"><i class="fa-solid fa-trash mr-1"></i>이미지 삭제</button>
+            </div>
             <div class="flex gap-3 pt-2">
               <button type="submit" id="noticeSubmitBtn" class="flex-1 py-3.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-bold transition">
                 <i class="fa-solid fa-check mr-1.5"></i>저장
@@ -1009,6 +1031,12 @@ adminRoutes.get('/admin/notices', async (c) => {
           document.getElementById('noticePinned').checked = false;
           document.getElementById('noticePublished').checked = true;
           document.getElementById('noticePopup').checked = false;
+          // Reset image
+          document.getElementById('noticeImage').value = '';
+          document.getElementById('noticeImagePreview').src = '';
+          document.getElementById('noticeImagePreview').classList.add('hidden');
+          document.getElementById('noticeImagePlaceholder').classList.remove('hidden');
+          document.getElementById('noticeImageRemoveBtn').classList.add('hidden');
         }
 
         function editNotice(n) {
@@ -1021,6 +1049,66 @@ adminRoutes.get('/admin/notices', async (c) => {
           document.getElementById('noticePinned').checked = !!n.is_pinned;
           document.getElementById('noticePublished').checked = !!n.is_published;
           document.getElementById('noticePopup').checked = !!n.is_popup;
+          // Image
+          if (n.image) {
+            document.getElementById('noticeImage').value = n.image;
+            document.getElementById('noticeImagePreview').src = n.image;
+            document.getElementById('noticeImagePreview').classList.remove('hidden');
+            document.getElementById('noticeImagePlaceholder').classList.add('hidden');
+            document.getElementById('noticeImageRemoveBtn').classList.remove('hidden');
+          } else {
+            document.getElementById('noticeImage').value = '';
+            document.getElementById('noticeImagePreview').src = '';
+            document.getElementById('noticeImagePreview').classList.add('hidden');
+            document.getElementById('noticeImagePlaceholder').classList.remove('hidden');
+            document.getElementById('noticeImageRemoveBtn').classList.add('hidden');
+          }
+        }
+
+        // R2 이미지 업로드
+        document.getElementById('noticeImageFile').addEventListener('change', async function() {
+          var file = this.files[0];
+          if (!file) return;
+          if (!file.type.startsWith('image/')) { alert('이미지 파일만 업로드 가능합니다.'); return; }
+          var placeholder = document.getElementById('noticeImagePlaceholder');
+          var uploading = document.getElementById('noticeImageUploading');
+          var preview = document.getElementById('noticeImagePreview');
+          var removeBtn = document.getElementById('noticeImageRemoveBtn');
+          placeholder.classList.add('hidden');
+          preview.classList.add('hidden');
+          removeBtn.classList.add('hidden');
+          uploading.classList.remove('hidden');
+          try {
+            var fd = new FormData();
+            fd.append('file', file);
+            fd.append('folder', 'notices');
+            var res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+            var json = await res.json();
+            if (json.ok) {
+              document.getElementById('noticeImage').value = json.url;
+              preview.src = json.url;
+              preview.classList.remove('hidden');
+              removeBtn.classList.remove('hidden');
+              uploading.classList.add('hidden');
+            } else {
+              alert(json.error || '업로드 실패');
+              placeholder.classList.remove('hidden');
+              uploading.classList.add('hidden');
+            }
+          } catch(e) {
+            alert('업로드 오류: ' + e.message);
+            placeholder.classList.remove('hidden');
+            uploading.classList.add('hidden');
+          }
+          this.value = '';
+        });
+
+        function removeNoticeImage() {
+          document.getElementById('noticeImage').value = '';
+          document.getElementById('noticeImagePreview').src = '';
+          document.getElementById('noticeImagePreview').classList.add('hidden');
+          document.getElementById('noticeImagePlaceholder').classList.remove('hidden');
+          document.getElementById('noticeImageRemoveBtn').classList.add('hidden');
         }
 
         document.getElementById('noticeForm').addEventListener('submit', async function(e) {
@@ -1037,6 +1125,7 @@ adminRoutes.get('/admin/notices', async (c) => {
             is_pinned: document.getElementById('noticePinned').checked ? 1 : 0,
             is_published: document.getElementById('noticePublished').checked ? 1 : 0,
             is_popup: document.getElementById('noticePopup').checked ? 1 : 0,
+            image: document.getElementById('noticeImage').value || '',
           };
 
           try {
@@ -1078,10 +1167,10 @@ adminRoutes.post('/api/admin/notices', async (c) => {
   await initAdminTables(c.env.DB);
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
   if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
-  const { title, content, category, is_pinned, is_published, is_popup } = await c.req.json();
+  const { title, content, category, is_pinned, is_published, is_popup, image } = await c.req.json();
   if (!title || !content) return c.json({ ok: false, error: '제목과 내용을 입력하세요' }, 400);
-  await c.env.DB.prepare('INSERT INTO notices (title, content, category, is_pinned, is_published, is_popup) VALUES (?, ?, ?, ?, ?, ?)')
-    .bind(title, content, category || '공지', is_pinned ? 1 : 0, is_published ? 1 : 0, is_popup ? 1 : 0).run();
+  await c.env.DB.prepare('INSERT INTO notices (title, content, category, is_pinned, is_published, is_popup, image) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .bind(title, content, category || '공지', is_pinned ? 1 : 0, is_published ? 1 : 0, is_popup ? 1 : 0, image || null).run();
   return c.json({ ok: true });
 })
 
@@ -1090,9 +1179,9 @@ adminRoutes.put('/api/admin/notices/:id', async (c) => {
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
   if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
   const id = c.req.param('id');
-  const { title, content, category, is_pinned, is_published, is_popup } = await c.req.json();
-  await c.env.DB.prepare('UPDATE notices SET title=?, content=?, category=?, is_pinned=?, is_published=?, is_popup=?, updated_at=datetime(\'now\') WHERE id=?')
-    .bind(title, content, category || '공지', is_pinned ? 1 : 0, is_published ? 1 : 0, is_popup ? 1 : 0, id).run();
+  const { title, content, category, is_pinned, is_published, is_popup, image } = await c.req.json();
+  await c.env.DB.prepare('UPDATE notices SET title=?, content=?, category=?, is_pinned=?, is_published=?, is_popup=?, image=?, updated_at=datetime(\'now\') WHERE id=?')
+    .bind(title, content, category || '공지', is_pinned ? 1 : 0, is_published ? 1 : 0, is_popup ? 1 : 0, image || null, id).run();
   return c.json({ ok: true });
 })
 

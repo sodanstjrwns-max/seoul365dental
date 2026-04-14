@@ -38,6 +38,8 @@ export async function initAdminTables(db: D1Database) {
   try { await db.prepare('ALTER TABLE before_after_cases ADD COLUMN view_count INTEGER DEFAULT 0').run(); } catch {}
   // Ensure is_popup column exists for older notices tables
   try { await db.prepare('ALTER TABLE notices ADD COLUMN is_popup INTEGER DEFAULT 0').run(); } catch {}
+  // Ensure image column exists for notices (R2 image upload)
+  try { await db.prepare('ALTER TABLE notices ADD COLUMN image TEXT').run(); } catch {}
   _adminTablesReady = true;
 }
 
