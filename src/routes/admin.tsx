@@ -891,6 +891,7 @@ adminRoutes.get('/admin/notices', async (c) => {
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">상태</th>
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">카테고리</th>
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">제목</th>
+                      <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell"><i class="fa-solid fa-window-restore mr-1"></i>팝업</th>
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell"><i class="fa-solid fa-eye mr-1"></i>조회</th>
                       <th class="text-left px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider hidden md:table-cell">작성일</th>
                       <th class="text-right px-5 py-3 text-white/30 font-semibold text-xs uppercase tracking-wider">관리</th>
@@ -911,6 +912,13 @@ adminRoutes.get('/admin/notices', async (c) => {
                         </td>
                         <td class="px-5 py-3 text-purple-300 text-xs">{n.category}</td>
                         <td class="px-5 py-3 text-white font-medium">{n.title}</td>
+                        <td class="px-5 py-3 hidden md:table-cell">
+                          {n.is_popup ? (
+                            <span class="inline-flex items-center gap-1 text-xs text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-full"><i class="fa-solid fa-window-restore text-[0.6rem]"></i>팝업 ON</span>
+                          ) : (
+                            <span class="text-white/15 text-xs">—</span>
+                          )}
+                        </td>
                         <td class="px-5 py-3 hidden md:table-cell">
                           <span class="text-white/50 text-xs font-mono"><i class="fa-solid fa-eye text-white/15 mr-1"></i>{n.view_count || 0}</span>
                         </td>
@@ -965,6 +973,10 @@ adminRoutes.get('/admin/notices', async (c) => {
                   <input type="checkbox" id="noticePublished" checked class="w-4 h-4 rounded bg-white/5 border-white/10 text-emerald-400 focus:ring-emerald-400/20" />
                   <span class="text-white/50 text-sm">공개</span>
                 </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="noticePopup" class="w-4 h-4 rounded bg-white/5 border-white/10 text-orange-400 focus:ring-orange-400/20" />
+                  <span class="text-white/50 text-sm"><i class="fa-solid fa-window-restore text-orange-400/50 mr-1"></i>메인 팝업</span>
+                </label>
               </div>
             </div>
             <div>
@@ -996,6 +1008,7 @@ adminRoutes.get('/admin/notices', async (c) => {
           document.getElementById('noticeCategory').value = '공지';
           document.getElementById('noticePinned').checked = false;
           document.getElementById('noticePublished').checked = true;
+          document.getElementById('noticePopup').checked = false;
         }
 
         function editNotice(n) {
@@ -1007,6 +1020,7 @@ adminRoutes.get('/admin/notices', async (c) => {
           document.getElementById('noticeCategory').value = n.category || '공지';
           document.getElementById('noticePinned').checked = !!n.is_pinned;
           document.getElementById('noticePublished').checked = !!n.is_published;
+          document.getElementById('noticePopup').checked = !!n.is_popup;
         }
 
         document.getElementById('noticeForm').addEventListener('submit', async function(e) {
@@ -1022,6 +1036,7 @@ adminRoutes.get('/admin/notices', async (c) => {
             category: document.getElementById('noticeCategory').value,
             is_pinned: document.getElementById('noticePinned').checked ? 1 : 0,
             is_published: document.getElementById('noticePublished').checked ? 1 : 0,
+            is_popup: document.getElementById('noticePopup').checked ? 1 : 0,
           };
 
           try {
@@ -1063,10 +1078,10 @@ adminRoutes.post('/api/admin/notices', async (c) => {
   await initAdminTables(c.env.DB);
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
   if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
-  const { title, content, category, is_pinned, is_published } = await c.req.json();
+  const { title, content, category, is_pinned, is_published, is_popup } = await c.req.json();
   if (!title || !content) return c.json({ ok: false, error: '제목과 내용을 입력하세요' }, 400);
-  await c.env.DB.prepare('INSERT INTO notices (title, content, category, is_pinned, is_published) VALUES (?, ?, ?, ?, ?)')
-    .bind(title, content, category || '공지', is_pinned ? 1 : 0, is_published ? 1 : 0).run();
+  await c.env.DB.prepare('INSERT INTO notices (title, content, category, is_pinned, is_published, is_popup) VALUES (?, ?, ?, ?, ?, ?)')
+    .bind(title, content, category || '공지', is_pinned ? 1 : 0, is_published ? 1 : 0, is_popup ? 1 : 0).run();
   return c.json({ ok: true });
 })
 
@@ -1075,9 +1090,9 @@ adminRoutes.put('/api/admin/notices/:id', async (c) => {
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
   if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
   const id = c.req.param('id');
-  const { title, content, category, is_pinned, is_published } = await c.req.json();
-  await c.env.DB.prepare('UPDATE notices SET title=?, content=?, category=?, is_pinned=?, is_published=?, updated_at=datetime(\'now\') WHERE id=?')
-    .bind(title, content, category || '공지', is_pinned ? 1 : 0, is_published ? 1 : 0, id).run();
+  const { title, content, category, is_pinned, is_published, is_popup } = await c.req.json();
+  await c.env.DB.prepare('UPDATE notices SET title=?, content=?, category=?, is_pinned=?, is_published=?, is_popup=?, updated_at=datetime(\'now\') WHERE id=?')
+    .bind(title, content, category || '공지', is_pinned ? 1 : 0, is_published ? 1 : 0, is_popup ? 1 : 0, id).run();
   return c.json({ ok: true });
 })
 

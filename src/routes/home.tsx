@@ -36,6 +36,131 @@ home.get('/', async (c) => {
 
   return c.render(
     <>
+      {/* ===== POPUP NOTICE OVERLAY ===== */}
+      <div id="popup-overlay" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 hidden" style="background:rgba(0,0,0,0.55);backdrop-filter:blur(4px)">
+        <div id="popup-container" class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-300 scale-95 opacity-0" style="max-height:85vh">
+          {/* Close button */}
+          <button onclick="closePopup()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-all group" aria-label="닫기">
+            <i class="fa-solid fa-xmark text-gray-500 group-hover:text-gray-800 text-lg"></i>
+          </button>
+
+          {/* Popup content area */}
+          <div id="popup-content" class="overflow-y-auto" style="max-height:calc(85vh - 70px)">
+            {/* Content injected by JS */}
+          </div>
+
+          {/* Bottom bar */}
+          <div class="border-t border-gray-100 px-6 py-3.5 flex items-center justify-between bg-gray-50/80">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="popup-dismiss-today" class="w-4 h-4 rounded border-gray-300 text-[#0066FF] focus:ring-[#0066FF]/30" />
+              <span class="text-gray-400 text-[0.8rem]">오늘 하루 안 보기</span>
+            </label>
+            <button onclick="closePopup()" class="text-[#0066FF] hover:text-[#0052cc] text-sm font-bold transition">
+              닫기
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        (function() {
+          // Check if dismissed today
+          var dismissed = localStorage.getItem('popup_dismissed');
+          if (dismissed) {
+            var dismissedDate = new Date(parseInt(dismissed));
+            var now = new Date();
+            if (dismissedDate.toDateString() === now.toDateString()) return;
+          }
+
+          // Fetch popup notices
+          fetch('/api/notices/popup')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (!data.ok || !data.notices || data.notices.length === 0) return;
+
+              var notices = data.notices;
+              var html = '';
+
+              if (notices.length === 1) {
+                // Single popup
+                var n = notices[0];
+                html = '<div class="p-7 pb-5">'
+                  + '<div class="flex items-center gap-2.5 mb-4">'
+                  + '<div class="w-8 h-8 rounded-lg bg-[#0066FF]/10 flex items-center justify-center"><i class="fa-solid fa-bullhorn text-[#0066FF] text-sm"></i></div>'
+                  + '<span class="text-[0.7rem] font-bold text-[#0066FF] tracking-wider uppercase">' + (n.category || '공지') + '</span>'
+                  + '</div>'
+                  + '<h3 class="text-xl font-bold text-gray-900 mb-4 pr-8 leading-snug">' + escapeHtml(n.title) + '</h3>'
+                  + '<div class="text-gray-500 text-[0.9rem] leading-relaxed whitespace-pre-line">' + escapeHtml(n.content) + '</div>'
+                  + '<div class="text-gray-300 text-xs mt-5">' + (n.created_at ? n.created_at.slice(0, 10) : '') + '</div>'
+                  + '</div>';
+              } else {
+                // Multiple popups — tabbed/stacked
+                html = '<div class="p-7 pb-5">'
+                  + '<div class="flex items-center gap-2.5 mb-5">'
+                  + '<div class="w-8 h-8 rounded-lg bg-[#0066FF]/10 flex items-center justify-center"><i class="fa-solid fa-bullhorn text-[#0066FF] text-sm"></i></div>'
+                  + '<span class="text-[0.7rem] font-bold text-[#0066FF] tracking-wider uppercase">공지사항</span>'
+                  + '<span class="text-gray-300 text-xs ml-auto">' + notices.length + '건</span>'
+                  + '</div>';
+                notices.forEach(function(n, i) {
+                  html += '<div class="' + (i > 0 ? 'border-t border-gray-100 pt-5 mt-5' : '') + '">'
+                    + '<div class="flex items-center gap-2 mb-2">'
+                    + '<span class="text-[0.65rem] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">' + (n.category || '공지') + '</span>'
+                    + '<span class="text-gray-300 text-xs">' + (n.created_at ? n.created_at.slice(0, 10) : '') + '</span>'
+                    + '</div>'
+                    + '<h3 class="text-base font-bold text-gray-900 mb-2 leading-snug">' + escapeHtml(n.title) + '</h3>'
+                    + '<div class="text-gray-500 text-sm leading-relaxed whitespace-pre-line">' + escapeHtml(n.content) + '</div>'
+                    + '</div>';
+                });
+                html += '</div>';
+              }
+
+              document.getElementById('popup-content').innerHTML = html;
+
+              // Show overlay
+              var overlay = document.getElementById('popup-overlay');
+              var container = document.getElementById('popup-container');
+              overlay.classList.remove('hidden');
+              // Animate in
+              requestAnimationFrame(function() {
+                container.style.transform = 'scale(1)';
+                container.style.opacity = '1';
+              });
+
+              // Close on overlay click (not on container)
+              overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closePopup();
+              });
+
+              // Close on ESC
+              document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closePopup();
+              });
+            })
+            .catch(function() {});
+
+          function escapeHtml(s) {
+            if (!s) return '';
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+          }
+        })();
+
+        function closePopup() {
+          var checkbox = document.getElementById('popup-dismiss-today');
+          if (checkbox && checkbox.checked) {
+            localStorage.setItem('popup_dismissed', Date.now().toString());
+          }
+          var overlay = document.getElementById('popup-overlay');
+          var container = document.getElementById('popup-container');
+          if (container) {
+            container.style.transform = 'scale(0.95)';
+            container.style.opacity = '0';
+          }
+          setTimeout(function() {
+            if (overlay) overlay.classList.add('hidden');
+          }, 200);
+        }
+      `}} />
+
       {/* ===== S1: CINEMATIC HERO — EMOTIONAL IMPACT v7 + DR PORTRAIT ===== */}
       <section class="hero-premium" aria-label="서울365치과 메인 히어로">
         {/* Background layers */}

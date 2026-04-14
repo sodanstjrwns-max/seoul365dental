@@ -141,6 +141,19 @@ apiRoutes.get('/api/notices', async (c) => {
   }
 })
 
+// 팝업 공지 조회 — 메인 페이지 팝업용 (is_popup=1 && is_published=1)
+apiRoutes.get('/api/notices/popup', async (c) => {
+  await initAdminTables(c.env.DB);
+  try {
+    const result = await c.env.DB.prepare(
+      'SELECT id, title, content, category, created_at FROM notices WHERE is_published = 1 AND is_popup = 1 ORDER BY is_pinned DESC, created_at DESC LIMIT 5'
+    ).all();
+    return c.json({ ok: true, notices: result.results || [] });
+  } catch {
+    return c.json({ ok: true, notices: [] });
+  }
+})
+
 apiRoutes.get('/api/notices/:id', async (c) => {
   await initAdminTables(c.env.DB);
   const id = c.req.param('id');
