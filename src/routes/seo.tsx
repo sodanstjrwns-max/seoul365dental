@@ -3,6 +3,7 @@ import type { Bindings } from '../lib/types'
 import { CLINIC } from '../data/clinic'
 import { treatments } from '../data/treatments'
 import { doctors } from '../data/doctors'
+import { AREAS } from '../data/areas'
 import { initBlogTables, getSetting } from '../lib/db'
 
 const seoRoutes = new Hono<{ Bindings: Bindings }>()
@@ -309,6 +310,10 @@ seoRoutes.get('/sitemap.xml', async (c) => {
     <loc>${base}/sitemap-blog.xml</loc>
     <lastmod>${blogLastmod}</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-areas.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
 </sitemapindex>`;
 
   return new Response(xml, { headers: sitemapHeaders });
@@ -347,6 +352,7 @@ seoRoutes.get('/sitemap-pages.xml', (c) => {
     { loc: '/faq', priority: '0.7', changefreq: 'monthly', lastmod: '2026-03-01' },
     { loc: '/cases/gallery', priority: '0.6', changefreq: 'weekly', lastmod: today },
     { loc: '/encyclopedia', priority: '0.7', changefreq: 'monthly', lastmod: '2026-04-07' },
+    { loc: '/area', priority: '0.8', changefreq: 'weekly', lastmod: today },
     { loc: '/notices', priority: '0.5', changefreq: 'weekly', lastmod: today },
     { loc: '/privacy', priority: '0.2', changefreq: 'yearly', lastmod: '2026-03-14' },
     { loc: '/terms', priority: '0.2', changefreq: 'yearly', lastmod: '2026-03-14' },
@@ -425,8 +431,31 @@ seoRoutes.get('/sitemap-blog.xml', async (c) => {
   return new Response(xml, { headers: sitemapHeaders });
 })
 
-// ============================================================
-// ROBOTS.TXT — v3.0
+// ── 6) SITEMAP — Area (동별) Pages ──
+seoRoutes.get('/sitemap-areas.xml', (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+
+  const pages = AREAS.map(a => ({
+    loc: `/area/${a.slug}`,
+    priority: a.distKm <= 2 ? '0.8' : a.distKm <= 5 ? '0.7' : '0.6',
+    changefreq: 'weekly' as const,
+    lastmod: today,
+  }));
+
+  // Also include the area index page
+  pages.unshift({
+    loc: '/area',
+    priority: '0.8',
+    changefreq: 'weekly' as const,
+    lastmod: today,
+  });
+
+  const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ============================================================ — v3.0
 // ============================================================
 seoRoutes.get('/robots.txt', (c) => {
   const robots = `# ====================================================
@@ -446,6 +475,8 @@ Allow: /blog
 Allow: /faq
 Allow: /reservation
 Allow: /cases/gallery
+Allow: /area
+Allow: /area/
 Allow: /privacy
 Allow: /terms
 Allow: /sitemap.xml
@@ -550,6 +581,8 @@ Allow: /faq
 Allow: /info
 Allow: /blog
 Allow: /cases/gallery
+Allow: /area
+Allow: /area/
 Disallow: /api/
 Disallow: /admin
 Disallow: /login
@@ -665,6 +698,7 @@ Sitemap: https://seoul365dc.kr/sitemap-pages.xml
 Sitemap: https://seoul365dc.kr/sitemap-treatments.xml
 Sitemap: https://seoul365dc.kr/sitemap-doctors.xml
 Sitemap: https://seoul365dc.kr/sitemap-blog.xml
+Sitemap: https://seoul365dc.kr/sitemap-areas.xml
 
 # ─── HOST (Yandex directive) ───
 Host: https://seoul365dc.kr
@@ -709,9 +743,10 @@ seoRoutes.post('/api/indexnow/submit', async (c) => {
   // Default: submit all important pages
   const urls = body.urls?.length ? body.urls : [
     '/', '/treatments', '/doctors', '/info', '/reservation',
-    '/blog', '/faq', '/cases/gallery',
+    '/blog', '/faq', '/cases/gallery', '/area',
     ...treatments.map(t => `/treatments/${t.slug}`),
     ...doctors.map(d => `/doctors/${d.slug}`),
+    ...AREAS.map(a => `/area/${a.slug}`),
   ].map(p => `${base}${p}`);
 
   // Submit to IndexNow API (covers Bing, Yandex, Naver, Seznam, etc.)

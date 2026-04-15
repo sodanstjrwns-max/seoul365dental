@@ -1,6 +1,7 @@
 import { jsxRenderer } from 'hono/jsx-renderer'
 import { CLINIC, HOURS } from './data/clinic'
 import { MESSAGING } from './data/brand'
+import { AREAS } from './data/areas'
 
 // SEO/AEO Optimized Renderer — v3.0
 // - Rich Schema.org (Dentist + MedicalOrganization + WebSite + Speakable)
@@ -126,11 +127,33 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       CLINIC.kakao,
       CLINIC.naverBooking,
     ],
-    "areaServed": {
-      "@type": "GeoCircle",
-      "geoMidpoint": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
-      "geoRadius": "15000",
-    },
+    "areaServed": [
+      {
+        "@type": "GeoCircle",
+        "geoMidpoint": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
+        "geoRadius": "15000",
+      },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구 구월동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구 간석동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구 만수동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구 논현동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구 서창동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구 고잔동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구 남촌동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구 장수동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구 도림동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 남동구 운연동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 미추홀구 주안동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 미추홀구 관교동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 연수구 청학동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 연수구 연수동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 연수구 송도동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 부평구 부평동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 부평구 십정동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 서구 검암동" },
+      { "@type": "AdministrativeArea", "name": "인천광역시 계양구 계양동" },
+    ],
     "slogan": MESSAGING.brandSlogan,
     "knowsAbout": [
       "임플란트", "전체임플란트", "디지털풀아치", "전체 치아 복원 임플란트", "치아교정", "인비절라인",
@@ -140,6 +163,10 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       "소아치과", "자체기공실", "즉시로딩", "MUA", "네비게이션 가이드 수술",
       "인천치과", "구월동치과", "남동구치과", "인천임플란트", "인천치아교정",
       "인천수면치과", "인천야간치과", "인천소아치과", "인천전체임플란트", "인천투명교정",
+      "간석동치과", "간석동임플란트", "만수동치과", "만수동임플란트", "논현동치과", "논현동임플란트",
+      "서창동치과", "고잔동치과", "남촌동치과", "장수동치과", "도림동치과", "운연동치과",
+      "주안동치과", "주안역치과", "관교동치과", "청학동치과", "연수동치과", "송도치과",
+      "부평치과", "부평역치과", "십정동치과", "검암동치과", "계양구치과", "미추홀구치과", "연수구치과",
     ],
     // Speakable for AEO (AI engines extracting quick answers)
     "speakable": {
@@ -411,7 +438,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* === PRIMARY SEO META === */}
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
-        <meta name="keywords" content="인천치과, 구월동치과, 남동구치과, 인천임플란트, 구월동임플란트, 오스템임플란트, 스트라우만임플란트, 메가젠임플란트, 오스템SOI, 임플란트가격, 임플란트비용, 인천치아교정, 인비절라인, 인천인비절라인, 구월동인비절라인, 투명교정, 인천투명교정, 인비절라인비용, 인비절라인가격, 수면진료, 전체임플란트, 디지털풀아치, 인천전체임플란트, 서울365치과, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 인천소아치과, 심미치료, 신경치료, 서울대치과, 인천수면치과, 간석동치과, 만수동치과, 논현동치과, 인천서구치과, 부평치과, 인천남동구임플란트, 구월동교정, 인천라미네이트, 인천충치치료, 인천야간치과, 인천응급치과" />
+        <meta name="keywords" content="인천치과, 구월동치과, 남동구치과, 인천임플란트, 구월동임플란트, 오스템임플란트, 스트라우만임플란트, 메가젠임플란트, 오스템SOI, 임플란트가격, 임플란트비용, 인천치아교정, 인비절라인, 인천인비절라인, 구월동인비절라인, 투명교정, 인천투명교정, 인비절라인비용, 인비절라인가격, 수면진료, 전체임플란트, 디지털풀아치, 인천전체임플란트, 서울365치과, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 인천소아치과, 심미치료, 신경치료, 서울대치과, 인천수면치과, 간석동치과, 간석동임플란트, 간석동교정, 간석오거리치과, 만수동치과, 만수동임플란트, 만수동교정, 만수역치과, 논현동치과, 논현동임플란트, 논현동교정, 인천논현역치과, 서창동치과, 서창동임플란트, 고잔동치과, 고잔동임플란트, 남촌동치과, 장수동치과, 도림동치과, 운연동치과, 주안동치과, 주안역치과, 주안동임플란트, 관교동치과, 청학동치과, 연수동치과, 연수역치과, 송도치과, 송도임플란트, 부평치과, 부평동치과, 부평역치과, 부평임플란트, 십정동치과, 백운역치과, 검암동치과, 계양구치과, 계양역치과, 인천서구치과, 미추홀구치과, 연수구치과, 인천남동구임플란트, 구월동교정, 인천라미네이트, 인천충치치료, 인천야간치과, 인천응급치과" />
         <link rel="canonical" href={canonicalUrl} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
@@ -754,6 +781,21 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                 <a href="/sitemap.xml" class="hover:text-white/50 transition-colors">사이트맵</a>
               </div>
             </div>
+
+            {/* 지역 SEO 내부링크 */}
+            <nav class="border-t border-white/[0.04] pt-5 pb-3" aria-label="인천 지역별 치과 안내">
+              <p class="text-[0.65rem] font-bold text-white/15 tracking-[0.15em] uppercase mb-3">서울365치과 인근 지역 안내</p>
+              <div class="flex flex-wrap gap-x-2 gap-y-1.5">
+                {AREAS.map(a => (
+                  <a href={`/area/${a.slug}`} class="text-[0.68rem] text-white/15 hover:text-[#00E5FF]/60 transition-colors whitespace-nowrap">
+                    {a.name}치과
+                  </a>
+                ))}
+                <a href="/area" class="text-[0.68rem] text-[#0066FF]/30 hover:text-[#00E5FF]/60 transition-colors whitespace-nowrap font-medium">
+                  전체 지역 보기 →
+                </a>
+              </div>
+            </nav>
           </div>
         </footer>
 
