@@ -179,19 +179,19 @@ home.get('/', async (c) => {
 
               {/* H1 — 3-Line Emotional Headline */}
               <h1 class="reveal" style="transition-delay:0.5s">
-                <span class="block text-white/40 mb-1" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
+                <span class="block text-white/40 mb-1 text-words" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
                   {MESSAGING.heroLine1}
                 </span>
-                <span class="block text-white/60 mb-2" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
+                <span class="block text-white/60 mb-2 text-words" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
                   {MESSAGING.heroLine2}
                 </span>
-                <span class="block gradient-text-electric" style="font-size:clamp(1.7rem,4.5vw,3.5rem);line-height:1.05;letter-spacing:-0.05em;font-weight:900;white-space:nowrap">
+                <span class="block gradient-text-electric text-split" style="font-size:clamp(1.7rem,4.5vw,3.5rem);line-height:1.05;letter-spacing:-0.05em;font-weight:900;white-space:nowrap">
                   {MESSAGING.heroAccent}
                 </span>
               </h1>
 
               {/* Divider */}
-              <div class="reveal mt-8 mb-6" style="transition-delay:0.65s">
+              <div class="line-draw mt-8 mb-6" style="transition-delay:0.65s">
                 <div class="w-14 h-[2px] bg-gradient-to-r from-[#0066FF] to-[#00E5FF] rounded-full"></div>
               </div>
 
@@ -215,7 +215,7 @@ home.get('/', async (c) => {
               </div>
 
               {/* Metric Tags */}
-              <div class="flex flex-wrap items-center gap-2 mb-8 reveal" style="transition-delay:0.95s">
+              <div class="flex flex-wrap items-center gap-2 mb-8 stagger-cascade" style="transition-delay:0.95s">
                 {[
                   { label: '서울대 5인 협진', icon: 'fa-user-doctor' },
                   { label: '365일 진료', icon: 'fa-calendar-check' },
@@ -224,7 +224,7 @@ home.get('/', async (c) => {
                   { label: '수면진료', icon: 'fa-bed' },
                   { label: '무통마취', icon: 'fa-syringe' },
                 ].map(m => (
-                  <div class="flex items-center gap-1.5 text-[0.72rem] px-3 py-1.5 rounded-full border border-[#0066FF]/10 bg-[#0066FF]/[0.03]">
+                  <div class="flex items-center gap-1.5 text-[0.72rem] px-3 py-1.5 rounded-full border border-[#0066FF]/10 bg-[#0066FF]/[0.03] float-badge">
                     <i class={`fa-solid ${m.icon} text-[#0066FF]/60 text-[0.6rem]`}></i>
                     <span class="text-white/45 font-medium">{m.label}</span>
                   </div>
@@ -233,15 +233,15 @@ home.get('/', async (c) => {
 
               {/* CTA Buttons */}
               <div class="flex flex-wrap gap-3 mb-10 reveal" style="transition-delay:1.05s">
-                <a href="/reservation" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic text-[0.9rem] px-8 py-4 group" data-cursor-hover>
+                <a href="/reservation" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic-strong ripple-effect text-[0.9rem] px-8 py-4 group" data-cursor-hover>
                   <i class="fa-solid fa-calendar-check group-hover:scale-110 transition-transform"></i>
                   <span>지금 상담 예약하기</span>
                 </a>
-                <a href={CLINIC.naverBooking} target="_blank" rel="noopener noreferrer nofollow" class="btn-premium btn-magnetic text-[0.9rem] px-8 py-4 group" style="background:#03C75A;color:#fff;border-color:#03C75A" data-cursor-hover>
+                <a href={CLINIC.naverBooking} target="_blank" rel="noopener noreferrer nofollow" class="btn-premium btn-magnetic-strong ripple-effect text-[0.9rem] px-8 py-4 group" style="background:#03C75A;color:#fff;border-color:#03C75A" data-cursor-hover>
                   <i class="fa-solid fa-n group-hover:scale-110 transition-transform"></i>
                   <span>네이버 예약</span>
                 </a>
-                <a href="tel:032-432-0365" class="btn-premium btn-premium-white btn-magnetic text-[0.9rem] px-8 py-4 group" data-cursor-hover>
+                <a href="tel:032-432-0365" class="btn-premium btn-premium-white btn-magnetic-strong ripple-effect text-[0.9rem] px-8 py-4 group" data-cursor-hover>
                   <i class="fa-solid fa-phone group-hover:animate-bounce"></i>
                   <span>032-432-0365</span>
                 </a>
@@ -416,7 +416,7 @@ home.get('/', async (c) => {
         <div class="relative max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">BY THE NUMBERS</span>
-            <h2 class="section-headline text-gray-900">숫자가 <span class="gradient-text-blue">증명</span>합니다</h2>
+            <h2 class="section-headline text-gray-900">숫자가 <span class="gradient-text-blue text-split">증명</span>합니다</h2>
           </div>
 
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10 stagger-children">
@@ -441,23 +441,23 @@ home.get('/', async (c) => {
         </div>
       </section>
 
-      <div class="divider-gradient"></div>
+      <div class="divider-animated"></div>
 
       {/* ===== S4: DIFFERENTIATION — PATIENT-FOCUSED BENTO GRID ===== */}
       <section class="section-lg bg-mesh relative overflow-hidden" aria-label="서울365치과 차별점">
         <div class="absolute top-20 right-10 w-[300px] h-[300px] bg-[#0066FF]/[0.04] rounded-full blur-[100px] pointer-events-none morph-blob"></div>
         <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
-          <div class="text-center mb-16 reveal">
+          <div class="text-center mb-16 reveal-blur">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">WHY SEOUL 365</span>
             <h2 class="section-headline text-gray-900">
               치과를 미뤄왔던 이유,<br class="md:hidden" /> <span class="highlight-word">저희가 해결합니다.</span>
             </h2>
-            <p class="section-body text-gray-400 mt-5 max-w-xl mx-auto">{MISSION}</p>
+            <p class="section-body text-gray-400 mt-5 max-w-xl mx-auto text-words">{MISSION}</p>
           </div>
 
-          <div class="bento-grid stagger-children">
+          <div class="bento-grid stagger-cascade">
             {DIFF_CARDS.map((card, i) => (
-              <div class={`glass-card p-7 group cursor-default tilt-card electric-card-border ${i === 0 ? 'bento-wide' : ''}`}>
+              <div class={`glass-card p-7 group cursor-default tilt-card electric-card-border glow-trail ${i === 0 ? 'bento-wide' : ''}`}>
                 <div class="icon-circle mb-5">
                   <i class={`fa-solid ${card.icon}`}></i>
                 </div>
@@ -487,7 +487,7 @@ home.get('/', async (c) => {
 
           <div class="horizontal-scroll-wrapper flex gap-5 pb-4 reveal-3d">
             {topTreatments.map(t => (
-              <a href={`/treatments/${t.slug}`} class="premium-card p-7 group block min-w-[300px] md:min-w-[340px] flex-shrink-0 electric-card-border" data-cursor-hover>
+              <a href={`/treatments/${t.slug}`} class="premium-card p-7 group block min-w-[300px] md:min-w-[340px] flex-shrink-0 electric-card-border glow-trail ripple-effect" data-cursor-hover>
                 <div class="icon-circle mb-5">
                   <i class={`fa-solid ${t.icon}`}></i>
                 </div>
@@ -512,7 +512,7 @@ home.get('/', async (c) => {
           <div class="text-center mb-16 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">OUR DOCTORS</span>
             <h2 class="section-headline text-white">
-              서울대 출신<br class="md:hidden" /> <span class="gradient-text-electric">5인 전문의</span>
+              서울대 출신<br class="md:hidden" /> <span class="gradient-text-electric text-split">5인 전문의</span>
             </h2>
             <p class="section-body text-white/30 mt-5 max-w-xl mx-auto">각 분야별 전문의가 협력하여 최적의 치료를 제공합니다.</p>
           </div>
@@ -562,16 +562,16 @@ home.get('/', async (c) => {
       {/* ===== S7: BEFORE/AFTER — DB 실시간 연동 ===== */}
       <section class="section-lg bg-white relative overflow-hidden" aria-label="치료 전후 사례">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-16 reveal">
+          <div class="text-center mb-16 reveal-pop">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">BEFORE &amp; AFTER</span>
-            <h2 class="section-headline text-gray-900">치료 <span class="gradient-text-blue">사례</span></h2>
+            <h2 class="section-headline text-gray-900">치료 <span class="gradient-text-blue text-split">사례</span></h2>
             <p class="section-body text-gray-400 mt-5 max-w-xl mx-auto">실제 치료 사례로 결과를 확인하세요.</p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-cascade">
             {baCases.length > 0 ? (
               baCases.map((cs: any) => (
-                <div onclick="checkLoginAndGo()" class="premium-card overflow-hidden group tilt-card electric-card-border block cursor-pointer" data-cursor-hover>
+                <div onclick="checkLoginAndGo()" class="premium-card overflow-hidden group tilt-card electric-card-border glow-trail img-hover-zoom block cursor-pointer" data-cursor-hover>
                   <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
                     {/* Before 사진만 전체 표시 */}
                     {cs.before_image ? (
@@ -611,7 +611,7 @@ home.get('/', async (c) => {
                 { title: '디지털풀아치 – 하악 즉시로딩', tag: '디지털풀아치', doctor: '박준규 대표원장' },
                 { title: '인비절라인 – 성인 투명교정', tag: '교정', doctor: '하누리 원장' },
               ].map(cs => (
-                <div onclick="checkLoginAndGo()" class="premium-card overflow-hidden group tilt-card electric-card-border block cursor-pointer" data-cursor-hover>
+                <div onclick="checkLoginAndGo()" class="premium-card overflow-hidden group tilt-card electric-card-border glow-trail block cursor-pointer" data-cursor-hover>
                   <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
                     <div class="absolute inset-0 flex items-center justify-center bg-gray-100/80">
                       <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
@@ -700,20 +700,20 @@ home.get('/', async (c) => {
       <section class="section-lg bg-mesh relative overflow-hidden" aria-label="환자 후기">
         <div class="absolute top-20 left-10 w-[400px] h-[400px] bg-[#0066FF]/[0.03] rounded-full blur-[120px] pointer-events-none morph-blob" style="animation-delay:-6s"></div>
         <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
-          <div class="text-center mb-16 reveal">
+          <div class="text-center mb-16 reveal-blur">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">REVIEWS</span>
             <h2 class="section-headline text-gray-900">환자분들의 <span class="highlight-word">솔직한 후기</span></h2>
           </div>
 
           {/* Review Scores */}
-          <div class="flex flex-wrap justify-center gap-5 mb-14 stagger-children">
+          <div class="flex flex-wrap justify-center gap-5 mb-14 stagger-cascade">
             {[
               { platform: '네이버', score: '4.85', icon: 'fa-solid fa-n', color: 'from-green-500 to-green-600' },
               { platform: '구글', score: '4.9', icon: 'fa-brands fa-google', color: 'from-blue-500 to-blue-600' },
               { platform: '만족도', score: '98%', icon: 'fa-solid fa-heart', color: 'from-rose-500 to-rose-600' },
               { platform: '재방문율', score: '87%', icon: 'fa-solid fa-rotate', color: 'from-emerald-500 to-emerald-600' },
             ].map(r => (
-              <div class="glass-card px-8 py-6 text-center min-w-[140px] tilt-card">
+              <div class="glass-card px-8 py-6 text-center min-w-[140px] tilt-card reveal-elastic">
                 <div class={`w-11 h-11 bg-gradient-to-br ${r.color} text-white rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg`}>
                   <i class={r.icon + ' text-sm'}></i>
                 </div>
@@ -759,9 +759,9 @@ home.get('/', async (c) => {
       <section class="section-lg bg-white relative overflow-hidden">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
           <div class="max-w-3xl mx-auto">
-            <div class="text-center mb-16 reveal">
+            <div class="text-center mb-16 reveal-pop">
               <span class="section-eyebrow text-[#0066FF] mb-4 block">PRICING</span>
-              <h2 class="section-headline text-gray-900">투명한 <span class="gradient-text-blue">비용 안내</span></h2>
+              <h2 class="section-headline text-gray-900">투명한 <span class="gradient-text-blue text-split">비용 안내</span></h2>
               <p class="section-body text-gray-400 mt-4">부담 없이 확인하세요.</p>
             </div>
 
@@ -801,12 +801,12 @@ home.get('/', async (c) => {
       {/* ===== S10: FAQ PREVIEW ===== */}
       <section class="section-lg bg-mesh relative overflow-hidden" aria-label="자주 묻는 질문">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
-          <div class="text-center mb-16 reveal">
+          <div class="text-center mb-16 reveal-blur">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">FAQ</span>
-            <h2 class="section-headline text-gray-900">자주 묻는 질문</h2>
+            <h2 class="section-headline text-gray-900 text-words">자주 묻는 질문</h2>
           </div>
 
-          <div class="space-y-3 stagger-children">
+          <div class="space-y-3 stagger-cascade">
             {mainFaq.map(faq => (
               <div class="faq-item">
                 <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
@@ -829,17 +829,17 @@ home.get('/', async (c) => {
       {/* ===== S11: CONTENT / COLUMNS — DB 실시간 연동 ===== */}
       <section class="section-lg bg-white">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-16 reveal">
+          <div class="text-center mb-16 reveal-pop">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">COLUMNS</span>
-            <h2 class="section-headline text-gray-900">전문 <span class="gradient-text-blue">칼럼</span></h2>
+            <h2 class="section-headline text-gray-900">전문 <span class="gradient-text-blue text-split">칼럼</span></h2>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-cascade">
             {blogPosts.length > 0 ? (
               blogPosts.map((article: any) => {
                 const dateStr = article.created_at ? new Date(article.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.').replace(/\.$/, '') : '';
                 return (
-                  <a href={`/blog/${article.slug}`} class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border block" data-cursor-hover>
+                  <a href={`/blog/${article.slug}`} class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border glow-trail img-hover-zoom block" data-cursor-hover>
                     <div class="aspect-[16/9] bg-gradient-to-br from-[#0066FF]/[0.06] to-[#00E5FF]/[0.02] flex items-center justify-center overflow-hidden relative">
                       {article.cover_image ? (
                         <img src={article.cover_image} alt={article.title} title={`${article.title} | 서울365치과 블로그`} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
@@ -865,7 +865,7 @@ home.get('/', async (c) => {
                 { title: '치아교정 나이 제한? 성인교정 궁금증 해결', tag: '교정', date: '2026.02.10' },
                 { title: '수면진료, 정말 안전한가요?', tag: '수면진료', date: '2026.02.05' },
               ].map(article => (
-                <a href="/blog" class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border block" data-cursor-hover>
+                <a href="/blog" class="premium-card overflow-hidden group cursor-pointer tilt-card electric-card-border glow-trail img-hover-zoom block" data-cursor-hover>
                   <div class="aspect-[16/9] bg-gradient-to-br from-[#0066FF]/[0.06] to-[#00E5FF]/[0.02] flex items-center justify-center overflow-hidden">
                     <i class="fa-solid fa-newspaper text-4xl text-[#0066FF]/10 group-hover:text-[#0066FF]/20 group-hover:scale-110 transition-all duration-700"></i>
                   </div>
@@ -894,11 +894,11 @@ home.get('/', async (c) => {
         <div class="absolute inset-0" style="background:radial-gradient(at 20% 30%, rgba(0,102,255,0.15) 0, transparent 50%),radial-gradient(at 80% 70%, rgba(0,229,255,0.08) 0, transparent 50%)"></div>
         <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0066FF]/20 to-transparent"></div>
         <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative z-10">
-          <div class="text-center mb-16 reveal">
+          <div class="text-center mb-16 reveal-blur">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">OUR PROMISE</span>
-            <h2 class="section-headline text-white">{VISION.headline}</h2>
+            <h2 class="section-headline text-white text-words">{VISION.headline}</h2>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-cascade">
             {VISION.promises.map((p, i) => (
               <div class="p-8 text-center tilt-card" style="background:rgba(0,102,255,0.06);border-radius:1.75rem;border:1px solid rgba(0,102,255,0.1)">
                 <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0066FF]/20 to-[#00E5FF]/10 flex items-center justify-center mx-auto mb-6">
@@ -916,7 +916,7 @@ home.get('/', async (c) => {
       {/* ===== 3-LINE SUMMARY ===== */}
       <section class="bg-white py-16 md:py-20 relative overflow-hidden">
         <div class="max-w-3xl mx-auto px-5 md:px-8 text-center">
-          <div class="space-y-4 reveal">
+          <div class="space-y-4 reveal-elastic">
             {MAIN_SUMMARY.map((line, i) => (
               <p class={`text-lg md:text-xl font-semibold leading-relaxed ${i === 0 ? 'text-[#0066FF]' : 'text-gray-700'}`}>
                 {line}
@@ -942,13 +942,13 @@ home.get('/', async (c) => {
             </p>
 
             <div class="flex flex-wrap justify-center gap-4">
-              <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white btn-magnetic px-9 py-4 text-[0.95rem]" data-cursor-hover>
+              <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white btn-magnetic-strong ripple-effect px-9 py-4 text-[0.95rem]" data-cursor-hover>
                 <i class="fa-solid fa-phone"></i> 전화 상담
               </a>
-              <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" class="btn-premium btn-magnetic px-9 py-4 text-[0.95rem]" style="background:#FEE500;color:#3C1E1E;border:none;" data-cursor-hover>
+              <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" class="btn-premium btn-magnetic-strong ripple-effect px-9 py-4 text-[0.95rem]" style="background:#FEE500;color:#3C1E1E;border:none;" data-cursor-hover>
                 <i class="fa-solid fa-comment"></i> 카카오톡
               </a>
-              <a href={CLINIC.naverBooking} target="_blank" rel="noopener noreferrer nofollow" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic px-9 py-4 text-[0.95rem]" data-cursor-hover>
+              <a href={CLINIC.naverBooking} target="_blank" rel="noopener noreferrer nofollow" class="btn-premium btn-premium-fill btn-electric-glow btn-magnetic-strong ripple-effect px-9 py-4 text-[0.95rem]" data-cursor-hover>
                 <i class="fa-solid fa-calendar-check"></i> 네이버 예약
               </a>
             </div>

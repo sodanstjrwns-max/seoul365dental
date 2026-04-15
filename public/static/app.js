@@ -137,5 +137,105 @@ var mlb=document.getElementById('mobile-logout-btn');if(mlb)mlb.addEventListener
 // YouTube Background Video — Lazy iframe inject
 (function(){var wrap=document.getElementById('yt-player-wrap');var poster=document.getElementById('yt-poster');var videoSection=document.getElementById('video-section');if(!wrap||!videoSection)return;var isMuted=true,iframe=null,injected=false;function injectIframe(){if(injected)return;injected=true;iframe=document.createElement('iframe');iframe.id='yt-iframe';iframe.allow='autoplay; encrypted-media';iframe.setAttribute('allowfullscreen','false');iframe.setAttribute('referrerpolicy','strict-origin-when-cross-origin');iframe.title='서울365치과 소개 영상';var mob=window.innerWidth<768;iframe.style.cssText=mob?'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100%;height:56.25vw;pointer-events:none;border:0;':'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:56.25vw;min-height:100%;min-width:177.78vh;pointer-events:none;border:0;';iframe.src='https://www.youtube-nocookie.com/embed/gB_yiatcwAc?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=gB_yiatcwAc&playsinline=1&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&cc_load_policy=0&enablejsapi=1';iframe.addEventListener('load',function(){if(poster){setTimeout(function(){poster.style.opacity='0';setTimeout(function(){poster.style.display='none'},1000)},600)}});wrap.appendChild(iframe)}var lazyObs=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){injectIframe();lazyObs.disconnect()}})},{rootMargin:'200px 0px'});lazyObs.observe(videoSection);function postCmd(cmd,args){if(!iframe||!iframe.contentWindow)return;try{iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:cmd,args:args||[]}),'*')}catch(e){}}var toggleBtn=document.getElementById('yt-sound-toggle');var soundIcon=document.getElementById('yt-sound-icon');var soundLabel=document.getElementById('yt-sound-label');if(toggleBtn){toggleBtn.addEventListener('click',function(){if(isMuted){postCmd('unMute');postCmd('setVolume',[80]);isMuted=false;if(soundIcon)soundIcon.className='fa-solid fa-volume-high text-sm';if(soundLabel)soundLabel.textContent='소리 끄기'}else{postCmd('mute');isMuted=true;if(soundIcon)soundIcon.className='fa-solid fa-volume-xmark text-sm';if(soundLabel)soundLabel.textContent='소리 켜기'}})}var vidObs=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(!iframe)return;if(entry.isIntersecting)postCmd('playVideo');else postCmd('pauseVideo')})},{threshold:0.1});vidObs.observe(videoSection)})();
 
-// Parallax on scroll
-var ticking=false;window.addEventListener('scroll',function(){if(!ticking){requestAnimationFrame(function(){var scrolled=window.scrollY;document.querySelectorAll('.parallax-slow').forEach(function(el){el.style.transform='translateY('+(scrolled*0.08)+'px)'});document.querySelectorAll('.parallax-fast').forEach(function(el){el.style.transform='translateY('+(scrolled*-0.05)+'px)'});ticking=false});ticking=true}},{passive:true});
+// Parallax on scroll + Scroll velocity skew + Multi-depth parallax
+var ticking=false;var lastScroll=0;var scrollVelocity=0;
+window.addEventListener('scroll',function(){if(!ticking){requestAnimationFrame(function(){var scrolled=window.scrollY;
+// Parallax
+document.querySelectorAll('.parallax-slow').forEach(function(el){el.style.transform='translateY('+(scrolled*0.08)+'px)'});
+document.querySelectorAll('.parallax-fast').forEach(function(el){el.style.transform='translateY('+(scrolled*-0.05)+'px)'});
+// Multi-depth parallax layers
+document.querySelectorAll('.parallax-depth-1').forEach(function(el){el.style.transform='translateY('+(scrolled*0.03)+'px)'});
+document.querySelectorAll('.parallax-depth-2').forEach(function(el){el.style.transform='translateY('+(scrolled*0.06)+'px)'});
+document.querySelectorAll('.parallax-depth-3').forEach(function(el){el.style.transform='translateY('+(scrolled*0.1)+'px)'});
+// Scroll velocity-based skew
+scrollVelocity=(scrolled-lastScroll)*0.15;scrollVelocity=Math.max(-4,Math.min(4,scrollVelocity));
+document.querySelectorAll('.scroll-skew').forEach(function(el){el.style.transform='skewY('+scrollVelocity+'deg)'});
+lastScroll=scrolled;ticking=false});ticking=true}},{passive:true});
+
+// ====== MICRO-INTERACTION ENHANCEMENTS v6 ======
+
+// 1. Text Split Animation — split text-split elements into individual chars
+document.querySelectorAll('.text-split').forEach(function(el){
+  if(el.dataset.split) return; el.dataset.split='true';
+  var text=el.textContent||'';var html='';
+  for(var i=0;i<text.length;i++){
+    if(text[i]===' ') html+=' ';
+    else html+='<span class="char" style="transition-delay:'+(i*0.03)+'s">'+text[i]+'</span>';
+  }
+  el.innerHTML=html;
+});
+
+// 2. Word-by-word reveal — split text-words elements into words
+document.querySelectorAll('.text-words').forEach(function(el){
+  if(el.dataset.wordsplit) return; el.dataset.wordsplit='true';
+  var words=(el.textContent||'').split(/\s+/);var html='';
+  words.forEach(function(w,i){
+    if(w) html+='<span class="word" style="transition-delay:'+(i*0.06)+'s">'+w+'</span> ';
+  });
+  el.innerHTML=html.trim();
+});
+
+// 3. Enhanced IntersectionObserver — include new animation classes
+var enhancedObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('visible');
+// Trigger counter bounce on stat numbers
+if(entry.target.classList.contains('stat-number')){entry.target.classList.add('counter-bounce');setTimeout(function(){entry.target.classList.remove('counter-bounce')},500)}
+}})},{threshold:0.05,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.text-split, .text-words, .line-draw, .divider-animated, .reveal-rotate, .stagger-cascade, .reveal-pop, .reveal-elastic').forEach(function(el){enhancedObserver.observe(el)});
+
+// 4. Ripple effect on click — for buttons with .ripple-effect class
+document.addEventListener('click',function(e){
+  var btn=e.target.closest('.ripple-effect');if(!btn) return;
+  var rect=btn.getBoundingClientRect();var ripple=document.createElement('span');ripple.className='ripple';
+  var size=Math.max(rect.width,rect.height)*2;ripple.style.width=ripple.style.height=size+'px';
+  ripple.style.left=(e.clientX-rect.left-size/2)+'px';ripple.style.top=(e.clientY-rect.top-size/2)+'px';
+  btn.appendChild(ripple);setTimeout(function(){ripple.remove()},600);
+});
+
+// 5. Glow trail — mouse-following glow on .glow-trail cards
+document.querySelectorAll('.glow-trail').forEach(function(card){
+  card.addEventListener('mousemove',function(e){
+    var rect=card.getBoundingClientRect();var before=card.querySelector(':before')||card;
+    card.style.setProperty('--glow-x',(e.clientX-rect.left)+'px');
+    card.style.setProperty('--glow-y',(e.clientY-rect.top)+'px');
+    // Use CSS custom properties for glow position
+    if(card.style.cssText.indexOf('--glow-x')!==-1){
+      var pseudo=getComputedStyle(card,':before');
+      card.style.cssText+=';--glow-x:'+(e.clientX-rect.left)+'px;--glow-y:'+(e.clientY-rect.top)+'px';
+    }
+  });
+});
+
+// 6. Enhanced animated counter with easing
+function animateCounterEnhanced(el){
+  if(el.dataset.animated) return; el.dataset.animated='true';
+  var target=parseFloat(el.dataset.count);var suffix=el.dataset.suffix||'';var prefix=el.dataset.prefix||'';
+  var decimals=(target%1!==0)?1:0;var duration=2400;var start=performance.now();
+  function easeOutExpo(t){return t===1?1:1-Math.pow(2,-10*t)}
+  function update(now){
+    var elapsed=now-start;var progress=Math.min(elapsed/duration,1);var eased=easeOutExpo(progress);
+    var current=eased*target;el.textContent=prefix+current.toFixed(decimals)+suffix;
+    if(progress<1) requestAnimationFrame(update);
+    else{el.textContent=prefix+target.toFixed(decimals)+suffix;el.classList.add('counter-bounce')}
+  }
+  requestAnimationFrame(update);
+}
+// Override old counter with enhanced version
+var counterObserver2=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){
+  entry.target.querySelectorAll('[data-count]').forEach(animateCounterEnhanced);counterObserver2.unobserve(entry.target)}})},{threshold:0.3});
+var counterSections=document.querySelectorAll('[data-counter-section]');counterSections.forEach(function(s){counterObserver2.observe(s)});
+
+// 7. Smooth section reveal with progress tracking
+var sectionProgress=new IntersectionObserver(function(entries){entries.forEach(function(entry){
+  if(entry.isIntersecting){
+    var fill=entry.target.querySelector('.scroll-fill');
+    if(fill){var ratio=Math.min(entry.intersectionRatio*2,1);fill.style.width=(ratio*100)+'%'}
+  }
+})},{threshold:[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]});
+document.querySelectorAll('[data-section-progress]').forEach(function(el){sectionProgress.observe(el)});
+
+// 8. Enhanced magnetic buttons (stronger + bounce back)
+if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').forEach(function(btn){
+  btn.addEventListener('mousemove',function(e){var rect=btn.getBoundingClientRect();var x=e.clientX-rect.left-rect.width/2;var y=e.clientY-rect.top-rect.height/2;
+  btn.style.transform='translate('+(x*0.4)+'px, '+(y*0.4)+'px) scale(1.05)'});
+  btn.addEventListener('mouseleave',function(){btn.style.transform='translate(0, 0) scale(1)'})
+})}
