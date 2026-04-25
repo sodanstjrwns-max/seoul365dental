@@ -927,7 +927,7 @@ adminRoutes.get('/admin/notices', async (c) => {
                         </td>
                         <td class="px-5 py-3 text-white/25 text-xs hidden md:table-cell">{n.created_at?.slice(0, 10)}</td>
                         <td class="px-5 py-3 text-right">
-                          <button onclick={`editNotice(${JSON.stringify(n).replace(/"/g, '&quot;')})`} class="text-white/30 hover:text-purple-400 transition p-1.5" title="수정">
+                          <button data-notice-id={String(n.id)} onclick="editNoticeById(this.dataset.noticeId)" class="text-white/30 hover:text-purple-400 transition p-1.5" title="수정">
                             <i class="fa-solid fa-pen-to-square"></i>
                           </button>
                           <button onclick={`deleteNotice(${n.id})`} class="text-white/30 hover:text-red-400 transition p-1.5 ml-1" title="삭제">
@@ -1021,6 +1021,15 @@ adminRoutes.get('/admin/notices', async (c) => {
       </div>
 
       <script dangerouslySetInnerHTML={{__html: `
+        // 공지 데이터를 안전하게 JS 변수로 전달 (인라인 JSON 깨짐 방지)
+        var __noticesData = ${JSON.stringify(notices.map((n: any) => ({ id: n.id, title: n.title, content: n.content, category: n.category, is_pinned: n.is_pinned, is_published: n.is_published, is_popup: n.is_popup, image: n.image })))};
+
+        function editNoticeById(id) {
+          var n = __noticesData.find(function(item) { return String(item.id) === String(id); });
+          if (!n) { alert('공지 데이터를 찾을 수 없습니다.'); return; }
+          editNotice(n);
+        }
+
         function openNoticeModal() {
           document.getElementById('noticeModal').classList.remove('hidden');
           document.getElementById('noticeId').value = '';
