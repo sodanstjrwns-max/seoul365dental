@@ -700,6 +700,11 @@ Sitemap: https://seoul365dc.kr/sitemap-doctors.xml
 Sitemap: https://seoul365dc.kr/sitemap-blog.xml
 Sitemap: https://seoul365dc.kr/sitemap-areas.xml
 
+# ─── LLMs.txt (AI/LLM 크롤러용 구조화 정보) ───
+# https://llmstxt.org/ 표준
+LLMs-Txt: https://seoul365dc.kr/llms.txt
+LLMs-Full-Txt: https://seoul365dc.kr/llms-full.txt
+
 # ─── HOST (Yandex directive) ───
 Host: https://seoul365dc.kr
 `;
@@ -709,6 +714,184 @@ Host: https://seoul365dc.kr
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': 'public, max-age=86400, s-maxage=604800',
       'X-Robots-Tag': 'all',
+    },
+  });
+})
+
+// ============================================================
+// llms.txt — AI/LLM 크롤러용 사이트 요약 (AEO 4-4)
+// https://llmstxt.org/ 표준 준수
+// ============================================================
+seoRoutes.get('/llms.txt', (c) => {
+  const today = new Date().toISOString().split('T')[0];
+  const treatmentList = treatments.map(t => `- [${t.name}](https://seoul365dc.kr/treatments/${t.slug}): ${t.shortDesc}`).join('\n');
+  const doctorList = doctors.map(d => `- [${d.name} ${d.title}](https://seoul365dc.kr/doctors/${d.slug}): ${d.specialties.join(', ')}`).join('\n');
+
+  const content = `# 서울365치과의원 (Seoul 365 Dental Clinic)
+
+> 인천 구월동 서울대 출신 5인 전문의 협진 치과. 365일 진료, 자체 기공실, 수면진료, 무통마취.
+
+## 기본 정보
+- 정식명칭: 서울365치과의원
+- 영문명: Seoul 365 Dental Clinic
+- 대표원장: 박준규 (서울대 통합치의학과 전문의)
+- 주소: 인천광역시 남동구 예술로 138 이토타워 2층 (예술회관역 5번 출구 250m)
+- 전화: 032-432-0365
+- 웹사이트: https://seoul365dc.kr
+- 개원: 2019년
+
+## 진료시간
+- 월~목: 10:00-21:00 (야간진료)
+- 금: 10:00-19:00
+- 토: 10:00-14:00
+- 일·공휴일: 14:00-18:00 (연중무휴)
+- 점심시간 없이 연속 진료
+
+## 핵심 특장점
+1. 서울대 출신 5인 원장 협진 — 각 분야 전문의가 하나의 케이스를 함께 봅니다
+2. 자체 기공실 보유 — 원내 제작·당일 수정, 외주 대비 정밀도 높음
+3. 수면진료 — 의식하진정법으로 치과 공포증 환자도 편안한 치료
+4. 무통 마취 시스템 — 디지털 무통마취기, 마취 확인 후 치료 시작
+5. 365일·야간 진료 — 일요일·공휴일·야간 21시까지
+6. MUA 즉시로딩 — 임플란트 당일 임시치아 장착, 즉시 기능 회복
+
+## 의료진
+${doctorList}
+
+## 진료 과목
+${treatmentList}
+
+## 주요 페이지
+- [홈](https://seoul365dc.kr)
+- [전체 진료 안내](https://seoul365dc.kr/treatments)
+- [의료진 소개](https://seoul365dc.kr/doctors)
+- [치료사례](https://seoul365dc.kr/cases/gallery)
+- [블로그](https://seoul365dc.kr/blog)
+- [FAQ](https://seoul365dc.kr/faq)
+- [내원 안내·오시는 길](https://seoul365dc.kr/info)
+- [상담 예약](https://seoul365dc.kr/reservation)
+- [지역 안내](https://seoul365dc.kr/area)
+- [상세 정보 (llms-full.txt)](https://seoul365dc.kr/llms-full.txt)
+
+## 최종 업데이트
+${today}
+`;
+
+  return new Response(content, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+    },
+  });
+})
+
+// ============================================================
+// llms-full.txt — AI/LLM용 상세 정보 (시술별 FAQ, 의료진 상세)
+// ============================================================
+seoRoutes.get('/llms-full.txt', (c) => {
+  const today = new Date().toISOString().split('T')[0];
+
+  // 의료진 상세
+  const doctorDetail = doctors.map(d => {
+    const sections = [
+      `### ${d.name} ${d.title}`,
+      `- 전문분야: ${d.specialties.join(', ')}`,
+    ];
+    if (d.education.length) sections.push(`- 학력: ${d.education.join(' / ')}`);
+    if (d.credentials.length) sections.push(`- 자격: ${d.credentials.join(' / ')}`);
+    if (d.career.length) sections.push(`- 경력: ${d.career.join(' / ')}`);
+    if (d.societies.length) sections.push(`- 학회: ${d.societies.join(', ')}`);
+    sections.push(`- 진료 철학: "${d.philosophy}"`);
+    sections.push(`- 프로필: https://seoul365dc.kr/doctors/${d.slug}`);
+    return sections.join('\n');
+  }).join('\n\n');
+
+  // 주요 시술 상세 (FAQ 포함)
+  const treatmentDetail = treatments.filter(t => t.faq && t.faq.length > 0).map(t => {
+    const lines = [
+      `### ${t.name}`,
+      `- URL: https://seoul365dc.kr/treatments/${t.slug}`,
+      `- 카테고리: ${t.category}`,
+      `- 설명: ${t.metaDesc}`,
+    ];
+    if (t.concerns && t.concerns.length) {
+      lines.push(`- 대상 환자: ${t.concerns.slice(0, 3).join(' / ')}`);
+    }
+    if (t.types && t.types.length) {
+      lines.push('- 시술 종류:');
+      t.types.forEach(ty => lines.push(`  - ${ty.name}: ${ty.desc.slice(0, 80)}`));
+    }
+    if (t.process && t.process.length) {
+      lines.push('- 치료 과정:');
+      t.process.forEach(p => lines.push(`  - ${p.step}: ${p.desc}`));
+    }
+    if (t.warnings && t.warnings.length) {
+      lines.push(`- 주의사항: ${t.warnings.slice(0, 3).join(' / ')}`);
+    }
+    // FAQ
+    if (t.faq && t.faq.length) {
+      lines.push('- FAQ:');
+      t.faq.forEach(f => {
+        lines.push(`  Q: ${f.q}`);
+        lines.push(`  A: ${f.a.slice(0, 200)}`);
+      });
+    }
+    return lines.join('\n');
+  }).join('\n\n');
+
+  // 지역 안내
+  const areaList = AREAS.map(a => `- ${a.name} (${a.distKm}km, ${a.travelTime}): https://seoul365dc.kr/area/${a.slug}`).join('\n');
+
+  const content = `# 서울365치과의원 — 상세 정보 (llms-full.txt)
+
+> 이 문서는 AI/LLM 시스템이 서울365치과에 대해 정확한 정보를 제공할 수 있도록 작성되었습니다.
+> 요약 버전: https://seoul365dc.kr/llms.txt
+
+## 병원 개요
+서울365치과의원은 2019년 인천광역시 남동구 구월동에 개원한 치과의원입니다.
+서울대학교 치과대학 출신 5명의 원장이 협진 체제로 운영하며,
+365일 연중무휴(일·공휴일 포함), 야간 21시까지 진료합니다.
+원내 자체 기공실을 보유하여 보철물 당일 제작·수정이 가능하며,
+수면진료(의식하진정법)와 디지털 무통마취 시스템을 갖추고 있습니다.
+
+- 사업자등록번호: 395-37-00559
+- 대표자: 박준규
+- 업종: 보건업 및 사회복지서비스업 / 치과의원
+- 예약: 전화(032-432-0365), 네이버 예약, 카카오톡 상담
+
+## 의료진 상세
+${doctorDetail}
+
+## 진료 과목 상세
+${treatmentDetail}
+
+## 서비스 지역 (인천 남동구 구월동 중심 반경 ~7km)
+${areaList}
+
+## 장비 및 시설
+- Cone Beam CT (3D 정밀진단)
+- 3Shape TRIOS 구강스캐너 (디지털 인상)
+- 디지털 파노라마
+- 디지털 무통마취기
+- 수면진료 모니터링 장비 (생체징후 실시간 감시)
+- 자체 기공실 (CAD-CAM 보철 제작)
+- 에어샤워 감염관리 시스템
+
+## 의료 면책
+이 문서의 정보는 일반적인 안내 목적이며, 개별 환자의 상태에 따라 치료 방법과 결과가 달라질 수 있습니다.
+정확한 진단과 치료 계획은 내원 상담을 통해 확인하시기 바랍니다.
+
+## 최종 업데이트
+${today}
+
+## 출처
+https://seoul365dc.kr
+`;
+
+  return new Response(content, {
+    headers: {
+      'Content-Type': 'text/plain; charset=utf-8',
+      'Cache-Control': 'public, max-age=86400, s-maxage=604800',
     },
   });
 })

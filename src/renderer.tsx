@@ -13,11 +13,12 @@ import { AREAS } from './data/areas'
 let _currentSeoSettings: Record<string, string> = {};
 export function setCurrentSeoSettings(s: Record<string, string>) { _currentSeoSettings = s; }
 
-export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd }) => {
+export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified }) => {
   const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·인비절라인 투명교정·수면진료 전문. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
   const ogImage = 'https://seoul365dc.kr/static/og-image.png';
+  const lastModified = dateModified || new Date().toISOString().split('T')[0];
 
   // Dynamic SEO/Analytics settings (from DB or env via global cache)
   const seo = _currentSeoSettings || {};
@@ -442,6 +443,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <link rel="canonical" href={canonicalUrl} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
+        <meta name="date" content={lastModified} />
+        <meta property="article:modified_time" content={lastModified} />
 
         {/* === LANGUAGE & GEO === */}
         <meta http-equiv="content-language" content="ko-KR" />

@@ -25,7 +25,8 @@ const app = new Hono<{ Bindings: Bindings }>()
 app.get('/:filename{.+\\.txt$}', async (c, next) => {
   const filename = c.req.param('filename');
   // robots.txt는 seoRoutes에서 처리 → 여기서 스킵
-  if (filename === 'robots.txt') return next();
+  // robots.txt, llms.txt, llms-full.txt → seoRoutes에서 처리
+  if (filename === 'robots.txt' || filename === 'llms.txt' || filename === 'llms-full.txt') return next();
   const key = filename.replace('.txt', '');
   try {
     await initSettingsTable(c.env.DB);
@@ -45,14 +46,26 @@ app.get('/naverc88e4f49632c4e687edac6645aeef061.html', (c) => {
   return c.html('naverc88e4f49632c4e687edac6645aeef061');
 })
 
-// ── Global Middleware ─────────────────────────────────────
+// ── Trailing Slash Normalization (SEO: URL 통일) ──
+app.use('*', async (c, next) => {
+  const url = new URL(c.req.url);
+  if (url.pathname !== '/' && url.pathname.endsWith('/') && !url.pathname.startsWith('/api/') && !url.pathname.startsWith('/static/')) {
+    const clean = url.pathname.slice(0, -1) + url.search;
+    return c.redirect(clean, 301);
+  }
+  await next();
+})
+
+// ── Global Middleware — Security Headers (SEO Checklist 1-3) ──
 app.use('*', async (c, next) => {
   await next();
-  // Security headers
   c.header('X-Content-Type-Options', 'nosniff');
   c.header('X-Frame-Options', 'SAMEORIGIN');
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
   c.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
+  c.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  c.header('X-XSS-Protection', '1; mode=block');
+  c.header('Cross-Origin-Opener-Policy', 'same-origin');
 })
 
 // SEO settings middleware: load from DB + env, inject into renderer context
