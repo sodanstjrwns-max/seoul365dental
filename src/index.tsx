@@ -18,6 +18,7 @@ import blogRoutes from './routes/blog'
 import seoRoutes from './routes/seo'
 import areaRoutes from './routes/area'
 import eventRoutes from './routes/event'
+import ruRoutes from './routes/ru'
 
 const app = new Hono<{ Bindings: Bindings }>()
 
@@ -97,6 +98,7 @@ app.route('/', doctorRoutes)
 app.route('/', pageRoutes)
 app.route('/', areaRoutes)
 app.route('/', eventRoutes)
+app.route('/', ruRoutes)
 
 // API endpoints
 app.route('/', apiRoutes)
