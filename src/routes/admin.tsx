@@ -290,6 +290,17 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                 </div>
               </div>
             </a>
+            <a href="/admin/pricing" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-pink-400/20 transition-all group">
+              <div class="flex flex-col items-center gap-2 text-center">
+                <div class="w-10 h-10 rounded-xl bg-pink-400/10 flex items-center justify-center">
+                  <i class="fa-solid fa-won-sign text-pink-400"></i>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-sm group-hover:text-pink-400 transition">수가 관리</div>
+                  <div class="text-white/25 text-xs">이벤트·수가 설정</div>
+                </div>
+              </div>
+            </a>
           </div>
 
           {/* New Case Button */}
@@ -1828,6 +1839,280 @@ adminRoutes.get('/api/admin/seo/settings', async (c) => {
 
   const settings = await getAllSeoSettings(c.env.DB, c.env as any);
   return c.json({ ok: true, settings });
+})
+
+// ============================================================
+// ADMIN: 수가 관리 페이지 — 이벤트 임플란트 수가 설정
+// ============================================================
+adminRoutes.get('/admin/pricing', async (c) => {
+  await initAdminTables(c.env.DB);
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.redirect('/admin');
+
+  // 현재 설정값 로딩
+  const fields = [
+    { key: 'EVENT_IMPLANT_BRAND', label: '이벤트 브랜드', placeholder: '오스템', default: '오스템' },
+    { key: 'EVENT_IMPLANT_BRAND_EN', label: '브랜드 (영문)', placeholder: 'Osstem', default: 'Osstem' },
+    { key: 'EVENT_IMPLANT_MODEL', label: '모델명', placeholder: 'TS III SA', default: 'TS III SA' },
+    { key: 'EVENT_IMPLANT_PRICE', label: '이벤트가 (만원)', placeholder: '64', default: '64' },
+    { key: 'EVENT_IMPLANT_ORIGINAL_PRICE', label: '정가 (만원)', placeholder: '89', default: '89' },
+    { key: 'EVENT_IMPLANT_ORIGIN', label: '원산지', placeholder: '한국', default: '한국' },
+    { key: 'EVENT_IMPLANT_SUBTITLE', label: '서브타이틀 (특징)', placeholder: 'SA 표면처리 · 국내 1위 · 40년 검증', default: 'SA 표면처리 · 국내 1위 · 40년 검증' },
+    { key: 'EVENT_IMPLANT_PERIOD', label: '이벤트 기간 문구', placeholder: '2026.05.01 ~ 소진 시 종료 · 월 한정 수량', default: '2026.05.01 ~ 소진 시 종료 · 월 한정 수량' },
+    { key: 'EVENT_IMPLANT_START_DATE', label: '시작일 (JSON-LD)', placeholder: '2026-05-01', default: '2026-05-01' },
+    { key: 'EVENT_IMPLANT_END_DATE', label: '종료일 (JSON-LD)', placeholder: '2026-06-30', default: '2026-06-30' },
+    { key: 'EVENT_IMPLANT_ACTIVE', label: '이벤트 활성', placeholder: '1', default: '1' },
+  ];
+
+  const currentValues: Record<string, string> = {};
+  for (const f of fields) {
+    currentValues[f.key] = await getSetting(c.env.DB, f.key, f.default);
+  }
+
+  return c.render(
+    <>
+      {/* Admin Header */}
+      <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
+        <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center hover:bg-[#0066FF]/30 transition">
+              <i class="fa-solid fa-arrow-left text-[#0066FF] text-sm"></i>
+            </a>
+            <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
+              <i class="fa-solid fa-won-sign text-pink-400 text-sm"></i>
+            </div>
+            <span class="text-white font-bold text-sm">수가 관리</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <a href="/event/implant" target="_blank" class="text-white/30 hover:text-white/60 text-xs transition"><i class="fa-solid fa-external-link mr-1"></i>이벤트 페이지</a>
+            <a href="/api/admin/logout" class="text-red-400/60 hover:text-red-400 text-xs transition"><i class="fa-solid fa-right-from-bracket mr-1"></i>로그아웃</a>
+          </div>
+        </div>
+      </div>
+
+      <section class="min-h-screen bg-gradient-to-br from-gray-900 via-[#0a0e1a] to-gray-900 pt-20 pb-12">
+        <div class="max-w-3xl mx-auto px-5 md:px-8">
+
+          {/* Info Banner */}
+          <div class="bg-gradient-to-r from-pink-500/10 to-[#0066FF]/10 border border-pink-500/20 rounded-2xl p-6 mb-8">
+            <h2 class="text-white font-bold text-lg mb-2"><i class="fa-solid fa-won-sign text-pink-400 mr-2"></i>임플란트 이벤트 수가 설정</h2>
+            <p class="text-white/40 text-sm">아래 설정을 변경하면 이벤트 랜딩페이지(<code class="text-pink-300">/event/implant</code>)에 즉시 반영됩니다.<br/>코드 배포 없이 가격·브랜드·기간을 자유롭게 변경할 수 있습니다.</p>
+          </div>
+
+          <form id="pricing-form" class="space-y-6">
+
+            {/* 브랜드 & 모델 */}
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-6">
+              <h3 class="text-white font-bold mb-5 flex items-center gap-2"><i class="fa-solid fa-tag text-pink-400"></i> 브랜드 정보</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {fields.filter(f => ['EVENT_IMPLANT_BRAND','EVENT_IMPLANT_BRAND_EN','EVENT_IMPLANT_MODEL','EVENT_IMPLANT_ORIGIN'].includes(f.key)).map(f => (
+                  <div>
+                    <label class="block text-white/50 text-xs font-semibold mb-1.5 uppercase tracking-wider">{f.label}</label>
+                    <input type="text" name={f.key} value={currentValues[f.key]} placeholder={f.placeholder}
+                      class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-pink-400/50 focus:outline-none transition" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 가격 */}
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-6">
+              <h3 class="text-white font-bold mb-5 flex items-center gap-2"><i class="fa-solid fa-coins text-amber-400"></i> 가격 설정</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-white/50 text-xs font-semibold mb-1.5 uppercase tracking-wider">이벤트가 (만원)</label>
+                  <div class="relative">
+                    <input type="number" name="EVENT_IMPLANT_PRICE" value={currentValues['EVENT_IMPLANT_PRICE']} placeholder="64"
+                      class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-2xl font-black placeholder-white/20 focus:border-amber-400/50 focus:outline-none transition" />
+                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 text-sm">만원</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-white/50 text-xs font-semibold mb-1.5 uppercase tracking-wider">정가 (만원)</label>
+                  <div class="relative">
+                    <input type="number" name="EVENT_IMPLANT_ORIGINAL_PRICE" value={currentValues['EVENT_IMPLANT_ORIGINAL_PRICE']} placeholder="89"
+                      class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-amber-400/50 focus:outline-none transition" />
+                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 text-sm">만원</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3 bg-amber-500/5 border border-amber-500/10 rounded-xl p-3">
+                <p class="text-amber-400/70 text-xs"><i class="fa-solid fa-calculator mr-1"></i> 할인율: <span id="discount-rate" class="font-bold text-amber-400">—</span> | 차액: <span id="discount-diff" class="font-bold text-amber-400">—</span>만원</p>
+              </div>
+            </div>
+
+            {/* 서브타이틀 & 기간 */}
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-6">
+              <h3 class="text-white font-bold mb-5 flex items-center gap-2"><i class="fa-solid fa-calendar-days text-blue-400"></i> 이벤트 정보</h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-white/50 text-xs font-semibold mb-1.5 uppercase tracking-wider">서브타이틀 (특징)</label>
+                  <input type="text" name="EVENT_IMPLANT_SUBTITLE" value={currentValues['EVENT_IMPLANT_SUBTITLE']} placeholder="SA 표면처리 · 국내 1위 · 40년 검증"
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-blue-400/50 focus:outline-none transition" />
+                </div>
+                <div>
+                  <label class="block text-white/50 text-xs font-semibold mb-1.5 uppercase tracking-wider">이벤트 기간 표시 문구</label>
+                  <input type="text" name="EVENT_IMPLANT_PERIOD" value={currentValues['EVENT_IMPLANT_PERIOD']} placeholder="2026.05.01 ~ 소진 시 종료"
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-blue-400/50 focus:outline-none transition" />
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-white/50 text-xs font-semibold mb-1.5 uppercase tracking-wider">시작일 (검색엔진용)</label>
+                    <input type="date" name="EVENT_IMPLANT_START_DATE" value={currentValues['EVENT_IMPLANT_START_DATE']}
+                      class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-400/50 focus:outline-none transition" />
+                  </div>
+                  <div>
+                    <label class="block text-white/50 text-xs font-semibold mb-1.5 uppercase tracking-wider">종료일 (검색엔진용)</label>
+                    <input type="date" name="EVENT_IMPLANT_END_DATE" value={currentValues['EVENT_IMPLANT_END_DATE']}
+                      class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:border-blue-400/50 focus:outline-none transition" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 활성 상태 */}
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-6">
+              <h3 class="text-white font-bold mb-4 flex items-center gap-2"><i class="fa-solid fa-toggle-on text-emerald-400"></i> 이벤트 상태</h3>
+              <label class="flex items-center gap-3 cursor-pointer">
+                <input type="checkbox" id="eventActive" name="EVENT_IMPLANT_ACTIVE" value="1" checked={currentValues['EVENT_IMPLANT_ACTIVE'] === '1'}
+                  class="w-5 h-5 rounded bg-white/5 border-white/10 text-emerald-400 focus:ring-emerald-400/20" />
+                <div>
+                  <span class="text-white font-semibold text-sm">이벤트 활성화</span>
+                  <p class="text-white/30 text-xs mt-0.5">비활성화 시 /event/implant 접근 시 메인 페이지로 리다이렉트됩니다.</p>
+                </div>
+              </label>
+            </div>
+
+            {/* Save */}
+            <div class="flex gap-3">
+              <button type="submit" id="pricing-save-btn" class="flex-1 bg-gradient-to-r from-pink-500 to-pink-600 text-white font-bold py-4 rounded-xl hover:shadow-lg hover:shadow-pink-500/20 transition-all text-sm">
+                <i class="fa-solid fa-floppy-disk mr-2"></i>수가 설정 저장
+              </button>
+              <a href="/event/implant" target="_blank" class="px-6 flex items-center bg-white/5 border border-white/10 rounded-xl text-white/50 hover:text-white/80 hover:bg-white/10 transition text-sm font-bold">
+                <i class="fa-solid fa-external-link mr-2"></i>미리보기
+              </a>
+            </div>
+
+          </form>
+
+          {/* 도움말 */}
+          <div class="mt-8 bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+            <h3 class="text-white font-bold mb-3"><i class="fa-solid fa-lightbulb text-amber-400 mr-2"></i>사용 안내</h3>
+            <ul class="text-white/40 text-xs space-y-1.5 leading-relaxed">
+              <li>• <strong class="text-white/60">브랜드 변경</strong>: '오스템' → '스트라우만' 등으로 변경하면 이벤트 페이지의 모든 텍스트가 자동 변경됩니다.</li>
+              <li>• <strong class="text-white/60">가격 변경</strong>: 이벤트가와 정가를 변경하면 메인 가격, 가격표, FAQ, SEO 메타 데이터가 모두 동기화됩니다.</li>
+              <li>• <strong class="text-white/60">이벤트 비활성화</strong>: 체크 해제 시 이벤트 페이지 접근 시 메인 페이지로 리다이렉트됩니다.</li>
+              <li>• <strong class="text-white/60">검색엔진 날짜</strong>: 시작일/종료일은 Google 이벤트 구조화 데이터(JSON-LD)에 반영됩니다.</li>
+              <li>• <strong class="text-white/60">저장 즉시 반영</strong>: 별도 배포 없이 저장하면 바로 적용됩니다.</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+      <script dangerouslySetInnerHTML={{__html: `
+        // 할인율 계산
+        function calcDiscount() {
+          var price = parseInt(document.querySelector('[name="EVENT_IMPLANT_PRICE"]').value) || 0;
+          var orig = parseInt(document.querySelector('[name="EVENT_IMPLANT_ORIGINAL_PRICE"]').value) || 0;
+          if (orig > 0 && price > 0 && orig > price) {
+            var rate = Math.round((1 - price / orig) * 100);
+            document.getElementById('discount-rate').textContent = rate + '%';
+            document.getElementById('discount-diff').textContent = (orig - price);
+          } else {
+            document.getElementById('discount-rate').textContent = '—';
+            document.getElementById('discount-diff').textContent = '—';
+          }
+        }
+        document.querySelector('[name="EVENT_IMPLANT_PRICE"]').addEventListener('input', calcDiscount);
+        document.querySelector('[name="EVENT_IMPLANT_ORIGINAL_PRICE"]').addEventListener('input', calcDiscount);
+        calcDiscount();
+
+        // 저장
+        document.getElementById('pricing-form').addEventListener('submit', async function(e) {
+          e.preventDefault();
+          var btn = document.getElementById('pricing-save-btn');
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>저장 중...';
+
+          var fd = new FormData(this);
+          var data = {};
+          fd.forEach(function(v, k) { data[k] = v.toString().trim(); });
+
+          // 체크박스 특수 처리
+          data['EVENT_IMPLANT_ACTIVE'] = document.getElementById('eventActive').checked ? '1' : '0';
+
+          try {
+            var res = await fetch('/api/admin/pricing', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data)
+            });
+            var result = await res.json();
+            if (result.ok) {
+              btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>저장 완료!';
+              btn.className = btn.className.replace('from-pink-500 to-pink-600', 'from-emerald-500 to-emerald-600');
+              setTimeout(function() {
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i>수가 설정 저장';
+                btn.className = btn.className.replace('from-emerald-500 to-emerald-600', 'from-pink-500 to-pink-600');
+                btn.disabled = false;
+              }, 2000);
+            } else {
+              throw new Error(result.error || '저장 실패');
+            }
+          } catch(err) {
+            alert('오류: ' + err.message);
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i>수가 설정 저장';
+            btn.disabled = false;
+          }
+        });
+      `}} />
+    </>,
+    { title: '수가 관리 | 서울365 관리자' }
+  )
+})
+
+// --- Pricing API: GET ---
+adminRoutes.get('/api/admin/pricing', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  const keys = [
+    'EVENT_IMPLANT_BRAND', 'EVENT_IMPLANT_BRAND_EN', 'EVENT_IMPLANT_MODEL',
+    'EVENT_IMPLANT_PRICE', 'EVENT_IMPLANT_ORIGINAL_PRICE', 'EVENT_IMPLANT_ORIGIN',
+    'EVENT_IMPLANT_SUBTITLE', 'EVENT_IMPLANT_PERIOD',
+    'EVENT_IMPLANT_START_DATE', 'EVENT_IMPLANT_END_DATE', 'EVENT_IMPLANT_ACTIVE',
+  ];
+  const settings: Record<string, string> = {};
+  for (const k of keys) {
+    settings[k] = await getSetting(c.env.DB, k, '');
+  }
+  return c.json({ ok: true, settings });
+})
+
+// --- Pricing API: PUT ---
+adminRoutes.put('/api/admin/pricing', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  const body = await c.req.json<Record<string, string>>();
+  const allowedKeys = [
+    'EVENT_IMPLANT_BRAND', 'EVENT_IMPLANT_BRAND_EN', 'EVENT_IMPLANT_MODEL',
+    'EVENT_IMPLANT_PRICE', 'EVENT_IMPLANT_ORIGINAL_PRICE', 'EVENT_IMPLANT_ORIGIN',
+    'EVENT_IMPLANT_SUBTITLE', 'EVENT_IMPLANT_PERIOD',
+    'EVENT_IMPLANT_START_DATE', 'EVENT_IMPLANT_END_DATE', 'EVENT_IMPLANT_ACTIVE',
+  ];
+
+  try {
+    for (const key of allowedKeys) {
+      if (key in body) {
+        await setSetting(c.env.DB, key, body[key] || '');
+      }
+    }
+    return c.json({ ok: true });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '저장 실패' }, 500);
+  }
 })
 
 export default adminRoutes
