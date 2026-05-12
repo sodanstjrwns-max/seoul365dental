@@ -141,12 +141,12 @@ apiRoutes.get('/api/notices', async (c) => {
   }
 })
 
-// 팝업 공지 조회 — 메인 페이지 팝업용 (is_popup=1 && is_published=1)
+// 팝업 공지 조회 — 레거시 경로 (→ /api/popup-notices로 통합)
 apiRoutes.get('/api/notices/popup', async (c) => {
   await initAdminTables(c.env.DB);
   try {
     const result = await c.env.DB.prepare(
-      'SELECT id, title, content, category, created_at FROM notices WHERE is_published = 1 AND is_popup = 1 ORDER BY is_pinned DESC, created_at DESC LIMIT 5'
+      'SELECT id, title, content, category, image, created_at FROM notices WHERE is_published = 1 AND is_popup = 1 ORDER BY is_pinned DESC, created_at DESC LIMIT 1'
     ).all();
     return c.json({ ok: true, notices: result.results || [] });
   } catch {
@@ -325,7 +325,7 @@ apiRoutes.get('/api/popup-notices', async (c) => {
   try {
     await initAdminTables(c.env.DB);
     const result = await c.env.DB.prepare(
-      'SELECT id, title, content, category, image FROM notices WHERE is_popup = 1 AND is_published = 1 ORDER BY is_pinned DESC, created_at DESC LIMIT 5'
+      'SELECT id, title, content, category, image FROM notices WHERE is_popup = 1 AND is_published = 1 ORDER BY is_pinned DESC, created_at DESC LIMIT 1'
     ).all();
     return c.json({ ok: true, notices: result.results || [] });
   } catch {
