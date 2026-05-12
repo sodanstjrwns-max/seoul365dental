@@ -318,4 +318,19 @@ apiRoutes.get('/api/admin/uploads', async (c) => {
   }
 })
 
+// ============================================================
+// PUBLIC API: 활성 팝업 공지 가져오기 (홈페이지 팝업용)
+// ============================================================
+apiRoutes.get('/api/popup-notices', async (c) => {
+  try {
+    await initAdminTables(c.env.DB);
+    const result = await c.env.DB.prepare(
+      'SELECT id, title, content, category, image FROM notices WHERE is_popup = 1 AND is_published = 1 ORDER BY is_pinned DESC, created_at DESC LIMIT 5'
+    ).all();
+    return c.json({ ok: true, notices: result.results || [] });
+  } catch {
+    return c.json({ ok: true, notices: [] });
+  }
+})
+
 export default apiRoutes

@@ -239,3 +239,158 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
   btn.style.transform='translate('+(x*0.4)+'px, '+(y*0.4)+'px) scale(1.05)'});
   btn.addEventListener('mouseleave',function(){btn.style.transform='translate(0, 0) scale(1)'})
 })}
+
+// ====== POPUP NOTICE SYSTEM ======
+// 홈페이지 팝업 공지 (이미지 지원 + 오늘 하루 보지 않기)
+(function(){
+  // 홈페이지('/')에서만 팝업 표시
+  if(window.location.pathname !== '/' && window.location.pathname !== '') return;
+  // 관리자 페이지에서는 비활성
+  if(window.location.pathname.startsWith('/admin')) return;
+
+  function getCookie(name){
+    var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+  function setCookie(name, val, days){
+    var d = new Date(); d.setTime(d.getTime() + days*86400000);
+    document.cookie = name + '=' + encodeURIComponent(val) + ';path=/;expires=' + d.toUTCString() + ';SameSite=Lax';
+  }
+
+  // 오늘 날짜 키
+  var today = new Date().toISOString().split('T')[0];
+
+  fetch('/api/popup-notices')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if(!data.ok || !data.notices || data.notices.length === 0) return;
+
+      // 이미 본 팝업 필터링 (오늘 하루 보지 않기)
+      var dismissed = getCookie('popup_dismissed_' + today);
+      var dismissedIds = dismissed ? dismissed.split(',') : [];
+      var notices = data.notices.filter(function(n){ return dismissedIds.indexOf(String(n.id)) === -1; });
+      if(notices.length === 0) return;
+
+      // 팝업 오버레이 생성
+      var overlay = document.createElement('div');
+      overlay.id = 'popup-notice-overlay';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);opacity:0;transition:opacity 0.3s ease';
+
+      var currentIdx = 0;
+
+      function renderPopup(idx){
+        var n = notices[idx];
+        var hasImage = n.image && n.image.length > 5;
+        var total = notices.length;
+
+        // 내용 텍스트에서 줄바꿈 처리
+        var contentHtml = (n.content || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+
+        var html = '<div id="popup-notice-card" style="background:#fff;border-radius:20px;max-width:480px;width:100%;max-height:85vh;overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,0.3);transform:translateY(20px) scale(0.96);transition:transform 0.35s cubic-bezier(0.16,1,0.3,1);position:relative">';
+
+        // 이미지 영역
+        if(hasImage){
+          html += '<div style="position:relative;overflow:hidden">';
+          html += '<img src="' + n.image + '" alt="' + (n.title||'공지사항').replace(/"/g,'&quot;') + '" style="width:100%;display:block;max-height:320px;object-fit:cover" onerror="this.parentElement.style.display=\'none\'" />';
+          // 카테고리 뱃지 (이미지 위)
+          html += '<span style="position:absolute;top:12px;left:12px;background:rgba(0,102,255,0.9);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;backdrop-filter:blur(4px)">' + (n.category || '공지') + '</span>';
+          html += '</div>';
+        }
+
+        // 텍스트 콘텐츠 영역
+        html += '<div style="padding:' + (hasImage ? '20px 24px 16px' : '28px 24px 16px') + '">';
+        if(!hasImage){
+          html += '<span style="display:inline-block;background:#0066FF;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;margin-bottom:12px">' + (n.category || '공지') + '</span>';
+        }
+        html += '<h3 style="font-size:18px;font-weight:800;color:#111;margin:0 0 10px;line-height:1.4">' + (n.title || '').replace(/</g,'&lt;') + '</h3>';
+        html += '<div style="font-size:14px;color:#555;line-height:1.7;max-height:150px;overflow-y:auto;word-break:keep-all">' + contentHtml + '</div>';
+        html += '</div>';
+
+        // 하단 액션 바
+        html += '<div style="padding:0 24px 20px;display:flex;align-items:center;justify-content:space-between;gap:8px">';
+        html += '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none">';
+        html += '<input type="checkbox" id="popup-dismiss-check" style="width:16px;height:16px;accent-color:#0066FF;cursor:pointer" />';
+        html += '<span style="font-size:13px;color:#999">오늘 하루 보지 않기</span>';
+        html += '</label>';
+
+        // 페이지 인디케이터 + 버튼들
+        html += '<div style="display:flex;align-items:center;gap:8px">';
+        if(total > 1){
+          html += '<span style="font-size:12px;color:#bbb;margin-right:4px">' + (idx+1) + ' / ' + total + '</span>';
+          if(idx < total - 1){
+            html += '<button id="popup-next-btn" style="background:#f5f5f5;border:none;padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;color:#666;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background=\'#eee\'" onmouseout="this.style.background=\'#f5f5f5\'">다음</button>';
+          }
+        }
+        html += '<button id="popup-close-btn" style="background:linear-gradient(135deg,#0066FF,#2979FF);border:none;padding:8px 20px;border-radius:10px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform=\'scale(1.05)\'" onmouseout="this.style.transform=\'scale(1)\'">확인</button>';
+        html += '</div>';
+
+        html += '</div>';
+
+        // 닫기(X) 버튼
+        html += '<button id="popup-x-btn" style="position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.4);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:background 0.2s" onmouseover="this.style.background=\'rgba(0,0,0,0.6)\'" onmouseout="this.style.background=\'rgba(0,0,0,0.4)\'">&times;</button>';
+
+        html += '</div>';
+        overlay.innerHTML = html;
+
+        // 애니메이션
+        requestAnimationFrame(function(){
+          var card = document.getElementById('popup-notice-card');
+          if(card) card.style.transform = 'translateY(0) scale(1)';
+        });
+
+        // 이벤트 바인딩
+        function closePopup(){
+          var chk = document.getElementById('popup-dismiss-check');
+          if(chk && chk.checked){
+            // 현재 보이는 공지 + 남은 공지 모두 dismiss
+            var allIds = notices.map(function(nn){ return String(nn.id); });
+            var merged = dismissedIds.concat(allIds);
+            var unique = merged.filter(function(v, i, a){ return a.indexOf(v) === i; });
+            setCookie('popup_dismissed_' + today, unique.join(','), 1);
+          }
+          overlay.style.opacity = '0';
+          var card = document.getElementById('popup-notice-card');
+          if(card) card.style.transform = 'translateY(20px) scale(0.96)';
+          setTimeout(function(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); }, 300);
+        }
+
+        var closeBtn = document.getElementById('popup-close-btn');
+        var xBtn = document.getElementById('popup-x-btn');
+        var nextBtn = document.getElementById('popup-next-btn');
+
+        if(closeBtn) closeBtn.addEventListener('click', closePopup);
+        if(xBtn) xBtn.addEventListener('click', closePopup);
+        if(nextBtn) nextBtn.addEventListener('click', function(){
+          // 현재 것만 dismiss (체크 시)
+          var chk = document.getElementById('popup-dismiss-check');
+          if(chk && chk.checked){
+            dismissedIds.push(String(notices[currentIdx].id));
+            setCookie('popup_dismissed_' + today, dismissedIds.join(','), 1);
+          }
+          currentIdx++;
+          renderPopup(currentIdx);
+        });
+
+        // 오버레이 클릭으로 닫기
+        overlay.addEventListener('click', function(e){
+          if(e.target === overlay) closePopup();
+        });
+
+        // ESC 키로 닫기
+        document.addEventListener('keydown', function escHandler(e){
+          if(e.key === 'Escape'){
+            closePopup();
+            document.removeEventListener('keydown', escHandler);
+          }
+        });
+      }
+
+      document.body.appendChild(overlay);
+      // Fade in
+      requestAnimationFrame(function(){
+        overlay.style.opacity = '1';
+        renderPopup(0);
+      });
+    })
+    .catch(function(e){ /* 팝업 로드 실패 시 무시 */ });
+})();
