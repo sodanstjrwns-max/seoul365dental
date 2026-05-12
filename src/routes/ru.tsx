@@ -350,6 +350,82 @@ ruRoutes.get('/ru', async (c) => {
     </div>
   </section>
 
+  <!-- ===== CHIEF DOCTOR ===== -->
+  <section class="py-16 md:py-24 bg-white overflow-hidden">
+    <div class="max-w-6xl mx-auto px-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+        <!-- Photo -->
+        <div class="relative">
+          <div class="relative rounded-3xl overflow-hidden shadow-2xl shadow-primary/10">
+            <img src="/static/dr-park.jpg" alt="Доктор Пак Чунгю — главный врач Seoul 365 Dental" class="w-full h-auto object-cover" loading="lazy"/>
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-navy/80 to-transparent p-6 pt-16">
+              <div class="flex items-center gap-2">
+                <span class="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full">Главный врач</span>
+                <span class="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full">🇰🇷 Сеульский университет</span>
+              </div>
+            </div>
+          </div>
+          <!-- Floating credential badge -->
+          <div class="absolute -bottom-4 -right-4 md:right-4 bg-white rounded-2xl shadow-lg border border-gray-100 p-4 max-w-[200px]">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-award text-amber-500"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-gray-900">Harvard</p>
+                <p class="text-[0.65rem] text-gray-400">Implant Course</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div>
+          <span class="badge-ru bg-primary/5 text-primary border border-primary/10 w-fit mb-6">ГЛАВНЫЙ ВРАЧ</span>
+          <h2 class="text-3xl md:text-4xl font-black text-gray-900 mt-4 mb-2">
+            Доктор Пак Чунгю
+          </h2>
+          <p class="text-lg text-primary font-semibold mb-6">박준규 대표원장</p>
+
+          <div class="space-y-3 mb-8">
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-graduation-cap text-primary mt-1 flex-shrink-0"></i>
+              <span class="text-gray-700 text-sm">Сеульский национальный университет — стоматологический факультет</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-user-doctor text-primary mt-1 flex-shrink-0"></i>
+              <span class="text-gray-700 text-sm">Сертифицированный специалист по общей стоматологии (Министерство здравоохранения)</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-globe text-primary mt-1 flex-shrink-0"></i>
+              <span class="text-gray-700 text-sm">Гарвардский университет — курс повышения квалификации по имплантологии</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-certificate text-primary mt-1 flex-shrink-0"></i>
+              <span class="text-gray-700 text-sm">Сертифицированный врач Invisalign</span>
+            </div>
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-tooth text-primary mt-1 flex-shrink-0"></i>
+              <span class="text-gray-700 text-sm">Более 10 000 случаев имплантации</span>
+            </div>
+          </div>
+
+          <blockquote class="border-l-4 border-primary/20 pl-4 py-2 mb-8">
+            <p class="text-gray-500 text-sm italic leading-relaxed">
+              «Каждый пациент заслуживает лучшего лечения — независимо от языка и национальности. Мы рады принять вас в Seoul 365.»
+            </p>
+            <cite class="text-xs text-gray-400 not-italic mt-2 block">— Д-р Пак Чунгю</cite>
+          </blockquote>
+
+          <a href="${CLINIC.phoneTel}" class="inline-flex items-center gap-2 bg-primary text-white font-bold px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors text-sm">
+            <i class="fa-solid fa-phone"></i>
+            Записаться к главному врачу
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== SERVICES ===== -->
   <section id="services" class="py-16 md:py-24 bg-white">
     <div class="max-w-6xl mx-auto px-5">
@@ -500,6 +576,93 @@ ruRoutes.get('/ru', async (c) => {
           </p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ===== CLINIC TOUR + TEAM ===== -->
+  <section class="py-16 md:py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-5">
+      <div class="text-center mb-14">
+        <span class="badge-ru bg-primary/5 text-primary border border-primary/10 mx-auto w-fit mb-4">НАША КЛИНИКА</span>
+        <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-3">Seoul 365 Dental Clinic</h2>
+        <p class="text-gray-400 max-w-xl mx-auto">Современная клиника с полным оборудованием и дружной командой профессионалов</p>
+      </div>
+
+      <!-- Team Photo — Full Width -->
+      <div class="relative rounded-3xl overflow-hidden shadow-xl mb-10">
+        <img src="/static/team-photo.jpg" alt="Команда Seoul 365 Dental — 25+ специалистов" class="w-full h-auto object-cover" loading="lazy"/>
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-navy/90 via-navy/40 to-transparent p-6 md:p-10 pt-20">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+              <h3 class="text-white text-2xl md:text-3xl font-black mb-2">25+ специалистов</h3>
+              <p class="text-white/50 text-sm md:text-base">Врачи, ассистенты и зубные техники — одна команда, одна цель</p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="bg-white/10 backdrop-blur-sm text-white/80 text-xs font-bold px-3 py-1.5 rounded-full border border-white/10">
+                <i class="fa-solid fa-user-doctor mr-1"></i> 5 врачей
+              </span>
+              <span class="bg-white/10 backdrop-blur-sm text-white/80 text-xs font-bold px-3 py-1.5 rounded-full border border-white/10">
+                <i class="fa-solid fa-gear mr-1"></i> Своя лаборатория
+              </span>
+              <span class="bg-white/10 backdrop-blur-sm text-white/80 text-xs font-bold px-3 py-1.5 rounded-full border border-white/10">
+                <i class="fa-solid fa-calendar-check mr-1"></i> С 2019 года
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctors Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+        <div class="text-center group">
+          <div class="relative rounded-2xl overflow-hidden mb-3 shadow-sm border border-gray-100 group-hover:shadow-md group-hover:border-primary/20 transition-all">
+            <img src="/static/dr-park-junkyu-profile.jpg" alt="Д-р Пак Чунгю" class="w-full aspect-[3/4] object-cover object-top" loading="lazy"/>
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-navy/70 to-transparent p-3 pt-8">
+              <span class="text-white text-[0.6rem] font-bold bg-primary/80 px-2 py-0.5 rounded-full">Главный</span>
+            </div>
+          </div>
+          <p class="font-bold text-gray-900 text-sm">Пак Чунгю</p>
+          <p class="text-[0.65rem] text-gray-400">Имплантация · Общая</p>
+        </div>
+
+        <div class="text-center group">
+          <div class="relative rounded-2xl overflow-hidden mb-3 shadow-sm border border-gray-100 group-hover:shadow-md group-hover:border-primary/20 transition-all">
+            <img src="/static/dr-choi-dabin-profile.jpg" alt="Д-р Чхве Дабин" class="w-full aspect-[3/4] object-cover object-top" loading="lazy"/>
+          </div>
+          <p class="font-bold text-gray-900 text-sm">Чхве Дабин</p>
+          <p class="text-[0.65rem] text-gray-400">Ортодонтия</p>
+        </div>
+
+        <div class="text-center group">
+          <div class="relative rounded-2xl overflow-hidden mb-3 shadow-sm border border-gray-100 group-hover:shadow-md group-hover:border-primary/20 transition-all">
+            <img src="/static/dr-jung-munhee-profile.jpg" alt="Д-р Чон Мунхи" class="w-full aspect-[3/4] object-cover object-top" loading="lazy"/>
+          </div>
+          <p class="font-bold text-gray-900 text-sm">Чон Мунхи</p>
+          <p class="text-[0.65rem] text-gray-400">Протезирование</p>
+        </div>
+
+        <div class="text-center group">
+          <div class="relative rounded-2xl overflow-hidden mb-3 shadow-sm border border-gray-100 group-hover:shadow-md group-hover:border-primary/20 transition-all">
+            <img src="/static/dr-sang-sehoon-profile.jpg" alt="Д-р Сан Сехун" class="w-full aspect-[3/4] object-cover object-top" loading="lazy"/>
+          </div>
+          <p class="font-bold text-gray-900 text-sm">Сан Сехун</p>
+          <p class="text-[0.65rem] text-gray-400">Имплантация</p>
+        </div>
+
+        <div class="text-center group">
+          <div class="relative rounded-2xl overflow-hidden mb-3 shadow-sm border border-gray-100 group-hover:shadow-md group-hover:border-primary/20 transition-all">
+            <img src="/static/dr-ha-nuri-profile.jpg" alt="Д-р Ха Нури" class="w-full aspect-[3/4] object-cover object-top" loading="lazy"/>
+          </div>
+          <p class="font-bold text-gray-900 text-sm">Ха Нури</p>
+          <p class="text-[0.65rem] text-gray-400">Эстетика · Детская</p>
+        </div>
+      </div>
+
+      <!-- Caption -->
+      <p class="text-center text-sm text-gray-400 mt-8">
+        <i class="fa-solid fa-graduation-cap mr-1"></i>
+        Все врачи — выпускники Сеульского национального университета (서울대학교)
+      </p>
     </div>
   </section>
 
