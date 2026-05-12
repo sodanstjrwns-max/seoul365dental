@@ -358,10 +358,10 @@ eventRoutes.get('/event/implant', async (c) => {
 
           <div class="space-y-4 stagger-children">
             {[
-              { step: '01', title: '무료 CT 정밀진단', desc: 'Cone Beam CT 촬영으로 뼈의 양·밀도·신경 위치를 정밀 분석합니다.', icon: 'fa-x-ray', time: '당일 30분' },
+              { step: '01', title: 'CT 정밀진단', desc: 'Cone Beam CT 촬영으로 뼈의 양·밀도·신경 위치를 정밀 분석합니다.', icon: 'fa-x-ray', time: '당일 30분' },
               { step: '02', title: '3D 모의수술 & 가이드 제작', desc: 'CT 데이터 기반 디지털 모의수술 후 맞춤 수술 가이드를 제작합니다.', icon: 'fa-laptop-medical', time: '1~2주' },
               { step: '03', title: `${brand} ${model} 식립`, desc: '네비게이션 가이드로 0.1mm 단위 정밀 식립. 수면진료 선택 가능.', icon: 'fa-screwdriver-wrench', time: '30분~1시간' },
-              { step: '04', title: '골유착 기간', desc: 'SA 표면처리로 빠른 골유착. 약 6~8주 후 2차 수술 진행.', icon: 'fa-bone', time: '6~8주' },
+              { step: '04', title: '골유착 기간', desc: 'SA 표면처리로 빠른 골유착. 약 10~16주 후 2차 수술 진행.', icon: 'fa-bone', time: '10~16주' },
               { step: '05', title: '맞춤 보철물 제작', desc: '자체 기공실에서 지르코니아 크라운을 정밀 제작합니다.', icon: 'fa-gear', time: '1~2주' },
               { step: '06', title: '최종 장착 & 정기 관리', desc: '보철물 장착, 교합 미세 조정, 정기 검진 프로그램 안내.', icon: 'fa-face-smile', time: '당일' },
             ].map(item => (
@@ -428,7 +428,7 @@ eventRoutes.get('/event/implant', async (c) => {
             <span class="gradient-text-white">지금, {price}만원</span>
           </h2>
           <p class="text-white/35 mb-10 reveal" style="transition-delay:0.2s">
-            서울대 전문의 직접 시술 · CT 무료 정밀진단 · 정품 인증서 발급
+            서울대 전문의 직접 시술 · CT 정밀진단 · 정품 인증서 발급
           </p>
 
           <div class="flex flex-col sm:flex-row items-center justify-center gap-4 reveal" style="transition-delay:0.4s">
@@ -531,7 +531,7 @@ eventRoutes.get('/event/implant', async (c) => {
             "procedureType": "SurgicalProcedure",
             "howPerformed": "CT 기반 네비게이션 가이드 수술로 정밀 식립",
             "preparation": "Cone Beam CT 정밀진단, 3D 모의수술",
-            "followup": "6~8주 골유착 후 지르코니아 크라운 최종 장착",
+            "followup": "10~16주 골유착 후 지르코니아 크라운 최종 장착",
             "status": "EventScheduled",
             "bodyLocation": "구강 (잇몸뼈)",
           },

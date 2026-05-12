@@ -247,6 +247,9 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
   if(window.location.pathname !== '/' && window.location.pathname !== '') return;
   // 관리자 페이지에서는 비활성
   if(window.location.pathname.startsWith('/admin')) return;
+  // 중복 실행 방지 — 이미 팝업이 생성되었으면 무시
+  if(window.__popupNoticeLoaded) return;
+  window.__popupNoticeLoaded = true;
 
   function getCookie(name){
     var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));

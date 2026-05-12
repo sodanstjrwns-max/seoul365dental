@@ -840,7 +840,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         </div>
 
         {/* === SCRIPTS === */}
-        <script src="/static/app.js" defer></script>
+        <script src="/static/app.js?v=20260512" defer></script>
       </body>
     </html>
   )
