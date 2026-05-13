@@ -780,19 +780,24 @@ adminRoutes.get('/admin/consultations', async (c) => {
                   <tbody>
                     {items.map((item: any) => {
                       const s = statusMap[item.status] || statusMap.new;
+                      const msgEscaped = (item.message || '내용 없음').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/\n/g, '<br>');
                       return (
-                        <tr class="border-b border-white/5 hover:bg-white/[0.02] transition">
+                        <>
+                        <tr class="border-b border-white/5 hover:bg-white/[0.04] transition cursor-pointer" onclick={`toggleDetail(${item.id})`}>
                           <td class="px-5 py-3">
                             <span class={`inline-flex items-center gap-1 text-xs text-${s.color}-400 bg-${s.color}-400/10 px-2.5 py-1 rounded-full`}>
                               <span class={`w-1.5 h-1.5 bg-${s.color}-400 rounded-full`}></span>{s.label}
                             </span>
                           </td>
-                          <td class="px-5 py-3 text-white font-medium">{item.name}</td>
-                          <td class="px-5 py-3"><a href={`tel:${item.phone}`} class="text-[#0066FF] hover:underline">{item.phone}</a></td>
+                          <td class="px-5 py-3 text-white font-medium">
+                            {item.name}
+                            <i class={`fa-solid fa-chevron-down text-white/20 text-[10px] ml-2 transition-transform`} id={`chevron-${item.id}`}></i>
+                          </td>
+                          <td class="px-5 py-3"><a href={`tel:${item.phone}`} class="text-[#0066FF] hover:underline" onclick="event.stopPropagation()">{item.phone}</a></td>
                           <td class="px-5 py-3 text-white/40 hidden md:table-cell">{item.treatment || '-'}</td>
                           <td class="px-5 py-3 text-white/30 hidden lg:table-cell max-w-[200px] truncate">{item.message || '-'}</td>
                           <td class="px-5 py-3 text-white/25 text-xs hidden md:table-cell">{item.created_at?.slice(0, 16)}</td>
-                          <td class="px-5 py-3 text-right">
+                          <td class="px-5 py-3 text-right" onclick="event.stopPropagation()">
                             <select onchange={`updateConsultStatus(${item.id}, this.value)`} class="bg-white/5 border border-white/10 text-white text-xs rounded-lg px-2 py-1 outline-none">
                               <option value="new" selected={item.status === 'new'} class="bg-gray-900">새 문의</option>
                               <option value="contacted" selected={item.status === 'contacted'} class="bg-gray-900">연락 완료</option>
@@ -800,6 +805,42 @@ adminRoutes.get('/admin/consultations', async (c) => {
                             </select>
                           </td>
                         </tr>
+                        {/* 상세 내용 펼치기 행 */}
+                        <tr id={`detail-${item.id}`} class="hidden">
+                          <td colspan="7" class="px-5 py-0">
+                            <div class="bg-white/[0.03] border border-white/5 rounded-xl my-2 p-5 overflow-hidden" style="animation:slideDown 0.2s ease">
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <div class="text-white/30 text-xs mb-1 font-semibold uppercase tracking-wider">이름</div>
+                                  <div class="text-white">{item.name}</div>
+                                </div>
+                                <div>
+                                  <div class="text-white/30 text-xs mb-1 font-semibold uppercase tracking-wider">연락처</div>
+                                  <div><a href={`tel:${item.phone}`} class="text-[#0066FF] hover:underline">{item.phone}</a></div>
+                                </div>
+                                <div>
+                                  <div class="text-white/30 text-xs mb-1 font-semibold uppercase tracking-wider">관심치료</div>
+                                  <div class="text-white/60">{item.treatment || '-'}</div>
+                                </div>
+                                <div>
+                                  <div class="text-white/30 text-xs mb-1 font-semibold uppercase tracking-wider">접수일시</div>
+                                  <div class="text-white/60">{item.created_at || '-'}</div>
+                                </div>
+                              </div>
+                              <div class="mt-4 pt-4 border-t border-white/5">
+                                <div class="text-white/30 text-xs mb-2 font-semibold uppercase tracking-wider">상담 내용</div>
+                                <div class="text-white/80 text-sm leading-relaxed whitespace-pre-wrap" style="word-break:keep-all">{item.message || '내용 없음'}</div>
+                              </div>
+                              {item.admin_memo ? (
+                                <div class="mt-4 pt-4 border-t border-white/5">
+                                  <div class="text-white/30 text-xs mb-2 font-semibold uppercase tracking-wider">관리자 메모</div>
+                                  <div class="text-yellow-400/70 text-sm leading-relaxed">{item.admin_memo}</div>
+                                </div>
+                              ) : null}
+                            </div>
+                          </td>
+                        </tr>
+                        </>
                       );
                     })}
                   </tbody>
@@ -810,7 +851,32 @@ adminRoutes.get('/admin/consultations', async (c) => {
         </div>
       </section>
 
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes slideDown { from { opacity:0; max-height:0; padding:0 20px; } to { opacity:1; max-height:500px; padding:20px; } }
+      `}} />
       <script dangerouslySetInnerHTML={{__html: `
+        function toggleDetail(id) {
+          var row = document.getElementById('detail-' + id);
+          var chevron = document.getElementById('chevron-' + id);
+          if (!row) return;
+          var isHidden = row.classList.contains('hidden');
+          // 다른 열린 상세행 닫기
+          document.querySelectorAll('[id^="detail-"]').forEach(function(el) {
+            if (el.id !== 'detail-' + id) {
+              el.classList.add('hidden');
+              var otherId = el.id.replace('detail-','');
+              var otherChevron = document.getElementById('chevron-' + otherId);
+              if (otherChevron) otherChevron.style.transform = 'rotate(0deg)';
+            }
+          });
+          if (isHidden) {
+            row.classList.remove('hidden');
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+          } else {
+            row.classList.add('hidden');
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+          }
+        }
         async function updateConsultStatus(id, status) {
           try {
             const res = await fetch('/api/admin/consultations/' + id, {
