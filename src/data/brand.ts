@@ -147,7 +147,7 @@ export const PERSONAS = {
     fear: '"나이가 많은데 임플란트를 해도 되나요?" "다른 병원에서 뼈가 부족하다고 했는데…"',
     empathy: '드시고 싶은 것을 마음껏 드시지 못하는 그 답답함, 저희가 압니다.',
     solution: '서울대 출신 임플란트 전문 원장이 CT 정밀 진단 후 맞춤 치료 계획을 세웁니다. 뼈가 부족한 경우에도 골이식과 병행하여 진행 가능합니다.',
-    cta: '무료 CT 촬영으로 정밀 진단 받아보세요.',
+    cta: 'CT 촬영으로 정밀 진단 받아보세요.',
     treatmentSlugs: ['full-implant', 'digital-full-arch', 'implant'],
   },
   B: {
