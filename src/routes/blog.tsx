@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { treatments, getTreatmentBySlug } from '../data/treatments'
-import { getAdminFromCookie, initAdminTables, initBlogTables, renderContent, extractFAQs, extractHeadings, slugify } from '../lib/db'
+import { getAdminFromCookie, initAdminTables, initBlogTables, renderContent, extractFAQs, extractHeadings, slugify, generateSeoSlug, autoGenerateExcerpt, estimateReadingTime, extractFirstImage, submitToIndexNow, pingSitemapUpdate } from '../lib/db'
 
 const blogRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -59,9 +59,14 @@ blogRoutes.get('/admin/blog', async (c) => {
 
           <div class="flex items-center justify-between mb-6">
             <h1 class="text-xl font-bold text-white">블로그 글 관리</h1>
-            <button onclick="openEditor()" class="px-5 py-2.5 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white text-sm font-bold transition">
-              <i class="fa-solid fa-plus mr-1.5"></i>새 글 작성
-            </button>
+            <div class="flex items-center gap-3">
+              <button onclick="migrateAllSlugs()" id="migrateSlugsBtn" class="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-xs font-bold transition border border-amber-500/20" title="기존 포스트의 URL을 SEO 최적화된 영문 슬러그로 일괄 변환합니다">
+                <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>SEO 슬러그 마이그레이션
+              </button>
+              <button onclick="openEditor()" class="px-5 py-2.5 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white text-sm font-bold transition">
+                <i class="fa-solid fa-plus mr-1.5"></i>새 글 작성
+              </button>
+            </div>
           </div>
 
           {/* Posts List */}
@@ -957,6 +962,37 @@ blogRoutes.get('/admin/blog', async (c) => {
             if (json.ok) window.location.reload(); else alert(json.error||'삭제 실패');
           } catch(e) { alert('오류: '+e.message); }
         }
+
+        async function migrateAllSlugs() {
+          var btn = document.getElementById('migrateSlugsBtn');
+          if (!confirm('모든 블로그 포스트의 URL을 SEO 최적화 영문 슬러그로 일괄 변환합니다.\\n\\n⚠️ 기존 URL은 301 리다이렉트로 자동 보존됩니다.\\n\\n진행하시겠습니까?')) return;
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1.5"></i>마이그레이션 중...';
+          try {
+            var res = await fetch('/api/admin/blog/migrate-slugs', { method: 'POST' });
+            var json = await res.json();
+            if (json.ok) {
+              var msg = '✅ SEO 슬러그 마이그레이션 완료!\\n\\n';
+              msg += '전체: ' + json.total + '개\\n';
+              msg += '변환: ' + json.migrated + '개\\n';
+              msg += '이미 최적화: ' + json.skipped + '개\\n';
+              if (json.changes && json.changes.length > 0) {
+                msg += '\\n변경 내역:\\n';
+                json.changes.forEach(function(ch) {
+                  msg += '• ' + ch.title + '\\n  ' + ch.oldSlug + ' → ' + ch.newSlug + '\\n';
+                });
+                msg += '\\n🔄 기존 URL은 301 리다이렉트로 보존됩니다.';
+                msg += '\\n📡 Google/Bing 사이트맵 핑 + IndexNow 제출 완료!';
+              }
+              alert(msg);
+              window.location.reload();
+            } else {
+              alert('오류: ' + (json.error || '마이그레이션 실패'));
+            }
+          } catch(e) { alert('오류: ' + e.message); }
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>SEO 슬러그 마이그레이션';
+        }
       `}} />
     </>,
     { title: '블로그 관리 | 서울365치과' }
@@ -970,13 +1006,36 @@ blogRoutes.post('/api/admin/blog', async (c) => {
   if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
 
   const data = await c.req.json();
-  const slug = slugify(data.title) + '-' + Date.now().toString(36);
-  // Ensure focus_keyword column exists
+  
+  // SEO-optimized slug: use focus_keyword or smart Korean→English conversion
+  let slug = generateSeoSlug(data.title, data.focus_keyword);
+  
+  // Ensure slug uniqueness by checking DB
+  const existing = await c.env.DB.prepare('SELECT id FROM blog_posts WHERE slug = ?').bind(slug).first();
+  if (existing) {
+    slug = slug + '-' + Date.now().toString(36).slice(-4);
+  }
+  
+  // Auto-generate excerpt if not provided
+  const excerpt = data.excerpt || autoGenerateExcerpt(data.content);
+  
+  // Ensure focus_keyword & seo_slug columns exist
   try { await c.env.DB.prepare('ALTER TABLE blog_posts ADD COLUMN focus_keyword TEXT').run(); } catch {}
+  try { await c.env.DB.prepare('ALTER TABLE blog_posts ADD COLUMN seo_slug TEXT').run(); } catch {}
+  
   await c.env.DB.prepare(`
     INSERT INTO blog_posts (slug, title, excerpt, content, category, tags, cover_image, treatment_slug, author_name, is_published, focus_keyword)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(slug, data.title, data.excerpt || null, data.content, data.category || '치과상식', data.tags || null, data.cover_image || null, data.treatment_slug || null, '서울365치과', data.is_published ? 1 : 0, data.focus_keyword || null).run();
+  `).bind(slug, data.title, excerpt, data.content, data.category || '치과상식', data.tags || null, data.cover_image || null, data.treatment_slug || null, '서울365치과', data.is_published ? 1 : 0, data.focus_keyword || null).run();
+  
+  // Auto SEO: If publishing, notify search engines
+  if (data.is_published) {
+    const postUrl = `https://seoul365dc.kr/blog/${slug}`;
+    // Fire-and-forget: submit to IndexNow + ping sitemaps
+    submitToIndexNow(c.env.DB, c.env as any, [postUrl]).catch(() => {});
+    pingSitemapUpdate().catch(() => {});
+  }
+  
   return c.json({ ok: true, slug });
 })
 
@@ -993,11 +1052,27 @@ blogRoutes.put('/api/admin/blog/:id', async (c) => {
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
   if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
   const data = await c.req.json();
+  // Auto-generate excerpt if not provided
+  const excerpt = data.excerpt || autoGenerateExcerpt(data.content);
+  
   // Ensure focus_keyword column exists
   try { await c.env.DB.prepare('ALTER TABLE blog_posts ADD COLUMN focus_keyword TEXT').run(); } catch {}
+  try { await c.env.DB.prepare('ALTER TABLE blog_posts ADD COLUMN seo_slug TEXT').run(); } catch {}
+  
   await c.env.DB.prepare(`
     UPDATE blog_posts SET title=?, excerpt=?, content=?, category=?, tags=?, cover_image=?, treatment_slug=?, is_published=?, focus_keyword=?, updated_at=datetime('now') WHERE id=?
-  `).bind(data.title, data.excerpt || null, data.content, data.category || '치과상식', data.tags || null, data.cover_image || null, data.treatment_slug || null, data.is_published ? 1 : 0, data.focus_keyword || null, c.req.param('id')).run();
+  `).bind(data.title, excerpt, data.content, data.category || '치과상식', data.tags || null, data.cover_image || null, data.treatment_slug || null, data.is_published ? 1 : 0, data.focus_keyword || null, c.req.param('id')).run();
+  
+  // Auto SEO: If publishing, notify search engines
+  if (data.is_published) {
+    const post = await c.env.DB.prepare('SELECT slug FROM blog_posts WHERE id = ?').bind(c.req.param('id')).first<{slug: string}>();
+    if (post) {
+      const postUrl = `https://seoul365dc.kr/blog/${post.slug}`;
+      submitToIndexNow(c.env.DB, c.env as any, [postUrl]).catch(() => {});
+      pingSitemapUpdate().catch(() => {});
+    }
+  }
+  
   return c.json({ ok: true });
 })
 
@@ -1110,12 +1185,70 @@ blogRoutes.get('/blog', async (c) => {
   )
 })
 
-// Blog Detail Page
+// --- Admin: Bulk Slug Migration API ---
+blogRoutes.post('/api/admin/blog/migrate-slugs', async (c) => {
+  await initBlogTables(c.env.DB);
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  // Get all posts
+  const result = await c.env.DB.prepare('SELECT id, slug, title, focus_keyword FROM blog_posts ORDER BY id ASC').all();
+  const posts = result.results || [];
+  
+  let migrated = 0;
+  let skipped = 0;
+  const changes: { id: number; oldSlug: string; newSlug: string; title: string }[] = [];
+
+  for (const post of posts as any[]) {
+    const newSlug = generateSeoSlug(post.title, post.focus_keyword);
+    
+    // Skip if slug is already good (same as what generateSeoSlug would produce)
+    if (post.slug === newSlug) {
+      skipped++;
+      continue;
+    }
+    
+    // Check uniqueness of new slug
+    let finalSlug = newSlug;
+    const existing = await c.env.DB.prepare('SELECT id FROM blog_posts WHERE slug = ? AND id != ?').bind(finalSlug, post.id).first();
+    if (existing) {
+      finalSlug = finalSlug + '-' + Date.now().toString(36).slice(-4);
+    }
+    
+    // Save old slug for 301 redirect, update to new slug
+    await c.env.DB.prepare(
+      'UPDATE blog_posts SET old_slug = CASE WHEN old_slug IS NULL THEN ? ELSE old_slug END, slug = ?, updated_at = datetime(\'now\') WHERE id = ?'
+    ).bind(post.slug, finalSlug, post.id).run();
+    
+    changes.push({ id: post.id, oldSlug: post.slug, newSlug: finalSlug, title: post.title });
+    migrated++;
+  }
+
+  // If any posts were migrated, trigger sitemap ping
+  if (migrated > 0) {
+    const urls = changes.map(ch => `https://seoul365dc.kr/blog/${ch.newSlug}`);
+    submitToIndexNow(c.env.DB, c.env as any, urls).catch(() => {});
+    pingSitemapUpdate().catch(() => {});
+  }
+
+  return c.json({ ok: true, migrated, skipped, total: posts.length, changes });
+});
+
+// Blog Detail Page (with 301 redirect for old slugs)
 blogRoutes.get('/blog/:slug', async (c) => {
   await initBlogTables(c.env.DB);
   const slug = c.req.param('slug');
   const post = await c.env.DB.prepare('SELECT * FROM blog_posts WHERE slug = ? AND is_published = 1').bind(slug).first<any>();
-  if (!post) return c.notFound();
+  
+  // If not found by current slug, check old_slug for 301 redirect
+  if (!post) {
+    const oldPost = await c.env.DB.prepare('SELECT slug FROM blog_posts WHERE old_slug = ? AND is_published = 1').bind(slug).first<{slug: string}>();
+    if (oldPost) {
+      // 301 Permanent Redirect — tells Google to transfer all SEO juice to new URL
+      return c.redirect(`/blog/${oldPost.slug}`, 301);
+    }
+    return c.notFound();
+  }
 
   // Increment view count
   await c.env.DB.prepare('UPDATE blog_posts SET view_count = view_count + 1 WHERE id = ?').bind(post.id).run();
@@ -1136,6 +1269,13 @@ blogRoutes.get('/blog/:slug', async (c) => {
 
   // Auto-extract FAQs for JSON-LD FAQPage schema (AEO)
   const faqs = extractFAQs(post.content);
+
+  // SEO/AEO enhanced data
+  const readingTime = estimateReadingTime(post.content);
+  const ogImg = post.cover_image || extractFirstImage(post.content) || 'https://seoul365dc.kr/static/og-image.png';
+  const postDate = post.created_at?.split('T')[0] || post.created_at?.split(' ')[0] || '';
+  const updateDate = post.updated_at?.split('T')[0] || post.updated_at?.split(' ')[0] || postDate;
+  const wordCount = post.content.replace(/[#*_~`>\[\]()!-]/g, '').replace(/\s+/g, '').length;
 
   return c.render(
     <>
@@ -1175,7 +1315,9 @@ blogRoutes.get('/blog/:slug', async (c) => {
                 <span class="font-medium text-gray-600" itemprop="author">{post.author_name}</span>
               </div>
               <span>·</span>
-              <time>{post.created_at?.split('T')[0] || post.created_at?.split(' ')[0]}</time>
+              <time datetime={post.created_at}>{postDate}</time>
+              <span>·</span>
+              <span><i class="fa-regular fa-clock mr-1"></i>{readingTime}분 읽기</span>
               <span>·</span>
               <span><i class="fa-regular fa-eye mr-1"></i>{post.view_count || 0}</span>
             </div>
@@ -1291,35 +1433,98 @@ blogRoutes.get('/blog/:slug', async (c) => {
       title: `${post.title} | 서울365치과 블로그`,
       description: post.excerpt || post.title + ' - 서울365치과 치과 전문 블로그',
       canonical: `https://seoul365dc.kr/blog/${post.slug}`,
+      // Dynamic OG: article type, custom cover image, publish/update dates, tags
+      ogImage: ogImg,
+      ogType: 'article',
+      datePublished: post.created_at,
+      dateModified: post.updated_at || post.created_at,
+      articleSection: post.category,
+      articleTags: tagsArray,
       jsonLd: [
+        // 1. BreadcrumbList — Google rich result
         { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
           { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
           { "@type": "ListItem", "position": 2, "name": "블로그", "item": "https://seoul365dc.kr/blog" },
-          { "@type": "ListItem", "position": 3, "name": post.title, "item": `https://seoul365dc.kr/blog/${post.slug}` }
+          ...(post.category !== '치과상식' ? [{ "@type": "ListItem", "position": 3, "name": post.category, "item": `https://seoul365dc.kr/blog?category=${encodeURIComponent(post.category)}` }] : []),
+          { "@type": "ListItem", "position": post.category !== '치과상식' ? 4 : 3, "name": post.title, "item": `https://seoul365dc.kr/blog/${post.slug}` }
         ]},
+        // 2. BlogPosting — Core article schema (MEGA enhanced)
         {
           "@context": "https://schema.org", "@type": "BlogPosting",
+          "@id": `https://seoul365dc.kr/blog/${post.slug}#article`,
           "headline": post.title,
+          "name": post.title,
           "description": post.excerpt || post.title,
           "datePublished": post.created_at,
-          "dateModified": post.updated_at,
-          ...(post.cover_image ? { "image": post.cover_image } : {}),
-          "author": { "@type": "Organization", "name": "서울365치과", "url": "https://seoul365dc.kr" },
+          "dateModified": post.updated_at || post.created_at,
+          "dateCreated": post.created_at,
+          "image": ogImg !== 'https://seoul365dc.kr/static/og-image.png' ? {
+            "@type": "ImageObject",
+            "url": ogImg,
+            "width": 1200,
+            "height": 630,
+          } : ogImg,
+          "author": {
+            "@type": "Organization",
+            "name": "서울365치과의원",
+            "url": "https://seoul365dc.kr",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://seoul365dc.kr/static/og-image.png",
+            },
+          },
           "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
-          "mainEntityOfPage": `https://seoul365dc.kr/blog/${post.slug}`,
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://seoul365dc.kr/blog/${post.slug}`,
+          },
           "url": `https://seoul365dc.kr/blog/${post.slug}`,
           "inLanguage": "ko-KR",
           "keywords": tagsArray.join(', '),
           "articleSection": post.category,
-          ...(linkedTreatment ? { "about": { "@type": "MedicalProcedure", "name": linkedTreatment.name } } : {}),
-          "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", "[itemprop='description']"] },
+          "articleBody": post.content.replace(/[#*_~`>\[\]()!-]/g, '').substring(0, 500),
+          "wordCount": wordCount,
+          "timeRequired": `PT${readingTime}M`,
+          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
+          "isAccessibleForFree": true,
+          ...(linkedTreatment ? { "about": { "@type": "MedicalProcedure", "name": linkedTreatment.name, "url": `https://seoul365dc.kr/treatments/${linkedTreatment.slug}` } } : {}),
+          // AEO: Speakable — AI voice assistants can read these sections
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": [
+              "[itemprop='headline']",
+              "[itemprop='description']",
+              "[itemprop='articleBody'] h2",
+              "[itemprop='articleBody'] p:first-of-type",
+            ],
+          },
+          // Citation/credibility
+          "citation": linkedTreatment ? `https://seoul365dc.kr/treatments/${linkedTreatment.slug}` : undefined,
         },
+        // 3. MedicalWebPage — For dental/medical content (Google Health panel)
         ...(linkedTreatment ? [{
           "@context": "https://schema.org", "@type": "MedicalWebPage",
-          "about": { "@type": "MedicalCondition", "name": linkedTreatment.name },
-          "specialty": "Dentistry", "lastReviewed": post.updated_at,
+          "about": {
+            "@type": "MedicalCondition",
+            "name": linkedTreatment.name,
+            "url": `https://seoul365dc.kr/treatments/${linkedTreatment.slug}`,
+          },
+          "specialty": {
+            "@type": "MedicalSpecialty",
+            "name": "Dentistry",
+          },
+          "lastReviewed": post.updated_at || post.created_at,
+          "reviewedBy": {
+            "@type": "Organization",
+            "name": "서울365치과의원",
+            "@id": "https://seoul365dc.kr/#dentist",
+          },
+          "mainContentOfPage": {
+            "@type": "WebPageElement",
+            "cssSelector": "[itemprop='articleBody']",
+          },
         }] : []),
-        // Auto-generated FAQPage schema from Q&A pairs in content (AEO)
+        // 4. FAQPage — Auto-extracted Q&A pairs (Google FAQ rich result + AEO)
         ...(faqs.length > 0 ? [{
           "@context": "https://schema.org",
           "@type": "FAQPage",
@@ -1328,9 +1533,24 @@ blogRoutes.get('/blog/:slug', async (c) => {
             "name": faq.question,
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": faq.answer
-            }
-          }))
+              "text": faq.answer,
+              "url": `https://seoul365dc.kr/blog/${post.slug}`,
+            },
+          })),
+        }] : []),
+        // 5. HowTo — If content has numbered steps (treatment process posts)
+        ...(headings.filter((h: any) => h.text.match(/^\d/)).length >= 3 ? [{
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          "name": post.title,
+          "description": post.excerpt || post.title,
+          "totalTime": `PT${readingTime}M`,
+          "step": headings.filter((h: any) => h.text.match(/^\d/)).map((h: any, i: number) => ({
+            "@type": "HowToStep",
+            "position": i + 1,
+            "name": h.text,
+            "url": `https://seoul365dc.kr/blog/${post.slug}#${h.id}`,
+          })),
         }] : []),
       ]
     }

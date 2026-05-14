@@ -13,11 +13,12 @@ import { AREAS } from './data/areas'
 let _currentSeoSettings: Record<string, string> = {};
 export function setCurrentSeoSettings(s: Record<string, string>) { _currentSeoSettings = s; }
 
-export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified }) => {
+export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified, ogImage: customOgImage, ogType, datePublished, articleSection, articleTags }) => {
   const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·인비절라인 투명교정·수면진료 전문. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
-  const ogImage = 'https://seoul365dc.kr/static/og-image.png';
+  const ogImage = customOgImage || 'https://seoul365dc.kr/static/og-image.png';
+  const resolvedOgType = ogType || 'website';
   const lastModified = dateModified || new Date().toISOString().split('T')[0];
 
   // Dynamic SEO/Analytics settings (from DB or env via global cache)
@@ -464,7 +465,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
 
         {/* === OPEN GRAPH === */}
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content={resolvedOgType} />
         <meta property="og:site_name" content="서울365치과의원" />
         <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={pageDesc} />
@@ -472,15 +473,21 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <meta property="og:image" content={ogImage} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="서울365치과 - 인천 구월동 서울대 출신 5인 전문의 치과" />
+        <meta property="og:image:alt" content={pageTitle} />
         <meta property="og:locale" content="ko_KR" />
+        {/* Article-specific OG tags (blog posts, cases) */}
+        {resolvedOgType === 'article' && datePublished && <meta property="article:published_time" content={datePublished} />}
+        {resolvedOgType === 'article' && lastModified && <meta property="article:modified_time" content={lastModified} />}
+        {resolvedOgType === 'article' && articleSection && <meta property="article:section" content={articleSection} />}
+        {resolvedOgType === 'article' && <meta property="article:author" content="서울365치과의원" />}
+        {resolvedOgType === 'article' && articleTags && (articleTags as string[]).map((tag: string) => <meta property="article:tag" content={tag} />)}
 
         {/* === TWITTER/X === */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDesc} />
         <meta name="twitter:image" content={ogImage} />
-        <meta name="twitter:image:alt" content="서울365치과 - 인천 구월동 서울대 출신 5인 전문의 치과" />
+        <meta name="twitter:image:alt" content={pageTitle} />
 
         {/* === NAVER VERIFICATION === */}
         {naverVerify && <meta name="naver-site-verification" content={naverVerify} />}

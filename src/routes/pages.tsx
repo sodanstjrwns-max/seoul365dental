@@ -5,7 +5,8 @@ import { treatments } from '../data/treatments'
 import { mainFaq, pricingData, pricingSummary, pricingCategories } from '../data/faq'
 import { MESSAGING } from '../data/brand'
 import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clearSessionCookie, getCurrentUser } from '../lib/auth'
-import { initAdminTables } from '../lib/db'
+import { initAdminTables, initBlogTables } from '../lib/db'
+import { getTreatmentBySlug } from '../data/treatments'
 import { terms, totalTerms } from '../data/encyclopedia-terms'
 
 const pageRoutes = new Hono<{ Bindings: Bindings }>()
@@ -893,6 +894,8 @@ pageRoutes.get('/cases/gallery', async (c) => {
                       <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#0066FF] transition-colors">{cs.title}</h3>
                       {cs.description && <p class="text-gray-500 text-xs mt-1.5 line-clamp-2">{cs.description}</p>}
                       <p class="text-xs text-gray-400 mt-2">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</p>
+                      {/* SEO: Crawlable link to individual case page (hidden visually, discoverable by bots) */}
+                      <a href={`/cases/${cs.id}`} class="text-[0.6rem] text-[#0066FF]/50 hover:text-[#0066FF] mt-2 inline-block" onclick="event.stopPropagation()">상세보기 →</a>
                     </div>
                   </div>
                 ))}
@@ -1111,6 +1114,237 @@ pageRoutes.get('/cases/gallery', async (c) => {
       ]
     }
   )
+})
+
+// ============================================================
+// CASES DETAIL PAGE — Individual case SEO pages (Google indexable)
+// ============================================================
+pageRoutes.get('/cases/:id', async (c) => {
+  const id = c.req.param('id');
+  try {
+    await initAdminTables(c.env.DB);
+    const cs = await c.env.DB.prepare('SELECT * FROM before_after_cases WHERE id = ? AND is_published = 1').bind(id).first<any>();
+    if (!cs) return c.notFound();
+
+    // Increment view count
+    await c.env.DB.prepare('UPDATE before_after_cases SET view_count = view_count + 1 WHERE id = ?').bind(id).run();
+
+    // Get related cases (same tag)
+    let relatedCases: any[] = [];
+    try {
+      const r = await c.env.DB.prepare('SELECT id, title, tag, before_image, doctor_name, duration FROM before_after_cases WHERE is_published = 1 AND id != ? AND tag = ? ORDER BY sort_order DESC LIMIT 3').bind(id, cs.tag).all();
+      relatedCases = r.results || [];
+    } catch {}
+
+    const linkedTreatment = cs.treatment_slug ? getTreatmentBySlug(cs.treatment_slug) : null;
+    const caseDate = cs.created_at?.split('T')[0] || cs.created_at?.split(' ')[0] || '';
+    const ogImg = cs.after_image || cs.before_image || 'https://seoul365dc.kr/static/og-image.png';
+    const caseTitle = `${cs.title} | 치료사례 Before & After`;
+    const caseDesc = `${cs.description || cs.title}. 담당: ${cs.doctor_name}${cs.duration ? ', 치료기간: ' + cs.duration : ''}. 서울365치과 서울대 출신 5인 전문의 협진.`;
+
+    // Check if user is logged in (for after image display)
+    const user = await getCurrentUser(c.env.DB, c.req.header('cookie'));
+    const isLoggedIn = !!user;
+
+    return c.render(
+      <>
+        <article class="pt-24 pb-16" itemscope itemtype="https://schema.org/MedicalStudy">
+          <meta itemprop="datePublished" content={cs.created_at} />
+          <meta itemprop="dateModified" content={cs.updated_at || cs.created_at} />
+
+          <div class="max-w-4xl mx-auto px-5 md:px-8">
+            {/* Breadcrumb navigation */}
+            <nav class="flex items-center gap-2 text-xs text-gray-400 mb-8" aria-label="Breadcrumb">
+              <a href="/" class="hover:text-[#0066FF] transition">홈</a>
+              <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
+              <a href="/cases/gallery" class="hover:text-[#0066FF] transition">치료사례</a>
+              <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
+              <span class="text-gray-600 font-medium">{cs.title}</span>
+            </nav>
+
+            {/* Header */}
+            <header class="mb-8">
+              <div class="flex items-center gap-2 mb-3">
+                <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-3 py-1 rounded-full font-semibold">{cs.tag}</span>
+                {cs.duration && <span class="text-[0.65rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
+              </div>
+              <h1 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight" itemprop="name">{cs.title}</h1>
+              {cs.description && <p class="text-gray-500 text-base leading-relaxed mt-3" itemprop="description">{cs.description}</p>}
+              <div class="flex items-center gap-4 mt-5 text-sm text-gray-400">
+                <span><i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i>담당: <span class="text-gray-600 font-medium">{cs.doctor_name}</span></span>
+                {cs.patient_age && <span>·</span>}
+                {cs.patient_age && <span>{cs.patient_age}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</span>}
+                <span>·</span>
+                <time datetime={cs.created_at}>{caseDate}</time>
+              </div>
+            </header>
+
+            {/* Before & After Images */}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+              {/* Before */}
+              <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3] shadow-lg">
+                {cs.before_image ? (
+                  <img src={cs.before_image} alt={`${cs.title} 치료 전 (Before)`} class="w-full h-full object-cover" loading="eager" itemprop="image" />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                    <span class="text-gray-300 text-lg font-bold tracking-widest uppercase">Before</span>
+                  </div>
+                )}
+                <span class="absolute top-3 left-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-lg">Before</span>
+              </div>
+              {/* After */}
+              <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3] shadow-lg">
+                {isLoggedIn && cs.after_image ? (
+                  <img src={cs.after_image} alt={`${cs.title} 치료 후 (After)`} class="w-full h-full object-cover" loading="eager" />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 relative">
+                    <div class="text-center">
+                      <i class="fa-solid fa-lock text-3xl text-[#0066FF]/30 mb-3"></i>
+                      <p class="text-gray-400 text-sm font-medium">After 사진은 로그인 후 열람</p>
+                      <a href="/login" class="inline-block mt-3 px-5 py-2 rounded-xl bg-[#0066FF] text-white text-xs font-bold hover:bg-[#0052cc] transition">로그인하기</a>
+                    </div>
+                  </div>
+                )}
+                <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/80 backdrop-blur-sm px-3 py-1.5 rounded-lg">After</span>
+              </div>
+            </div>
+
+            {/* Case Info */}
+            <div class="bg-gray-50 rounded-2xl p-6 mb-10">
+              <h2 class="text-lg font-bold text-gray-900 mb-4">치료 상세 정보</h2>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <span class="text-gray-400 text-xs font-semibold uppercase">치료 분류</span>
+                  <p class="text-gray-900 font-medium mt-1">{cs.tag}</p>
+                </div>
+                <div>
+                  <span class="text-gray-400 text-xs font-semibold uppercase">담당 의료진</span>
+                  <p class="text-gray-900 font-medium mt-1">{cs.doctor_name}</p>
+                </div>
+                {cs.duration && (
+                  <div>
+                    <span class="text-gray-400 text-xs font-semibold uppercase">치료 기간</span>
+                    <p class="text-gray-900 font-medium mt-1">{cs.duration}</p>
+                  </div>
+                )}
+                {cs.patient_age && (
+                  <div>
+                    <span class="text-gray-400 text-xs font-semibold uppercase">환자 정보</span>
+                    <p class="text-gray-900 font-medium mt-1">{cs.patient_age}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Related Treatment Link */}
+            {linkedTreatment && (
+              <div class="p-5 rounded-2xl bg-[#0066FF]/[0.03] border border-[#0066FF]/10 mb-10">
+                <div class="flex items-center gap-2 mb-2">
+                  <i class="fa-solid fa-stethoscope text-[#0066FF] text-xs"></i>
+                  <span class="text-xs font-semibold text-[#0066FF]">관련 진료 안내</span>
+                </div>
+                <a href={`/treatments/${linkedTreatment.slug}`} class="text-gray-900 font-bold hover:text-[#0066FF] transition">
+                  {linkedTreatment.name} — 진료 상세보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
+                </a>
+              </div>
+            )}
+
+            {/* CTA */}
+            <div class="p-6 rounded-2xl bg-gradient-to-br from-navy to-navy-lighter text-center mb-10">
+              <h3 class="text-white font-bold text-lg mb-2">비슷한 고민을 가지고 계신가요?</h3>
+              <p class="text-white/40 text-sm mb-5">서울365치과에서 직접 상담받아 보세요.</p>
+              <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>무료 상담 예약 <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>
+            </div>
+
+            {/* Related Cases */}
+            {relatedCases.length > 0 && (
+              <div class="pt-10 border-t border-gray-100">
+                <h3 class="text-lg font-bold text-gray-900 mb-6">같은 분류 치료 사례</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {relatedCases.map((rc: any) => (
+                    <a href={`/cases/${rc.id}`} class="premium-card overflow-hidden group hover:shadow-lg transition">
+                      <div class="aspect-[4/3] bg-gray-50 relative overflow-hidden">
+                        {rc.before_image ? (
+                          <img src={rc.before_image} alt={`${rc.title} Before`} class="w-full h-full object-cover" loading="lazy" />
+                        ) : (
+                          <div class="w-full h-full flex items-center justify-center"><span class="text-gray-300 text-xs">Before</span></div>
+                        )}
+                        <span class="absolute top-2 left-2 text-[0.55rem] font-bold text-white bg-black/50 px-2 py-0.5 rounded-lg">{rc.tag}</span>
+                      </div>
+                      <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-sm group-hover:text-[#0066FF] transition line-clamp-2">{rc.title}</h4>
+                        <p class="text-xs text-gray-400 mt-1">담당: {rc.doctor_name}</p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p class="text-[0.72rem] text-gray-300 text-center mt-10">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
+          </div>
+        </article>
+      </>,
+      {
+        title: `${caseTitle} | 서울365치과`,
+        description: caseDesc.substring(0, 160),
+        canonical: `https://seoul365dc.kr/cases/${id}`,
+        ogImage: ogImg,
+        ogType: 'article',
+        datePublished: cs.created_at,
+        dateModified: cs.updated_at || cs.created_at,
+        articleSection: cs.tag,
+        jsonLd: [
+          // BreadcrumbList
+          { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "치료사례", "item": "https://seoul365dc.kr/cases/gallery" },
+            { "@type": "ListItem", "position": 3, "name": cs.title, "item": `https://seoul365dc.kr/cases/${id}` }
+          ]},
+          // MedicalStudy — Google Health Panel + AEO
+          {
+            "@context": "https://schema.org",
+            "@type": "MedicalStudy",
+            "name": cs.title,
+            "description": cs.description || cs.title,
+            "url": `https://seoul365dc.kr/cases/${id}`,
+            "studySubject": {
+              "@type": "MedicalCondition",
+              "name": cs.tag,
+            },
+            "outcome": `치료 기간: ${cs.duration || '상담 시 결정'}`,
+            "sponsor": { "@id": "https://seoul365dc.kr/#dentist" },
+            "datePublished": cs.created_at,
+            ...(cs.before_image ? { "image": [cs.before_image, ...(cs.after_image ? [cs.after_image] : [])] } : {}),
+            "speakable": {
+              "@type": "SpeakableSpecification",
+              "cssSelector": ["h1", "[itemprop='description']"],
+            },
+          },
+          // ImageObject for Before/After (Google Image Search)
+          ...(cs.before_image ? [{
+            "@context": "https://schema.org",
+            "@type": "ImageObject",
+            "contentUrl": cs.before_image,
+            "name": `${cs.title} 치료 전 (Before)`,
+            "description": `서울365치과 ${cs.tag} 치료 전 사진. 담당: ${cs.doctor_name}`,
+            "creditText": "서울365치과의원",
+            "copyrightHolder": { "@id": "https://seoul365dc.kr/#dentist" },
+          }] : []),
+          // MedicalWebPage
+          ...(linkedTreatment ? [{
+            "@context": "https://schema.org",
+            "@type": "MedicalWebPage",
+            "about": { "@type": "MedicalProcedure", "name": linkedTreatment.name, "url": `https://seoul365dc.kr/treatments/${linkedTreatment.slug}` },
+            "specialty": { "@type": "MedicalSpecialty", "name": "Dentistry" },
+            "lastReviewed": cs.updated_at || cs.created_at,
+          }] : []),
+        ],
+      }
+    );
+  } catch {
+    return c.notFound();
+  }
 })
 
 // ============================================================

@@ -48,6 +48,10 @@ let _blogTablesReady = false;
 export async function initBlogTables(db: D1Database) {
   if (_blogTablesReady) return;
   await db.prepare(`CREATE TABLE IF NOT EXISTS blog_posts (id INTEGER PRIMARY KEY AUTOINCREMENT, slug TEXT NOT NULL UNIQUE, title TEXT NOT NULL, excerpt TEXT, content TEXT NOT NULL, category TEXT DEFAULT '일반', tags TEXT DEFAULT '', cover_image TEXT, treatment_slug TEXT, author_name TEXT DEFAULT '서울365치과', is_published INTEGER DEFAULT 0, view_count INTEGER DEFAULT 0, created_at DATETIME DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME DEFAULT CURRENT_TIMESTAMP)`).run();
+  // Ensure old_slug column for 301 redirect support (slug migration)
+  try { await db.prepare('ALTER TABLE blog_posts ADD COLUMN old_slug TEXT').run(); } catch {}
+  // Create index on old_slug for fast redirect lookups
+  try { await db.prepare('CREATE INDEX IF NOT EXISTS idx_blog_old_slug ON blog_posts(old_slug)').run(); } catch {}
   _blogTablesReady = true;
 }
 
@@ -228,7 +232,7 @@ export async function getAllSeoSettings(db: D1Database, env: Record<string, stri
   return result;
 }
 
-// Slugify helper
+// Slugify helper (legacy — used for basic slug generation)
 export function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -239,4 +243,176 @@ export function slugify(text: string): string {
     })
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
+}
+
+// ============================================================
+// SEO/AEO MEGA UPGRADE — Utility Functions
+// ============================================================
+
+// Korean dental term → English SEO slug mapping
+const DENTAL_TERM_MAP: Record<string, string> = {
+  // 진료 과목
+  '임플란트': 'implant', '임플': 'implant', '인플란트': 'implant',
+  '교정': 'orthodontics', '치아교정': 'orthodontics', '치열교정': 'orthodontics',
+  '인비절라인': 'invisalign', '투명교정': 'clear-aligner',
+  '라미네이트': 'laminate', '비니어': 'veneer', '비니어라미네이트': 'veneer-laminate',
+  '충치': 'cavity', '충치치료': 'cavity-treatment',
+  '신경치료': 'root-canal', '근관치료': 'root-canal',
+  '발치': 'extraction', '사랑니': 'wisdom-tooth', '사랑니발치': 'wisdom-tooth-extraction',
+  '스케일링': 'scaling', '치석': 'tartar', '치석제거': 'scaling',
+  '잇몸': 'gum', '잇몸치료': 'gum-treatment', '치주': 'periodontal', '치주치료': 'periodontal-treatment',
+  '보철': 'prosthetics', '크라운': 'crown', '브릿지': 'bridge',
+  '틀니': 'denture', '의치': 'denture',
+  '수면진료': 'sedation', '수면치료': 'sedation',
+  '소아': 'pediatric', '소아치과': 'pediatric-dentistry', '어린이치과': 'pediatric-dentistry',
+  '심미': 'cosmetic', '심미치료': 'cosmetic-dentistry', '미백': 'whitening', '치아미백': 'teeth-whitening',
+  '전체임플란트': 'full-mouth-implant', '풀아치': 'full-arch', '올온포': 'all-on-4',
+  '즉시로딩': 'immediate-loading', '뼈이식': 'bone-graft', '골이식': 'bone-graft',
+  '상악동거상술': 'sinus-lift', '상악동': 'sinus',
+  '디지털': 'digital', 'CT': 'ct', '파노라마': 'panoramic',
+  // 일반 의료/건강
+  '치과': 'dental', '치아': 'tooth', '치아건강': 'dental-health',
+  '구강': 'oral', '구강건강': 'oral-health',
+  '통증': 'pain', '치통': 'toothache',
+  '비용': 'cost', '가격': 'price', '가격비교': 'price-comparison',
+  '후기': 'review', '치료후기': 'treatment-review',
+  '과정': 'process', '치료과정': 'treatment-process',
+  '기간': 'duration', '치료기간': 'treatment-duration',
+  '수명': 'lifespan', '수명관리': 'maintenance',
+  '주의사항': 'precautions', '부작용': 'side-effects',
+  '장단점': 'pros-cons', '장점': 'benefits', '단점': 'drawbacks',
+  '차이': 'difference', '비교': 'comparison', '종류': 'types',
+  '선택': 'guide', '가이드': 'guide', '안내': 'guide', '총정리': 'complete-guide',
+  '알아보기': 'guide', '정리': 'summary',
+  // 지역
+  '인천': 'incheon', '구월동': 'guwol', '남동구': 'namdong',
+  '서울': 'seoul', '강남': 'gangnam',
+  // 액션
+  '상담': 'consultation', '예약': 'reservation', '검진': 'checkup', '진단': 'diagnosis',
+  '전후': 'before-after', '비포애프터': 'before-after',
+  // 환자 관련
+  '환자': 'patient', '노인': 'elderly', '고령자': 'senior',
+  '어린이': 'children', '청소년': 'teenager',
+};
+
+// Smart SEO slug generator — converts Korean title to readable English slug
+export function generateSeoSlug(title: string, focusKeyword?: string): string {
+  // 1. If focus keyword provided and contains English, use it as base
+  if (focusKeyword) {
+    const englishPart = focusKeyword.replace(/[^a-zA-Z0-9\s-]/g, '').trim();
+    if (englishPart.length > 3) {
+      return englishPart.toLowerCase().replace(/\s+/g, '-').replace(/^-|-$/g, '').substring(0, 60);
+    }
+  }
+
+  let slug = title;
+
+  // 2. Replace known Korean dental terms → English (longest match first)
+  const sortedTerms = Object.entries(DENTAL_TERM_MAP)
+    .sort((a, b) => b[0].length - a[0].length);
+  
+  for (const [ko, en] of sortedTerms) {
+    slug = slug.replace(new RegExp(ko, 'gi'), ` ${en} `);
+  }
+
+  // 3. Extract English words and numbers
+  slug = slug
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .substring(0, 70);
+
+  // 4. If too short (< 5 chars), fallback to timestamp-based
+  if (slug.length < 5) {
+    slug = 'post-' + Date.now().toString(36);
+  }
+
+  return slug;
+}
+
+// Auto-generate meta description from content (Korean, 120-160 chars)
+export function autoGenerateExcerpt(content: string, maxLen = 155): string {
+  // Strip markdown syntax
+  let plain = content
+    .replace(/^#+\s.+$/gm, '') // headings
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '') // images
+    .replace(/\[[^\]]+\]\([^)]+\)/g, '') // links
+    .replace(/[*_~`#>-]/g, '') // markdown chars
+    .replace(/\n+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  
+  if (plain.length <= maxLen) return plain;
+  
+  // Cut at sentence boundary if possible
+  const truncated = plain.substring(0, maxLen);
+  const lastPeriod = truncated.lastIndexOf('.');
+  const lastQuestion = truncated.lastIndexOf('?');
+  const lastBreak = Math.max(lastPeriod, lastQuestion);
+  
+  if (lastBreak > maxLen * 0.6) {
+    return truncated.substring(0, lastBreak + 1);
+  }
+  return truncated.replace(/\s+\S*$/, '') + '...';
+}
+
+// Extract reading time estimate (Korean text)
+export function estimateReadingTime(content: string): number {
+  const plain = content.replace(/[#*_~`>\[\]()!-]/g, '').replace(/\s+/g, ' ').trim();
+  // Korean reading speed: ~500 chars/min
+  return Math.max(1, Math.ceil(plain.length / 500));
+}
+
+// Auto-extract first image from markdown content for OG image
+export function extractFirstImage(content: string): string | null {
+  const match = content.match(/!\[[^\]]*\]\(([^)]+)\)/);
+  return match ? match[1] : null;
+}
+
+// Submit URL to IndexNow for instant indexing (Bing/Yandex/Naver)
+export async function submitToIndexNow(
+  db: D1Database,
+  env: { INDEXNOW_KEY?: string },
+  urls: string[]
+): Promise<boolean> {
+  try {
+    const indexNowKey = await getSetting(db, 'INDEXNOW_KEY', env.INDEXNOW_KEY || '');
+    if (!indexNowKey || urls.length === 0) return false;
+
+    const payload = {
+      host: 'seoul365dc.kr',
+      key: indexNowKey,
+      keyLocation: `https://seoul365dc.kr/${indexNowKey}.txt`,
+      urlList: urls,
+    };
+
+    // Submit to all IndexNow endpoints in parallel
+    await Promise.allSettled([
+      fetch('https://api.indexnow.org/indexnow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify(payload),
+      }),
+      fetch('https://www.bing.com/indexnow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify(payload),
+      }),
+    ]);
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Ping Google/Bing sitemap update
+export async function pingSitemapUpdate(): Promise<void> {
+  const sitemapUrl = encodeURIComponent('https://seoul365dc.kr/sitemap.xml');
+  await Promise.allSettled([
+    fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`),
+    fetch(`https://www.bing.com/ping?sitemap=${sitemapUrl}`),
+  ]);
 }

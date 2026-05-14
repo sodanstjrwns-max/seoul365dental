@@ -4,7 +4,7 @@ import { CLINIC } from '../data/clinic'
 import { treatments } from '../data/treatments'
 import { doctors } from '../data/doctors'
 import { AREAS } from '../data/areas'
-import { initBlogTables, getSetting } from '../lib/db'
+import { initBlogTables, initAdminTables, getSetting } from '../lib/db'
 
 const seoRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -292,6 +292,16 @@ seoRoutes.get('/sitemap.xml', async (c) => {
     if (r?.last_date) blogLastmod = r.last_date.substring(0, 10);
   } catch {}
 
+  // Check cases last update for dynamic lastmod
+  let casesLastmod = today;
+  try {
+    await initAdminTables(c.env.DB);
+    const cr = await c.env.DB.prepare(
+      'SELECT MAX(COALESCE(updated_at, created_at)) as last_date FROM before_after_cases WHERE is_published = 1'
+    ).first<{ last_date: string }>();
+    if (cr?.last_date) casesLastmod = cr.last_date.substring(0, 10);
+  } catch {}
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
@@ -309,6 +319,10 @@ seoRoutes.get('/sitemap.xml', async (c) => {
   <sitemap>
     <loc>${base}/sitemap-blog.xml</loc>
     <lastmod>${blogLastmod}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-cases.xml</loc>
+    <lastmod>${casesLastmod}</lastmod>
   </sitemap>
   <sitemap>
     <loc>${base}/sitemap-areas.xml</loc>
@@ -452,6 +466,33 @@ seoRoutes.get('/sitemap-areas.xml', (c) => {
   });
 
   const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── 7) SITEMAP — Cases (Before & After) ──
+seoRoutes.get('/sitemap-cases.xml', async (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+
+  let casePages: any[] = [];
+  try {
+    await initAdminTables(c.env.DB);
+    const casesResult = await c.env.DB.prepare(
+      'SELECT id, title, tag, before_image, after_image, updated_at, created_at FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC LIMIT 500'
+    ).all();
+    casePages = (casesResult.results || []).map((cs: any) => ({
+      loc: `/cases/${cs.id}`,
+      priority: '0.6',
+      changefreq: 'weekly',
+      lastmod: (cs.updated_at || cs.created_at || today).substring(0, 10),
+      images: [
+        ...(cs.before_image ? [{ url: cs.before_image, title: `${cs.title} 치료 전 (Before)`, caption: `서울365치과 ${cs.tag} 치료 전 사진` }] : []),
+        ...(cs.after_image ? [{ url: cs.after_image, title: `${cs.title} 치료 후 (After)`, caption: `서울365치과 ${cs.tag} 치료 후 사진` }] : []),
+      ],
+    }));
+  } catch {}
+
+  const xml = `${urlsetOpen}\n${casePages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
   return new Response(xml, { headers: sitemapHeaders });
 })
 
@@ -698,6 +739,7 @@ Sitemap: https://seoul365dc.kr/sitemap-pages.xml
 Sitemap: https://seoul365dc.kr/sitemap-treatments.xml
 Sitemap: https://seoul365dc.kr/sitemap-doctors.xml
 Sitemap: https://seoul365dc.kr/sitemap-blog.xml
+Sitemap: https://seoul365dc.kr/sitemap-cases.xml
 Sitemap: https://seoul365dc.kr/sitemap-areas.xml
 
 # ─── LLMs.txt (AI/LLM 크롤러용 구조화 정보) ───
@@ -722,10 +764,36 @@ Host: https://seoul365dc.kr
 // llms.txt — AI/LLM 크롤러용 사이트 요약 (AEO 4-4)
 // https://llmstxt.org/ 표준 준수
 // ============================================================
-seoRoutes.get('/llms.txt', (c) => {
+seoRoutes.get('/llms.txt', async (c) => {
   const today = new Date().toISOString().split('T')[0];
   const treatmentList = treatments.map(t => `- [${t.name}](https://seoul365dc.kr/treatments/${t.slug}): ${t.shortDesc}`).join('\n');
   const doctorList = doctors.map(d => `- [${d.name} ${d.title}](https://seoul365dc.kr/doctors/${d.slug}): ${d.specialties.join(', ')}`).join('\n');
+
+  // Dynamic: Recent blog posts from DB
+  let blogList = '';
+  try {
+    await initBlogTables(c.env.DB);
+    const blogResult = await c.env.DB.prepare(
+      'SELECT slug, title, category, created_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 20'
+    ).all();
+    const posts = blogResult.results || [];
+    if (posts.length > 0) {
+      blogList = posts.map((p: any) => `- [${p.title}](https://seoul365dc.kr/blog/${p.slug}) (${p.category}, ${(p.created_at || '').substring(0, 10)})`).join('\n');
+    }
+  } catch {}
+
+  // Dynamic: Recent cases from DB
+  let caseList = '';
+  try {
+    await initAdminTables(c.env.DB);
+    const caseResult = await c.env.DB.prepare(
+      'SELECT id, title, tag, doctor_name FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC LIMIT 20'
+    ).all();
+    const cases = caseResult.results || [];
+    if (cases.length > 0) {
+      caseList = cases.map((cs: any) => `- [${cs.title}](https://seoul365dc.kr/cases/${cs.id}): ${cs.tag}, 담당 ${cs.doctor_name}`).join('\n');
+    }
+  } catch {}
 
   const content = `# 서울365치과의원 (Seoul 365 Dental Clinic)
 
@@ -760,17 +828,25 @@ ${doctorList}
 
 ## 진료 과목
 ${treatmentList}
-
+${blogList ? `
+## 최근 블로그 (전문 치과 정보)
+${blogList}
+` : ''}
+${caseList ? `
+## 치료 사례 Before & After
+${caseList}
+` : ''}
 ## 주요 페이지
 - [홈](https://seoul365dc.kr)
 - [전체 진료 안내](https://seoul365dc.kr/treatments)
 - [의료진 소개](https://seoul365dc.kr/doctors)
-- [치료사례](https://seoul365dc.kr/cases/gallery)
+- [치료사례 갤러리](https://seoul365dc.kr/cases/gallery)
 - [블로그](https://seoul365dc.kr/blog)
 - [FAQ](https://seoul365dc.kr/faq)
 - [내원 안내·오시는 길](https://seoul365dc.kr/info)
 - [상담 예약](https://seoul365dc.kr/reservation)
 - [지역 안내](https://seoul365dc.kr/area)
+- [치과 백과사전](https://seoul365dc.kr/encyclopedia)
 - [상세 정보 (llms-full.txt)](https://seoul365dc.kr/llms-full.txt)
 
 ## 최종 업데이트
@@ -780,7 +856,7 @@ ${today}
   return new Response(content, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      'Cache-Control': 'public, max-age=3600, s-maxage=14400',
     },
   });
 })
@@ -788,7 +864,7 @@ ${today}
 // ============================================================
 // llms-full.txt — AI/LLM용 상세 정보 (시술별 FAQ, 의료진 상세)
 // ============================================================
-seoRoutes.get('/llms-full.txt', (c) => {
+seoRoutes.get('/llms-full.txt', async (c) => {
   const today = new Date().toISOString().split('T')[0];
 
   // 의료진 상세
@@ -842,6 +918,43 @@ seoRoutes.get('/llms-full.txt', (c) => {
   // 지역 안내
   const areaList = AREAS.map(a => `- ${a.name} (${a.distKm}km, ${a.travelTime}): https://seoul365dc.kr/area/${a.slug}`).join('\n');
 
+  // Dynamic: Blog posts with excerpts from DB
+  let blogDetail = '';
+  try {
+    await initBlogTables(c.env.DB);
+    const blogResult = await c.env.DB.prepare(
+      'SELECT slug, title, excerpt, category, tags, created_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 30'
+    ).all();
+    const posts = blogResult.results || [];
+    if (posts.length > 0) {
+      blogDetail = posts.map((p: any) => {
+        const lines = [`### ${p.title}`, `- URL: https://seoul365dc.kr/blog/${p.slug}`, `- 카테고리: ${p.category}`, `- 게시일: ${(p.created_at || '').substring(0, 10)}`];
+        if (p.excerpt) lines.push(`- 요약: ${p.excerpt.substring(0, 200)}`);
+        if (p.tags) lines.push(`- 태그: ${p.tags}`);
+        return lines.join('\n');
+      }).join('\n\n');
+    }
+  } catch {}
+
+  // Dynamic: Cases from DB
+  let caseDetail = '';
+  try {
+    await initAdminTables(c.env.DB);
+    const caseResult = await c.env.DB.prepare(
+      'SELECT id, title, tag, doctor_name, description, duration, patient_age, patient_gender, created_at FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC LIMIT 30'
+    ).all();
+    const cases = caseResult.results || [];
+    if (cases.length > 0) {
+      caseDetail = cases.map((cs: any) => {
+        const lines = [`### ${cs.title}`, `- URL: https://seoul365dc.kr/cases/${cs.id}`, `- 치료분류: ${cs.tag}`, `- 담당의: ${cs.doctor_name}`];
+        if (cs.duration) lines.push(`- 치료기간: ${cs.duration}`);
+        if (cs.patient_age) lines.push(`- 환자: ${cs.patient_age}${cs.patient_gender ? ' ' + cs.patient_gender : ''}`);
+        if (cs.description) lines.push(`- 설명: ${cs.description.substring(0, 200)}`);
+        return lines.join('\n');
+      }).join('\n\n');
+    }
+  } catch {}
+
   const content = `# 서울365치과의원 — 상세 정보 (llms-full.txt)
 
 > 이 문서는 AI/LLM 시스템이 서울365치과에 대해 정확한 정보를 제공할 수 있도록 작성되었습니다.
@@ -864,7 +977,17 @@ ${doctorDetail}
 
 ## 진료 과목 상세
 ${treatmentDetail}
+${blogDetail ? `
+## 블로그 (전문 치과 정보 콘텐츠)
+${blogDetail}
+` : ''}
+${caseDetail ? `
+## 치료 사례 Before & After
+치료 전후 사진과 상세 정보가 포함된 실제 치료 사례입니다.
+회원 로그인 시 After 사진 열람이 가능합니다.
 
+${caseDetail}
+` : ''}
 ## 서비스 지역 (인천 남동구 구월동 중심 반경 ~7km)
 ${areaList}
 
@@ -876,6 +999,19 @@ ${areaList}
 - 수면진료 모니터링 장비 (생체징후 실시간 감시)
 - 자체 기공실 (CAD-CAM 보철 제작)
 - 에어샤워 감염관리 시스템
+
+## 사이트맵
+- 메인: https://seoul365dc.kr
+- 진료안내: https://seoul365dc.kr/treatments
+- 의료진: https://seoul365dc.kr/doctors
+- 블로그: https://seoul365dc.kr/blog
+- 치료사례: https://seoul365dc.kr/cases/gallery
+- FAQ: https://seoul365dc.kr/faq
+- 내원안내: https://seoul365dc.kr/info
+- 상담예약: https://seoul365dc.kr/reservation
+- 지역안내: https://seoul365dc.kr/area
+- 치과백과사전: https://seoul365dc.kr/encyclopedia
+- 공지사항: https://seoul365dc.kr/notices
 
 ## 의료 면책
 이 문서의 정보는 일반적인 안내 목적이며, 개별 환자의 상태에 따라 치료 방법과 결과가 달라질 수 있습니다.
@@ -891,7 +1027,7 @@ https://seoul365dc.kr
   return new Response(content, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
-      'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      'Cache-Control': 'public, max-age=3600, s-maxage=14400',
     },
   });
 })
