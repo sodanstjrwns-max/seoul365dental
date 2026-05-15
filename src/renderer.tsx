@@ -811,7 +811,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === MOBILE BOTTOM CTA === */}
         <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 mobile-cta-bar safe-bottom" role="complementary" aria-label="빠른 연락">
-          <div class="grid grid-cols-4">
+          <div class="grid grid-cols-5">
             <a href={CLINIC.phoneTel} class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="전화 상담">
               <i class="fa-solid fa-phone text-[1.1rem]" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-medium">전화</span>
@@ -825,6 +825,10 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               <i class="fa-solid fa-calendar-check text-[1.1rem] relative z-10" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-bold relative z-10">예약</span>
             </a>
+            <a href="https://blog.naver.com/seoul365dental" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center py-3 text-[#03C75A] active:bg-green-50 transition-colors" aria-label="네이버 블로그">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" class="text-[#03C75A]" aria-hidden="true"><path d="M13.54 10.68L6.17 2H2v16h4.46V9.32L13.83 18H18V2h-4.46v8.68z" fill="currentColor"/></svg>
+              <span class="text-[10px] mt-1 font-medium">블로그</span>
+            </a>
             <a href="/info#directions" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="오시는 길 안내">
               <i class="fa-solid fa-location-dot text-[1.1rem]" aria-hidden="true"></i>
               <span class="text-[10px] mt-1 font-medium">길찾기</span>
@@ -834,6 +838,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === DESKTOP FLOATING CTA === */}
         <div class="hidden md:flex fixed bottom-8 right-8 z-40 flex-col gap-3" aria-label="빠른 연락 버튼">
+          <a href="https://blog.naver.com/seoul365dental" target="_blank" rel="noopener noreferrer" class="floating-btn bg-[#03C75A] text-white rounded-2xl flex items-center justify-center shadow-lg hover:shadow-[#03C75A]/30 hover:scale-105 transition-all" aria-label="네이버 블로그 바로가기" style="width:52px;height:52px;" data-cursor-hover>
+            <svg width="22" height="22" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M13.54 10.68L6.17 2H2v16h4.46V9.32L13.83 18H18V2h-4.46v8.68z" fill="white"/></svg>
+          </a>
           <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" class="floating-btn bg-[#FEE500] text-[#3C1E1E] rounded-2xl flex items-center justify-center" aria-label="카카오톡 상담" style="width:52px;height:52px;" data-cursor-hover>
             <i class="fa-solid fa-comment text-lg" aria-hidden="true"></i>
           </a>
