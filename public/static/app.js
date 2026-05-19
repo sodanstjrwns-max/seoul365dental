@@ -240,16 +240,18 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
   btn.addEventListener('mouseleave',function(){btn.style.transform='translate(0, 0) scale(1)'})
 })}
 
-// ====== POPUP NOTICE SYSTEM v2 ======
-// 좌측상단 고정, 블러 없음, 사이즈 확대, 중복 완전 차단
+// ====== POPUP NOTICE SYSTEM v3 ======
+// 이미지만 표시, 오버레이 없음, 커서 가림 없음
 (function(){
   if(window.location.pathname !== '/' && window.location.pathname !== '') return;
   if(window.location.pathname.startsWith('/admin')) return;
   if(window.__popupNoticeLoaded) return;
   window.__popupNoticeLoaded = true;
-  // 이전 팝업 오버레이가 남아있으면 제거
+  // 이전 팝업 잔여물 제거
   var old = document.getElementById('popup-notice-overlay');
   if(old) old.parentNode.removeChild(old);
+  var oldCard = document.getElementById('popup-notice-card');
+  if(oldCard) oldCard.parentNode.removeChild(oldCard);
 
   function getCookie(name){
     var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
@@ -272,55 +274,42 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
       var notices = data.notices.filter(function(n){ return dismissedIds.indexOf(String(n.id)) === -1; });
       if(notices.length === 0) return;
       // 중복 방지 재확인
-      if(document.getElementById('popup-notice-overlay')) return;
+      if(document.getElementById('popup-notice-card')) return;
 
-      var n = notices[0];
-      var hasImage = n.image && n.image.length > 5;
-      var contentHtml = (n.content || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+      // 이미지가 있는 첫 번째 공지만 표시
+      var n = null;
+      for(var i = 0; i < notices.length; i++){
+        if(notices[i].image && notices[i].image.length > 5){ n = notices[i]; break; }
+      }
+      if(!n) return;
 
-      // 반투명 오버레이 (블러 없음)
-      var overlay = document.createElement('div');
-      overlay.id = 'popup-notice-overlay';
-      overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.45);opacity:0;transition:opacity 0.3s ease';
-
-      // 팝업 카드 — 좌측상단 고정, 사이즈 확대
+      // ★ 오버레이 없음 — 배경 블러/어두움 제거
+      // 팝업 카드 — 좌측상단 고정, 이미지만 표시
       var card = document.createElement('div');
       card.id = 'popup-notice-card';
-      card.style.cssText = 'position:fixed;z-index:100000;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,0.25);opacity:0;transform:translateY(-10px);transition:opacity 0.35s ease, transform 0.35s cubic-bezier(0.16,1,0.3,1);'
-        + 'top:20px;left:20px;width:520px;max-height:90vh;'
-        // 모바일 대응
-        + 'max-width:calc(100vw - 40px);';
+      card.style.cssText = 'position:fixed;z-index:99990;background:#fff;border-radius:16px;overflow:hidden;'
+        + 'box-shadow:0 20px 50px rgba(0,0,0,0.25);opacity:0;transform:translateY(-10px);'
+        + 'transition:opacity 0.35s ease, transform 0.35s cubic-bezier(0.16,1,0.3,1);'
+        + 'top:20px;left:20px;width:520px;max-width:calc(100vw - 40px);';
 
       var html = '';
 
-      // 이미지 영역
-      if(hasImage){
-        html += '<div style="position:relative;overflow:hidden">';
-        html += '<img src="' + n.image + '" alt="' + (n.title||'공지사항').replace(/"/g,'&quot;') + '" style="width:100%;display:block;max-height:380px;object-fit:cover" onerror="this.parentElement.style.display=\'none\'" />';
-        html += '<span style="position:absolute;top:12px;left:12px;background:rgba(0,102,255,0.9);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px">' + (n.category || '공지') + '</span>';
-        html += '</div>';
-      }
-
-      // 텍스트 영역
-      html += '<div style="padding:' + (hasImage ? '16px 20px 12px' : '24px 20px 12px') + '">';
-      if(!hasImage){
-        html += '<span style="display:inline-block;background:#0066FF;color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;margin-bottom:10px">' + (n.category || '공지') + '</span>';
-      }
-      html += '<h3 style="font-size:17px;font-weight:800;color:#111;margin:0 0 8px;line-height:1.4">' + (n.title || '').replace(/</g,'&lt;') + '</h3>';
-      html += '<div style="font-size:14px;color:#555;line-height:1.7;max-height:120px;overflow-y:auto;word-break:keep-all">' + contentHtml + '</div>';
+      // ★ 이미지만 — 카테고리 뱃지, 제목, 본문 텍스트 모두 제거
+      html += '<div style="position:relative">';
+      html += '<img src="' + n.image + '" alt="' + (n.title||'공지사항').replace(/"/g,'&quot;') + '" style="width:100%;display:block;object-fit:cover" onerror="this.closest(\'#popup-notice-card\').style.display=\'none\'" />';
       html += '</div>';
 
-      // 하단 액션 바
-      html += '<div style="padding:0 20px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px">';
+      // 하단 액션 바 — 오늘 하루 보지 않기 + 닫기
+      html += '<div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff">';
       html += '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none">';
-      html += '<input type="checkbox" id="popup-dismiss-check" style="width:16px;height:16px;accent-color:#0066FF;cursor:pointer" />';
-      html += '<span style="font-size:13px;color:#999">오늘 하루 보지 않기</span>';
+      html += '<input type="checkbox" id="popup-dismiss-check" style="width:15px;height:15px;accent-color:#0066FF;cursor:pointer" />';
+      html += '<span style="font-size:12px;color:#999">오늘 하루 보지 않기</span>';
       html += '</label>';
-      html += '<button id="popup-close-btn" style="background:linear-gradient(135deg,#0066FF,#2979FF);border:none;padding:8px 20px;border-radius:10px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:transform 0.2s">확인</button>';
+      html += '<button id="popup-close-btn" style="background:none;border:1px solid #ddd;padding:6px 16px;border-radius:8px;font-size:12px;font-weight:600;color:#666;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background=\'#f5f5f5\'" onmouseout="this.style.background=\'none\'">닫기</button>';
       html += '</div>';
 
-      // 닫기(X) 버튼
-      html += '<button id="popup-x-btn" style="position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.35);border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s">&times;</button>';
+      // 닫기(X) 버튼 — 이미지 우측 상단
+      html += '<button id="popup-x-btn" style="position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.4);border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s" onmouseover="this.style.background=\'rgba(0,0,0,0.6)\'" onmouseout="this.style.background=\'rgba(0,0,0,0.4)\'">&times;</button>';
 
       card.innerHTML = html;
 
@@ -332,21 +321,17 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
           var unique = merged.filter(function(v, i, a){ return a.indexOf(v) === i; });
           setCookie('popup_dismissed_' + today, unique.join(','), 1);
         }
-        overlay.style.opacity = '0';
         card.style.opacity = '0';
         card.style.transform = 'translateY(-10px)';
         setTimeout(function(){
-          if(overlay.parentNode) overlay.parentNode.removeChild(overlay);
           if(card.parentNode) card.parentNode.removeChild(card);
         }, 300);
       }
 
-      document.body.appendChild(overlay);
       document.body.appendChild(card);
 
       // Fade in
       requestAnimationFrame(function(){
-        overlay.style.opacity = '1';
         card.style.opacity = '1';
         card.style.transform = 'translateY(0)';
       });
@@ -356,7 +341,7 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
       var xBtn = document.getElementById('popup-x-btn');
       if(closeBtn) closeBtn.addEventListener('click', closePopup);
       if(xBtn) xBtn.addEventListener('click', closePopup);
-      overlay.addEventListener('click', closePopup);
+      // ESC 키로도 닫기
       document.addEventListener('keydown', function escHandler(e){
         if(e.key === 'Escape'){ closePopup(); document.removeEventListener('keydown', escHandler); }
       });
