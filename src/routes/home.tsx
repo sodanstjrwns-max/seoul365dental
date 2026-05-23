@@ -911,11 +911,11 @@ home.get('/', async (c) => {
           "@type": "ItemList",
           "name": "서울365치과 환자 후기",
           "itemListElement": [
-            { "@type": "ListItem", "position": 1, "item": { "@type": "Review", "reviewBody": "스케일링부터 임플란트까지, 자세한 설명과 친절한 진료에 늘 감사드립니다.", "author": { "@type": "Person", "name": "김O영" }, "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
-            { "@type": "ListItem", "position": 2, "item": { "@type": "Review", "reviewBody": "전체임플란트 수술 받았습니다. 수면진료라 전혀 무섭지 않았고, 자체 기공실이 있어서 보철물 맞춤이 정말 빠르고 정확했습니다.", "author": { "@type": "Person", "name": "이O수" }, "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
-            { "@type": "ListItem", "position": 3, "item": { "@type": "Review", "reviewBody": "인비절라인 교정 중인데, 하누리 원장님이 꼼꼼하게 체크해주시고 예상 결과를 3D로 보여주셔서 믿음이 갑니다.", "author": { "@type": "Person", "name": "박O현" }, "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
-            { "@type": "ListItem", "position": 4, "item": { "@type": "Review", "reviewBody": "야간에 갑자기 이가 아파서 방문했는데, 21시까지 진료해주셔서 정말 다행이었습니다.", "author": { "@type": "Person", "name": "최O진" }, "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
-            { "@type": "ListItem", "position": 5, "item": { "@type": "Review", "reviewBody": "아이 충치 치료로 방문했는데, 소아 전문 의료진이 계셔서 아이가 전혀 무서워하지 않았어요.", "author": { "@type": "Person", "name": "정O미" }, "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
+            { "@type": "ListItem", "position": 1, "item": { "@type": "Review", "itemReviewed": { "@type": "Dentist", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원" }, "reviewBody": "스케일링부터 임플란트까지, 자세한 설명과 친절한 진료에 늘 감사드립니다.", "author": { "@type": "Person", "name": "김O영" }, "datePublished": "2025-11-15", "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
+            { "@type": "ListItem", "position": 2, "item": { "@type": "Review", "itemReviewed": { "@type": "Dentist", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원" }, "reviewBody": "전체임플란트 수술 받았습니다. 수면진료라 전혀 무섭지 않았고, 자체 기공실이 있어서 보철물 맞춤이 정말 빠르고 정확했습니다.", "author": { "@type": "Person", "name": "이O수" }, "datePublished": "2025-10-20", "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
+            { "@type": "ListItem", "position": 3, "item": { "@type": "Review", "itemReviewed": { "@type": "Dentist", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원" }, "reviewBody": "인비절라인 교정 중인데, 하누리 원장님이 꼼꼼하게 체크해주시고 예상 결과를 3D로 보여주셔서 믿음이 갑니다.", "author": { "@type": "Person", "name": "박O현" }, "datePublished": "2025-09-10", "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
+            { "@type": "ListItem", "position": 4, "item": { "@type": "Review", "itemReviewed": { "@type": "Dentist", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원" }, "reviewBody": "야간에 갑자기 이가 아파서 방문했는데, 21시까지 진료해주셔서 정말 다행이었습니다.", "author": { "@type": "Person", "name": "최O진" }, "datePublished": "2025-08-25", "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
+            { "@type": "ListItem", "position": 5, "item": { "@type": "Review", "itemReviewed": { "@type": "Dentist", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원" }, "reviewBody": "아이 충치 치료로 방문했는데, 소아 전문 의료진이 계셔서 아이가 전혀 무서워하지 않았어요.", "author": { "@type": "Person", "name": "정O미" }, "datePublished": "2025-07-18", "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" } } },
           ]
         },
         // FAQPage — homepage preview FAQ
@@ -1003,7 +1003,7 @@ home.get('/', async (c) => {
             "target": { "@type": "EntryPoint", "urlTemplate": "https://seoul365dc.kr/reservation", "actionPlatform": ["http://schema.org/DesktopWebPlatform", "http://schema.org/MobileWebPlatform"] },
             "deliveryMethod": "http://purl.org/goodrelations/v1#DeliveryModeOwnFleet",
           },
-          "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "bestRating": "5", "ratingCount": "2150", "reviewCount": "1840" },
+          "aggregateRating": { "@type": "AggregateRating", "itemReviewed": { "@type": "LocalBusiness", "name": "서울365치과의원", "@id": "https://seoul365dc.kr/#dentist" }, "ratingValue": "4.9", "bestRating": "5", "ratingCount": "2150", "reviewCount": "1840" },
         },
       ]
     }
