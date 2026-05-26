@@ -112,9 +112,22 @@ src/
 - 반응형: Mobile-first (모바일 하단 CTA, 데스크톱 플로팅 CTA)
 - 고정 헤더: 운영 상태 실시간 표시
 
-## 🚀 SEO 슈퍼 업그레이드 (2026-05-26)
+## 🚀🚀 SEO 슈퍼 업그레이드 v2 (2026-05-26) — 1,374 페이지 SEO 군단
 
-### 지역×진료 매트릭스 시스템 도입
+### v2 추가 사항 (이번 업그레이드)
+- **롱테일 변형 페이지 1,140개 신설** (19 지역 × 10 진료 × 6 변형 = 1,140)
+  - 6변형: `cost`(비용)·`recommend`(추천)·`review`(후기)·`event`(이벤트)·`best`(잘하는곳)·`night`(야간)
+  - 경로: `/area/:areaSlug/:treatmentSlug/:variantSlug`
+  - 예: `/area/guwol-dong/implant/cost` → "구월동 임플란트 비용"
+- **매트릭스 페이지 콘텐츠 3배 확장** (109KB → 1500자+ 본문, 가격표, 6가지 선택이유, 사후관리, 후기 등)
+- **추가 JSON-LD 스키마 4종**: Article, HowTo, OfferCatalog, Place (총 12개 schema)
+- **TREATMENT_PRICING 가격표**: 10개 진료별 정찰가 자동 노출 (PriceSpecification 구조화)
+- **Core Web Vitals 강화**: preconnect/dns-prefetch 8개 추가, fetchpriority hint
+- **새 sitemap**: `/sitemap-area-variants.xml` (1,140 URL)
+- **공개 ping API**: `/api/seo/ping-public` (외부 cron service에서 자동 호출 가능)
+- **SEO 통계 API**: `/api/seo/stats` (실시간 페이지 수·sitemap 모니터링)
+
+### v1 매트릭스 시스템
 - **190개 자동 생성 SEO 랜딩 페이지** (19개 지역 × 10개 핵심 진료)
 - 경로: `/area/:areaSlug/:treatmentSlug`
 - 예: `/area/guwol-dong/implant` → "구월동 임플란트"
@@ -153,6 +166,7 @@ src/
 ## Deployment
 - **Platform**: Cloudflare Pages
 - **Status**: 개발 완료, 배포 대기
-- **Bundle Size**: 951KB
-- **Total Routes**: 46개 + 매트릭스 190개 + 리다이렉트 2개 = **238개 SEO 페이지**
-- **Last Updated**: 2026-05-26 (SEO 슈퍼 업그레이드)
+- **Bundle Size**: 989KB (v2 풍부한 콘텐츠 포함)
+- **Total Routes**: 46개 코어 + 190 매트릭스 + 1,140 변형 + 리다이렉트 2개 = **1,378개 라우트**
+- **Total SEO Landing Pages**: **1,374개** (190 매트릭스 + 1,140 변형 + 19 지역 + 25 진료)
+- **Last Updated**: 2026-05-26 v2 (SEO 슈퍼 업그레이드 2차)

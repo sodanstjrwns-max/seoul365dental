@@ -4,7 +4,7 @@ import { CLINIC } from '../data/clinic'
 import { treatments } from '../data/treatments'
 import { doctors } from '../data/doctors'
 import { AREAS } from '../data/areas'
-import { getAllMatrixPages, MATRIX_TREATMENT_SLUGS } from '../data/area-treatment'
+import { getAllMatrixPages, getAllVariantPages, MATRIX_TREATMENT_SLUGS, MATRIX_VARIANTS } from '../data/area-treatment'
 import { initBlogTables, initAdminTables, getSetting } from '../lib/db'
 
 const seoRoutes = new Hono<{ Bindings: Bindings }>()
@@ -333,6 +333,10 @@ seoRoutes.get('/sitemap.xml', async (c) => {
     <loc>${base}/sitemap-area-treatments.xml</loc>
     <lastmod>${today}</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-area-variants.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
 </sitemapindex>`;
 
   return new Response(xml, { headers: sitemapHeaders });
@@ -488,6 +492,22 @@ seoRoutes.get('/sitemap-area-treatments.xml', (c) => {
   }));
 
   const xml = `${urlsetOpen}\n${matrixPages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// 🚀 v2 SUPER UPGRADE — 롱테일 변형 페이지 sitemap (1,080 URL)
+seoRoutes.get('/sitemap-area-variants.xml', (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+
+  const variantPages = getAllVariantPages().map(m => ({
+    loc: `/area/${m.areaSlug}/${m.treatmentSlug}/${m.variantSlug}`,
+    priority: m.priority.toFixed(2),
+    changefreq: 'weekly' as const,
+    lastmod: today,
+  }));
+
+  const xml = `${urlsetOpen}\n${variantPages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
   return new Response(xml, { headers: sitemapHeaders });
 })
 
@@ -764,6 +784,7 @@ Sitemap: https://seoul365dc.kr/sitemap-blog.xml
 Sitemap: https://seoul365dc.kr/sitemap-cases.xml
 Sitemap: https://seoul365dc.kr/sitemap-areas.xml
 Sitemap: https://seoul365dc.kr/sitemap-area-treatments.xml
+Sitemap: https://seoul365dc.kr/sitemap-area-variants.xml
 
 # ─── LLMs.txt (AI/LLM 크롤러용 구조화 정보) ───
 # https://llmstxt.org/ 표준
@@ -1082,8 +1103,9 @@ seoRoutes.post('/api/indexnow/submit', async (c) => {
   const body = await c.req.json<{ urls?: string[] }>().catch(() => ({}));
   const base = 'https://seoul365dc.kr';
 
-  // Default: submit all important pages (including 180 matrix pages)
+  // 🚀 v2: Submit all important pages — 매트릭스 + 롱테일 변형까지 전부
   const matrixUrls = getAllMatrixPages().map(m => `/area/${m.areaSlug}/${m.treatmentSlug}`);
+  const variantUrls = getAllVariantPages().map(m => `/area/${m.areaSlug}/${m.treatmentSlug}/${m.variantSlug}`);
   const urls = body.urls?.length ? body.urls : [
     '/', '/treatments', '/doctors', '/info', '/reservation',
     '/blog', '/faq', '/cases/gallery', '/area',
@@ -1091,6 +1113,7 @@ seoRoutes.post('/api/indexnow/submit', async (c) => {
     ...doctors.map(d => `/doctors/${d.slug}`),
     ...AREAS.map(a => `/area/${a.slug}`),
     ...matrixUrls,
+    ...variantUrls,
   ].map(p => `${base}${p}`);
 
   // Submit to IndexNow API (covers Bing, Yandex, Naver, Seznam, etc.)
@@ -1145,6 +1168,71 @@ seoRoutes.post('/api/seo/ping', async (c) => {
   }
 
   return c.json({ ok: true, results });
+})
+
+// 🚀 v2: SEO 통계 공개 엔드포인트 (모니터링용)
+seoRoutes.get('/api/seo/stats', async (c) => {
+  const matrixPages = getAllMatrixPages();
+  const variantPages = getAllVariantPages();
+  return c.json({
+    base: 'https://seoul365dc.kr',
+    sitemaps: [
+      '/sitemap.xml',
+      '/sitemap-pages.xml',
+      '/sitemap-treatments.xml',
+      '/sitemap-doctors.xml',
+      '/sitemap-blog.xml',
+      '/sitemap-cases.xml',
+      '/sitemap-areas.xml',
+      '/sitemap-area-treatments.xml',
+      '/sitemap-area-variants.xml',
+    ],
+    counts: {
+      matrixPages: matrixPages.length,
+      variantPages: variantPages.length,
+      areas: AREAS.length,
+      treatments: treatments.length,
+      coreTreatments: MATRIX_TREATMENT_SLUGS.length,
+      variants: MATRIX_VARIANTS.length,
+      totalSeoLandingPages: matrixPages.length + variantPages.length + AREAS.length + treatments.length,
+    },
+    lastUpdated: new Date().toISOString(),
+  });
+})
+
+// 🚀 v2: 공개 ping 트리거 (외부 cron service / GitHub Actions 등에서 호출)
+// Authorization 헤더로 보호 가능: header 'X-Ping-Token' 사용
+seoRoutes.post('/api/seo/ping-public', async (c) => {
+  const token = c.req.header('X-Ping-Token');
+  const expectedToken = await getSetting(c.env.DB, 'PING_TOKEN', c.env.PING_TOKEN || '');
+  if (expectedToken && token !== expectedToken) {
+    return c.json({ error: 'Invalid token' }, 401);
+  }
+
+  const sitemapUrls = [
+    'https://seoul365dc.kr/sitemap.xml',
+    'https://seoul365dc.kr/sitemap-area-treatments.xml',
+    'https://seoul365dc.kr/sitemap-area-variants.xml',
+  ];
+
+  const results: Record<string, any> = {};
+  for (const sitemapUrl of sitemapUrls) {
+    const pingTargets = [
+      { name: 'google', url: `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}` },
+      { name: 'bing', url: `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}` },
+    ];
+    results[sitemapUrl] = {};
+    for (const target of pingTargets) {
+      try {
+        const res = await fetch(target.url, { method: 'GET' });
+        results[sitemapUrl][target.name] = res.status;
+      } catch {
+        results[sitemapUrl][target.name] = 0;
+      }
+    }
+  }
+
+  return c.json({ ok: true, pinged: sitemapUrls.length, results });
 })
 
 // ============================================================

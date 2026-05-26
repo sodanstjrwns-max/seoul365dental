@@ -515,13 +515,21 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           <script dangerouslySetInnerHTML={{__html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4Id}',{page_title:document.title,page_location:window.location.href,cookie_flags:'SameSite=None;Secure',anonymize_ip:true,send_page_view:true});`}} />
         </>}
 
-        {/* === PRECONNECT === */}
+        {/* === PRECONNECT (Core Web Vitals LCP 최적화) === */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
+        <link rel="dns-prefetch" href="https://www.google.com" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        <link rel="dns-prefetch" href="https://booking.naver.com" />
+        <link rel="dns-prefetch" href="https://pf.kakao.com" />
+
+        {/* === 🚀 v2: SEO Resource Hints — 검색엔진 크롤러용 === */}
+        <link rel="alternate" type="application/rss+xml" title="서울365치과 블로그 RSS" href="/blog/rss.xml" />
 
         {/* === CRITICAL: Preload cursor logo for instant display === */}
-        <link rel="preload" href="/static/cursor-logo.png" as="image" type="image/png" />
+        <link rel="preload" href="/static/cursor-logo.png" as="image" type="image/png" fetchpriority="high" />
 
         {/* === FONTS (non-blocking) === */}
         <link rel="preload" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" as="style" />
