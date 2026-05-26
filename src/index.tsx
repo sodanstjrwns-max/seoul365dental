@@ -25,6 +25,12 @@ import compareRoutes from './routes/compare'
 import guidesRoutes from './routes/guides'
 import stationsRoutes from './routes/stations'
 import intlRoutes from './routes/intl'
+// v4 SEO Super Upgrade routes
+import reviewsRoutes from './routes/reviews'
+import proceduresRoutes from './routes/procedures'
+import insuranceRoutes from './routes/insurance'
+import whyusRoutes from './routes/whyus'
+import eventsRoutes from './routes/events'
 
 const app = new Hono<{ Bindings: Bindings }>()
 
@@ -112,6 +118,13 @@ app.route('/', compareRoutes)
 app.route('/', guidesRoutes)
 app.route('/', stationsRoutes)
 app.route('/', intlRoutes)
+
+// v4 SEO Super Upgrade — Reviews, HowTo Procedures, Insurance, WhyUs, Events
+app.route('/', reviewsRoutes)
+app.route('/', proceduresRoutes)
+app.route('/', insuranceRoutes)
+app.route('/', whyusRoutes)
+app.route('/', eventsRoutes)
 
 // API endpoints
 app.route('/', apiRoutes)

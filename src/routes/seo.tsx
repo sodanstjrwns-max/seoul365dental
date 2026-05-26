@@ -357,6 +357,26 @@ seoRoutes.get('/sitemap.xml', async (c) => {
     <loc>${base}/sitemap-intl.xml</loc>
     <lastmod>${today}</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-reviews.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-procedures.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-insurance.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-events.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-whyus.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
 </sitemapindex>`;
 
   return new Response(xml, { headers: sitemapHeaders });
@@ -624,6 +644,98 @@ seoRoutes.get('/sitemap-intl.xml', (c) => {
     { loc: '/zh', priority: '0.85', changefreq: 'weekly' as const, lastmod: today },
   ];
 
+  const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── v4 SITEMAP — Reviews (AggregateRating ⭐) ──
+seoRoutes.get('/sitemap-reviews.xml', async (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+  const { getAllReviewCategorySlugs } = await import('./reviews');
+  const slugs = getAllReviewCategorySlugs();
+
+  const pages = [
+    { loc: '/reviews', priority: '0.90', changefreq: 'weekly' as const, lastmod: today },
+    ...slugs.map(s => ({
+      loc: `/reviews/${s}`,
+      priority: '0.80',
+      changefreq: 'weekly' as const,
+      lastmod: today,
+    })),
+  ];
+  const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── v4 SITEMAP — Procedures (HowTo) ──
+seoRoutes.get('/sitemap-procedures.xml', async (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+  const { getAllProcedureSlugs } = await import('./procedures');
+  const slugs = getAllProcedureSlugs();
+
+  const pages = [
+    { loc: '/procedures', priority: '0.85', changefreq: 'monthly' as const, lastmod: today },
+    ...slugs.map(s => ({
+      loc: `/procedures/${s}`,
+      priority: '0.80',
+      changefreq: 'monthly' as const,
+      lastmod: today,
+    })),
+  ];
+  const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── v4 SITEMAP — Insurance ──
+seoRoutes.get('/sitemap-insurance.xml', async (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+  const { getAllInsuranceSlugs } = await import('./insurance');
+  const slugs = getAllInsuranceSlugs();
+
+  const pages = [
+    { loc: '/insurance', priority: '0.85', changefreq: 'monthly' as const, lastmod: today },
+    ...slugs.map(s => ({
+      loc: `/insurance/${s}`,
+      priority: '0.80',
+      changefreq: 'monthly' as const,
+      lastmod: today,
+    })),
+  ];
+  const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── v4 SITEMAP — Events (Event schema) ──
+seoRoutes.get('/sitemap-events.xml', async (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+  const { getAllEventSlugs } = await import('./events');
+  const slugs = getAllEventSlugs();
+
+  const pages = [
+    { loc: '/events', priority: '0.85', changefreq: 'daily' as const, lastmod: today },
+    ...slugs.map(s => ({
+      loc: `/events/${s}`,
+      priority: '0.85',
+      changefreq: 'weekly' as const,
+      lastmod: today,
+    })),
+  ];
+  const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── v4 SITEMAP — Why Us ──
+seoRoutes.get('/sitemap-whyus.xml', (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+
+  const pages = [
+    { loc: '/why-us', priority: '0.85', changefreq: 'monthly' as const, lastmod: today },
+  ];
   const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
   return new Response(xml, { headers: sitemapHeaders });
 })
@@ -907,6 +1019,11 @@ Sitemap: https://seoul365dc.kr/sitemap-compare.xml
 Sitemap: https://seoul365dc.kr/sitemap-guides.xml
 Sitemap: https://seoul365dc.kr/sitemap-stations.xml
 Sitemap: https://seoul365dc.kr/sitemap-intl.xml
+Sitemap: https://seoul365dc.kr/sitemap-reviews.xml
+Sitemap: https://seoul365dc.kr/sitemap-procedures.xml
+Sitemap: https://seoul365dc.kr/sitemap-insurance.xml
+Sitemap: https://seoul365dc.kr/sitemap-events.xml
+Sitemap: https://seoul365dc.kr/sitemap-whyus.xml
 
 # ─── LLMs.txt (AI/LLM 크롤러용 구조화 정보) ───
 # https://llmstxt.org/ 표준
@@ -1350,6 +1467,11 @@ seoRoutes.get('/api/seo/stats', async (c) => {
       '/sitemap-guides.xml',
       '/sitemap-stations.xml',
       '/sitemap-intl.xml',
+      '/sitemap-reviews.xml',
+      '/sitemap-procedures.xml',
+      '/sitemap-insurance.xml',
+      '/sitemap-events.xml',
+      '/sitemap-whyus.xml',
     ],
     counts: {
       matrixPages: matrixPages.length,
@@ -1381,6 +1503,11 @@ seoRoutes.post('/api/seo/ping-public', async (c) => {
     'https://seoul365dc.kr/sitemap-compare.xml',
     'https://seoul365dc.kr/sitemap-guides.xml',
     'https://seoul365dc.kr/sitemap-stations.xml',
+    'https://seoul365dc.kr/sitemap-reviews.xml',
+    'https://seoul365dc.kr/sitemap-procedures.xml',
+    'https://seoul365dc.kr/sitemap-insurance.xml',
+    'https://seoul365dc.kr/sitemap-events.xml',
+    'https://seoul365dc.kr/sitemap-whyus.xml',
   ];
 
   const results: Record<string, any> = {};
@@ -1479,6 +1606,11 @@ seoRoutes.post('/api/cron/full-sync', async (c) => {
     `${base}/sitemap-guides.xml`,
     `${base}/sitemap-stations.xml`,
     `${base}/sitemap-intl.xml`,
+    `${base}/sitemap-reviews.xml`,
+    `${base}/sitemap-procedures.xml`,
+    `${base}/sitemap-insurance.xml`,
+    `${base}/sitemap-events.xml`,
+    `${base}/sitemap-whyus.xml`,
   ];
   results.tasks.ping = {};
   for (const sm of sitemapUrls) {

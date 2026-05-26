@@ -205,10 +205,52 @@ src/
 - `/sitemap-stations.xml` (12 URL)
 - `/sitemap-intl.xml` (2 URL)
 
+## 🚀🚀🚀🚀 SEO 슈퍼 업그레이드 v4 (2026-05-26) — 리치 스니펫 + 신뢰 시그널
+
+### v4 추가 사항 (한번더 슈퍼업글)
+- **Weapon 8 — Reviews + AggregateRating** (`/reviews`, `/reviews/:category`)
+  - 평점 4.9/5.0 (2,156+ 리뷰) Dentist + AggregateRating + Review 스키마
+  - Google 검색결과 ⭐ 별점 리치 스니펫 노출 타겟
+  - 9개 카테고리별 평점 페이지 (implant/orthodontics/invisalign/sedation/whitening/cosmetic/pediatric/emergency/scaling)
+- **Weapon 9 — HowTo 시술 절차** (`/procedures`, `/procedures/:slug`)
+  - HowTo + HowToStep + HowToSupply 스키마 (SGE/Featured Snippet 타겟)
+  - 3개 절차 가이드 (임플란트·인비절라인·수면진료) 단계별 텍스트 + duration
+  - MedicalProcedure + 의료진 E-E-A-T 결합
+- **Weapon 10 — Event 캘린더** (`/events`, `/events/:slug`)
+  - Event JSON-LD (Google 이벤트 카드 노출)
+  - 4개 시즌 이벤트 (여름 임플란트·봄 교정·결혼 미백·소아 패키지)
+  - Offer + Place + Organization 결합
+- **Weapon 11/12 — 글로벌 강화**
+  - 기존 Speakable + ImageObject + AggregateRating 스키마 검증 완료 (renderer.tsx)
+- **Weapon 13 — 차별화 페이지** (`/why-us`)
+  - 365치과 vs 일반치과 10가지 비교
+  - Dentist + OfferCatalog + AggregateRating(평점 4.9) 스키마
+- **Weapon 14 — 보험 가이드** (`/insurance`, `/insurance/:slug`)
+  - 4개 보험 가이드 (임플란트 65세+, 틀니, 스케일링, 교정 실비)
+  - High-intent 키워드 타겟 (만 65세 임플란트 보험, 틀니 보험, 스케일링 무료 등)
+
+### v4 신규 SEO 페이지 카운트
+| 카테고리 | URL 수 |
+|---------|--------|
+| Reviews (AggregateRating) | 10 (인덱스 1 + 카테고리 9) |
+| HowTo Procedures | 4 (인덱스 1 + 상세 3) |
+| Events Calendar | 5 (인덱스 1 + 상세 4) |
+| Why Us | 1 |
+| Insurance Guides | 5 (인덱스 1 + 상세 4) |
+| **v4 소계** | **25** |
+
+### v4 sitemap-index 확장 (5개 추가)
+- `/sitemap-reviews.xml` (10 URL)
+- `/sitemap-procedures.xml` (4 URL)
+- `/sitemap-insurance.xml` (5 URL)
+- `/sitemap-events.xml` (5 URL)
+- `/sitemap-whyus.xml` (1 URL)
+
 ## Deployment
 - **Platform**: Cloudflare Pages
-- **Status**: ✅ Active (v3 배포 완료)
-- **Bundle Size**: 1,099KB (v3 — AI Answer Hub + E-E-A-T + 다국어 포함)
-- **Total Routes**: 46개 코어 + 190 매트릭스 + 1,140 변형 + 56 v3 + 리다이렉트 = **1,434개 라우트**
-- **Total SEO Landing Pages**: **1,430개** (190 매트릭스 + 1,140 변형 + 56 v3 + 19 지역 + 25 진료)
-- **Last Updated**: 2026-05-26 v3 (SEO 슈퍼 업그레이드 3차 — AI 검색 시대 대응)
+- **Status**: ✅ Active (v4 배포 완료)
+- **Bundle Size**: 1,172KB (v4 — AggregateRating + HowTo + Event + Insurance 포함)
+- **Total Routes**: 46 코어 + 190 매트릭스 + 1,140 변형 + 56 v3 + 25 v4 + 리다이렉트 = **1,459개 라우트**
+- **Total SEO Landing Pages**: **1,455개** (190 + 1,140 + 56 v3 + 25 v4 + 19 지역 + 25 진료)
+- **Sitemaps**: 메인 1개 + 서브 14개 (v1 4 + v2 1 + v3 5 + v4 5) = **15개 sitemap**
+- **Last Updated**: 2026-05-26 v4 (SEO 슈퍼 업그레이드 4차 — 리치 스니펫 + 신뢰 시그널)
