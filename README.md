@@ -112,8 +112,36 @@ src/
 - 반응형: Mobile-first (모바일 하단 CTA, 데스크톱 플로팅 CTA)
 - 고정 헤더: 운영 상태 실시간 표시
 
+## 🚀 SEO 슈퍼 업그레이드 (2026-05-26)
+
+### 지역×진료 매트릭스 시스템 도입
+- **190개 자동 생성 SEO 랜딩 페이지** (19개 지역 × 10개 핵심 진료)
+- 경로: `/area/:areaSlug/:treatmentSlug`
+- 예: `/area/guwol-dong/implant` → "구월동 임플란트"
+- 각 페이지 고유 콘텐츠:
+  - 지역명+진료명 H1 + 8개 H2 (키워드 밀도 ↑↑↑)
+  - 지역 맞춤 FAQ 8개 (FAQPage 스키마)
+  - 거리·소요시간·랜드마크 + 진료 셀링포인트
+  - LocalBusiness/Dentist + MedicalProcedure + areaServed JSON-LD
+  - 내부 링크: 같은 지역 다른 진료 9개 + 같은 진료 다른 지역 12개
+- **키워드 자동 노출 패턴**:
+  - `{지역명} {진료명}` (구월동 임플란트)
+  - `{지역명}{진료명}` (구월동임플란트)  
+  - `{지역명} {진료명} 추천/잘하는곳/비용/가격`
+  - `{구이름} {진료명}` (남동구 임플란트)
+  - `인천 {지역} {진료}` 
+  - `{랜드마크} {진료}` (예술회관역 임플란트)
+
+### SEO 인프라 강화
+- ✅ `sitemap-area-treatments.xml` 추가 (190 URL, priority 0.65~0.9)
+- ✅ `robots.txt`에 매트릭스 sitemap 등록
+- ✅ IndexNow API 자동 제출 대상에 매트릭스 페이지 포함
+- ✅ 페이지별 `keywords` 메타 태그 지원 (renderer.tsx)
+- ✅ 진료 페이지(`/treatments/:slug`)에 19개 지역 그리드 추가
+- ✅ 지역 페이지(`/area/:slug`)에 10개 진료 그리드 추가
+- ✅ 홈페이지에 SEO 허브 섹션 추가 (3개 핵심 진료 × 10개 지역)
+
 ## 미구현 (Phase 2+)
-- [ ] 지역 SEO 랜딩 페이지 (15개+)
 - [ ] 실제 이미지 교체 (의사 사진, 시설 사진, 치료 사례)
 - [ ] Naver/Kakao Map API 연동
 - [ ] Google Places API 실시간 리뷰
@@ -125,6 +153,6 @@ src/
 ## Deployment
 - **Platform**: Cloudflare Pages
 - **Status**: 개발 완료, 배포 대기
-- **Bundle Size**: 432KB
-- **Total Routes**: 46개 + 리다이렉트 2개
-- **Last Updated**: 2026-03-10
+- **Bundle Size**: 951KB
+- **Total Routes**: 46개 + 매트릭스 190개 + 리다이렉트 2개 = **238개 SEO 페이지**
+- **Last Updated**: 2026-05-26 (SEO 슈퍼 업그레이드)

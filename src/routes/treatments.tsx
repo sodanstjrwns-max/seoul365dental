@@ -4,6 +4,8 @@ import { CLINIC } from '../data/clinic'
 import { treatments, getTreatmentBySlug, treatmentCategories } from '../data/treatments'
 import { TREATMENT_EMPATHY } from '../data/brand'
 import { initAdminTables } from '../lib/db'
+import { AREAS, getAreasSorted } from '../data/areas'
+import { MATRIX_TREATMENT_SLUGS } from '../data/area-treatment'
 
 const treatmentRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -741,6 +743,41 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
           </div>
         </div>
       </section>
+
+      {/* 🎯 지역별 {진료} SEO 그리드 — 매트릭스 진입로 (핵심 진료만 노출) */}
+      {MATRIX_TREATMENT_SLUGS.includes(t.slug as any) && (
+        <section class="section-md bg-gradient-to-b from-gray-50 to-white">
+          <div class="max-w-6xl mx-auto px-5 md:px-8">
+            <div class="text-center mb-10 reveal">
+              <span class="section-eyebrow text-[#0066FF] mb-3 block">BY AREA</span>
+              <h2 class="text-xl md:text-2xl font-bold text-gray-900">
+                지역별 {t.name} 안내 — 우리 동네에서 가까운 곳
+              </h2>
+              <p class="text-gray-400 text-sm mt-3">
+                인천 {AREAS.length}개 지역에서 서울365치과 {t.name} 받으러 오시는 거리·시간 안내
+              </p>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 stagger-children">
+              {getAreasSorted().map(a => (
+                <a href={`/area/${a.slug}/${t.slug}`}
+                   class="premium-card p-3 text-center group hover:border-[#0066FF]/20 transition-all block"
+                   data-cursor-hover
+                   title={`${a.name} ${t.name}`}>
+                  <p class="font-bold text-gray-900 text-xs group-hover:text-[#0066FF] transition-colors leading-snug">
+                    {a.name} {t.name}
+                  </p>
+                  <p class="text-[10px] text-gray-400 mt-1">
+                    {a.distKm === 0 ? '도보 3분' : `${a.distKm}km · ${a.travelMin}분`}
+                  </p>
+                </a>
+              ))}
+            </div>
+            <p class="text-center text-xs text-gray-400 mt-6">
+              모든 지역에서 동일한 {t.name} 진료 · 예술회관역 5번 출구 도보 3분
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* Related Treatments */}
       {t.relatedSlugs && t.relatedSlugs.length > 0 && (

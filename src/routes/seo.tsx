@@ -4,6 +4,7 @@ import { CLINIC } from '../data/clinic'
 import { treatments } from '../data/treatments'
 import { doctors } from '../data/doctors'
 import { AREAS } from '../data/areas'
+import { getAllMatrixPages, MATRIX_TREATMENT_SLUGS } from '../data/area-treatment'
 import { initBlogTables, initAdminTables, getSetting } from '../lib/db'
 
 const seoRoutes = new Hono<{ Bindings: Bindings }>()
@@ -328,6 +329,10 @@ seoRoutes.get('/sitemap.xml', async (c) => {
     <loc>${base}/sitemap-areas.xml</loc>
     <lastmod>${today}</lastmod>
   </sitemap>
+  <sitemap>
+    <loc>${base}/sitemap-area-treatments.xml</loc>
+    <lastmod>${today}</lastmod>
+  </sitemap>
 </sitemapindex>`;
 
   return new Response(xml, { headers: sitemapHeaders });
@@ -469,7 +474,24 @@ seoRoutes.get('/sitemap-areas.xml', (c) => {
   return new Response(xml, { headers: sitemapHeaders });
 })
 
-// ── 7) SITEMAP — Cases (Before & After) ──
+// ── 7) SITEMAP — Area × Treatment Matrix (SEO 골든 그리드) ──
+// 18개 지역 × 10개 핵심 진료 = 180개 자동 SEO 랜딩 페이지
+seoRoutes.get('/sitemap-area-treatments.xml', (c) => {
+  const base = 'https://seoul365dc.kr';
+  const today = new Date().toISOString().split('T')[0];
+
+  const matrixPages = getAllMatrixPages().map(m => ({
+    loc: `/area/${m.areaSlug}/${m.treatmentSlug}`,
+    priority: m.priority.toFixed(1),
+    changefreq: 'weekly' as const,
+    lastmod: today,
+  }));
+
+  const xml = `${urlsetOpen}\n${matrixPages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
+// ── 8) SITEMAP — Cases (Before & After) ──
 seoRoutes.get('/sitemap-cases.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
   const today = new Date().toISOString().split('T')[0];
@@ -741,6 +763,7 @@ Sitemap: https://seoul365dc.kr/sitemap-doctors.xml
 Sitemap: https://seoul365dc.kr/sitemap-blog.xml
 Sitemap: https://seoul365dc.kr/sitemap-cases.xml
 Sitemap: https://seoul365dc.kr/sitemap-areas.xml
+Sitemap: https://seoul365dc.kr/sitemap-area-treatments.xml
 
 # ─── LLMs.txt (AI/LLM 크롤러용 구조화 정보) ───
 # https://llmstxt.org/ 표준
@@ -1059,13 +1082,15 @@ seoRoutes.post('/api/indexnow/submit', async (c) => {
   const body = await c.req.json<{ urls?: string[] }>().catch(() => ({}));
   const base = 'https://seoul365dc.kr';
 
-  // Default: submit all important pages
+  // Default: submit all important pages (including 180 matrix pages)
+  const matrixUrls = getAllMatrixPages().map(m => `/area/${m.areaSlug}/${m.treatmentSlug}`);
   const urls = body.urls?.length ? body.urls : [
     '/', '/treatments', '/doctors', '/info', '/reservation',
     '/blog', '/faq', '/cases/gallery', '/area',
     ...treatments.map(t => `/treatments/${t.slug}`),
     ...doctors.map(d => `/doctors/${d.slug}`),
     ...AREAS.map(a => `/area/${a.slug}`),
+    ...matrixUrls,
   ].map(p => `${base}${p}`);
 
   // Submit to IndexNow API (covers Bing, Yandex, Naver, Seznam, etc.)

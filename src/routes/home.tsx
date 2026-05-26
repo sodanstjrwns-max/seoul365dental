@@ -6,6 +6,8 @@ import { treatments } from '../data/treatments'
 import { mainFaq, pricingSummary } from '../data/faq'
 import { MESSAGING, MISSION, VISION, MAIN_SUMMARY } from '../data/brand'
 import { initAdminTables, initBlogTables } from '../lib/db'
+import { AREAS, getAreasSorted } from '../data/areas'
+import { MATRIX_TREATMENT_SLUGS, MATRIX_TREATMENT_INFO } from '../data/area-treatment'
 
 const home = new Hono<{ Bindings: Bindings }>()
 
@@ -799,6 +801,76 @@ home.get('/', async (c) => {
                 {line}
               </p>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 🎯 SEO HUB: 지역×진료 매트릭스 진입 ===== */}
+      <section class="bg-gradient-to-b from-gray-50 to-white py-16 md:py-20 border-t border-gray-100">
+        <div class="max-w-6xl mx-auto px-5 md:px-8">
+          <div class="text-center mb-12 reveal">
+            <span class="section-eyebrow text-[#0066FF] mb-3 block">FIND YOUR AREA</span>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900">
+              우리 동네에서 가까운<br class="md:hidden" /> 서울365치과 찾기
+            </h2>
+            <p class="text-gray-400 text-sm mt-3">
+              인천 {AREAS.length}개 지역 × {MATRIX_TREATMENT_SLUGS.length}개 핵심 진료 — 클릭 한 번으로 우리 지역 전문 진료 페이지로 이동
+            </p>
+          </div>
+
+          {/* 지역별 빠른 진입 — 거리순 */}
+          <div class="mb-10">
+            <h3 class="font-bold text-gray-700 text-sm mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-location-dot text-[#0066FF] text-xs"></i>
+              지역별 안내
+            </h3>
+            <div class="flex flex-wrap gap-2">
+              {getAreasSorted().map(a => (
+                <a href={`/area/${a.slug}`}
+                   class="inline-flex items-center gap-1.5 text-xs bg-white hover:bg-[#0066FF]/8 text-gray-700 hover:text-[#0066FF] px-3 py-2 rounded-full border border-gray-200 hover:border-[#0066FF]/30 transition-all"
+                   data-cursor-hover
+                   title={`${a.name}치과 - 서울365치과 ${a.distKm === 0 ? '도보 3분' : a.travelMin + '분'}`}>
+                  <i class="fa-solid fa-location-dot text-[9px] text-[#0066FF]/40"></i>
+                  <span class="font-medium">{a.name}치과</span>
+                  <span class="text-[10px] text-gray-400">
+                    {a.distKm === 0 ? '도보 3분' : `${a.travelMin}분`}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* 진료별 상위 키워드 매트릭스 — 핵심 3진료 × 핵심 지역 */}
+          {['implant', 'invisalign', 'orthodontics'].map(tSlug => {
+            const info = MATRIX_TREATMENT_INFO[tSlug as keyof typeof MATRIX_TREATMENT_INFO];
+            const topAreas = getAreasSorted().slice(0, 10);
+            return (
+              <div class="mb-6 last:mb-0">
+                <h3 class="font-bold text-gray-700 text-sm mb-3 flex items-center gap-2">
+                  <i class={`fa-solid ${info.icon} text-[#0066FF] text-xs`}></i>
+                  지역별 {info.name}
+                  <a href={`/treatments/${tSlug}`} class="ml-auto text-[10px] text-[#0066FF] font-medium hover:underline" data-cursor-hover>
+                    {info.name} 자세히 보기 <i class="fa-solid fa-arrow-right text-[8px]"></i>
+                  </a>
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                  {topAreas.map(a => (
+                    <a href={`/area/${a.slug}/${tSlug}`}
+                       class="inline-flex items-center gap-1 text-xs bg-white hover:bg-[#0066FF]/8 text-gray-600 hover:text-[#0066FF] px-3 py-1.5 rounded-full border border-gray-100 hover:border-[#0066FF]/20 transition-all"
+                       data-cursor-hover
+                       title={`${a.name} ${info.name}`}>
+                      <span class="font-medium">{a.name} {info.name}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+
+          <div class="text-center mt-8">
+            <a href="/area" class="btn-premium btn-premium-outline" data-cursor-hover>
+              <i class="fa-solid fa-map-location-dot mr-1.5"></i> 전체 지역 안내 보기
+            </a>
           </div>
         </div>
       </section>

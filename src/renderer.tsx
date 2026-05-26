@@ -13,10 +13,13 @@ import { AREAS } from './data/areas'
 let _currentSeoSettings: Record<string, string> = {};
 export function setCurrentSeoSettings(s: Record<string, string>) { _currentSeoSettings = s; }
 
-export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified, ogImage: customOgImage, ogType, datePublished, articleSection, articleTags }) => {
+export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified, ogImage: customOgImage, ogType, datePublished, articleSection, articleTags, keywords: pageKeywords }) => {
   const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·인비절라인 투명교정·수면진료 전문. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
+  const defaultKeywords = '인천치과, 구월동치과, 남동구치과, 인천임플란트, 구월동임플란트, 오스템임플란트, 스트라우만임플란트, 메가젠임플란트, 오스템SOI, 임플란트가격, 임플란트비용, 인천치아교정, 인비절라인, 인천인비절라인, 구월동인비절라인, 투명교정, 인천투명교정, 인비절라인비용, 인비절라인가격, 수면진료, 전체임플란트, 디지털풀아치, 인천전체임플란트, 서울365치과, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 인천소아치과, 심미치료, 신경치료, 서울대치과, 인천수면치과, 간석동치과, 간석동임플란트, 만수동치과, 만수동임플란트, 논현동치과, 논현동임플란트, 서창동치과, 고잔동치과, 남촌동치과, 장수동치과, 도림동치과, 운연동치과, 주안동치과, 관교동치과, 청학동치과, 연수동치과, 송도치과, 송도임플란트, 부평치과, 부평임플란트, 십정동치과, 검암동치과, 계양구치과, 미추홀구치과, 연수구치과, 인천남동구임플란트';
+  // 페이지별 키워드가 있으면 기본 키워드와 합쳐서 노출 (페이지 키워드 먼저)
+  const metaKeywords = pageKeywords ? `${pageKeywords}, ${defaultKeywords}` : defaultKeywords;
   const ogImage = customOgImage || 'https://seoul365dc.kr/static/og-image.png';
   const resolvedOgType = ogType || 'website';
   const lastModified = dateModified || new Date().toISOString().split('T')[0];
@@ -445,7 +448,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* === PRIMARY SEO META === */}
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
-        <meta name="keywords" content="인천치과, 구월동치과, 남동구치과, 인천임플란트, 구월동임플란트, 오스템임플란트, 스트라우만임플란트, 메가젠임플란트, 오스템SOI, 임플란트가격, 임플란트비용, 인천치아교정, 인비절라인, 인천인비절라인, 구월동인비절라인, 투명교정, 인천투명교정, 인비절라인비용, 인비절라인가격, 수면진료, 전체임플란트, 디지털풀아치, 인천전체임플란트, 서울365치과, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 인천소아치과, 심미치료, 신경치료, 서울대치과, 인천수면치과, 간석동치과, 간석동임플란트, 간석동교정, 간석오거리치과, 만수동치과, 만수동임플란트, 만수동교정, 만수역치과, 논현동치과, 논현동임플란트, 논현동교정, 인천논현역치과, 서창동치과, 서창동임플란트, 고잔동치과, 고잔동임플란트, 남촌동치과, 장수동치과, 도림동치과, 운연동치과, 주안동치과, 주안역치과, 주안동임플란트, 관교동치과, 청학동치과, 연수동치과, 연수역치과, 송도치과, 송도임플란트, 부평치과, 부평동치과, 부평역치과, 부평임플란트, 십정동치과, 백운역치과, 검암동치과, 계양구치과, 계양역치과, 인천서구치과, 미추홀구치과, 연수구치과, 인천남동구임플란트, 구월동교정, 인천라미네이트, 인천충치치료, 인천야간치과, 인천응급치과" />
+        <meta name="keywords" content={metaKeywords} />
         <link rel="canonical" href={canonicalUrl} />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
