@@ -19,6 +19,12 @@ import seoRoutes from './routes/seo'
 import areaRoutes from './routes/area'
 import eventRoutes from './routes/event'
 import ruRoutes from './routes/ru'
+// v3 SEO Super Upgrade routes
+import answersRoutes from './routes/answers'
+import compareRoutes from './routes/compare'
+import guidesRoutes from './routes/guides'
+import stationsRoutes from './routes/stations'
+import intlRoutes from './routes/intl'
 
 const app = new Hono<{ Bindings: Bindings }>()
 
@@ -99,6 +105,13 @@ app.route('/', pageRoutes)
 app.route('/', areaRoutes)
 app.route('/', eventRoutes)
 app.route('/', ruRoutes)
+
+// v3 SEO Super Upgrade — AI Answer Hub, Compare, Guides, Stations, International
+app.route('/', answersRoutes)
+app.route('/', compareRoutes)
+app.route('/', guidesRoutes)
+app.route('/', stationsRoutes)
+app.route('/', intlRoutes)
 
 // API endpoints
 app.route('/', apiRoutes)

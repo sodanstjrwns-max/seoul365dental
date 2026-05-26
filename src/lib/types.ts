@@ -13,5 +13,7 @@ export type Bindings = {
   NAVER_SITE_VERIFICATION?: string;
   BING_SITE_VERIFICATION?: string;
   INDEXNOW_KEY?: string;            // IndexNow API key
+  PING_TOKEN?: string;              // v2: 공개 ping 엔드포인트 토큰
+  CRON_TOKEN?: string;              // v3: 외부 cron-job.org 호출 토큰
 }
 export type App = Hono<{ Bindings: Bindings }>

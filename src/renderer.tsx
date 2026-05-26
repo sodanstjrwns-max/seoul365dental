@@ -455,9 +455,11 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <meta name="date" content={lastModified} />
         <meta property="article:modified_time" content={lastModified} />
 
-        {/* === LANGUAGE & GEO === */}
+        {/* === LANGUAGE & GEO (v3: 다국어 hreflang) === */}
         <meta http-equiv="content-language" content="ko-KR" />
         <link rel="alternate" hreflang="ko-KR" href={canonicalUrl} />
+        <link rel="alternate" hreflang="en" href="https://seoul365dc.kr/en" />
+        <link rel="alternate" hreflang="zh-CN" href="https://seoul365dc.kr/zh" />
         <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
         <meta name="geo.region" content="KR-28" />
         <meta name="geo.placename" content="인천 남동구 구월동" />

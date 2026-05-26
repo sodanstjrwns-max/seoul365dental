@@ -163,10 +163,52 @@ src/
 - [ ] Tailwind CSS 빌드 모드 전환 (CDN → PostCSS)
 - [ ] Cloudflare Pages 프로덕션 배포
 
+## 🚀🚀🚀 SEO 슈퍼 업그레이드 v3 (2026-05-26) — AI 검색 시대 7대 무기
+
+### v3 추가 사항
+- **Weapon 1 — AI Answer Hub** (`/answers`, `/answers/:slug`)
+  - 13개 핵심 질문에 대한 QAPage JSON-LD (SGE/Perplexity/ChatGPT/Claude 인용 최적화)
+  - mainEntity Question 배열로 AI가 직접 답변 추출 가능
+- **Weapon 2 — E-E-A-T 시그널 강화**
+  - Author/reviewedBy/worksFor/alumniOf/memberOf(대한치과의사협회) 명시
+  - MedicalAudience + citation 스키마 (Google 의료 콘텐츠 가이드라인 대응)
+- **Weapon 3 — 역세권/랜드마크 페이지** (`/stations`, `/stations/:slug`)
+  - 11개 역/랜드마크 (예술회관역, 인천시청역, 가천대 길병원, 송도국제도시역 등)
+  - Place + containsPlace Dentist 스키마
+- **Weapon 4 — 비교 페이지** (`/compare`, `/compare/:slug`)
+  - 7개 A-vs-B 키워드 페이지 (오스템 vs 스트라우만, 인비절라인 vs 메탈 등)
+  - ItemList + MedicalWebPage + FAQPage 스키마
+- **Weapon 5 — Topic Cluster (Hub-Spoke)** (`/guides`, `/guides/:cluster`, `/guides/:cluster/:spoke`)
+  - 3개 Pillar (임플란트/인비절라인/교정) + 16개 Spoke
+  - hasPart/isPartOf 관계로 토픽 권위 구축
+- **Weapon 6 — 자동 IndexNow** (`/api/cron/full-sync`)
+  - X-Cron-Token 인증, 외부 cron-job.org에서 호출 가능
+  - POST/GET 양방향 지원 (Cloudflare Pages는 Cron Trigger 미지원이라 우회)
+- **Weapon 7 — 다국어** (`/en`, `/zh`)
+  - 송도 외국인 거주자 타겟 (영어 + 간체)
+  - hreflang ko-KR/en/zh-CN/x-default 전체 페이지 적용
+
+### v3 신규 SEO 페이지 카운트
+| 카테고리 | URL 수 |
+|---------|--------|
+| AI Answer Hub | 14 (인덱스 1 + 상세 13) |
+| 비교 페이지 | 8 (인덱스 1 + 상세 7) |
+| Topic Cluster | 20 (허브 1 + Pillar 3 + Spoke 16) |
+| 역세권/랜드마크 | 12 (인덱스 1 + 상세 11) |
+| 다국어 | 2 (en + zh) |
+| **v3 소계** | **56** |
+
+### v3 sitemap-index 확장
+- `/sitemap-answers.xml` (14 URL)
+- `/sitemap-compare.xml` (8 URL)
+- `/sitemap-guides.xml` (20 URL)
+- `/sitemap-stations.xml` (12 URL)
+- `/sitemap-intl.xml` (2 URL)
+
 ## Deployment
 - **Platform**: Cloudflare Pages
-- **Status**: 개발 완료, 배포 대기
-- **Bundle Size**: 989KB (v2 풍부한 콘텐츠 포함)
-- **Total Routes**: 46개 코어 + 190 매트릭스 + 1,140 변형 + 리다이렉트 2개 = **1,378개 라우트**
-- **Total SEO Landing Pages**: **1,374개** (190 매트릭스 + 1,140 변형 + 19 지역 + 25 진료)
-- **Last Updated**: 2026-05-26 v2 (SEO 슈퍼 업그레이드 2차)
+- **Status**: ✅ Active (v3 배포 완료)
+- **Bundle Size**: 1,099KB (v3 — AI Answer Hub + E-E-A-T + 다국어 포함)
+- **Total Routes**: 46개 코어 + 190 매트릭스 + 1,140 변형 + 56 v3 + 리다이렉트 = **1,434개 라우트**
+- **Total SEO Landing Pages**: **1,430개** (190 매트릭스 + 1,140 변형 + 56 v3 + 19 지역 + 25 진료)
+- **Last Updated**: 2026-05-26 v3 (SEO 슈퍼 업그레이드 3차 — AI 검색 시대 대응)
