@@ -8,20 +8,35 @@
 import { Hono } from 'hono';
 import type { Bindings } from '../lib/types';
 import { CLINIC } from '../data/clinic';
+import {
+  buildBreadcrumb,
+  buildFAQ,
+  buildServiceWithOffers,
+  buildClinicWithEmphasis,
+  SITE_URL,
+} from '../lib/schemas';
 
 const app = new Hono<{ Bindings: Bindings }>();
-const SITE_URL = 'https://seoul365dc.kr';
 
 // ────────────────────────────────────────────────
 // 가격 비교 데이터 (실제 서울365치과 진료비 기준)
 // ────────────────────────────────────────────────
-type PriceTier = { name: string; price: string; range: string; features: string[]; recommended?: boolean };
+type PriceTier = {
+  name: string;
+  price: string;            // 표시용
+  range: string;            // 표시용
+  priceMin: number;         // 스키마용 (KRW)
+  priceMax: number;         // 스키마용 (KRW)
+  features: string[];
+  recommended?: boolean;
+};
 type PricePage = {
   slug: string;
   title: string;
   h1: string;
   description: string;
   intro: string;
+  serviceType: string;      // 스키마 Service.serviceType
   tiers: PriceTier[];
   factors: string[];
   faqs: Array<{ q: string; a: string }>;
@@ -34,17 +49,22 @@ const PRICE_PAGES: Record<string, PricePage> = {
     h1: '인천 임플란트 가격 — 정직한 비용 안내',
     description: '인천 구월동 임플란트 가격 비교. 오스템 90만원~, 스트라우만 180만원~, 메가젠 130만원~. 보험 적용·할부·진료비 투명 공개. 서울대 출신 5인 협진.',
     intro: '서울365치과는 임플란트 비용을 투명하게 공개합니다. 환자 잇몸·뼈 상태, 사용 제품, 보철물 종류에 따라 가격이 달라지며, 정확한 견적은 무료 1:1 상담 후 안내해드립니다.',
+    serviceType: '임플란트 시술 (치과 보철)',
     tiers: [
       {
         name: '오스템 SOI (국산)',
         price: '90만원~',
         range: '90~120만원 / 1개',
+        priceMin: 900000,
+        priceMax: 1200000,
         features: ['국내 점유율 1위 임플란트', '평균 10년+ 임상 데이터', '재료비 부담 최소', '식립 + 보철 포함'],
       },
       {
         name: '메가젠 (국산 프리미엄)',
         price: '130만원~',
         range: '130~160만원 / 1개',
+        priceMin: 1300000,
+        priceMax: 1600000,
         features: ['국산 프리미엄 라인', '얇은 잇몸·앞니 심미 영역 권장', '식립 + 보철 포함', '평생 보증 적용'],
         recommended: true,
       },
@@ -52,6 +72,8 @@ const PRICE_PAGES: Record<string, PricePage> = {
         name: '스트라우만 (스위스 수입)',
         price: '180만원~',
         range: '180~250만원 / 1개',
+        priceMin: 1800000,
+        priceMax: 2500000,
         features: ['세계 1위 프리미엄 임플란트', '뼈이식 동시 식립 가능', '40년+ 임상 데이터', '평생 무상 A/S'],
       },
     ],
@@ -74,23 +96,30 @@ const PRICE_PAGES: Record<string, PricePage> = {
     h1: '인천 치아교정 비용 — 메탈/세라믹/인비절라인 비교',
     description: '인천 구월동 치아교정 비용 비교. 메탈교정 350만원~, 세라믹 500만원~, 인비절라인 700만원~. 24개월 무이자 할부, 보철 전문의 상담.',
     intro: '치아교정은 환자의 부정교합 정도, 치료 기간, 장치 종류에 따라 비용이 크게 달라집니다. 서울365치과는 보철과 전문의가 직접 진단 후 가장 비용 효율적인 방법을 추천드립니다.',
+    serviceType: '치아교정 (Orthodontics)',
     tiers: [
       {
         name: '메탈 교정 (기본)',
         price: '350만원~',
         range: '350~450만원 / 전체',
+        priceMin: 3500000,
+        priceMax: 4500000,
         features: ['브라켓·와이어 부착', '치료 기간 18~24개월', '가장 경제적인 옵션', '복잡한 케이스도 가능'],
       },
       {
         name: '세라믹 교정 (자연색)',
         price: '500만원~',
         range: '500~650만원 / 전체',
+        priceMin: 5000000,
+        priceMax: 6500000,
         features: ['치아색 브라켓 사용', '심미적 부담 감소', '치료 기간 18~24개월', '메탈 대비 1.5배'],
       },
       {
         name: '인비절라인 투명교정',
         price: '700만원~',
         range: '700~1,200만원 / 전체',
+        priceMin: 7000000,
+        priceMax: 12000000,
         features: ['투명 장치로 거의 보이지 않음', '식사·양치 시 탈착 가능', '7~10일마다 새 장치 교체', '인비절라인 다이아몬드 공식 인증 의원'],
         recommended: true,
       },
@@ -114,9 +143,10 @@ const PRICE_PAGES: Record<string, PricePage> = {
     h1: '인천 라미네이트 가격 — 자연스러운 심미 보철',
     description: '인천 구월동 라미네이트 가격 비교. 일반 80만원~, 프리미엄 120만원~. 자체 기공실 운영으로 정밀 가공, 평생 무상 A/S.',
     intro: '라미네이트는 치아 앞면을 얇게 깎고 도자기를 부착하여 색·모양·치열을 동시 개선합니다. 서울365치과는 자체 기공실을 운영해 정밀 가공과 빠른 보철 제작이 가능합니다.',
+    serviceType: '라미네이트 (Dental Veneer)',
     tiers: [
-      { name: '일반 라미네이트 (e.max)', price: '80만원~', range: '80~100만원 / 1개', features: ['e.max 도자기 사용', '치아 1mm 미만 삭제', '평균 10년+ 유지', '평생 무상 A/S'] },
-      { name: '프리미엄 라미네이트', price: '120만원~', range: '120~150만원 / 1개', features: ['독일 명장 기공 제작', '치아색 정밀 매칭', '심미 영역 (앞니 4~6개) 권장', '평생 무상 A/S'], recommended: true },
+      { name: '일반 라미네이트 (e.max)', price: '80만원~', range: '80~100만원 / 1개', priceMin: 800000, priceMax: 1000000, features: ['e.max 도자기 사용', '치아 1mm 미만 삭제', '평균 10년+ 유지', '평생 무상 A/S'] },
+      { name: '프리미엄 라미네이트', price: '120만원~', range: '120~150만원 / 1개', priceMin: 1200000, priceMax: 1500000, features: ['독일 명장 기공 제작', '치아색 정밀 매칭', '심미 영역 (앞니 4~6개) 권장', '평생 무상 A/S'], recommended: true },
     ],
     factors: ['치아 갯수 — 보통 4~6개 (앞니 라인)', '도자기 재료 — e.max vs 자체 프리미엄', '치아 미백 동반 여부', '치아 정렬 상태 — 심한 경우 교정 선행 권장'],
     faqs: [
@@ -124,49 +154,113 @@ const PRICE_PAGES: Record<string, PricePage> = {
       { q: '라미네이트로 치아 색을 얼마나 밝게 할 수 있나요?', a: '도자기 색상은 1~16단계로 매우 세밀하게 선택 가능하며, 자연치보다 2~3단계 밝게 시술하는 것이 일반적입니다. 너무 하얗게 하면 부자연스러우므로 상담 후 결정합니다.' },
     ],
   },
-  '레진': { slug: '레진', title: '인천 치아 레진 충전 가격 — 구월동 서울365치과', h1: '인천 레진 충전 가격', description: '인천 구월동 레진 충전 가격. 1면 8만원~, 2면 12만원~, 3면 18만원~. 보험 적용 가능 (만 12세 이하 어금니 광중합 레진).', intro: '레진 충전은 충치 부위를 제거하고 치아색 합성수지로 메우는 보존치료입니다.', tiers: [{ name: '레진 충전 1면', price: '8만원~', range: '8~12만원', features: ['소형 충치', '당일 시술', '치아색 자연스러움'] }, { name: '레진 충전 2면', price: '12만원~', range: '12~18만원', features: ['중간 크기 충치', '인접면 포함', '치아색 자연스러움'], recommended: true }, { name: '레진 충전 3면 이상', price: '18만원~', range: '18~25만원', features: ['큰 충치 / 인레이 비교 검토', '치아 보존 우선', '평생 무상 A/S'] }], factors: ['충치 깊이', '치아 위치', '보험 적용 여부 (만 12세 이하)'], faqs: [{ q: '레진 충전과 인레이 차이는?', a: '레진은 당일 직접 충전, 인레이는 본뜨고 별도 제작 후 부착하는 방식입니다. 충치가 클 경우 인레이가 더 견고합니다.' }] },
-  '신경치료': { slug: '신경치료', title: '인천 신경치료 비용 — 구월동 서울365치과', h1: '인천 신경치료 비용', description: '인천 신경치료 비용. 보험 적용 시 본인부담 약 5~15만원, 비보험 30~50만원. 미세현미경 사용 정밀 치료.', intro: '신경치료는 충치가 신경까지 진행됐을 때 신경관을 청소·소독·충전하는 치료로, 대부분 국민건강보험 급여 적용 대상입니다.', tiers: [{ name: '앞니 신경치료', price: '5만원~', range: '본인부담 5~8만원', features: ['보험 적용', '1~2회 내원', '미세현미경 사용'] }, { name: '어금니 신경치료', price: '10만원~', range: '본인부담 10~15만원', features: ['보험 적용', '2~3회 내원', '신경관 3~4개'], recommended: true }, { name: '재신경치료', price: '30만원~', range: '비보험 30~50만원', features: ['기존 신경치료 실패 케이스', '미세현미경 필수', '재발률 낮음'] }], factors: ['치아 위치 (앞니/어금니)', '재치료 여부', '크라운 동반 여부'], faqs: [{ q: '신경치료 후 꼭 크라운을 씌워야 하나요?', a: '어금니는 거의 필수이며, 앞니는 충치 범위에 따라 다릅니다. 신경치료 후 치아가 약해지므로 크라운으로 보호해야 장기 유지됩니다.' }] },
-  '크라운': { slug: '크라운', title: '인천 크라운 비용 — 구월동 서울365치과', h1: '인천 크라운(보철) 비용 비교', description: '인천 크라운 비용 비교. PFM 30만원~, 골드 60만원~, 지르코니아 50만원~. 자체 기공실 정밀 가공.', intro: '크라운은 신경치료 후 또는 큰 충치 후 치아를 씌우는 보철물입니다.', tiers: [{ name: 'PFM 크라운', price: '30만원~', range: '30~45만원', features: ['금속+도자기', '경제적', '평균 10년 유지'] }, { name: '지르코니아 크라운', price: '50만원~', range: '50~70만원', features: ['금속 무함유', '심미적', '평생 보증'], recommended: true }, { name: '골드 크라운', price: '60만원~', range: '60~80만원', features: ['최고 적합성', '어금니 권장', '20년+ 유지'] }], factors: ['치아 위치', '재료 (PFM/지르코니아/골드)', '심미성 vs 내구성 중점'], faqs: [{ q: '지르코니아가 PFM보다 좋은가요?', a: '심미성·금속 알레르기 없음·강도 모두 우수합니다. 단 비용이 약 1.5배 차이납니다.' }] },
-  '치아미백': { slug: '치아미백', title: '인천 치아미백 가격 — 구월동 서울365치과', h1: '인천 치아미백 가격', description: '인천 치아미백 가격. 사무실 미백 30만원~, 자가 미백 키트 15만원~, 듀얼 미백 45만원~.', intro: '치아미백은 변색된 치아를 약제로 밝게 만드는 시술입니다.', tiers: [{ name: '자가 미백 (홈블리칭)', price: '15만원~', range: '15~20만원', features: ['맞춤 트레이 제작', '2~4주 매일 사용', '효과 점진적'] }, { name: '사무실 미백 (오피스)', price: '30만원~', range: '30~40만원', features: ['병원 1~2회 방문', '빠른 효과', '평균 6~10단계 밝아짐'], recommended: true }, { name: '듀얼 미백 (콤보)', price: '45만원~', range: '45~60만원', features: ['오피스 + 홈블리칭', '최대 효과', '유지 기간 길어짐'] }], factors: ['치아 변색 정도', '내인성 vs 외인성 변색', '미백 후 유지 관리'], faqs: [{ q: '치아미백 후 시린 증상이 생기나요?', a: '약 30% 환자에서 일시적 시림이 나타나며, 시술 후 3~7일 내 자연 호전됩니다. 지속 시 추가 처치가 가능합니다.' }] },
-  '사랑니발치': { slug: '사랑니발치', title: '인천 사랑니 발치 비용 — 구월동 서울365치과', h1: '인천 사랑니 발치 비용', description: '인천 사랑니 발치 비용. 단순 발치 보험 적용 시 1~3만원, 매복 사랑니 5~15만원, 수면진정 동반 20~30만원 추가.', intro: '사랑니 발치는 사랑니의 위치·매복 정도에 따라 비용과 난이도가 크게 달라집니다.', tiers: [{ name: '단순 발치 (정상 맹출)', price: '1만원~', range: '본인부담 1~3만원', features: ['보험 적용', '국소마취', '당일 완료'] }, { name: '부분 매복 사랑니', price: '5만원~', range: '본인부담 5~10만원', features: ['보험 적용', '치아 분할 발치', '봉합 필요'], recommended: true }, { name: '완전 매복 + 수면진정', price: '20만원~', range: '20~30만원 추가', features: ['수면진정 동반', '구강악안면외과 전문의', 'CT 진단 필수'] }], factors: ['매복 정도 (완전/부분/없음)', '신경관과의 거리', '수면진정 동반 여부'], faqs: [{ q: '사랑니는 꼭 빼야 하나요?', a: '바르게 났고 양치가 잘 된다면 유지 가능하지만, 비스듬히 났거나 매복돼 있으면 충치·잇몸염증·인접치 손상 위험이 높아 발치를 권장합니다.' }] },
+  '레진': {
+    slug: '레진',
+    title: '인천 치아 레진 충전 가격 — 구월동 서울365치과',
+    h1: '인천 레진 충전 가격',
+    description: '인천 구월동 레진 충전 가격. 1면 8만원~, 2면 12만원~, 3면 18만원~. 보험 적용 가능 (만 12세 이하 어금니 광중합 레진).',
+    intro: '레진 충전은 충치 부위를 제거하고 치아색 합성수지로 메우는 보존치료입니다.',
+    serviceType: '레진 충전 (Composite Filling)',
+    tiers: [
+      { name: '레진 충전 1면', price: '8만원~', range: '8~12만원', priceMin: 80000, priceMax: 120000, features: ['소형 충치', '당일 시술', '치아색 자연스러움'] },
+      { name: '레진 충전 2면', price: '12만원~', range: '12~18만원', priceMin: 120000, priceMax: 180000, features: ['중간 크기 충치', '인접면 포함', '치아색 자연스러움'], recommended: true },
+      { name: '레진 충전 3면 이상', price: '18만원~', range: '18~25만원', priceMin: 180000, priceMax: 250000, features: ['큰 충치 / 인레이 비교 검토', '치아 보존 우선', '평생 무상 A/S'] },
+    ],
+    factors: ['충치 깊이', '치아 위치', '보험 적용 여부 (만 12세 이하)'],
+    faqs: [{ q: '레진 충전과 인레이 차이는?', a: '레진은 당일 직접 충전, 인레이는 본뜨고 별도 제작 후 부착하는 방식입니다. 충치가 클 경우 인레이가 더 견고합니다.' }],
+  },
+  '신경치료': {
+    slug: '신경치료',
+    title: '인천 신경치료 비용 — 구월동 서울365치과',
+    h1: '인천 신경치료 비용',
+    description: '인천 신경치료 비용. 보험 적용 시 본인부담 약 5~15만원, 비보험 30~50만원. 미세현미경 사용 정밀 치료.',
+    intro: '신경치료는 충치가 신경까지 진행됐을 때 신경관을 청소·소독·충전하는 치료로, 대부분 국민건강보험 급여 적용 대상입니다.',
+    serviceType: '신경치료 (Root Canal Treatment)',
+    tiers: [
+      { name: '앞니 신경치료', price: '5만원~', range: '본인부담 5~8만원', priceMin: 50000, priceMax: 80000, features: ['보험 적용', '1~2회 내원', '미세현미경 사용'] },
+      { name: '어금니 신경치료', price: '10만원~', range: '본인부담 10~15만원', priceMin: 100000, priceMax: 150000, features: ['보험 적용', '2~3회 내원', '신경관 3~4개'], recommended: true },
+      { name: '재신경치료', price: '30만원~', range: '비보험 30~50만원', priceMin: 300000, priceMax: 500000, features: ['기존 신경치료 실패 케이스', '미세현미경 필수', '재발률 낮음'] },
+    ],
+    factors: ['치아 위치 (앞니/어금니)', '재치료 여부', '크라운 동반 여부'],
+    faqs: [{ q: '신경치료 후 꼭 크라운을 씌워야 하나요?', a: '어금니는 거의 필수이며, 앞니는 충치 범위에 따라 다릅니다. 신경치료 후 치아가 약해지므로 크라운으로 보호해야 장기 유지됩니다.' }],
+  },
+  '크라운': {
+    slug: '크라운',
+    title: '인천 크라운 비용 — 구월동 서울365치과',
+    h1: '인천 크라운(보철) 비용 비교',
+    description: '인천 크라운 비용 비교. PFM 30만원~, 골드 60만원~, 지르코니아 50만원~. 자체 기공실 정밀 가공.',
+    intro: '크라운은 신경치료 후 또는 큰 충치 후 치아를 씌우는 보철물입니다.',
+    serviceType: '크라운 보철 (Dental Crown)',
+    tiers: [
+      { name: 'PFM 크라운', price: '30만원~', range: '30~45만원', priceMin: 300000, priceMax: 450000, features: ['금속+도자기', '경제적', '평균 10년 유지'] },
+      { name: '지르코니아 크라운', price: '50만원~', range: '50~70만원', priceMin: 500000, priceMax: 700000, features: ['금속 무함유', '심미적', '평생 보증'], recommended: true },
+      { name: '골드 크라운', price: '60만원~', range: '60~80만원', priceMin: 600000, priceMax: 800000, features: ['최고 적합성', '어금니 권장', '20년+ 유지'] },
+    ],
+    factors: ['치아 위치', '재료 (PFM/지르코니아/골드)', '심미성 vs 내구성 중점'],
+    faqs: [{ q: '지르코니아가 PFM보다 좋은가요?', a: '심미성·금속 알레르기 없음·강도 모두 우수합니다. 단 비용이 약 1.5배 차이납니다.' }],
+  },
+  '치아미백': {
+    slug: '치아미백',
+    title: '인천 치아미백 가격 — 구월동 서울365치과',
+    h1: '인천 치아미백 가격',
+    description: '인천 치아미백 가격. 사무실 미백 30만원~, 자가 미백 키트 15만원~, 듀얼 미백 45만원~.',
+    intro: '치아미백은 변색된 치아를 약제로 밝게 만드는 시술입니다.',
+    serviceType: '치아미백 (Teeth Whitening)',
+    tiers: [
+      { name: '자가 미백 (홈블리칭)', price: '15만원~', range: '15~20만원', priceMin: 150000, priceMax: 200000, features: ['맞춤 트레이 제작', '2~4주 매일 사용', '효과 점진적'] },
+      { name: '사무실 미백 (오피스)', price: '30만원~', range: '30~40만원', priceMin: 300000, priceMax: 400000, features: ['병원 1~2회 방문', '빠른 효과', '평균 6~10단계 밝아짐'], recommended: true },
+      { name: '듀얼 미백 (콤보)', price: '45만원~', range: '45~60만원', priceMin: 450000, priceMax: 600000, features: ['오피스 + 홈블리칭', '최대 효과', '유지 기간 길어짐'] },
+    ],
+    factors: ['치아 변색 정도', '내인성 vs 외인성 변색', '미백 후 유지 관리'],
+    faqs: [{ q: '치아미백 후 시린 증상이 생기나요?', a: '약 30% 환자에서 일시적 시림이 나타나며, 시술 후 3~7일 내 자연 호전됩니다. 지속 시 추가 처치가 가능합니다.' }],
+  },
+  '사랑니발치': {
+    slug: '사랑니발치',
+    title: '인천 사랑니 발치 비용 — 구월동 서울365치과',
+    h1: '인천 사랑니 발치 비용',
+    description: '인천 사랑니 발치 비용. 단순 발치 보험 적용 시 1~3만원, 매복 사랑니 5~15만원, 수면진정 동반 20~30만원 추가.',
+    intro: '사랑니 발치는 사랑니의 위치·매복 정도에 따라 비용과 난이도가 크게 달라집니다.',
+    serviceType: '사랑니 발치 (Wisdom Tooth Extraction)',
+    tiers: [
+      { name: '단순 발치 (정상 맹출)', price: '1만원~', range: '본인부담 1~3만원', priceMin: 10000, priceMax: 30000, features: ['보험 적용', '국소마취', '당일 완료'] },
+      { name: '부분 매복 사랑니', price: '5만원~', range: '본인부담 5~10만원', priceMin: 50000, priceMax: 100000, features: ['보험 적용', '치아 분할 발치', '봉합 필요'], recommended: true },
+      { name: '완전 매복 + 수면진정', price: '20만원~', range: '20~30만원 추가', priceMin: 200000, priceMax: 300000, features: ['수면진정 동반', '구강악안면외과 전문의', 'CT 진단 필수'] },
+    ],
+    factors: ['매복 정도 (완전/부분/없음)', '신경관과의 거리', '수면진정 동반 여부'],
+    faqs: [{ q: '사랑니는 꼭 빼야 하나요?', a: '바르게 났고 양치가 잘 된다면 유지 가능하지만, 비스듬히 났거나 매복돼 있으면 충치·잇몸염증·인접치 손상 위험이 높아 발치를 권장합니다.' }],
+  },
 };
-
-// ────────────────────────────────────────────────
-// JSON-LD 빌더
-// ────────────────────────────────────────────────
-function buildPriceSchema(p: PricePage, url: string) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    '@id': url,
-    name: p.title,
-    description: p.description,
-    breadcrumb: {
-      '@type': 'BreadcrumbList',
-      itemListElement: [
-        { '@type': 'ListItem', position: 1, name: '홈', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: '가격 안내', item: `${SITE_URL}/prices` },
-        { '@type': 'ListItem', position: 3, name: p.slug, item: url },
-      ],
-    },
-    mainEntity: {
-      '@type': 'FAQPage',
-      mainEntity: p.faqs.map(f => ({
-        '@type': 'Question',
-        name: f.q,
-        acceptedAnswer: { '@type': 'Answer', text: f.a },
-      })),
-    },
-  };
-}
 
 // ────────────────────────────────────────────────
 // /prices — 가격 안내 인덱스
 // ────────────────────────────────────────────────
 app.get('/prices', (c) => {
   const canonicalUrl = `${SITE_URL}/prices`;
+
+  // BreadcrumbList + ItemList (가격 인덱스)
+  const breadcrumbSchema = buildBreadcrumb([
+    { name: '홈', url: '/' },
+    { name: '가격 안내', url: '/prices' },
+  ]);
+  const itemListSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    '@id': `${canonicalUrl}#itemlist`,
+    name: '서울365치과 진료 가격 안내',
+    numberOfItems: Object.keys(PRICE_PAGES).length,
+    itemListElement: Object.values(PRICE_PAGES).map((p, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      url: `${SITE_URL}/prices/${encodeURIComponent(p.slug)}`,
+      name: `${p.slug} 가격`,
+    })),
+  };
+  const schemas = [breadcrumbSchema, itemListSchema];
+
   return c.render(
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
+
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
           <div class="text-emerald-400/80 text-sm font-bold mb-3 reveal" style="transition-delay:0.2s">PRICE GUIDE 2026</div>
@@ -216,11 +310,35 @@ app.get('/prices/:treatment', (c) => {
   if (!page) return c.notFound();
 
   const canonicalUrl = `${SITE_URL}/prices/${encodeURIComponent(treatment)}`;
-  const schema = buildPriceSchema(page, canonicalUrl);
+
+  // ✨ 3종 스키마 배열: BreadcrumbList + Service+AggregateOffer + FAQPage
+  const breadcrumbSchema = buildBreadcrumb([
+    { name: '홈', url: '/' },
+    { name: '가격 안내', url: '/prices' },
+    { name: page.slug, url: `/prices/${encodeURIComponent(page.slug)}` },
+  ]);
+
+  const serviceSchema = buildServiceWithOffers({
+    url: canonicalUrl,
+    name: `${page.slug} — 인천 구월동 서울365치과`,
+    description: page.description,
+    serviceType: page.serviceType,
+    tiers: page.tiers.map(t => ({
+      name: t.name,
+      price: t.priceMin,
+      priceMax: t.priceMax,
+      description: t.features.join(' · '),
+    })),
+    faqs: page.faqs,
+  });
+
+  const faqSchema = buildFAQ(page.faqs);
+
+  const schemas = [breadcrumbSchema, serviceSchema, faqSchema];
 
   return c.render(
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
 
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
@@ -322,29 +440,33 @@ app.get('/prices/:treatment', (c) => {
 // ────────────────────────────────────────────────
 app.get('/emergency', (c) => {
   const canonicalUrl = `${SITE_URL}/emergency`;
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'EmergencyService',
-    name: '서울365치과 응급치과 — 당일 진료',
+
+  // ✨ 유효한 Schema.org 타입으로 교체 (EmergencyService는 비표준)
+  const clinicSchema = buildClinicWithEmphasis({
     url: canonicalUrl,
-    telephone: CLINIC.phone,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: CLINIC.address,
-      addressLocality: '인천광역시 남동구',
-      addressCountry: 'KR',
-    },
-    openingHoursSpecification: [
-      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '10:00', closes: '21:00' },
-      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday'], opens: '10:00', closes: '18:00' },
-      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Sunday', 'PublicHolidays'], opens: '14:00', closes: '18:00' },
-    ],
-    description: '인천 구월동 응급치과. 365일 진료, 평일 21시까지 야간진료. 치통·외상·임플란트 응급 대응 가능.',
-  };
+    name: '서울365치과 응급치과 — 인천 구월동 당일 진료',
+    description: '인천 구월동 응급치과. 365일 진료, 평일 21시까지 야간진료. 치통·외상·임플란트 응급 대응 가능. 서울대 출신 5인 협진.',
+    emphasis: 'emergency',
+  });
+
+  const breadcrumbSchema = buildBreadcrumb([
+    { name: '홈', url: '/' },
+    { name: '응급 진료', url: '/emergency' },
+  ]);
+
+  // 응급 진료 FAQ 추가
+  const emergencyFaqs = [
+    { q: '서울365치과는 일요일·공휴일도 진료하나요?', a: '네, 일요일과 공휴일(설·추석 당일 제외) 14:00~18:00 진료합니다. 365일 진료 시스템으로 응급 환자를 우선 대응합니다.' },
+    { q: '응급 진료 전 예약 없이 방문해도 되나요?', a: '응급 환자는 전화 후 방문하시면 도착 즉시 우선 진료해드립니다. 진료 가능 여부 확인을 위해 반드시 사전 전화(032-432-0365) 부탁드립니다.' },
+    { q: '치아가 빠졌는데 어떻게 해야 하나요?', a: '빠진 치아를 우유나 생리식염수에 담아 1시간 내 내원하시면 재식립 가능성이 높습니다. 치아 뿌리는 만지지 마시고 즉시 전화 주세요.' },
+  ];
+  const faqSchema = buildFAQ(emergencyFaqs);
+
+  const schemas = [breadcrumbSchema, clinicSchema, faqSchema];
 
   return c.render(
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
 
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
@@ -400,6 +522,22 @@ app.get('/emergency', (c) => {
               응급 환자는 <strong>전화 후 방문</strong>하시면 우선 진료 안내해드립니다. 진료 가능 여부 확인을 위해 반드시 전화 주세요.
             </div>
           </div>
+
+          {/* 응급 FAQ */}
+          <div class="mt-12">
+            <h3 class="text-2xl font-black text-gray-900 mb-6">응급 진료 FAQ</h3>
+            <div class="space-y-3">
+              {emergencyFaqs.map(faq => (
+                <details class="p-5 rounded-xl bg-white border border-gray-100 group">
+                  <summary class="font-bold text-gray-900 cursor-pointer flex items-center justify-between">
+                    <span>{faq.q}</span>
+                    <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition"></i>
+                  </summary>
+                  <p class="text-gray-600 text-sm leading-relaxed mt-4">{faq.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -425,8 +563,33 @@ app.get('/emergency', (c) => {
 app.get('/night-clinic', (c) => {
   const canonicalUrl = `${SITE_URL}/night-clinic`;
 
+  // ✨ Dentist + MedicalClinic + LocalBusiness 다중 타입 + 야간 강조
+  const clinicSchema = buildClinicWithEmphasis({
+    url: canonicalUrl,
+    name: '서울365치과 야간진료 — 인천 구월동 21시까지',
+    description: '인천 구월동 야간 치과. 평일 21시까지 진료, 직장인·학생·맞벌이 가정을 위한 야간 진료 시스템.',
+    emphasis: 'night',
+  });
+
+  const breadcrumbSchema = buildBreadcrumb([
+    { name: '홈', url: '/' },
+    { name: '야간 진료', url: '/night-clinic' },
+  ]);
+
+  // 야간 진료 FAQ
+  const nightFaqs = [
+    { q: '평일 야간 진료는 몇 시까지인가요?', a: '월~금 21:00까지 진료합니다. 마지막 접수는 20:30까지이며, 18~20시 슬롯이 가장 인기 많아 예약을 권장드립니다.' },
+    { q: '야간에도 의료진이 동일한가요?', a: '네, 야간 시간대에도 서울대 출신 5인 협진 시스템이 그대로 유지됩니다. 주간과 동일한 진료 품질을 보장합니다.' },
+    { q: '야간에도 수면진료가 가능한가요?', a: '가능합니다. 마취과 전문의가 직접 상주하여 야간 수면진료를 시행하고 있습니다. 사전 예약 시 상담드립니다.' },
+  ];
+  const faqSchema = buildFAQ(nightFaqs);
+
+  const schemas = [breadcrumbSchema, clinicSchema, faqSchema];
+
   return c.render(
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
+
       <section class="treatment-hero">
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
           <div class="text-purple-400 text-sm font-bold mb-3 reveal" style="transition-delay:0.2s"><i class="fa-solid fa-moon mr-2"></i>NIGHT CLINIC · 야간 진료</div>
@@ -489,6 +652,22 @@ app.get('/night-clinic', (c) => {
                 <div class="font-bold text-gray-900 mb-1">마지막 슬롯</div>
                 <div class="text-sm text-gray-500">가장 조용함. 1:1 상담·정밀 진단 권장. 당일 진료비 5% 할인</div>
               </div>
+            </div>
+          </div>
+
+          {/* 야간 FAQ */}
+          <div class="mt-12">
+            <h3 class="text-2xl font-black text-gray-900 mb-6">야간 진료 FAQ</h3>
+            <div class="space-y-3">
+              {nightFaqs.map(faq => (
+                <details class="p-5 rounded-xl bg-white border border-gray-100 group">
+                  <summary class="font-bold text-gray-900 cursor-pointer flex items-center justify-between">
+                    <span>{faq.q}</span>
+                    <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition"></i>
+                  </summary>
+                  <p class="text-gray-600 text-sm leading-relaxed mt-4">{faq.a}</p>
+                </details>
+              ))}
             </div>
           </div>
         </div>
