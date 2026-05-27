@@ -303,80 +303,49 @@ seoRoutes.get('/sitemap.xml', async (c) => {
     if (cr?.last_date) casesLastmod = cr.last_date.substring(0, 10);
   } catch {}
 
+  // ✨ v5: sitemap-news 동적 lastmod (블로그 최근 48시간)
+  let newsLastmod = today;
+  try {
+    const nr = await c.env.DB.prepare(
+      "SELECT MAX(COALESCE(updated_at, created_at)) as last_date FROM blog_posts WHERE is_published = 1 AND datetime(COALESCE(updated_at, created_at)) >= datetime('now', '-2 days')"
+    ).first<{ last_date: string }>();
+    if (nr?.last_date) newsLastmod = nr.last_date.substring(0, 10);
+  } catch {}
+
+  // v5: 순서를 sub-sitemap 정의 순서와 일치 (디버깅·유지보수 ↑)
+  const subSitemaps: Array<{ name: string; lastmod: string }> = [
+    // ── Tier 1: Core ──
+    { name: 'pages',            lastmod: today },
+    { name: 'treatments',       lastmod: '2026-03-27' },
+    { name: 'doctors',          lastmod: '2026-03-01' },
+    { name: 'blog',             lastmod: blogLastmod },
+    { name: 'cases',            lastmod: casesLastmod },
+    // ── Tier 2: Local SEO (지역 × 진료) ──
+    { name: 'areas',            lastmod: today },
+    { name: 'area-treatments',  lastmod: today },
+    { name: 'area-variants',    lastmod: today },
+    // ── Tier 3: Topical Authority (v3) ──
+    { name: 'answers',          lastmod: today },
+    { name: 'compare',          lastmod: today },
+    { name: 'guides',           lastmod: today },
+    { name: 'stations',         lastmod: today },
+    { name: 'intl',             lastmod: today },
+    // ── Tier 4: Rich Snippets (v4) ──
+    { name: 'reviews',          lastmod: today },
+    { name: 'procedures',       lastmod: today },
+    { name: 'insurance',        lastmod: today },
+    { name: 'events',           lastmod: today },
+    { name: 'whyus',            lastmod: today },
+    // ── Tier 5: News (v5 NEW — Google News용) ──
+    { name: 'news',             lastmod: newsLastmod },
+  ];
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>${base}/sitemap-pages.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-treatments.xml</loc>
-    <lastmod>2026-03-27</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-doctors.xml</loc>
-    <lastmod>2026-03-01</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-blog.xml</loc>
-    <lastmod>${blogLastmod}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-cases.xml</loc>
-    <lastmod>${casesLastmod}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-areas.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-area-treatments.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-area-variants.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-answers.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-compare.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-guides.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-stations.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-intl.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-reviews.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-procedures.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-insurance.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-events.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
-  <sitemap>
-    <loc>${base}/sitemap-whyus.xml</loc>
-    <lastmod>${today}</lastmod>
-  </sitemap>
+${subSitemaps.map(s => `  <sitemap>
+    <loc>${base}/sitemap-${s.name}.xml</loc>
+    <lastmod>${s.lastmod}</lastmod>
+  </sitemap>`).join('\n')}
 </sitemapindex>`;
 
   return new Response(xml, { headers: sitemapHeaders });
@@ -740,6 +709,43 @@ seoRoutes.get('/sitemap-whyus.xml', (c) => {
   return new Response(xml, { headers: sitemapHeaders });
 })
 
+// ── v5 SITEMAP — Google News (최근 48시간 블로그 글만) ──
+// Google News 가이드: 최근 2일 이내 콘텐츠만 포함, news 네임스페이스 사용
+seoRoutes.get('/sitemap-news.xml', async (c) => {
+  const base = 'https://seoul365dc.kr';
+
+  let newsItems: Array<{ slug: string; title: string; pubDate: string }> = [];
+  try {
+    await initBlogTables(c.env.DB);
+    const r = await c.env.DB.prepare(
+      "SELECT slug, title, COALESCE(updated_at, created_at) as pubDate FROM blog_posts WHERE is_published = 1 AND datetime(COALESCE(updated_at, created_at)) >= datetime('now', '-2 days') ORDER BY pubDate DESC LIMIT 1000"
+    ).all<{ slug: string; title: string; pubDate: string }>();
+    newsItems = (r.results || []).map((p: any) => ({
+      slug: p.slug,
+      title: p.title || '',
+      pubDate: new Date(p.pubDate).toISOString(),
+    }));
+  } catch {}
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+${newsItems.map(p => `  <url>
+    <loc>${base}/blog/${p.slug}</loc>
+    <news:news>
+      <news:publication>
+        <news:name>서울365치과 블로그</news:name>
+        <news:language>ko</news:language>
+      </news:publication>
+      <news:publication_date>${p.pubDate}</news:publication_date>
+      <news:title>${esc(p.title)}</news:title>
+    </news:news>
+  </url>`).join('\n')}
+</urlset>`;
+
+  return new Response(xml, { headers: sitemapHeaders });
+})
+
 // ── 8) SITEMAP — Cases (Before & After) ──
 seoRoutes.get('/sitemap-cases.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
@@ -773,7 +779,7 @@ seoRoutes.get('/robots.txt', (c) => {
   const robots = `# ====================================================
 # 서울365치과의원 (Seoul 365 Dental Clinic)
 # https://seoul365dc.kr
-# robots.txt v3.0 — SEO/AEO Optimized
+# robots.txt v5.0 — SEO/AEO Optimized
 # Last updated: ${new Date().toISOString().split('T')[0]}
 # ====================================================
 
@@ -789,6 +795,27 @@ Allow: /reservation
 Allow: /cases/gallery
 Allow: /area
 Allow: /area/
+Allow: /notices
+Allow: /encyclopedia
+Allow: /reviews
+Allow: /reviews/
+Allow: /procedures
+Allow: /procedures/
+Allow: /insurance
+Allow: /insurance/
+Allow: /events
+Allow: /events/
+Allow: /why-us
+Allow: /answers
+Allow: /answers/
+Allow: /compare
+Allow: /compare/
+Allow: /guides
+Allow: /guides/
+Allow: /stations
+Allow: /stations/
+Allow: /en
+Allow: /zh
 Allow: /privacy
 Allow: /terms
 Allow: /sitemap.xml
@@ -800,8 +827,14 @@ Disallow: /admin/
 Disallow: /login
 Disallow: /register
 
-# Block UTM/tracking parameter duplicates
-Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&fbclid&gclid&ref
+# Disallow tracking parameter duplicates (UTM/Click IDs)
+# Yandex respects Clean-param (see Yandex section below)
+# Other crawlers: Disallow パターン
+Disallow: /*?utm_*
+Disallow: /*?fbclid=*
+Disallow: /*?gclid=*
+Disallow: /*?_gl=*
+Disallow: /*?msclkid=*
 
 # ─── GOOGLE ───
 User-agent: Googlebot
@@ -811,6 +844,7 @@ Allow: /
 User-agent: Googlebot-Image
 Allow: /static/
 Allow: /*.jpg$
+Allow: /*.jpeg$
 Allow: /*.png$
 Allow: /*.webp$
 Allow: /*.svg$
@@ -860,6 +894,8 @@ Crawl-delay: 1
 User-agent: YandexBot
 Allow: /
 Crawl-delay: 2
+# Yandex-only: collapse UTM/tracking params (canonical normalization)
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&fbclid&gclid&msclkid&ref
 
 # ─── APPLE ───
 User-agent: Applebot
@@ -1004,26 +1040,33 @@ Disallow: /
 User-agent: GPTBot-experimental
 Disallow: /
 
-# ─── SITEMAP ───
+# ─── SITEMAPS (master index first, then per-category) ───
+# 🌟 Master index — 검색엔진에 이것 하나만 제출해도 충분
 Sitemap: https://seoul365dc.kr/sitemap.xml
+# Tier 1: Core
 Sitemap: https://seoul365dc.kr/sitemap-pages.xml
 Sitemap: https://seoul365dc.kr/sitemap-treatments.xml
 Sitemap: https://seoul365dc.kr/sitemap-doctors.xml
 Sitemap: https://seoul365dc.kr/sitemap-blog.xml
 Sitemap: https://seoul365dc.kr/sitemap-cases.xml
+# Tier 2: Local SEO
 Sitemap: https://seoul365dc.kr/sitemap-areas.xml
 Sitemap: https://seoul365dc.kr/sitemap-area-treatments.xml
 Sitemap: https://seoul365dc.kr/sitemap-area-variants.xml
+# Tier 3: Topical Authority (v3)
 Sitemap: https://seoul365dc.kr/sitemap-answers.xml
 Sitemap: https://seoul365dc.kr/sitemap-compare.xml
 Sitemap: https://seoul365dc.kr/sitemap-guides.xml
 Sitemap: https://seoul365dc.kr/sitemap-stations.xml
 Sitemap: https://seoul365dc.kr/sitemap-intl.xml
+# Tier 4: Rich Snippets (v4)
 Sitemap: https://seoul365dc.kr/sitemap-reviews.xml
 Sitemap: https://seoul365dc.kr/sitemap-procedures.xml
 Sitemap: https://seoul365dc.kr/sitemap-insurance.xml
 Sitemap: https://seoul365dc.kr/sitemap-events.xml
 Sitemap: https://seoul365dc.kr/sitemap-whyus.xml
+# Tier 5: News (v5)
+Sitemap: https://seoul365dc.kr/sitemap-news.xml
 
 # ─── LLMs.txt (AI/LLM 크롤러용 구조화 정보) ───
 # https://llmstxt.org/ 표준
@@ -1428,9 +1471,10 @@ seoRoutes.post('/api/seo/ping', async (c) => {
   if (!match) return c.json({ error: '관리자 인증 필요' }, 401);
 
   const sitemapUrl = 'https://seoul365dc.kr/sitemap.xml';
+  // Google ping deprecated 2023-06 — Bing/Yandex만 핑
   const pingTargets = [
-    `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`,
     `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`,
+    `https://blogs.yandex.ru/pings/?status=success&url=${encodeURIComponent(sitemapUrl)}`,
   ];
 
   const results: Record<string, number> = {};
@@ -1443,7 +1487,11 @@ seoRoutes.post('/api/seo/ping', async (c) => {
     }
   }
 
-  return c.json({ ok: true, results });
+  return c.json({
+    ok: true,
+    results,
+    note: 'Google sitemap ping endpoint deprecated (2023-06). Use Search Console or IndexNow.',
+  });
 })
 
 // 🚀 v2: SEO 통계 공개 엔드포인트 (모니터링용)
@@ -1495,26 +1543,38 @@ seoRoutes.post('/api/seo/ping-public', async (c) => {
     return c.json({ error: 'Invalid token' }, 401);
   }
 
+  // v5: 전체 20개 sitemap (master + 19 sub)
+  const base = 'https://seoul365dc.kr';
   const sitemapUrls = [
-    'https://seoul365dc.kr/sitemap.xml',
-    'https://seoul365dc.kr/sitemap-area-treatments.xml',
-    'https://seoul365dc.kr/sitemap-area-variants.xml',
-    'https://seoul365dc.kr/sitemap-answers.xml',
-    'https://seoul365dc.kr/sitemap-compare.xml',
-    'https://seoul365dc.kr/sitemap-guides.xml',
-    'https://seoul365dc.kr/sitemap-stations.xml',
-    'https://seoul365dc.kr/sitemap-reviews.xml',
-    'https://seoul365dc.kr/sitemap-procedures.xml',
-    'https://seoul365dc.kr/sitemap-insurance.xml',
-    'https://seoul365dc.kr/sitemap-events.xml',
-    'https://seoul365dc.kr/sitemap-whyus.xml',
+    `${base}/sitemap.xml`,
+    `${base}/sitemap-pages.xml`,
+    `${base}/sitemap-treatments.xml`,
+    `${base}/sitemap-doctors.xml`,
+    `${base}/sitemap-blog.xml`,
+    `${base}/sitemap-cases.xml`,
+    `${base}/sitemap-areas.xml`,
+    `${base}/sitemap-area-treatments.xml`,
+    `${base}/sitemap-area-variants.xml`,
+    `${base}/sitemap-answers.xml`,
+    `${base}/sitemap-compare.xml`,
+    `${base}/sitemap-guides.xml`,
+    `${base}/sitemap-stations.xml`,
+    `${base}/sitemap-intl.xml`,
+    `${base}/sitemap-reviews.xml`,
+    `${base}/sitemap-procedures.xml`,
+    `${base}/sitemap-insurance.xml`,
+    `${base}/sitemap-events.xml`,
+    `${base}/sitemap-whyus.xml`,
+    `${base}/sitemap-news.xml`,
   ];
 
+  // ⚠️ Google ping endpoint deprecated 2023-06 (now 404).
+  // 유효한 핑: Bing/Yandex/IndexNow만 작동
   const results: Record<string, any> = {};
   for (const sitemapUrl of sitemapUrls) {
     const pingTargets = [
-      { name: 'google', url: `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}` },
-      { name: 'bing', url: `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}` },
+      { name: 'bing',   url: `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}` },
+      { name: 'yandex', url: `https://blogs.yandex.ru/pings/?status=success&url=${encodeURIComponent(sitemapUrl)}` },
     ];
     results[sitemapUrl] = {};
     for (const target of pingTargets) {
@@ -1527,7 +1587,12 @@ seoRoutes.post('/api/seo/ping-public', async (c) => {
     }
   }
 
-  return c.json({ ok: true, pinged: sitemapUrls.length, results });
+  return c.json({
+    ok: true,
+    pinged: sitemapUrls.length,
+    results,
+    note: 'Google ping endpoint deprecated (2023-06). Use Search Console or IndexNow.',
+  });
 })
 
 // ============================================================
@@ -1598,9 +1663,18 @@ seoRoutes.post('/api/cron/full-sync', async (c) => {
     results.tasks.indexnow = { skipped: 'INDEXNOW_KEY not configured' };
   }
 
-  // ── Task 2: Search engine sitemap ping ──
+  // ── Task 2: Search engine sitemap ping (v5: 전체 20개 동기화) ──
+  // Google ping endpoint deprecated 2023-06 — Bing만 ping, Google은 IndexNow로 처리
   const sitemapUrls = [
     `${base}/sitemap.xml`,
+    `${base}/sitemap-pages.xml`,
+    `${base}/sitemap-treatments.xml`,
+    `${base}/sitemap-doctors.xml`,
+    `${base}/sitemap-blog.xml`,
+    `${base}/sitemap-cases.xml`,
+    `${base}/sitemap-areas.xml`,
+    `${base}/sitemap-area-treatments.xml`,
+    `${base}/sitemap-area-variants.xml`,
     `${base}/sitemap-answers.xml`,
     `${base}/sitemap-compare.xml`,
     `${base}/sitemap-guides.xml`,
@@ -1611,20 +1685,21 @@ seoRoutes.post('/api/cron/full-sync', async (c) => {
     `${base}/sitemap-insurance.xml`,
     `${base}/sitemap-events.xml`,
     `${base}/sitemap-whyus.xml`,
+    `${base}/sitemap-news.xml`,
   ];
-  results.tasks.ping = {};
+  results.tasks.ping = { totalSitemaps: sitemapUrls.length, results: {} };
   for (const sm of sitemapUrls) {
     const pings = [
-      { name: 'google', url: `https://www.google.com/ping?sitemap=${encodeURIComponent(sm)}` },
-      { name: 'bing', url: `https://www.bing.com/ping?sitemap=${encodeURIComponent(sm)}` },
+      { name: 'bing',   url: `https://www.bing.com/ping?sitemap=${encodeURIComponent(sm)}` },
+      { name: 'yandex', url: `https://blogs.yandex.ru/pings/?status=success&url=${encodeURIComponent(sm)}` },
     ];
-    results.tasks.ping[sm] = {};
+    results.tasks.ping.results[sm] = {};
     for (const p of pings) {
       try {
         const res = await fetch(p.url, { method: 'GET' });
-        results.tasks.ping[sm][p.name] = res.status;
+        results.tasks.ping.results[sm][p.name] = res.status;
       } catch {
-        results.tasks.ping[sm][p.name] = 0;
+        results.tasks.ping.results[sm][p.name] = 0;
       }
     }
   }
