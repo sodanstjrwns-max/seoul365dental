@@ -131,6 +131,34 @@ adminRoutes.get('/admin/dashboard', async (c) => {
   // Calculate case view totals
   const caseTotalViews = cases.reduce((sum: number, cs: any) => sum + (cs.view_count || 0), 0);
 
+  // 🚀 v6: IndexNow 색인 현황
+  let indexStats: any = { totalPings: 0, totalUrls: 0, lastPing: null, recentPings: [], indexNowConfigured: false };
+  try {
+    const { initIndexNowLog, getSetting } = await import('../lib/db');
+    await initIndexNowLog(c.env.DB);
+    const totals = await c.env.DB.prepare(
+      'SELECT COUNT(*) as cnt, COALESCE(SUM(url_count), 0) as urls FROM indexnow_log'
+    ).first<{ cnt: number; urls: number }>();
+    indexStats.totalPings = Number(totals?.cnt || 0);
+    indexStats.totalUrls = Number(totals?.urls || 0);
+
+    const recent = await c.env.DB.prepare(
+      'SELECT trigger_source, url_count, endpoints_ok, endpoints_fail, created_at FROM indexnow_log ORDER BY created_at DESC LIMIT 5'
+    ).all<any>();
+    indexStats.recentPings = recent.results || [];
+    indexStats.lastPing = indexStats.recentPings[0]?.created_at || null;
+
+    const key = await getSetting(c.env.DB, 'INDEXNOW_KEY', c.env.INDEXNOW_KEY || '');
+    indexStats.indexNowConfigured = Boolean(key);
+  } catch {}
+
+  // 사이트 전체 인덱서블 URL 카운트 (대략)
+  const { getAllMatrixPages, getAllVariantPages } = await import('../data/area-treatment');
+  const { AREAS } = await import('../data/areas');
+  const matrixCount = getAllMatrixPages().length;
+  const variantCount = getAllVariantPages().length;
+  const totalIndexable = 30 + treatments.length + doctors.length + AREAS.length + matrixCount + variantCount + blogStats.total;
+
   const treatmentOptions = treatments.map(t => ({ slug: t.slug, name: t.name, category: t.category }));
   const doctorOptions = doctors.map(d => ({ slug: d.slug, name: d.name }));
 
@@ -198,6 +226,91 @@ adminRoutes.get('/admin/dashboard', async (c) => {
               <div class="text-2xl font-black text-cyan-400">{blogStats.totalViews.toLocaleString()}</div>
               <div class="text-white/15 text-[0.65rem] mt-1">{blogStats.total}건</div>
             </div>
+          </div>
+
+          {/* 🚀 v6: IndexNow 색인 현황 대시보드 */}
+          <div class="bg-gradient-to-br from-orange-500/10 to-amber-500/5 border border-orange-500/20 rounded-2xl p-6 mb-8">
+            <div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
+                  <i class="fa-solid fa-bolt text-orange-400"></i>
+                </div>
+                <div>
+                  <h2 class="text-white font-bold text-lg">색인 현황 (IndexNow)</h2>
+                  <p class="text-white/40 text-xs">Bing · Yandex · Naver 즉시 색인 프로토콜</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                {indexStats.indexNowConfigured ? (
+                  <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold"><i class="fa-solid fa-check-circle mr-1"></i>활성화</span>
+                ) : (
+                  <span class="px-3 py-1 rounded-full bg-red-500/20 text-red-400 text-xs font-bold"><i class="fa-solid fa-circle-xmark mr-1"></i>키 미설정</span>
+                )}
+                <a href="/admin/seo" class="px-3 py-1 rounded-full bg-white/5 text-white/60 hover:bg-white/10 text-xs"><i class="fa-solid fa-cog mr-1"></i>설정</a>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+              <div class="bg-white/5 border border-white/5 rounded-xl p-4">
+                <div class="text-white/40 text-xs uppercase tracking-wider mb-2">총 인덱서블 URL</div>
+                <div class="text-2xl font-black text-white">{totalIndexable.toLocaleString()}</div>
+                <div class="text-white/20 text-[0.65rem] mt-1">사이트맵 등재 기준</div>
+              </div>
+              <div class="bg-white/5 border border-white/5 rounded-xl p-4">
+                <div class="text-white/40 text-xs uppercase tracking-wider mb-2">발행 블로그</div>
+                <div class="text-2xl font-black text-cyan-400">{blogStats.total.toLocaleString()}</div>
+                <div class="text-white/20 text-[0.65rem] mt-1">자동 IndexNow ping</div>
+              </div>
+              <div class="bg-white/5 border border-white/5 rounded-xl p-4">
+                <div class="text-white/40 text-xs uppercase tracking-wider mb-2">누적 ping 횟수</div>
+                <div class="text-2xl font-black text-orange-400">{indexStats.totalPings.toLocaleString()}</div>
+                <div class="text-white/20 text-[0.65rem] mt-1">{indexStats.totalUrls.toLocaleString()} URL 제출</div>
+              </div>
+              <div class="bg-white/5 border border-white/5 rounded-xl p-4">
+                <div class="text-white/40 text-xs uppercase tracking-wider mb-2">마지막 Ping</div>
+                <div class="text-sm font-black text-amber-400" id="last-ping-display">{indexStats.lastPing ? new Date(indexStats.lastPing).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '없음'}</div>
+                <div class="text-white/20 text-[0.65rem] mt-1">최근 IndexNow 호출</div>
+              </div>
+            </div>
+
+            {/* 🚀 Bulk Priority Submit Buttons */}
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+              <button data-bulk-tier="tier1" class="bulk-indexnow-btn px-3 py-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 text-xs font-bold transition disabled:opacity-30">
+                <i class="fa-solid fa-bolt mr-1"></i>핵심 페이지 (Tier 1)
+              </button>
+              <button data-bulk-tier="tier4" class="bulk-indexnow-btn px-3 py-2.5 rounded-lg bg-purple-500/10 border border-purple-500/20 text-purple-400 hover:bg-purple-500/20 text-xs font-bold transition disabled:opacity-30">
+                <i class="fa-solid fa-dollar-sign mr-1"></i>가격 페이지 (D-Tier)
+              </button>
+              <button data-bulk-tier="tier3" class="bulk-indexnow-btn px-3 py-2.5 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 text-xs font-bold transition disabled:opacity-30">
+                <i class="fa-solid fa-layer-group mr-1"></i>롱테일 (1,140개)
+              </button>
+              <button data-bulk-tier="all" class="bulk-indexnow-btn px-3 py-2.5 rounded-lg bg-orange-500/20 border border-orange-500/40 text-orange-400 hover:bg-orange-500/30 text-xs font-bold transition disabled:opacity-30">
+                <i class="fa-solid fa-rocket mr-1"></i>전체 일괄 제출
+              </button>
+            </div>
+
+            {/* Recent Pings Log */}
+            {indexStats.recentPings.length > 0 && (
+              <div class="bg-black/20 rounded-xl p-4">
+                <div class="text-white/50 text-xs font-bold uppercase tracking-wider mb-3"><i class="fa-solid fa-history mr-1"></i>최근 Ping 로그 (5건)</div>
+                <div class="space-y-1.5">
+                  {indexStats.recentPings.map((p: any) => (
+                    <div class="flex items-center justify-between text-xs gap-2">
+                      <span class="text-white/50 font-mono">{new Date(p.created_at + 'Z').toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
+                      <span class="text-white/40 flex-1 truncate">{p.trigger_source}</span>
+                      <span class="text-cyan-400 font-bold">{p.url_count} URL</span>
+                      <span class={p.endpoints_ok > 0 ? 'text-emerald-400' : 'text-red-400'}>
+                        <i class={`fa-solid fa-${p.endpoints_ok > 0 ? 'check' : 'xmark'} mr-1`}></i>
+                        {p.endpoints_ok}/{p.endpoints_ok + p.endpoints_fail}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Status Log Output */}
+            <div id="bulk-indexnow-log" class="hidden mt-4 bg-black/40 rounded-xl p-4 text-xs font-mono text-emerald-400 max-h-32 overflow-y-auto"></div>
           </div>
 
           {/* Quick Links */}
@@ -526,6 +639,49 @@ adminRoutes.get('/admin/dashboard', async (c) => {
 
       {/* Admin Scripts */}
       <script dangerouslySetInnerHTML={{__html: `
+        // ── 🚀 v6: Bulk IndexNow Submit ──
+        document.querySelectorAll('.bulk-indexnow-btn').forEach(function(btn) {
+          btn.addEventListener('click', async function() {
+            var tier = this.getAttribute('data-bulk-tier');
+            var tierName = {tier1: '핵심 페이지', tier4: '가격 페이지 (D-Tier)', tier3: '롱테일 1,140개', all: '전체 일괄'}[tier] || tier;
+            if (!confirm(tierName + '을 IndexNow로 즉시 색인 요청합니다.\\n계속할까요?')) return;
+
+            var logEl = document.getElementById('bulk-indexnow-log');
+            logEl.classList.remove('hidden');
+            logEl.innerHTML = '<div>🚀 ' + tierName + ' IndexNow 제출 시작...</div>';
+
+            // 모든 bulk 버튼 비활성화
+            document.querySelectorAll('.bulk-indexnow-btn').forEach(function(b) { b.disabled = true; });
+            var originalHtml = this.innerHTML;
+            this.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>제출 중...';
+
+            try {
+              var res = await fetch('/api/indexnow/bulk-priority', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tier: tier })
+              });
+              var data = await res.json();
+              if (data.ok) {
+                logEl.innerHTML += '<div>✅ ' + data.totalUrls + '개 URL을 ' + data.batches + '개 배치로 제출 완료</div>';
+                data.results.forEach(function(r) {
+                  logEl.innerHTML += '<div class="text-white/40">  • 배치 ' + r.batch + ': ' + r.size + ' URL → ' + (r.ok ? '✅ 성공' : '❌ 실패') + '</div>';
+                });
+                logEl.innerHTML += '<div class="text-emerald-400 mt-2">완료. 페이지 새로고침 시 통계가 업데이트됩니다.</div>';
+                // 3초 후 자동 새로고침
+                setTimeout(function() { location.reload(); }, 3000);
+              } else {
+                logEl.innerHTML += '<div class="text-red-400">❌ 오류: ' + (data.error || 'unknown') + '</div>';
+              }
+            } catch (e) {
+              logEl.innerHTML += '<div class="text-red-400">❌ 네트워크 오류: ' + e.message + '</div>';
+            } finally {
+              this.innerHTML = originalHtml;
+              document.querySelectorAll('.bulk-indexnow-btn').forEach(function(b) { b.disabled = false; });
+            }
+          });
+        });
+
         // ── R2 Upload for B&A images (무제한 용량, 원본 화질) ──
         async function uploadCaseImage(input, side) {
           const file = input.files[0];

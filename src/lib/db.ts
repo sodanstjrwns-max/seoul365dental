@@ -371,11 +371,30 @@ export function extractFirstImage(content: string): string | null {
   return match ? match[1] : null;
 }
 
-// Submit URL to IndexNow for instant indexing (Bing/Yandex/Naver)
+// Initialize IndexNow log table (idempotent)
+export async function initIndexNowLog(db: D1Database): Promise<void> {
+  try {
+    await db.prepare(`
+      CREATE TABLE IF NOT EXISTS indexnow_log (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        trigger_source TEXT NOT NULL,
+        url_count INTEGER NOT NULL DEFAULT 0,
+        endpoints_ok INTEGER NOT NULL DEFAULT 0,
+        endpoints_fail INTEGER NOT NULL DEFAULT 0,
+        sample_url TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )
+    `).run();
+    await db.prepare('CREATE INDEX IF NOT EXISTS idx_indexnow_log_created ON indexnow_log(created_at DESC)').run();
+  } catch {}
+}
+
+// Submit URL to IndexNow for instant indexing (Bing/Yandex/Naver) + log to D1
 export async function submitToIndexNow(
   db: D1Database,
   env: { INDEXNOW_KEY?: string },
-  urls: string[]
+  urls: string[],
+  source: string = 'manual'
 ): Promise<boolean> {
   try {
     const indexNowKey = await getSetting(db, 'INDEXNOW_KEY', env.INDEXNOW_KEY || '');
@@ -388,8 +407,8 @@ export async function submitToIndexNow(
       urlList: urls,
     };
 
-    // Submit to all IndexNow endpoints in parallel
-    await Promise.allSettled([
+    // Submit to all IndexNow endpoints in parallel (api.indexnow.org fans out to Bing/Yandex/Naver/Seznam)
+    const results = await Promise.allSettled([
       fetch('https://api.indexnow.org/indexnow', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json; charset=utf-8' },
@@ -400,19 +419,40 @@ export async function submitToIndexNow(
         headers: { 'Content-Type': 'application/json; charset=utf-8' },
         body: JSON.stringify(payload),
       }),
+      fetch('https://yandex.com/indexnow', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify(payload),
+      }),
     ]);
 
-    return true;
+    // Count successes (2xx) vs failures
+    let ok = 0;
+    let fail = 0;
+    for (const r of results) {
+      if (r.status === 'fulfilled' && r.value.status >= 200 && r.value.status < 300) ok++;
+      else fail++;
+    }
+
+    // Log to D1 (fire-and-forget, don't block on failure)
+    try {
+      await initIndexNowLog(db);
+      await db.prepare(
+        'INSERT INTO indexnow_log (trigger_source, url_count, endpoints_ok, endpoints_fail, sample_url) VALUES (?, ?, ?, ?, ?)'
+      ).bind(source, urls.length, ok, fail, urls[0] || null).run();
+    } catch {}
+
+    return ok > 0;
   } catch {
     return false;
   }
 }
 
-// Ping Google/Bing sitemap update
+// Ping Bing/Yandex sitemap update (Google ping deprecated 2023-06)
 export async function pingSitemapUpdate(): Promise<void> {
   const sitemapUrl = encodeURIComponent('https://seoul365dc.kr/sitemap.xml');
   await Promise.allSettled([
-    fetch(`https://www.google.com/ping?sitemap=${sitemapUrl}`),
     fetch(`https://www.bing.com/ping?sitemap=${sitemapUrl}`),
+    fetch(`https://blogs.yandex.ru/pings/?status=success&url=${sitemapUrl}`),
   ]);
 }

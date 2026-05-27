@@ -5,7 +5,7 @@ import { treatments } from '../data/treatments'
 import { doctors } from '../data/doctors'
 import { AREAS } from '../data/areas'
 import { getAllMatrixPages, getAllVariantPages, MATRIX_TREATMENT_SLUGS, MATRIX_VARIANTS } from '../data/area-treatment'
-import { initBlogTables, initAdminTables, getSetting } from '../lib/db'
+import { initBlogTables, initAdminTables, getSetting, submitToIndexNow, initIndexNowLog } from '../lib/db'
 
 const seoRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -386,6 +386,18 @@ seoRoutes.get('/sitemap-pages.xml', (c) => {
     { loc: '/encyclopedia', priority: '0.7', changefreq: 'monthly', lastmod: '2026-04-07' },
     { loc: '/area', priority: '0.8', changefreq: 'weekly', lastmod: today },
     { loc: '/notices', priority: '0.5', changefreq: 'weekly', lastmod: today },
+    // 🚀 v6 D-Tier: High-Intent Commercial Pages (한글 URL은 percent-encode)
+    { loc: '/prices', priority: '0.9', changefreq: 'weekly', lastmod: today },
+    { loc: `/prices/${encodeURIComponent('임플란트')}`, priority: '0.95', changefreq: 'weekly', lastmod: today },
+    { loc: `/prices/${encodeURIComponent('교정')}`, priority: '0.95', changefreq: 'weekly', lastmod: today },
+    { loc: `/prices/${encodeURIComponent('라미네이트')}`, priority: '0.85', changefreq: 'monthly', lastmod: today },
+    { loc: `/prices/${encodeURIComponent('레진')}`, priority: '0.8', changefreq: 'monthly', lastmod: today },
+    { loc: `/prices/${encodeURIComponent('신경치료')}`, priority: '0.8', changefreq: 'monthly', lastmod: today },
+    { loc: `/prices/${encodeURIComponent('크라운')}`, priority: '0.8', changefreq: 'monthly', lastmod: today },
+    { loc: `/prices/${encodeURIComponent('치아미백')}`, priority: '0.8', changefreq: 'monthly', lastmod: today },
+    { loc: `/prices/${encodeURIComponent('사랑니발치')}`, priority: '0.8', changefreq: 'monthly', lastmod: today },
+    { loc: '/emergency', priority: '0.95', changefreq: 'weekly', lastmod: today },
+    { loc: '/night-clinic', priority: '0.9', changefreq: 'weekly', lastmod: today },
     { loc: '/privacy', priority: '0.2', changefreq: 'yearly', lastmod: '2026-03-14' },
     { loc: '/terms', priority: '0.2', changefreq: 'yearly', lastmod: '2026-03-14' },
   ];
@@ -1749,6 +1761,150 @@ seoRoutes.notFound((c) => {
     </section>,
     { title: '404 - 페이지를 찾을 수 없습니다 | 서울365치과' }
   )
+})
+
+// ============================================================
+// 📊 v6: 색인(IndexNow) 모니터링 + 일괄 우선순위 제출 API
+// ============================================================
+
+// 색인 통계 — 관리자 대시보드 타일에서 호출
+seoRoutes.get('/api/seo/index-stats', async (c) => {
+  const cookie = c.req.header('Cookie');
+  const match = cookie?.match(/(?:^|;\s*)admin_session=([^;]+)/);
+  if (!match) return c.json({ error: '관리자 인증 필요' }, 401);
+
+  try {
+    await initIndexNowLog(c.env.DB);
+
+    // 1. 사이트 전체 URL 카운트 (sitemaps에 등재된 것 기준)
+    const matrixCount = getAllMatrixPages().length;
+    const variantCount = getAllVariantPages().length;
+    const treatmentCount = treatments.length;
+    const doctorCount = doctors.length;
+    const areaCount = AREAS.length;
+
+    // 2. 발행 블로그 수
+    let blogPublished = 0, blogTotal = 0;
+    try {
+      const blog = await c.env.DB.prepare(
+        "SELECT COUNT(*) as total, COALESCE(SUM(CASE WHEN is_published = 1 THEN 1 ELSE 0 END), 0) as published FROM blog_posts"
+      ).first<{ total: number; published: number }>();
+      blogPublished = Number(blog?.published || 0);
+      blogTotal = Number(blog?.total || 0);
+    } catch {}
+
+    // 3. 최근 IndexNow ping 로그 (최근 5건)
+    let recentPings: any[] = [];
+    let lastPing: string | null = null;
+    let totalPings = 0;
+    let totalUrlsSubmitted = 0;
+    try {
+      const r = await c.env.DB.prepare(
+        'SELECT trigger_source, url_count, endpoints_ok, endpoints_fail, created_at FROM indexnow_log ORDER BY created_at DESC LIMIT 5'
+      ).all<any>();
+      recentPings = r.results || [];
+      lastPing = recentPings[0]?.created_at || null;
+
+      const totals = await c.env.DB.prepare(
+        'SELECT COUNT(*) as cnt, COALESCE(SUM(url_count), 0) as urls FROM indexnow_log'
+      ).first<{ cnt: number; urls: number }>();
+      totalPings = Number(totals?.cnt || 0);
+      totalUrlsSubmitted = Number(totals?.urls || 0);
+    } catch {}
+
+    // 4. IndexNow 키 설정 여부
+    const indexNowKey = await getSetting(c.env.DB, 'INDEXNOW_KEY', c.env.INDEXNOW_KEY || '');
+
+    return c.json({
+      ok: true,
+      site: {
+        treatments: treatmentCount,
+        doctors: doctorCount,
+        areas: areaCount,
+        matrixPages: matrixCount,
+        variantPages: variantCount,
+        blogPublished,
+        blogTotal,
+        totalIndexable: 9 + treatmentCount + doctorCount + areaCount + matrixCount + variantCount + blogPublished,
+      },
+      indexNow: {
+        configured: Boolean(indexNowKey),
+        keyLength: indexNowKey ? indexNowKey.length : 0,
+        totalPings,
+        totalUrlsSubmitted,
+        lastPing,
+        recentPings,
+      },
+    });
+  } catch (err: any) {
+    return c.json({ ok: false, error: err?.message || 'unknown' }, 500);
+  }
+})
+
+// 우선순위 일괄 색인 — 1,140개 area-variant URL을 배치로 IndexNow 제출
+// IndexNow 제한: 1회 호출 당 최대 10,000 URL — 안전하게 500개씩 배치 처리
+seoRoutes.post('/api/indexnow/bulk-priority', async (c) => {
+  const cookie = c.req.header('Cookie');
+  const match = cookie?.match(/(?:^|;\s*)admin_session=([^;]+)/);
+  if (!match) return c.json({ error: '관리자 인증 필요' }, 401);
+
+  const indexNowKey = await getSetting(c.env.DB, 'INDEXNOW_KEY', c.env.INDEXNOW_KEY || '');
+  if (!indexNowKey) return c.json({ error: 'IndexNow 키가 설정되지 않았습니다' }, 400);
+
+  const body = await c.req.json<{ tier?: string }>().catch(() => ({}));
+  const tier = body.tier || 'all';
+  const base = 'https://seoul365dc.kr';
+
+  // 🎯 우선순위 티어 정의
+  const tier1Core = [
+    '/', '/treatments', '/doctors', '/info', '/reservation',
+    '/blog', '/faq', '/cases/gallery', '/area',
+    '/notices', '/reviews', '/insurance', '/why-us',
+    '/answers', '/compare', '/guides', '/stations',
+    '/procedures', '/events',
+    // 🚀 신규 D-Tier 상업 페이지
+    '/emergency', '/night-clinic',
+    ...treatments.map(t => `/treatments/${t.slug}`),
+    ...doctors.map(d => `/doctors/${d.slug}`),
+    ...AREAS.map(a => `/area/${a.slug}`),
+  ];
+
+  const tier2Matrix = getAllMatrixPages().map(m => `/area/${m.areaSlug}/${m.treatmentSlug}`);
+  const tier3Variants = getAllVariantPages().map(m => `/area/${m.areaSlug}/${m.treatmentSlug}/${m.variantSlug}`);
+  const tier4Prices = ['임플란트', '교정', '라미네이트', '레진', '신경치료', '크라운', '치아미백', '사랑니발치'].map(t => `/prices/${t}`);
+
+  let urls: string[] = [];
+  if (tier === 'tier1') urls = tier1Core;
+  else if (tier === 'tier2') urls = tier2Matrix;
+  else if (tier === 'tier3') urls = tier3Variants;
+  else if (tier === 'tier4') urls = tier4Prices;
+  else urls = [...tier1Core, ...tier4Prices, ...tier2Matrix, ...tier3Variants];
+
+  const fullUrls = urls.map(p => `${base}${p}`);
+
+  // 배치 처리: 500개씩 끊어서 IndexNow에 제출
+  const BATCH_SIZE = 500;
+  const batches: string[][] = [];
+  for (let i = 0; i < fullUrls.length; i += BATCH_SIZE) {
+    batches.push(fullUrls.slice(i, i + BATCH_SIZE));
+  }
+
+  const batchResults: Array<{ batch: number; size: number; ok: boolean }> = [];
+  for (let i = 0; i < batches.length; i++) {
+    const ok = await submitToIndexNow(c.env.DB, c.env as any, batches[i], `bulk-${tier}-batch${i + 1}`);
+    batchResults.push({ batch: i + 1, size: batches[i].length, ok });
+    // Rate limit 회피: 배치 간 짧은 대기 (Cloudflare Workers는 setTimeout 없음 → 자연 지연만 활용)
+  }
+
+  return c.json({
+    ok: true,
+    tier,
+    totalUrls: fullUrls.length,
+    batches: batches.length,
+    batchSize: BATCH_SIZE,
+    results: batchResults,
+    message: `${fullUrls.length}개 URL을 ${batches.length}개 배치로 IndexNow에 제출했습니다.`,
+  });
 })
 
 export default seoRoutes

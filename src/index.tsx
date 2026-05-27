@@ -32,6 +32,9 @@ import insuranceRoutes from './routes/insurance'
 import whyusRoutes from './routes/whyus'
 import eventsRoutes from './routes/events'
 
+// v6 D-Tier — High-Intent Commercial Pages
+import commercialRoutes from './routes/commercial'
+
 const app = new Hono<{ Bindings: Bindings }>()
 
 // ── IndexNow Key File (.txt) — Must be FIRST before any other route ──
@@ -125,6 +128,9 @@ app.route('/', proceduresRoutes)
 app.route('/', insuranceRoutes)
 app.route('/', whyusRoutes)
 app.route('/', eventsRoutes)
+
+// v6 D-Tier — High-Intent Commercial Pages (/prices, /emergency, /night-clinic)
+app.route('/', commercialRoutes)
 
 // API endpoints
 app.route('/', apiRoutes)
