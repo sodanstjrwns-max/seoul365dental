@@ -339,63 +339,74 @@ body {
 /* =========================================
    SCROLL ANIMATIONS
    ========================================= */
+/* === SCROLL REVEAL — Progressive Enhancement 패턴 ===
+   기본은 항상 보임. <html class="js-anim-ready">가 추가된 환경(데스크탑 + 정상 모바일 브라우저)
+   에서만 숨김 후 페이드인. 네이버/카카오 인앱 브라우저처럼 IntersectionObserver가
+   불안정한 환경에서는 그냥 정상 표시됨. */
 .reveal {
-  opacity: 0;
-  transform: translateY(80px);
+  opacity: 1;
+  transform: none;
   transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
               transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.js-anim-ready .reveal:not(.visible) { opacity: 0; transform: translateY(80px); }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
 .reveal-left {
-  opacity: 0;
-  transform: translateX(-80px);
+  opacity: 1;
+  transform: none;
   transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
               transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.js-anim-ready .reveal-left:not(.visible) { opacity: 0; transform: translateX(-80px); }
 .reveal-left.visible { opacity: 1; transform: translateX(0); }
 
 .reveal-right {
-  opacity: 0;
-  transform: translateX(80px);
+  opacity: 1;
+  transform: none;
   transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
               transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.js-anim-ready .reveal-right:not(.visible) { opacity: 0; transform: translateX(80px); }
 .reveal-right.visible { opacity: 1; transform: translateX(0); }
 
 .reveal-scale {
-  opacity: 0;
-  transform: scale(0.85);
+  opacity: 1;
+  transform: none;
   transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
               transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.js-anim-ready .reveal-scale:not(.visible) { opacity: 0; transform: scale(0.85); }
 .reveal-scale.visible { opacity: 1; transform: scale(1); }
 
 .reveal-3d {
-  opacity: 0;
-  transform: perspective(1200px) rotateX(12deg) translateY(60px);
+  opacity: 1;
+  transform: none;
   transition: opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1),
               transform 1.1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.js-anim-ready .reveal-3d:not(.visible) { opacity: 0; transform: perspective(1200px) rotateX(12deg) translateY(60px); }
 .reveal-3d.visible { opacity: 1; transform: perspective(1200px) rotateX(0) translateY(0); }
 
 .reveal-blur {
-  opacity: 0;
-  filter: blur(20px);
-  transform: translateY(40px);
+  opacity: 1;
+  filter: none;
+  transform: none;
   transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1),
               filter 1s cubic-bezier(0.16, 1, 0.3, 1),
               transform 1s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.js-anim-ready .reveal-blur:not(.visible) { opacity: 0; filter: blur(20px); transform: translateY(40px); }
 .reveal-blur.visible { opacity: 1; filter: blur(0); transform: translateY(0); }
 
-/* Stagger */
+/* Stagger — Progressive Enhancement */
 .stagger-children > * {
-  opacity: 0;
-  transform: translateY(50px);
+  opacity: 1;
+  transform: none;
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.js-anim-ready .stagger-children:not(.visible) > * { opacity: 0; transform: translateY(50px); }
 .stagger-children.visible > *:nth-child(1) { transition-delay: 0.05s; }
 .stagger-children.visible > *:nth-child(2) { transition-delay: 0.1s; }
 .stagger-children.visible > *:nth-child(3) { transition-delay: 0.15s; }
@@ -1113,28 +1124,41 @@ input:focus, textarea:focus, select:focus {
    MICRO-INTERACTIONS v6 — ENHANCED
    ========================================= */
 
-/* === TEXT SPLIT ANIMATION (char-by-char) === */
+/* === TEXT SPLIT ANIMATION (char-by-char) ===
+   안드로이드/네이버 인앱 브라우저 호환성을 위해 Progressive Enhancement 적용:
+   - 기본 상태: 항상 보임 (opacity:1) → JS 미작동/IntersectionObserver 실패 시에도 텍스트 표시
+   - .js-anim-ready 클래스가 <html>에 추가되면 그때부터만 숨김 시작 → 애니메이션 발동
+   이 패턴으로 인앱 브라우저(N/카카오톡 등)에서 글자 잘림 방지 */
 .text-split .char {
   display: inline-block;
-  opacity: 0;
-  transform: translateY(40px) rotateX(-90deg);
+  opacity: 1;
+  transform: none;
   transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.js-anim-ready .text-split:not(.visible) .char {
+  opacity: 0;
+  transform: translateY(40px) rotateX(-90deg);
 }
 .text-split.visible .char {
   opacity: 1;
   transform: translateY(0) rotateX(0);
 }
 
-/* === WORD-BY-WORD REVEAL === */
+/* === WORD-BY-WORD REVEAL (동일 패턴 적용) === */
 .text-words .word {
   display: inline-block;
-  opacity: 0;
-  transform: translateY(25px);
-  filter: blur(8px);
+  opacity: 1;
+  transform: none;
+  filter: none;
   transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
               filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.js-anim-ready .text-words:not(.visible) .word {
+  opacity: 0;
+  transform: translateY(25px);
+  filter: blur(8px);
 }
 .text-words.visible .word {
   opacity: 1;
@@ -1223,23 +1247,25 @@ input:focus, textarea:focus, select:focus {
 
 /* === REVEAL ROTATE (for icons/small elements) === */
 .reveal-rotate {
-  opacity: 0;
-  transform: rotate(-180deg) scale(0.5);
+  opacity: 1;
+  transform: none;
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.js-anim-ready .reveal-rotate:not(.visible) { opacity: 0; transform: rotate(-180deg) scale(0.5); }
 .reveal-rotate.visible {
   opacity: 1;
   transform: rotate(0) scale(1);
 }
 
-/* === STAGGER ENHANCED — CASCADING FROM LEFT === */
+/* === STAGGER ENHANCED — CASCADING FROM LEFT (Progressive Enhancement) === */
 .stagger-cascade > * {
-  opacity: 0;
-  transform: translateX(-30px) translateY(20px);
+  opacity: 1;
+  transform: none;
   transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.js-anim-ready .stagger-cascade:not(.visible) > * { opacity: 0; transform: translateX(-30px) translateY(20px); }
 .stagger-cascade.visible > *:nth-child(1) { transition-delay: 0.05s; }
 .stagger-cascade.visible > *:nth-child(2) { transition-delay: 0.12s; }
 .stagger-cascade.visible > *:nth-child(3) { transition-delay: 0.2s; }
@@ -1322,25 +1348,27 @@ input:focus, textarea:focus, select:focus {
   will-change: transform;
 }
 
-/* === ENTER FROM BEHIND (3D perspective pop) === */
+/* === ENTER FROM BEHIND (3D perspective pop) — Progressive Enhancement === */
 .reveal-pop {
-  opacity: 0;
-  transform: perspective(800px) translateZ(-100px) scale(0.9);
+  opacity: 1;
+  transform: none;
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
               transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.js-anim-ready .reveal-pop:not(.visible) { opacity: 0; transform: perspective(800px) translateZ(-100px) scale(0.9); }
 .reveal-pop.visible {
   opacity: 1;
   transform: perspective(800px) translateZ(0) scale(1);
 }
 
-/* === ELASTIC BOUNCE REVEAL === */
+/* === ELASTIC BOUNCE REVEAL — Progressive Enhancement === */
 .reveal-elastic {
-  opacity: 0;
-  transform: translateY(60px) scale(0.8);
+  opacity: 1;
+  transform: none;
   transition: opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
               transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+.js-anim-ready .reveal-elastic:not(.visible) { opacity: 0; transform: translateY(60px) scale(0.8); }
 .reveal-elastic.visible {
   opacity: 1;
   transform: translateY(0) scale(1);

@@ -1,4 +1,29 @@
 // Seoul365 Dental — Main App JS
+
+// ── Progressive Enhancement Gate ─────────────
+// IntersectionObserver가 정상 지원되는 환경에서만 애니메이션 숨김 시작 상태로 진입.
+// 네이버/카카오/삼성 인앱 브라우저 일부 또는 구형 안드로이드에서 미지원 시 텍스트는 그대로 표시됨.
+(function(){
+  try {
+    if ('IntersectionObserver' in window && 'IntersectionObserverEntry' in window) {
+      document.documentElement.classList.add('js-anim-ready');
+    }
+  } catch(e) { /* 보수적으로 통과 → 텍스트는 항상 보임 */ }
+  // 안전망: 2.5초 후에도 .visible 안 붙은 reveal 요소가 있으면 강제 노출
+  // (혹시 IO 등록 누락된 케이스 대비)
+  setTimeout(function(){
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-3d, .reveal-blur, .reveal-pop, .reveal-elastic, .reveal-rotate, .text-split, .text-words, .stagger-cascade, .stagger-children').forEach(function(el){
+      if(!el.classList.contains('visible')){
+        var rect = el.getBoundingClientRect();
+        // 이미 화면 위쪽에 지나갔거나 현재 보이는 영역이면 .visible 강제 부여
+        if(rect.top < window.innerHeight && rect.bottom > 0){
+          el.classList.add('visible');
+        }
+      }
+    });
+  }, 2500);
+})();
+
 // ── Admin page layout cleanup ──────────────────
 (function(){if(window.location.pathname.startsWith('/admin')){var mh=document.getElementById('main-header');if(mh)mh.style.display='none';document.querySelectorAll('footer').forEach(function(el){el.style.display='none'});document.querySelectorAll('.mobile-cta-bar').forEach(function(el){el.style.display='none'});document.querySelectorAll('.floating-btn').forEach(function(el){if(el.parentElement)el.parentElement.style.display='none'});var cd=document.getElementById('cursor-dot');if(cd)cd.style.display='none';var cr=document.getElementById('cursor-ring');if(cr)cr.style.display='none';var s=document.createElement('style');s.textContent='body,body *,body *::before,body *::after{cursor:auto!important}a,button,select,[role=button]{cursor:pointer!important}input,textarea{cursor:text!important}';document.head.appendChild(s);var sp=document.getElementById('scroll-progress');if(sp)sp.style.display='none';document.body.style.overflow='auto'}})();
 
