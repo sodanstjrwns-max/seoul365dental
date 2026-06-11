@@ -1,4 +1,5 @@
 import { jsxRenderer } from 'hono/jsx-renderer'
+import { raw } from 'hono/html'
 import { CLINIC, HOURS } from './data/clinic'
 import { MESSAGING } from './data/brand'
 import { AREAS } from './data/areas'
@@ -489,12 +490,15 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <meta name="date" content={lastModified} />
         <meta property="article:modified_time" content={lastModified} />
 
-        {/* === LANGUAGE & GEO (v3: 다국어 hreflang) === */}
+        {/* === LANGUAGE & GEO (v7: hreflang 정밀화) ===
+            hreflang은 "같은 콘텐츠의 언어 버전" 간에만 상호 선언해야 함.
+            전 페이지에 /en·/zh를 선언하면 비대응 페이지 신호 오염 → 홈·다국어 페이지에서만 클러스터 선언 */}
         <meta http-equiv="content-language" content="ko-KR" />
-        <link rel="alternate" hreflang="ko-KR" href={canonicalUrl} />
-        <link rel="alternate" hreflang="en" href="https://seoul365dc.kr/en" />
-        <link rel="alternate" hreflang="zh-CN" href="https://seoul365dc.kr/zh" />
-        <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+        {/* raw() 사용 이유: Hono JSX는 동일 href <link>를 dedup하므로 canonical과 같은 href인
+            ko-KR/x-default hreflang이 제거됨 → raw HTML로 우회 */}
+        {raw(`<link rel="alternate" hreflang="ko-KR" href="${canonicalUrl}" />`)}
+        {(canonicalUrl === 'https://seoul365dc.kr' || canonicalUrl === 'https://seoul365dc.kr/' || canonicalUrl === 'https://seoul365dc.kr/en' || canonicalUrl === 'https://seoul365dc.kr/zh' || canonicalUrl === 'https://seoul365dc.kr/ru') && raw(`<link rel="alternate" hreflang="ko" href="https://seoul365dc.kr" /><link rel="alternate" hreflang="en" href="https://seoul365dc.kr/en" /><link rel="alternate" hreflang="zh-CN" href="https://seoul365dc.kr/zh" /><link rel="alternate" hreflang="ru" href="https://seoul365dc.kr/ru" />`)}
+        {raw(`<link rel="alternate" hreflang="x-default" href="${canonicalUrl}" />`)}
         <meta name="geo.region" content="KR-28" />
         <meta name="geo.placename" content="인천 남동구 구월동" />
         <meta name="geo.position" content="37.4482;126.7042" />
@@ -563,6 +567,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === 🚀 v2: SEO Resource Hints — 검색엔진 크롤러용 === */}
         <link rel="alternate" type="application/rss+xml" title="서울365치과 블로그 RSS" href="/blog/rss.xml" />
+        <link rel="alternate" type="application/atom+xml" title="서울365치과 블로그 Atom" href="/blog/atom.xml" />
+        <link rel="alternate" type="application/feed+json" title="서울365치과 블로그 JSON Feed" href="/feed.json" />
 
         {/* === CRITICAL: Preload cursor logo for instant display === */}
         <link rel="preload" href="/static/cursor-logo.png" as="image" type="image/png" fetchpriority="high" />

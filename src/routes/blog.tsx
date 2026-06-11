@@ -1234,6 +1234,140 @@ blogRoutes.post('/api/admin/blog/migrate-slugs', async (c) => {
   return c.json({ ok: true, migrated, skipped, total: posts.length, changes });
 });
 
+// ============================================================
+// 📡 FEEDS — RSS 2.0 + Atom 1.0 + JSON Feed 1.1
+// AI 크롤러·검색엔진·피드리더가 새 콘텐츠를 즉시 발견하는 경로
+// ============================================================
+const FEED_SITE = 'https://seoul365dc.kr';
+const xmlEsc = (s: any) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+const stripMd = (s: string) => String(s || '').replace(/!\[[^\]]*\]\([^)]*\)/g, '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/[#*_`>~-]{1,}/g, ' ').replace(/\s+/g, ' ').trim();
+
+async function getFeedPosts(db: D1Database, limit = 30): Promise<any[]> {
+  try {
+    await initBlogTables(db);
+    const r = await db.prepare(
+      'SELECT slug, title, excerpt, content, category, tags, cover_image, author_name, created_at, updated_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT ?'
+    ).bind(limit).all();
+    return r.results || [];
+  } catch { return []; }
+}
+
+const feedHeaders = (type: string) => ({
+  'Content-Type': type,
+  'Cache-Control': 'public, max-age=1800, s-maxage=3600',
+});
+
+// ── RSS 2.0 ──
+blogRoutes.get('/blog/rss.xml', async (c) => {
+  const posts = await getFeedPosts(c.env.DB);
+  const lastBuild = posts.length ? new Date(posts[0].updated_at || posts[0].created_at).toUTCString() : new Date().toUTCString();
+  const items = posts.map((p) => {
+    const url = `${FEED_SITE}/blog/${p.slug}`;
+    const desc = p.excerpt || autoGenerateExcerpt(p.content || '');
+    return `    <item>
+      <title>${xmlEsc(p.title)}</title>
+      <link>${url}</link>
+      <guid isPermaLink="true">${url}</guid>
+      <pubDate>${new Date(p.created_at).toUTCString()}</pubDate>
+      <category>${xmlEsc(p.category || '치과상식')}</category>
+      <dc:creator>${xmlEsc(p.author_name || '서울365치과')}</dc:creator>
+      <description>${xmlEsc(desc)}</description>${p.cover_image ? `
+      <enclosure url="${xmlEsc(p.cover_image.startsWith('http') ? p.cover_image : FEED_SITE + p.cover_image)}" type="image/jpeg" length="0" />` : ''}
+    </item>`;
+  }).join('\n');
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>서울365치과 블로그</title>
+    <link>${FEED_SITE}/blog</link>
+    <atom:link href="${FEED_SITE}/blog/rss.xml" rel="self" type="application/rss+xml" />
+    <description>인천 구월동 서울365치과 — 서울대 출신 5인 전문의가 전하는 치아 건강 전문 정보</description>
+    <language>ko-KR</language>
+    <copyright>© 서울365치과의원</copyright>
+    <lastBuildDate>${lastBuild}</lastBuildDate>
+    <ttl>60</ttl>
+    <image>
+      <url>${FEED_SITE}/static/logo-512.png</url>
+      <title>서울365치과 블로그</title>
+      <link>${FEED_SITE}/blog</link>
+    </image>
+${items}
+  </channel>
+</rss>`;
+  return new Response(xml, { headers: feedHeaders('application/rss+xml; charset=utf-8') });
+})
+
+// ── Atom 1.0 ──
+blogRoutes.get('/blog/atom.xml', async (c) => {
+  const posts = await getFeedPosts(c.env.DB);
+  const updated = posts.length ? new Date(posts[0].updated_at || posts[0].created_at).toISOString() : new Date().toISOString();
+  const entries = posts.map((p) => {
+    const url = `${FEED_SITE}/blog/${p.slug}`;
+    const desc = p.excerpt || autoGenerateExcerpt(p.content || '');
+    return `  <entry>
+    <title>${xmlEsc(p.title)}</title>
+    <link href="${url}" />
+    <id>${url}</id>
+    <published>${new Date(p.created_at).toISOString()}</published>
+    <updated>${new Date(p.updated_at || p.created_at).toISOString()}</updated>
+    <author><name>${xmlEsc(p.author_name || '서울365치과')}</name></author>
+    <category term="${xmlEsc(p.category || '치과상식')}" />
+    <summary>${xmlEsc(desc)}</summary>
+  </entry>`;
+  }).join('\n');
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="ko-KR">
+  <title>서울365치과 블로그</title>
+  <subtitle>인천 구월동 서울대 출신 5인 전문의가 전하는 치아 건강 전문 정보</subtitle>
+  <link href="${FEED_SITE}/blog" />
+  <link href="${FEED_SITE}/blog/atom.xml" rel="self" type="application/atom+xml" />
+  <id>${FEED_SITE}/blog</id>
+  <updated>${updated}</updated>
+  <icon>${FEED_SITE}/static/logo-192.png</icon>
+  <logo>${FEED_SITE}/static/logo-512.png</logo>
+  <rights>© 서울365치과의원</rights>
+${entries}
+</feed>`;
+  return new Response(xml, { headers: feedHeaders('application/atom+xml; charset=utf-8') });
+})
+
+// ── JSON Feed 1.1 (AI/LLM 파싱 최적 — JSON 네이티브) ──
+blogRoutes.get('/feed.json', async (c) => {
+  const posts = await getFeedPosts(c.env.DB);
+  const feed = {
+    version: 'https://jsonfeed.org/version/1.1',
+    title: '서울365치과 블로그',
+    home_page_url: `${FEED_SITE}/blog`,
+    feed_url: `${FEED_SITE}/feed.json`,
+    description: '인천 구월동 서울365치과 — 서울대 출신 5인 전문의가 전하는 치아 건강 전문 정보',
+    icon: `${FEED_SITE}/static/logo-512.png`,
+    favicon: `${FEED_SITE}/static/favicon-32x32.png`,
+    language: 'ko-KR',
+    authors: [{ name: '서울365치과의원', url: FEED_SITE }],
+    items: posts.map((p) => ({
+      id: `${FEED_SITE}/blog/${p.slug}`,
+      url: `${FEED_SITE}/blog/${p.slug}`,
+      title: p.title,
+      summary: p.excerpt || autoGenerateExcerpt(p.content || ''),
+      content_text: stripMd(p.content || '').slice(0, 2000),
+      date_published: new Date(p.created_at).toISOString(),
+      date_modified: new Date(p.updated_at || p.created_at).toISOString(),
+      tags: (p.tags || '').split(',').map((t: string) => t.trim()).filter(Boolean),
+      ...(p.cover_image ? { image: p.cover_image.startsWith('http') ? p.cover_image : FEED_SITE + p.cover_image } : {}),
+      authors: [{ name: p.author_name || '서울365치과' }],
+    })),
+  };
+  return new Response(JSON.stringify(feed, null, 2), { headers: feedHeaders('application/feed+json; charset=utf-8') });
+})
+
+// ── 표준 경로 별칭 (피드 자동발견 호환) ──
+blogRoutes.get('/rss.xml', (c) => c.redirect('/blog/rss.xml', 301))
+blogRoutes.get('/atom.xml', (c) => c.redirect('/blog/atom.xml', 301))
+blogRoutes.get('/feed', (c) => c.redirect('/blog/rss.xml', 301))
+blogRoutes.get('/blog/feed', (c) => c.redirect('/blog/rss.xml', 301))
+
 // Blog Detail Page (with 301 redirect for old slugs)
 blogRoutes.get('/blog/:slug', async (c) => {
   await initBlogTables(c.env.DB);

@@ -261,3 +261,45 @@ export const terms: TermCategory[] = [
 ]
 
 export const totalTerms = terms.reduce((sum, cat) => sum + cat.items.length, 0)
+
+// ============================================================
+// 🚀 v7: 용어별 개별 페이지용 플랫 리스트 + 슬러그
+// 영문명 기반 URL-safe slug 자동 생성 (중복 시 -2, -3 suffix)
+// ============================================================
+export interface FlatTerm extends TermItem {
+  slug: string
+  cat: string
+  catIndex: number
+}
+
+function slugifyEn(en: string): string {
+  return en
+    .toLowerCase()
+    .replace(/\([^)]*\)/g, '')      // 괄호 제거
+    .replace(/[^a-z0-9]+/g, '-')    // 비영숫자 → 하이픈
+    .replace(/^-+|-+$/g, '')        // 양끝 하이픈 제거
+    .slice(0, 60) || 'term'
+}
+
+export const flatTerms: FlatTerm[] = (() => {
+  const seen = new Map<string, number>()
+  const out: FlatTerm[] = []
+  terms.forEach((cat, catIndex) => {
+    cat.items.forEach((item) => {
+      let slug = slugifyEn(item.en)
+      const n = seen.get(slug) || 0
+      seen.set(slug, n + 1)
+      if (n > 0) slug = `${slug}-${n + 1}`
+      out.push({ ...item, slug, cat: cat.cat, catIndex })
+    })
+  })
+  return out
+})()
+
+export function getTermBySlug(slug: string): FlatTerm | undefined {
+  return flatTerms.find(t => t.slug === slug)
+}
+
+export function getRelatedTerms(term: FlatTerm, limit = 8): FlatTerm[] {
+  return flatTerms.filter(t => t.catIndex === term.catIndex && t.slug !== term.slug).slice(0, limit)
+}

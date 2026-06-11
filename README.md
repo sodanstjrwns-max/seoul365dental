@@ -254,3 +254,33 @@ src/
 - **Total SEO Landing Pages**: **1,455개** (190 + 1,140 + 56 v3 + 25 v4 + 19 지역 + 25 진료)
 - **Sitemaps**: 메인 1개 + 서브 14개 (v1 4 + v2 1 + v3 5 + v4 5) = **15개 sitemap**
 - **Last Updated**: 2026-05-26 v4 (SEO 슈퍼 업그레이드 4차 — 리치 스니펫 + 신뢰 시그널)
+
+## 🚀🚀🚀🚀🚀 SEO/AEO 머신 업그레이드 v7 (2026-06-11) — 진짜 머신화
+
+### v7 핵심 개선 (Critical Fixes + 신규 무기)
+- **Fix 1 — Soft-404 제거**: 404 페이지가 HTTP 200으로 응답하던 문제 수정 → `c.status(404)` + `X-Robots-Tag: noindex` (Google이 가짜 페이지로 색인하는 것 방지)
+- **Fix 2 — Fake Freshness 제거**: 정적 sitemap lastmod가 매 요청마다 `today`로 갱신되던 문제 수정 → `STATIC_LASTMOD` 상수 도입 (Google의 lastmod 신호 신뢰도 회복; 콘텐츠 실수정 시에만 날짜 갱신)
+- **Fix 3 — hreflang 정밀화**: 전 페이지에 en/zh hreflang을 무차별 선언하던 신호 오염 수정 → 홈·다국어 페이지에서만 ko/en/zh-CN/ru 클러스터 상호 선언, 일반 페이지는 ko-KR+x-default만. Hono JSX의 동일 href `<link>` dedup 이슈를 `raw()`로 우회
+- **Weapon 15 — 콘텐츠 피드 3종** (AI 크롤러·검색엔진 신규 콘텐츠 발견 경로)
+  - RSS 2.0: `/blog/rss.xml` (dc:creator, enclosure, ttl)
+  - Atom 1.0: `/blog/atom.xml`
+  - JSON Feed 1.1: `/feed.json` (content_text 포함 — LLM 파싱 최적)
+  - 별칭 301: `/rss.xml`, `/atom.xml`, `/feed`, `/blog/feed`
+  - 전 페이지 `<head>`에 3종 자동발견 링크 추가
+- **Weapon 16 — 백과사전 용어 개별 페이지 200개** (`/encyclopedia/:slug`)
+  - DefinedTerm + MedicalWebPage + Question/Answer(직답) + Speakable + Breadcrumb 스키마
+  - "{용어} 뜻", "{용어}이란" 롱테일 검색 타겟
+  - 같은 카테고리 관련 용어 8개 내부링크 + 관련 진료 CTA
+  - `/sitemap-encyclopedia.xml` (200 URL) — sitemap index + robots.txt 등록
+- **Weapon 17 — llms.txt 슈퍼 확장**
+  - 가격 정보 섹션 (정찰가 직접 노출 — AI 답변 인용 최적)
+  - AI 답변용 Q&A 허브 8개 링크 (answers/compare/guides/procedures/insurance/reviews/stations/why-us)
+  - 다국어 페이지 + 피드 3종 안내
+  - "인용 가이드 (For AI Assistants)" — 출처 표기 방법 명시
+- **기타**: `/ru` 러시아어 페이지 sitemap-intl 등록 (기존 누락)
+
+### v7 후 전체 현황
+- **Total SEO Landing Pages**: 1,455 + 200 (백과사전) = **1,655개**
+- **Sitemaps**: 16개 (encyclopedia 추가)
+- **Feeds**: RSS + Atom + JSON Feed 3종
+- **Last Updated**: 2026-06-11 v7

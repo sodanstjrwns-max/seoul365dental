@@ -7,7 +7,7 @@ import { MESSAGING } from '../data/brand'
 import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clearSessionCookie, getCurrentUser } from '../lib/auth'
 import { initAdminTables, initBlogTables } from '../lib/db'
 import { getTreatmentBySlug } from '../data/treatments'
-import { terms, totalTerms } from '../data/encyclopedia-terms'
+import { terms, totalTerms, flatTerms, getTermBySlug, getRelatedTerms } from '../data/encyclopedia-terms'
 
 const pageRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -1769,10 +1769,14 @@ pageRoutes.get('/encyclopedia', (c) => {
                 <span class="text-xs text-gray-400 font-normal">{cat.items.length}개 용어</span>
               </h3>
               <dl class="space-y-5">
-                {cat.items.map((item) => (
+                {cat.items.map((item) => {
+                  const flat = flatTerms.find(f => f.catIndex === ci && f.term === item.term);
+                  return (
                   <div class="group">
                     <dt class="flex items-baseline gap-2 mb-1.5">
-                      <h4 class="font-bold text-gray-900 text-[0.95rem] m-0">{item.term}</h4>
+                      <h4 class="font-bold text-gray-900 text-[0.95rem] m-0">
+                        {flat ? <a href={`/encyclopedia/${flat.slug}`} class="hover:text-[#0066FF] transition-colors" data-cursor-hover>{item.term}</a> : item.term}
+                      </h4>
                       <span class="text-xs text-[#0066FF]/60 font-medium">{item.en}</span>
                     </dt>
                     <dd class="text-gray-600 text-[0.85rem] leading-[1.9] pl-0">
@@ -1782,9 +1786,15 @@ pageRoutes.get('/encyclopedia', (c) => {
                           자세히 보기 <i class="fa-solid fa-arrow-right text-[0.6rem]"></i>
                         </a>
                       )}
+                      {flat && (
+                        <a href={`/encyclopedia/${flat.slug}`} class="inline-flex items-center gap-1 ml-2 text-xs text-gray-400 hover:text-[#0066FF] hover:underline">
+                          용어 페이지 <i class="fa-solid fa-up-right-from-square text-[0.55rem]"></i>
+                        </a>
+                      )}
                     </dd>
                   </div>
-                ))}
+                  );
+                })}
               </dl>
             </article>
           ))}
@@ -1854,6 +1864,126 @@ pageRoutes.get('/encyclopedia', (c) => {
                 ...(item.link ? { "url": `https://seoul365dc.kr${item.link}` } : {})
               }))
             )
+          }
+        }
+      ]
+    }
+  )
+})
+
+// ============================================================
+// 🚀 v7: 백과사전 용어 개별 페이지 — /encyclopedia/:slug
+// 201개 DefinedTerm 롱테일 SEO 페이지 (용어 검색 + AI 인용 타겟)
+// ============================================================
+pageRoutes.get('/encyclopedia/:slug', (c) => {
+  const slug = c.req.param('slug');
+  const term = getTermBySlug(slug);
+  if (!term) return c.notFound();
+
+  const related = getRelatedTerms(term, 8);
+  const pageUrl = `https://seoul365dc.kr/encyclopedia/${term.slug}`;
+  const title = `${term.term}(${term.en})이란? 뜻·정의 | 치과 백과사전 — 서울365치과`;
+  const desc = term.def.length > 150 ? term.def.slice(0, 147) + '…' : term.def;
+
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-24 md:py-32">
+          <nav aria-label="브레드크럼" class="mb-5 reveal">
+            <ol class="flex flex-wrap items-center gap-2 text-xs text-white/40">
+              <li><a href="/" class="hover:text-white/70">홈</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="/encyclopedia" class="hover:text-white/70">치과 백과사전</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-white/70" aria-current="page">{term.term}</li>
+            </ol>
+          </nav>
+          <span class="inline-block text-xs font-bold text-[#5BA9FF] bg-white/5 px-3 py-1 rounded-full mb-4 reveal">{term.cat}</span>
+          <h1 class="section-headline text-white mb-3 reveal" style="transition-delay:0.2s">{term.term}</h1>
+          <p class="text-white/40 text-lg font-medium reveal" style="transition-delay:0.4s">{term.en}</p>
+        </div>
+      </section>
+
+      <section class="section-lg bg-white">
+        <article class="max-w-3xl mx-auto px-5 md:px-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-4">{term.term}이란?</h2>
+          {/* AI 인용 최적화: 정의를 첫 문단에 직답 형태로 배치 */}
+          <p class="text-gray-700 text-[1.02rem] leading-[2] mb-8" id="term-definition">{term.def}</p>
+
+          {term.link && (
+            <aside class="glass-card p-5 mb-10 flex items-center justify-between gap-4" aria-label="관련 진료 안내">
+              <div>
+                <p class="text-sm font-bold text-gray-900 mb-1">이 용어와 관련된 진료가 궁금하신가요?</p>
+                <p class="text-xs text-gray-500">서울365치과의 관련 진료 상세 안내를 확인해 보세요.</p>
+              </div>
+              <a href={term.link} class="btn-premium btn-premium-fill shrink-0 text-sm" data-cursor-hover>진료 안내 보기</a>
+            </aside>
+          )}
+
+          {related.length > 0 && (
+            <section aria-labelledby="related-terms-heading" class="mb-12">
+              <h2 id="related-terms-heading" class="text-lg font-bold text-gray-900 mb-5">함께 보면 좋은 {term.cat} 용어</h2>
+              <div class="grid sm:grid-cols-2 gap-3">
+                {related.map((r) => (
+                  <a href={`/encyclopedia/${r.slug}`} class="glass-card px-4 py-3.5 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
+                    <span class="block font-semibold text-gray-800 group-hover:text-[#0066FF] text-sm transition-colors">{r.term}</span>
+                    <span class="block text-xs text-gray-400 mt-0.5">{r.en}</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <p class="text-gray-300 text-xs mb-8">※ 본 내용은 일반적인 치과 정보 제공 목적이며, 정확한 진단과 치료 계획은 반드시 전문의와의 상담을 통해 결정하셔야 합니다.</p>
+          <div class="flex flex-wrap gap-3">
+            <a href="/encyclopedia" class="btn-premium btn-premium-outline text-sm" data-cursor-hover><i class="fa-solid fa-book"></i> 전체 용어 사전</a>
+            <a href="/reservation" class="btn-premium btn-premium-fill text-sm" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 상담 예약</a>
+          </div>
+        </article>
+      </section>
+    </>,
+    {
+      title,
+      description: desc,
+      canonical: pageUrl,
+      keywords: `${term.term}, ${term.term} 뜻, ${term.term}이란, ${term.en}, 치과 용어, ${term.cat}`,
+      jsonLd: [
+        {
+          "@context": "https://schema.org", "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "치과 백과사전", "item": "https://seoul365dc.kr/encyclopedia" },
+            { "@type": "ListItem", "position": 3, "name": term.term, "item": pageUrl }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "DefinedTerm",
+          "@id": `${pageUrl}#term`,
+          "name": term.term,
+          "alternateName": term.en,
+          "description": term.def,
+          "inDefinedTermSet": { "@type": "DefinedTermSet", "name": "서울365치과 치과 용어 사전", "url": "https://seoul365dc.kr/encyclopedia" },
+          "url": pageUrl,
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "MedicalWebPage",
+          "@id": `${pageUrl}#webpage`,
+          "name": title,
+          "url": pageUrl,
+          "description": desc,
+          "inLanguage": "ko-KR",
+          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
+          "about": { "@id": `${pageUrl}#term` },
+          "specialty": "Dentistry",
+          "lastReviewed": "2026-06-11",
+          "reviewedBy": { "@type": "Physician", "name": "박준규", "jobTitle": "대표원장", "worksFor": { "@id": "https://seoul365dc.kr/#dentist" } },
+          "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "#term-definition"] },
+          "mainEntity": {
+            "@type": "Question",
+            "name": `${term.term}(${term.en})이란 무엇인가요?`,
+            "acceptedAnswer": { "@type": "Answer", "text": term.def }
           }
         }
       ]

@@ -144,6 +144,8 @@ app.route('/', seoRoutes)
 
 // ── Custom 404 Page ────────────────────────────────────
 app.notFound((c) => {
+  c.status(404); // soft-404 방지: 반드시 HTTP 404 상태코드 반환 (SEO 필수)
+  c.header('X-Robots-Tag', 'noindex');
   return c.render(
     <section class="hero-premium" style="min-height:80vh">
       <div class="hero-grid"></div>
