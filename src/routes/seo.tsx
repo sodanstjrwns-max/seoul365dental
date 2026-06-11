@@ -1699,6 +1699,12 @@ seoRoutes.post('/api/cron/full-sync', async (c) => {
         ...cl.spokes.map(s => `${base}/guides/${cl.slug}/${s.slug}`),
       ]),
       ...STATIONS.map(s => `${base}/stations/${s.slug}`),
+      // v8: 백과사전 200개 용어 페이지 + 피드 + ru
+      `${base}/encyclopedia`,
+      ...flatTerms.map(t => `${base}/encyclopedia/${t.slug}`),
+      `${base}/blog/rss.xml`,
+      `${base}/feed.json`,
+      `${base}/ru`,
     ];
 
     const indexNowEndpoints = [
@@ -1752,6 +1758,7 @@ seoRoutes.post('/api/cron/full-sync', async (c) => {
     `${base}/sitemap-events.xml`,
     `${base}/sitemap-whyus.xml`,
     `${base}/sitemap-news.xml`,
+    `${base}/sitemap-encyclopedia.xml`,
   ];
   results.tasks.ping = { totalSitemaps: sitemapUrls.length, results: {} };
   for (const sm of sitemapUrls) {

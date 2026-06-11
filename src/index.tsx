@@ -83,6 +83,18 @@ app.use('*', async (c, next) => {
   c.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   c.header('X-XSS-Protection', '1; mode=block');
   c.header('Cross-Origin-Opener-Policy', 'same-origin');
+
+  // v8: HTML 엣지 캐싱 — 크롤러 TTFB 단축 + Cloudflare 엣지 캐시 활용
+  // (콘텐츠 페이지만; admin/api/인증 관련은 no-store)
+  const p = new URL(c.req.url).pathname;
+  const isPrivate = p.startsWith('/admin') || p.startsWith('/api/') || p === '/login' || p === '/register';
+  if (!c.res.headers.get('Cache-Control')) {
+    if (isPrivate) {
+      c.header('Cache-Control', 'no-store');
+    } else if (c.res.status === 200 && (c.res.headers.get('Content-Type') || '').includes('text/html')) {
+      c.header('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=86400');
+    }
+  }
 })
 
 // SEO settings middleware: load from DB + env, inject into renderer context

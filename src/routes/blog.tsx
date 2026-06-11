@@ -995,7 +995,7 @@ blogRoutes.get('/admin/blog', async (c) => {
         }
       `}} />
     </>,
-    { title: '블로그 관리 | 서울365치과' }
+    { title: '블로그 관리 | 서울365치과', noindex: true }
   )
 })
 

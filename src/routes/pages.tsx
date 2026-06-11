@@ -1497,6 +1497,7 @@ pageRoutes.get('/register', (c) => {
       title: '회원가입 | 서울365치과 치료사례 열람',
       description: '서울365치과 회원가입. 30초면 간편 가입. 회원 전용 Before & After 치료사례 확인.',
       canonical: 'https://seoul365dc.kr/register',
+      noindex: true,
     }
   )
 })
@@ -1575,6 +1576,7 @@ pageRoutes.get('/login', (c) => {
       title: '로그인 | 서울365치과 회원 전용',
       description: '서울365치과 로그인. Before & After 치료사례 등 회원 전용 콘텐츠 열람.',
       canonical: 'https://seoul365dc.kr/login',
+      noindex: true,
     }
   )
 })

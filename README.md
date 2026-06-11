@@ -284,3 +284,9 @@ src/
 - **Sitemaps**: 16개 (encyclopedia 추가)
 - **Feeds**: RSS + Atom + JSON Feed 3종
 - **Last Updated**: 2026-06-11 v7
+
+## 🚀 v8 (2026-06-11) — 크롤 버짓 + 엣지 캐싱 최적화
+- **noindex 시스템**: admin·login·register 등 비공개 페이지 9곳 `noindex, nofollow` (크롤 버짓 절약)
+- **HTML 엣지 캐싱**: 콘텐츠 페이지 `s-maxage=1800 + stale-while-revalidate` / admin·api `no-store` (크롤러 TTFB 단축)
+- **full-sync 확장**: IndexNow 대상에 백과사전 200 URL + 피드 + /ru 포함, sitemap ping 21개로 확장
+- **푸터 내부링크 강화**: 가격표·직답·백과사전·후기 4개 링크 전 페이지 노출 (링크 에쿼티 분배)

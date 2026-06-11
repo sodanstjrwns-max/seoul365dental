@@ -15,7 +15,7 @@ import { AGGREGATE_RATING, REVIEWS } from './data/reviews'
 let _currentSeoSettings: Record<string, string> = {};
 export function setCurrentSeoSettings(s: Record<string, string>) { _currentSeoSettings = s; }
 
-export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified, ogImage: customOgImage, ogType, datePublished, articleSection, articleTags, keywords: pageKeywords }) => {
+export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified, ogImage: customOgImage, ogType, datePublished, articleSection, articleTags, keywords: pageKeywords, noindex }) => {
   const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·인비절라인 투명교정·수면진료 전문. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
@@ -485,8 +485,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <meta name="description" content={pageDesc} />
         <meta name="keywords" content={metaKeywords} />
         <link rel="canonical" href={canonicalUrl} />
-        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-        <meta name="googlebot" content="index, follow" />
+        {/* v8: noindex prop — admin/login/register 등 비공개 페이지는 색인 차단 (크롤 버짓 절약) */}
+        <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
+        <meta name="googlebot" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
         <meta name="date" content={lastModified} />
         <meta property="article:modified_time" content={lastModified} />
 
@@ -786,6 +787,10 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                   <li><a href="/info" class="text-white/35 hover:text-[#00E5FF] transition-colors">내원안내</a></li>
                   <li><a href="/blog" class="text-white/35 hover:text-[#00E5FF] transition-colors">블로그</a></li>
                   <li><a href="/faq" class="text-white/35 hover:text-[#00E5FF] transition-colors">FAQ</a></li>
+                  <li><a href="/prices" class="text-white/35 hover:text-[#00E5FF] transition-colors">가격표</a></li>
+                  <li><a href="/answers" class="text-white/35 hover:text-[#00E5FF] transition-colors">자주 묻는 질문 직답</a></li>
+                  <li><a href="/encyclopedia" class="text-white/35 hover:text-[#00E5FF] transition-colors">치과 백과사전</a></li>
+                  <li><a href="/reviews" class="text-white/35 hover:text-[#00E5FF] transition-colors">환자 후기</a></li>
                 </ul>
               </nav>
 

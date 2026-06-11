@@ -42,7 +42,7 @@ adminRoutes.get('/admin', async (c) => {
         <p class="text-center text-white/15 text-xs mt-8">Seoul 365 Dental Admin System</p>
       </div>
     </section>,
-    { title: '관리자 로그인 | 서울365치과' }
+    { title: '관리자 로그인 | 서울365치과', noindex: true }
   )
 })
 
@@ -851,7 +851,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
         }
       `}} />
     </>,
-    { title: '관리자 대시보드 | 서울365치과' }
+    { title: '관리자 대시보드 | 서울365치과', noindex: true }
   )
 })
 
@@ -1047,7 +1047,7 @@ adminRoutes.get('/admin/consultations', async (c) => {
         }
       `}} />
     </>,
-    { title: '상담문의 관리 | 서울365치과' }
+    { title: '상담문의 관리 | 서울365치과', noindex: true }
   )
 })
 
@@ -1400,7 +1400,7 @@ adminRoutes.get('/admin/notices', async (c) => {
         }
       `}} />
     </>,
-    { title: '공지사항 관리 | 서울365치과' }
+    { title: '공지사항 관리 | 서울365치과', noindex: true }
   )
 })
 
@@ -1718,6 +1718,7 @@ adminRoutes.get('/admin/members', async (c) => {
     {
       title: '회원 관리 | 서울365 관리자',
       description: '서울365치과 관리자 회원 관리 페이지',
+      noindex: true,
     }
   )
 })
@@ -2030,7 +2031,7 @@ adminRoutes.get('/admin/seo', async (c) => {
         });
       `}} />
     </>,
-    { title: 'SEO / 색인 설정 | 서울365 관리자' }
+    { title: 'SEO / 색인 설정 | 서울365 관리자', noindex: true }
   )
 })
 
@@ -2290,7 +2291,7 @@ adminRoutes.get('/admin/pricing', async (c) => {
         });
       `}} />
     </>,
-    { title: '수가 관리 | 서울365 관리자' }
+    { title: '수가 관리 | 서울365 관리자', noindex: true }
   )
 })
 
