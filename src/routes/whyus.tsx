@@ -150,7 +150,7 @@ app.get('/why-us', (c) => {
               </div>
               <div class="p-3 bg-white rounded-xl">
                 <div class="font-bold text-gray-900">최다빈</div>
-                <div class="text-xs text-gray-500">심미·소아</div>
+                <div class="text-xs text-gray-500">임플란트·심미</div>
               </div>
               <div class="p-3 bg-white rounded-xl">
                 <div class="font-bold text-gray-900">정문희</div>
@@ -158,7 +158,7 @@ app.get('/why-us', (c) => {
               </div>
               <div class="p-3 bg-white rounded-xl">
                 <div class="font-bold text-gray-900">상세훈</div>
-                <div class="text-xs text-gray-500">보철·임플란트</div>
+                <div class="text-xs text-gray-500">보철</div>
               </div>
               <div class="p-3 bg-white rounded-xl">
                 <div class="font-bold text-gray-900">하누리</div>

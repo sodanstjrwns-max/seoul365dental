@@ -285,6 +285,16 @@ src/
 - **Feeds**: RSS + Atom + JSON Feed 3종
 - **Last Updated**: 2026-06-11 v7
 
+## 🔧 v9 (2026-06-19) — 의료진 정보 수정 + 배포
+- **하누리 원장 약력 정정**: 서울대학교 → **원광대학교**로 교체 (본문 약력 3곳 + brand 스토리 + JSON-LD alumniOf 스키마)
+- **임플란트 진료과목 담당의 변경**: 상세훈 원장 → **최다빈 원장**으로 이관
+  - 최다빈: specialties/treatmentLinks에 임플란트 추가, brand 프로필 반영
+  - 상세훈: 임플란트 제거 → 보철 전문으로 정리
+  - whyus 의료진 카드: 최다빈 "임플란트·심미" / 상세훈 "보철"
+- **JSON-LD 스키마 개선**: 의사별 alumniOf가 하드코딩(서울대)이던 것을 `doc.education` 기반 동적 생성으로 수정
+- **신규 관리자 계정**: drmoon (문석준 원장) 프로덕션 D1에 추가 (기존 admin 계정 유지)
+- **배포 완료**: https://seoul365dc.kr (Cloudflare Pages, 2026-06-19)
+
 ## 🚀 v8 (2026-06-11) — 크롤 버짓 + 엣지 캐싱 최적화
 - **noindex 시스템**: admin·login·register 등 비공개 페이지 9곳 `noindex, nofollow` (크롤 버짓 절약)
 - **HTML 엣지 캐싱**: 콘텐츠 페이지 `s-maxage=1800 + stale-while-revalidate` / admin·api `no-store` (크롤러 TTFB 단축)

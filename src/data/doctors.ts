@@ -78,11 +78,11 @@ export const doctors: Doctor[] = [
       '대한치과보존학회 정회원',
       '대한치과보철학회 정회원',
     ],
-    specialties: ['일반진료', '심미치료', '보존치료'],
-    treatmentLinks: ['/treatments/cavity', '/treatments/cosmetic'],
+    specialties: ['임플란트', '일반진료', '심미치료', '보존치료'],
+    treatmentLinks: ['/treatments/implant', '/treatments/cavity', '/treatments/cosmetic'],
     h1: '최다빈 원장 – 서울대 치의학석사',
     metaTitle: '최다빈 원장 | 서울365치과 - 서울대 치의학석사',
-    metaDesc: '서울365치과 최다빈 원장. 서울대 치의학석사. 꼼꼼한 설명과 정밀한 진료.',
+    metaDesc: '서울365치과 최다빈 원장. 서울대 치의학석사. 임플란트·꼼꼼한 설명과 정밀한 진료.',
   },
   {
     slug: 'jung-munhee',
@@ -132,11 +132,11 @@ export const doctors: Doctor[] = [
       '대한치과보철학회 정회원',
       '대한구강악안면임플란트 정회원',
     ],
-    specialties: ['임플란트', '보철치료', '종합진료'],
-    treatmentLinks: ['/treatments/implant', '/treatments/crown', '/treatments/bridge'],
+    specialties: ['보철치료', '종합진료'],
+    treatmentLinks: ['/treatments/crown', '/treatments/bridge'],
     h1: '상세훈 원장 – 서울대 치의학석사',
     metaTitle: '상세훈 원장 | 서울365치과 - 서울대 치의학석사',
-    metaDesc: '서울365치과 상세훈 원장. 서울대 치의학석사. 임플란트·보철치료 전문.',
+    metaDesc: '서울365치과 상세훈 원장. 서울대 치의학석사. 보철치료 전문.',
   },
   {
     slug: 'ha-nuri',
@@ -147,15 +147,15 @@ export const doctors: Doctor[] = [
     photoFallback: '/static/dr-ha-nuri-profile.svg',
     philosophy: '아름다운 미소는 건강한 교합에서 시작됩니다. 기능과 심미 모두를 고려한 교정 치료를 약속드립니다.',
     education: [
-      '서울대학교 치과대학 졸업',
-      '서울대학교 치의학대학원 교정과 수련',
+      '원광대학교 치과대학 졸업',
+      '원광대학교 치의학대학원 교정과 수련',
     ],
     credentials: [
       '보건복지부 인증 교정과 전문의',
       '인비절라인 인증의 (Invisalign Certified)',
     ],
     career: [
-      '서울대학교 치과병원 교정과 전공의',
+      '원광대학교 치과병원 교정과 전공의',
     ],
     societies: [
       '대한치과교정학회 정회원',
