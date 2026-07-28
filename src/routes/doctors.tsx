@@ -18,9 +18,9 @@ doctorRoutes.get('/doctors', (c) => {
         </div>
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 pt-28 md:pt-36 pb-12">
           <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s;text-shadow:0 2px 20px rgba(0,0,0,0.5)">서울365치과 의료진 소개</h1>
-          <p class="hero-sub text-white/60 max-w-xl reveal" style="transition-delay:0.6s;text-shadow:0 1px 10px rgba(0,0,0,0.5)">서울대 출신 5인 원장이 하나의 케이스를 함께 봅니다.</p>
+          <p class="hero-sub text-white/60 max-w-xl reveal" style="transition-delay:0.6s;text-shadow:0 1px 10px rgba(0,0,0,0.5)">서울대 출신 원장들이 하나의 케이스를 함께 봅니다.</p>
           <p class="text-white/30 text-sm mt-4 reveal" style="transition-delay:0.75s">
-            <i class="fa-solid fa-users text-[#0066FF]/50 mr-2"></i>원장 5인 · 전문 스태프 20여 명이 함께합니다.
+            <i class="fa-solid fa-users text-[#0066FF]/50 mr-2"></i>서울대 출신 원장 · 전문 스태프 20여 명이 함께합니다.
           </p>
         </div>
       </section>

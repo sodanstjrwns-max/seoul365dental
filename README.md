@@ -300,3 +300,14 @@ src/
 - **HTML 엣지 캐싱**: 콘텐츠 페이지 `s-maxage=1800 + stale-while-revalidate` / admin·api `no-store` (크롤러 TTFB 단축)
 - **full-sync 확장**: IndexNow 대상에 백과사전 200 URL + 피드 + /ru 포함, sitemap ping 21개로 확장
 - **푸터 내부링크 강화**: 가격표·직답·백과사전·후기 4개 링크 전 페이지 노출 (링크 에쿼티 분배)
+
+## v10 (2026-07-28) — 차해나 원장 신규 합류
+- **신규 의료진 추가**: 차해나 원장 (slug: `cha-haena`)
+  - 학력: 연세대 생명공학과 졸업 / 서울대 치과대학 졸업 / 서울대 치의학대학원 석사
+  - 경력: 서울대학교 치과병원 종합진료실
+  - 국제 연수: 美 Tufts·NYU, 濠 Univ. of Melbourne, 中 Sichuan Univ.
+  - 담당: 보철·심미·보존치료·종합진료
+- 박준규 원장이 전달한 카카오톡 스크린샷에서 프로필 사진만 크롭하여 `/static/dr-cha-haena-profile.jpg`로 저장
+- 반영 파일: `src/data/doctors.ts`, `src/data/brand.ts`, `src/routes/whyus.tsx`
+- **정책(옵션2)**: 브랜드 슬로건 "서울대 출신 5인" 표기는 그대로 유지(전문의 3인 포함 표현 보존, 의료광고법 리스크 회피). 의료진 목록/카드에만 차해나 원장 추가.
+- 배포: https://b5387f90.seoul365dental.pages.dev → https://seoul365dc.kr/ (HTTP 200 검증 완료)

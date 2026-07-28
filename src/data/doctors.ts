@@ -167,6 +167,43 @@ export const doctors: Doctor[] = [
     metaTitle: '하누리 원장 | 서울365치과 - 교정과 전문의',
     metaDesc: '서울365치과 하누리 원장. 교정과 전문의, 인비절라인 인증의. 투명교정·성인교정·소아교정 전문.',
   },
+  {
+    slug: 'cha-haena',
+    name: '차해나',
+    title: '원장',
+    titleShort: '원장',
+    photo: '/static/dr-cha-haena-profile.jpg',
+    photoFallback: '/static/dr-cha-haena-profile.svg',
+    philosophy: '환자 한 분 한 분의 이야기에 귀 기울이고, 세심하고 정확한 진료로 편안한 치료 경험을 드리겠습니다.',
+    education: [
+      '연세대학교 생명공학과 졸업',
+      '서울대학교 치과대학 졸업',
+      '서울대학교 치의학대학원 석사',
+    ],
+    credentials: [
+      '서울대학교 치의학대학원 임상증례 발표 우수 포스터상',
+      '장석우 교수 핸즈온 엔도 세미나 수료',
+      'KATMD 턱관절장애 연수회 이수',
+      '국민건강보험공단 구강검진 교육 이수',
+      '미국 Tufts University Dental School Externship',
+      '미국 New York University Dental School Visiting Student',
+      '호주 University of Melbourne Dental School Visiting Student',
+      '중국 Sichuan University CAMPUS Asia Plus (CA +inD)',
+    ],
+    career: [
+      '서울대학교 치과병원 종합진료실',
+    ],
+    societies: [
+      '대한치과보철학회 정회원',
+      '대한심미치과학회 정회원',
+      '대한치과보존학회 정회원',
+    ],
+    specialties: ['보철치료', '심미치료', '보존치료', '종합진료'],
+    treatmentLinks: ['/treatments/crown', '/treatments/cosmetic', '/treatments/cavity'],
+    h1: '차해나 원장 – 서울대 치의학석사',
+    metaTitle: '차해나 원장 | 서울365치과 - 서울대 치의학석사',
+    metaDesc: '서울365치과 차해나 원장. 서울대 치의학석사, 연세대 생명공학과 졸업. 보철·심미·보존치료 전문. 국제 연수 다수.',
+  },
 ];
 
 export function getDoctorBySlug(slug: string): Doctor | undefined {

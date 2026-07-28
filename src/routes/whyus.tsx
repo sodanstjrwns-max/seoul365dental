@@ -138,12 +138,12 @@ app.get('/why-us', (c) => {
           </div>
 
           <div class="mt-12 p-8 bg-gray-50 rounded-2xl border border-gray-100">
-            <h2 class="text-2xl font-bold text-gray-900 mb-4 text-center">서울대 치과대학 출신 5인 협진</h2>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 text-center">서울대 치과대학 출신 의료진 협진</h2>
             <p class="text-gray-700 leading-relaxed text-center mb-6">
-              일반 치과는 보통 1~3인의 치과의사가 모든 분야를 진료합니다. 서울365치과는 임플란트, 보존과, 교정과 등 분야별 전문의 5명이 협진하므로,
+              일반 치과는 보통 1~3인의 치과의사가 모든 분야를 진료합니다. 서울365치과는 임플란트, 보존과, 교정과 등 분야별 전문 원장이 협진하므로,
               복잡한 케이스도 한 병원에서 원스톱으로 해결 가능합니다.
             </p>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-3 text-center">
               <div class="p-3 bg-white rounded-xl">
                 <div class="font-bold text-gray-900">박준규</div>
                 <div class="text-xs text-gray-500">대표원장 · 임플란트</div>
@@ -163,6 +163,10 @@ app.get('/why-us', (c) => {
               <div class="p-3 bg-white rounded-xl">
                 <div class="font-bold text-gray-900">하누리</div>
                 <div class="text-xs text-gray-500">교정과 전문의</div>
+              </div>
+              <div class="p-3 bg-white rounded-xl">
+                <div class="font-bold text-gray-900">차해나</div>
+                <div class="text-xs text-gray-500">보철·심미</div>
               </div>
             </div>
           </div>
