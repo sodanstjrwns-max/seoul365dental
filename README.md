@@ -311,3 +311,18 @@ src/
 - 반영 파일: `src/data/doctors.ts`, `src/data/brand.ts`, `src/routes/whyus.tsx`
 - **정책(옵션2)**: 브랜드 슬로건 "서울대 출신 5인" 표기는 그대로 유지(전문의 3인 포함 표현 보존, 의료광고법 리스크 회피). 의료진 목록/카드에만 차해나 원장 추가.
 - 배포: https://b5387f90.seoul365dental.pages.dev → https://seoul365dc.kr/ (HTTP 200 검증 완료)
+
+## v11 (2026-08-02) — 진료비 수가표 관리자 편집 기능
+- **관리자 페이지에서 8개 진료 수가표를 코드 배포 없이 편집 가능** (`/admin/pricing`)
+  - 대상 진료: 임플란트 · 교정 · 라미네이트 · 레진 · 신경치료 · 크라운 · 치아미백 · 사랑니발치
+  - 편집 항목: 각 tier의 이름(name) · 가격(price) · 범위(range) · 특징(features) + 진료별 intro/description
+  - 8개 진료를 접이식(`<details>`) 아코디언 UI로 제공, 저장/초기화 버튼 + `/prices` 미리보기 링크
+- **아키텍처 (비침습적 병합 전략)**
+  - 코드의 `PRICE_PAGES`(기본값)는 그대로 두고, DB `site_settings`의 `PRICING_OVERRIDE` 키에 편집 JSON을 저장
+  - 요청 시 `getPricePages(db)`가 기본값 위에 override를 병합 → **즉시 반영, 스키마 마이그레이션 불필요**
+  - 초기화 = override 빈 문자열 저장 → 코드 기본값으로 롤백
+  - range 문자열에서 숫자 자동 파싱(`parseRangeToKRW`) → JSON-LD의 `priceMin`/`priceMax` 자동 갱신 (Schema.org AggregateOffer 반영)
+- **보안**: `PUT /api/admin/pricing/tables`는 `getAdminFromCookie` 인증 필수(미인증 시 401), `PRICE_PAGES` slug/tier 인덱스 화이트리스트 검증 + 길이 캡
+- 반영 파일: `src/routes/commercial.tsx` (PRICE_PAGES export, getPricePages 병합 헬퍼, async 라우트), `src/routes/admin.tsx` (에디터 UI + 저장/초기화 API)
+- 기존 임플란트 이벤트 설정(`EVENT_IMPLANT_*`) UI/API는 그대로 유지 (독립 동작)
+- 배포: https://60eeccd1.seoul365dental.pages.dev → https://seoul365dc.kr/ (프로덕션 로그인 후 수가표 섹션 렌더 + 8개 진료 주입 검증 완료)

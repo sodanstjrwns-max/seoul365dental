@@ -4,6 +4,7 @@ import { hashPassword, verifyPassword, generateSessionId } from '../lib/auth'
 import { getAdminUser, getAdminFromCookie, initAdminTables, initUserTables, initSettingsTable, getSetting, setSetting, getAllSeoSettings } from '../lib/db'
 import { treatments } from '../data/treatments'
 import { doctors } from '../data/doctors'
+import { PRICE_PAGES, PRICING_OVERRIDE_KEY } from './commercial'
 
 const adminRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -2092,6 +2093,28 @@ adminRoutes.get('/admin/pricing', async (c) => {
     currentValues[f.key] = await getSetting(c.env.DB, f.key, f.default);
   }
 
+  // ── 진료비 수가표(8과목) 현재값: 기본 PRICE_PAGES + DB 오버라이드 병합 ──
+  const pricingTables: Record<string, any> = JSON.parse(JSON.stringify(PRICE_PAGES));
+  try {
+    const rawOv = await getSetting(c.env.DB, PRICING_OVERRIDE_KEY, '');
+    if (rawOv) {
+      const ov = JSON.parse(rawOv);
+      for (const slug of Object.keys(pricingTables)) {
+        if (!ov[slug]) continue;
+        if (typeof ov[slug].intro === 'string' && ov[slug].intro.trim()) pricingTables[slug].intro = ov[slug].intro;
+        if (Array.isArray(ov[slug].tiers)) {
+          ov[slug].tiers.forEach((t: any, i: number) => {
+            if (!pricingTables[slug].tiers[i]) return;
+            if (typeof t.name === 'string' && t.name.trim()) pricingTables[slug].tiers[i].name = t.name;
+            if (typeof t.price === 'string' && t.price.trim()) pricingTables[slug].tiers[i].price = t.price;
+            if (typeof t.range === 'string' && t.range.trim()) pricingTables[slug].tiers[i].range = t.range;
+            if (Array.isArray(t.features) && t.features.length) pricingTables[slug].tiers[i].features = t.features;
+          });
+        }
+      }
+    }
+  } catch { /* 오버라이드 파싱 실패 시 기본값 사용 */ }
+
   return c.render(
     <>
       {/* Admin Header */}
@@ -2230,10 +2253,149 @@ adminRoutes.get('/admin/pricing', async (c) => {
             </ul>
           </div>
 
+          {/* ═══════════════════════════════════════════════ */}
+          {/* 진료비 수가표 관리 (8개 진료과목 · /prices/*) */}
+          {/* ═══════════════════════════════════════════════ */}
+          <div class="mt-14 pt-10 border-t border-white/10">
+            <div class="bg-gradient-to-r from-emerald-500/10 to-[#0066FF]/10 border border-emerald-500/20 rounded-2xl p-6 mb-8">
+              <h2 class="text-white font-bold text-lg mb-2"><i class="fa-solid fa-list-ol text-emerald-400 mr-2"></i>진료비 수가표 관리</h2>
+              <p class="text-white/40 text-sm">가격 안내 페이지(<code class="text-emerald-300">/prices/[진료명]</code>)의 진료비 수가를 직접 수정합니다.<br/>과목별 가격·범위·특징을 변경하면 <strong class="text-white/60">코드 배포 없이</strong> 즉시 반영됩니다.</p>
+            </div>
+
+            <div id="pricing-tables-root" class="space-y-5"></div>
+
+            <div class="flex gap-3 mt-8">
+              <button type="button" id="tables-save-btn" class="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold py-4 rounded-xl hover:shadow-lg hover:shadow-emerald-500/20 transition-all text-sm">
+                <i class="fa-solid fa-floppy-disk mr-2"></i>진료비 수가표 저장
+              </button>
+              <button type="button" id="tables-reset-btn" class="px-6 flex items-center bg-white/5 border border-white/10 rounded-xl text-white/50 hover:text-red-400 hover:border-red-400/30 transition text-sm font-bold">
+                <i class="fa-solid fa-rotate-left mr-2"></i>기본값 복원
+              </button>
+              <a href="/prices" target="_blank" class="px-6 flex items-center bg-white/5 border border-white/10 rounded-xl text-white/50 hover:text-white/80 hover:bg-white/10 transition text-sm font-bold">
+                <i class="fa-solid fa-external-link mr-2"></i>미리보기
+              </a>
+            </div>
+
+            <div class="mt-6 bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+              <h3 class="text-white font-bold mb-3 text-sm"><i class="fa-solid fa-circle-info text-emerald-400 mr-2"></i>수가표 편집 안내</h3>
+              <ul class="text-white/40 text-xs space-y-1.5 leading-relaxed">
+                <li>• <strong class="text-white/60">가격</strong>: 카드에 크게 표시되는 대표 가격입니다 (예: <code class="text-emerald-300">90만원~</code>).</li>
+                <li>• <strong class="text-white/60">범위</strong>: 가격 아래 작게 표시되는 상세 범위입니다 (예: <code class="text-emerald-300">90~120만원 / 1개</code>). 범위의 숫자는 검색엔진 가격 데이터(JSON-LD)에 자동 반영됩니다.</li>
+                <li>• <strong class="text-white/60">특징</strong>: 한 줄에 하나씩 입력하세요. 카드에 체크 목록으로 표시됩니다.</li>
+                <li>• <strong class="text-white/60">기본값 복원</strong>: 저장된 수정 내용을 모두 지우고 원래 코드 기본값으로 되돌립니다.</li>
+              </ul>
+            </div>
+          </div>
+
         </div>
       </section>
 
+      {/* 서버에서 병합한 현재 수가표 데이터 주입 */}
+      <script id="pricing-tables-data" type="application/json" dangerouslySetInnerHTML={{__html: JSON.stringify(pricingTables)}} />
+
       <script dangerouslySetInnerHTML={{__html: `
+        // ── 진료비 수가표 편집기 ──
+        var PT_DATA = {};
+        try { PT_DATA = JSON.parse(document.getElementById('pricing-tables-data').textContent || '{}'); } catch(e) { PT_DATA = {}; }
+
+        function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+        function renderPricingTables() {
+          var root = document.getElementById('pricing-tables-root');
+          if (!root) return;
+          var html = '';
+          Object.keys(PT_DATA).forEach(function(slug) {
+            var page = PT_DATA[slug];
+            html += '<details class="bg-white/5 border border-white/5 rounded-2xl overflow-hidden group" data-slug="'+esc(slug)+'">';
+            html += '<summary class="px-6 py-4 cursor-pointer flex items-center justify-between text-white font-bold text-sm hover:bg-white/[0.03]">';
+            html += '<span><i class="fa-solid fa-tooth text-emerald-400 mr-2"></i>'+esc(slug)+' <span class="text-white/30 font-normal ml-2">('+page.tiers.length+'개 항목)</span></span>';
+            html += '<i class="fa-solid fa-chevron-down text-white/30 group-open:rotate-180 transition"></i>';
+            html += '</summary>';
+            html += '<div class="px-6 pb-6 pt-2 space-y-5">';
+            page.tiers.forEach(function(t, ti) {
+              html += '<div class="bg-white/[0.03] border border-white/5 rounded-xl p-4 space-y-3" data-tier="'+ti+'">';
+              html += '<div class="text-emerald-400/70 text-xs font-bold">항목 '+(ti+1)+'</div>';
+              html += '<div class="grid grid-cols-1 md:grid-cols-3 gap-3">';
+              html += '<div><label class="block text-white/40 text-[11px] font-semibold mb-1">제품/항목명</label><input type="text" data-field="name" value="'+esc(t.name)+'" class="pt-input w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-emerald-400/50 focus:outline-none"/></div>';
+              html += '<div><label class="block text-white/40 text-[11px] font-semibold mb-1">대표 가격</label><input type="text" data-field="price" value="'+esc(t.price)+'" placeholder="90만원~" class="pt-input w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-emerald-300 font-bold text-sm focus:border-emerald-400/50 focus:outline-none"/></div>';
+              html += '<div><label class="block text-white/40 text-[11px] font-semibold mb-1">가격 범위</label><input type="text" data-field="range" value="'+esc(t.range)+'" placeholder="90~120만원 / 1개" class="pt-input w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-emerald-400/50 focus:outline-none"/></div>';
+              html += '</div>';
+              html += '<div><label class="block text-white/40 text-[11px] font-semibold mb-1">특징 (한 줄에 하나씩)</label><textarea data-field="features" rows="'+Math.max(3,t.features.length)+'" class="pt-input w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-emerald-400/50 focus:outline-none leading-relaxed">'+esc(t.features.join('\\n'))+'</textarea></div>';
+              html += '</div>';
+            });
+            html += '</div></details>';
+          });
+          root.innerHTML = html;
+        }
+        renderPricingTables();
+
+        // 편집 내용 수집 → 오버라이드 JSON 생성
+        function collectPricingOverride() {
+          var out = {};
+          document.querySelectorAll('#pricing-tables-root details[data-slug]').forEach(function(det) {
+            var slug = det.getAttribute('data-slug');
+            var tiers = [];
+            det.querySelectorAll('div[data-tier]').forEach(function(tw) {
+              var name = (tw.querySelector('[data-field="name"]')||{}).value || '';
+              var price = (tw.querySelector('[data-field="price"]')||{}).value || '';
+              var range = (tw.querySelector('[data-field="range"]')||{}).value || '';
+              var featRaw = (tw.querySelector('[data-field="features"]')||{}).value || '';
+              var features = featRaw.split('\\n').map(function(x){return x.trim();}).filter(function(x){return x;});
+              tiers.push({ name: name.trim(), price: price.trim(), range: range.trim(), features: features });
+            });
+            out[slug] = { tiers: tiers };
+          });
+          return out;
+        }
+
+        // 저장
+        document.getElementById('tables-save-btn').addEventListener('click', async function() {
+          var btn = this;
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>저장 중...';
+          try {
+            var override = collectPricingOverride();
+            var res = await fetch('/api/admin/pricing/tables', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ override: override })
+            });
+            var result = await res.json();
+            if (!result.ok) throw new Error(result.error || '저장 실패');
+            btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>저장 완료!';
+            setTimeout(function() {
+              btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i>진료비 수가표 저장';
+              btn.disabled = false;
+            }, 2000);
+          } catch(err) {
+            alert('오류: ' + err.message);
+            btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i>진료비 수가표 저장';
+            btn.disabled = false;
+          }
+        });
+
+        // 기본값 복원
+        document.getElementById('tables-reset-btn').addEventListener('click', async function() {
+          if (!confirm('저장된 수가표 수정 내용을 모두 지우고 코드 기본값으로 되돌립니다. 계속할까요?')) return;
+          var btn = this;
+          btn.disabled = true;
+          btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i>복원 중...';
+          try {
+            var res = await fetch('/api/admin/pricing/tables', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ reset: true })
+            });
+            var result = await res.json();
+            if (!result.ok) throw new Error(result.error || '복원 실패');
+            location.reload();
+          } catch(err) {
+            alert('오류: ' + err.message);
+            btn.innerHTML = '<i class="fa-solid fa-rotate-left mr-2"></i>기본값 복원';
+            btn.disabled = false;
+          }
+        });
+
         // 할인율 계산
         function calcDiscount() {
           var price = parseInt(document.querySelector('[name="EVENT_IMPLANT_PRICE"]').value) || 0;
@@ -2332,6 +2494,49 @@ adminRoutes.put('/api/admin/pricing', async (c) => {
         await setSetting(c.env.DB, key, body[key] || '');
       }
     }
+    return c.json({ ok: true });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '저장 실패' }, 500);
+  }
+})
+
+// --- 진료비 수가표(8과목) API: PUT (저장 / 기본값 복원) ---
+adminRoutes.put('/api/admin/pricing/tables', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  try {
+    const body = await c.req.json<{ override?: any; reset?: boolean }>();
+
+    // 기본값 복원 = 빈 오버라이드 저장
+    if (body.reset) {
+      await setSetting(c.env.DB, PRICING_OVERRIDE_KEY, '');
+      return c.json({ ok: true, reset: true });
+    }
+
+    const override = body.override;
+    if (!override || typeof override !== 'object') {
+      return c.json({ ok: false, error: '올바른 데이터가 아닙니다.' }, 400);
+    }
+
+    // 화이트리스트: 실제 존재하는 과목/티어 인덱스만 허용 (임의 키 주입 방지)
+    const clean: Record<string, any> = {};
+    for (const slug of Object.keys(PRICE_PAGES)) {
+      const ov = override[slug];
+      if (!ov || !Array.isArray(ov.tiers)) continue;
+      const baseTiers = PRICE_PAGES[slug].tiers;
+      const tiers = ov.tiers.slice(0, baseTiers.length).map((t: any, i: number) => ({
+        name: String(t?.name ?? baseTiers[i].name).slice(0, 120),
+        price: String(t?.price ?? baseTiers[i].price).slice(0, 60),
+        range: String(t?.range ?? baseTiers[i].range).slice(0, 120),
+        features: Array.isArray(t?.features)
+          ? t.features.map((f: any) => String(f).slice(0, 120)).filter((f: string) => f.trim()).slice(0, 12)
+          : baseTiers[i].features,
+      }));
+      clean[slug] = { tiers };
+    }
+
+    await setSetting(c.env.DB, PRICING_OVERRIDE_KEY, JSON.stringify(clean));
     return c.json({ ok: true });
   } catch (e: any) {
     return c.json({ ok: false, error: e.message || '저장 실패' }, 500);

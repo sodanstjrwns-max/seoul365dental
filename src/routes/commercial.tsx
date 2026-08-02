@@ -8,6 +8,7 @@
 import { Hono } from 'hono';
 import type { Bindings } from '../lib/types';
 import { CLINIC } from '../data/clinic';
+import { getSetting } from '../lib/db';
 import {
   buildBreadcrumb,
   buildFAQ,
@@ -42,7 +43,7 @@ type PricePage = {
   faqs: Array<{ q: string; a: string }>;
 };
 
-const PRICE_PAGES: Record<string, PricePage> = {
+export const PRICE_PAGES: Record<string, PricePage> = {
   '임플란트': {
     slug: '임플란트',
     title: '인천 임플란트 가격 비교 2026 — 구월동 서울365치과',
@@ -232,9 +233,72 @@ const PRICE_PAGES: Record<string, PricePage> = {
 };
 
 // ────────────────────────────────────────────────
+// 💰 관리자 수가 오버라이드 (site_settings의 PRICING_OVERRIDE 키)
+// PRICE_PAGES를 기본값으로 두고, DB에 저장된 값이 있으면 병합한다.
+// 저장 형식(JSON): { "임플란트": { "tiers": [{ name, price, range, features:[...] }, ...] }, ... }
+// - 관리자가 편집 가능한 필드: 각 과목의 intro / 각 tier의 name·price·range·features
+// - priceMin/priceMax(스키마용 숫자)는 range 문자열에서 자동 파싱하여 갱신
+// ────────────────────────────────────────────────
+export const PRICING_OVERRIDE_KEY = 'PRICING_OVERRIDE';
+
+// range 문자열(예: "90~120만원 / 1개", "본인부담 5~8만원", "20~30만원 추가")에서
+// 최소/최대 금액(KRW)을 최대한 추출. 실패 시 기존값 유지.
+function parseRangeToKRW(range: string, fallbackMin: number, fallbackMax: number): { min: number; max: number } {
+  try {
+    const nums = (range.match(/[\d,]+/g) || []).map(n => parseInt(n.replace(/,/g, ''), 10)).filter(n => !isNaN(n));
+    if (nums.length === 0) return { min: fallbackMin, max: fallbackMax };
+    // "만원" 단위 가정 → 원 단위로 환산
+    const toKRW = (v: number) => v * 10000;
+    const min = toKRW(nums[0]);
+    const max = toKRW(nums.length > 1 ? nums[1] : nums[0]);
+    return { min: Math.min(min, max), max: Math.max(min, max) };
+  } catch {
+    return { min: fallbackMin, max: fallbackMax };
+  }
+}
+
+// 기본 PRICE_PAGES + DB 오버라이드를 병합한 결과를 반환
+async function getPricePages(db: D1Database): Promise<Record<string, PricePage>> {
+  // 깊은 복사(기본값 훼손 방지)
+  const base: Record<string, PricePage> = JSON.parse(JSON.stringify(PRICE_PAGES));
+  let override: any = null;
+  try {
+    const raw = await getSetting(db, PRICING_OVERRIDE_KEY, '');
+    if (raw) override = JSON.parse(raw);
+  } catch { /* 파싱 실패 시 기본값 사용 */ }
+  if (!override || typeof override !== 'object') return base;
+
+  for (const slug of Object.keys(base)) {
+    const ov = override[slug];
+    if (!ov) continue;
+    const page = base[slug];
+    if (typeof ov.intro === 'string' && ov.intro.trim()) page.intro = ov.intro;
+    if (typeof ov.description === 'string' && ov.description.trim()) page.description = ov.description;
+    if (Array.isArray(ov.tiers)) {
+      ov.tiers.forEach((ovTier: any, i: number) => {
+        const t = page.tiers[i];
+        if (!t) return;
+        if (typeof ovTier.name === 'string' && ovTier.name.trim()) t.name = ovTier.name;
+        if (typeof ovTier.price === 'string' && ovTier.price.trim()) t.price = ovTier.price;
+        if (typeof ovTier.range === 'string' && ovTier.range.trim()) {
+          t.range = ovTier.range;
+          const { min, max } = parseRangeToKRW(ovTier.range, t.priceMin, t.priceMax);
+          t.priceMin = min; t.priceMax = max;
+        }
+        if (Array.isArray(ovTier.features) && ovTier.features.length) {
+          t.features = ovTier.features.filter((f: any) => typeof f === 'string' && f.trim());
+        }
+      });
+    }
+  }
+  return base;
+}
+
+// ────────────────────────────────────────────────
 // /prices — 가격 안내 인덱스
 // ────────────────────────────────────────────────
-app.get('/prices', (c) => {
+app.get('/prices', async (c) => {
+  const PRICE_PAGES = await getPricePages(c.env.DB);
   const canonicalUrl = `${SITE_URL}/prices`;
 
   // BreadcrumbList + ItemList (가격 인덱스)
@@ -304,8 +368,9 @@ app.get('/prices', (c) => {
 // ────────────────────────────────────────────────
 // /prices/[treatment] — 항목별 가격 페이지
 // ────────────────────────────────────────────────
-app.get('/prices/:treatment', (c) => {
+app.get('/prices/:treatment', async (c) => {
   const treatment = decodeURIComponent(c.req.param('treatment'));
+  const PRICE_PAGES = await getPricePages(c.env.DB);
   const page = PRICE_PAGES[treatment];
   if (!page) return c.notFound();
 
