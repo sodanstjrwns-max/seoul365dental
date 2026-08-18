@@ -25,6 +25,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const ogImage = customOgImage || 'https://seoul365dc.kr/static/og-image.png';
   const resolvedOgType = ogType || 'website';
   const lastModified = dateModified || new Date().toISOString().split('T')[0];
+  const currentYear = new Date().getFullYear(); // 푸터·저작권 연도 자동 갱신 (F2 방치 신호 제거)
 
   // Dynamic SEO/Analytics settings (from DB or env via global cache)
   const seo = _currentSeoSettings || {};
@@ -53,7 +54,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       "query-input": "required name=search_term_string"
     },
     "copyrightHolder": { "@id": "https://seoul365dc.kr/#dentist" },
-    "copyrightYear": "2019",
+    "copyrightYear": String(currentYear),
   };
 
   // Dentist + MedicalOrganization combined schema
@@ -847,7 +848,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
             {/* Copyright & Links */}
             <div class="border-t border-white/[0.04] py-5 flex flex-col md:flex-row justify-between gap-3 text-[0.72rem] text-white/15">
-              <span>&copy; 2019-2026 서울365치과의원. All rights reserved.</span>
+              <span>&copy; 2019-{currentYear} 서울365치과의원. All rights reserved.</span>
               <div class="flex gap-4">
                 <a href="/privacy" class="hover:text-white/50 transition-colors">개인정보처리방침</a>
                 <a href="/terms" class="hover:text-white/50 transition-colors">이용약관</a>

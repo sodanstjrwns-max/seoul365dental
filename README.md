@@ -326,3 +326,22 @@ src/
 - 반영 파일: `src/routes/commercial.tsx` (PRICE_PAGES export, getPricePages 병합 헬퍼, async 라우트), `src/routes/admin.tsx` (에디터 UI + 저장/초기화 API)
 - 기존 임플란트 이벤트 설정(`EVENT_IMPLANT_*`) UI/API는 그대로 유지 (독립 동작)
 - 배포: https://60eeccd1.seoul365dental.pages.dev → https://seoul365dc.kr/ (프로덕션 로그인 후 수가표 섹션 렌더 + 8개 진료 주입 검증 완료)
+
+## v12 (2026-08-18) — Patient Grader 감점 개선 1차 (F2·A4·데이터 정합성)
+> PF 병원 14곳 홈페이지 평가(Patient Grader) 리포트 기반. 서울365치과 80.5점 → 감점 항목 중 "코드로 확실히 고칠 수 있는 것" 우선 처리.
+- **[F2 기술 현대성 +2.5] 저작권 연도 방치 신호 제거**
+  - 푸터 `© 2019-2026` 하드코딩 → **동적 연도**(`2019-{new Date().getFullYear()}`)로 변경 → 매년 자동 갱신, 재방치 원천 차단
+  - JSON-LD `copyrightYear: "2019"` → `String(currentYear)` (검색엔진·AI가 읽는 구조화 데이터 갱신)
+  - 러시아어 페이지(`/ru`) 푸터 `© 2019–2026`도 동일 동적화
+  - 반영: `src/renderer.tsx`, `src/routes/ru.tsx`
+- **[A4 canonical 정합성 +0.5] www ↔ non-www URL 통일**
+  - 문제: `www.seoul365dc.kr`가 301 없이 HTTP 200으로 중복 서빙 → 같은 페이지가 2개 주소로 존재(점수 분산)
+  - 조치: `index.tsx` 전역 미들웨어에 **www → non-www 301 리다이렉트** 추가 (대표 URL = `https://seoul365dc.kr`)
+  - 검증: `https://www.seoul365dc.kr/`, `/prices` 모두 `301 → https://seoul365dc.kr/...` 확인
+- **[데이터 정합성] "026년" 오인 텍스트 수정**
+  - 원인: 홈·블로그 최신글 카드에서 카테고리 span과 날짜 span이 공백 없이 인접(`치과상식2026.08.18`) → 크롤러/AI가 "…상식2026", "026년"으로 오인 (리포트 D4 증거)
+  - 조치: 카테고리·날짜 사이에 `·` 구분자(`aria-hidden`) 삽입 → 텍스트 경계 확보(`치과상식·2026.08.18`), 시각 디자인 유지
+  - 반영: `src/routes/home.tsx`(본문+폴백 2곳), `src/routes/blog.tsx`(리스트 카드)
+- **보류**: D5 전문용어 병기(치조골→잇몸뼈 등)는 백과사전·용어집의 정확 용어 표제어까지 깨질 위험이 커서 원장님 지시로 단어 치환 미실시
+- **다음 단계(별도)**: D3 클리셰 지수(-2.5) — "환자 중심·아름다운 미소" 등 → 실적 수치·고유명사로 교체안 표 작성 후 원장님 확인 예정
+- 배포: https://30a0931e.seoul365dental.pages.dev → https://seoul365dc.kr/ (301·copyright·구분자 모두 검증 완료. 커스텀 도메인 루트는 엣지 캐시 s-maxage=1800으로 최대 30분 내 자동 반영)

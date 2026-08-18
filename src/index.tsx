@@ -66,6 +66,13 @@ app.get('/naverc88e4f49632c4e687edac6645aeef061.html', (c) => {
 // ── Trailing Slash Normalization (SEO: URL 통일) ──
 app.use('*', async (c, next) => {
   const url = new URL(c.req.url);
+  // A4 canonical 정합성: www → non-www 301 통일 (대표 URL = https://seoul365dc.kr)
+  // 같은 페이지가 www/비www 두 주소로 존재하면 평가 점수가 분산됨
+  if (url.hostname.startsWith('www.')) {
+    const bare = url.hostname.slice(4); // "www." 제거
+    return c.redirect(`https://${bare}${url.pathname}${url.search}`, 301);
+  }
+  // trailing slash 제거 통일
   if (url.pathname !== '/' && url.pathname.endsWith('/') && !url.pathname.startsWith('/api/') && !url.pathname.startsWith('/static/')) {
     const clean = url.pathname.slice(0, -1) + url.search;
     return c.redirect(clean, 301);

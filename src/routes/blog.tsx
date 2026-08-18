@@ -1145,6 +1145,7 @@ blogRoutes.get('/blog', async (c) => {
                   <div class="p-5">
                     <div class="flex items-center gap-2 mb-2">
                       <span class="text-[0.65rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{post.category}</span>
+                      <span class="text-gray-200" aria-hidden="true">·</span>
                       <span class="text-[0.6rem] text-gray-300">{post.created_at?.split('T')[0] || post.created_at?.split(' ')[0]}</span>
                     </div>
                     <h3 class="font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors line-clamp-2">{post.title}</h3>

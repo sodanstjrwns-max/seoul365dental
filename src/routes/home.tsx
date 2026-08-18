@@ -729,6 +729,7 @@ home.get('/', async (c) => {
                     <div class="p-5">
                       <div class="flex items-center gap-2 mb-2.5">
                         <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{article.category || '일반'}</span>
+                        <span class="text-gray-200" aria-hidden="true">·</span>
                         <span class="text-[0.7rem] text-gray-300">{dateStr}</span>
                       </div>
                       <h3 class="font-bold text-gray-900 text-[0.95rem] leading-snug group-hover:text-[#0066FF] transition-colors">{article.title}</h3>
@@ -751,6 +752,7 @@ home.get('/', async (c) => {
                   <div class="p-5">
                     <div class="flex items-center gap-2 mb-2.5">
                       <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{article.tag}</span>
+                      <span class="text-gray-200" aria-hidden="true">·</span>
                       <span class="text-[0.7rem] text-gray-300">{article.date}</span>
                     </div>
                     <h3 class="font-bold text-gray-900 text-[0.95rem] leading-snug group-hover:text-[#0066FF] transition-colors">{article.title}</h3>
