@@ -27,7 +27,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
   // Dynamic SEO/Analytics settings (from DB or env via global cache)
   const seo = _currentSeoSettings || {};
-  const ga4Id = seo.GA4_MEASUREMENT_ID || '';
+  const ga4Id = seo.GA4_MEASUREMENT_ID || 'G-5G4T54KTZW';
   const gtmId = seo.GTM_CONTAINER_ID || '';
   const googleVerify = seo.GOOGLE_SITE_VERIFICATION || '';
   const naverVerify = seo.NAVER_SITE_VERIFICATION || '';
