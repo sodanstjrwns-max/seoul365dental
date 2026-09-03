@@ -29,7 +29,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
   // Dynamic SEO/Analytics settings (from DB or env via global cache)
   const seo = _currentSeoSettings || {};
-  const ga4Id = seo.GA4_MEASUREMENT_ID || '';
+  const ga4Id = seo.GA4_MEASUREMENT_ID || 'G-5G4T54KTZW';
   const gtmId = seo.GTM_CONTAINER_ID || '';
   const googleVerify = seo.GOOGLE_SITE_VERIFICATION || '';
   const naverVerify = seo.NAVER_SITE_VERIFICATION || '';
@@ -556,6 +556,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}></script>
           <script dangerouslySetInnerHTML={{__html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4Id}',{page_title:document.title,page_location:window.location.href,cookie_flags:'SameSite=None;Secure',anonymize_ip:true,send_page_view:true});`}} />
         </>}
+
+        {/* Microsoft Clarity */}
+        <script dangerouslySetInnerHTML={{ __html: '(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","yc83itfgmi");' }} />
 
         {/* === PRECONNECT (Core Web Vitals LCP 최적화) === */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
