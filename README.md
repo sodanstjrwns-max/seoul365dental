@@ -327,6 +327,21 @@ src/
 - 기존 임플란트 이벤트 설정(`EVENT_IMPLANT_*`) UI/API는 그대로 유지 (독립 동작)
 - 배포: https://60eeccd1.seoul365dental.pages.dev → https://seoul365dc.kr/ (프로덕션 로그인 후 수가표 섹션 렌더 + 8개 진료 주입 검증 완료)
 
+## v13 (2026-09-03) — Git 분기 사고 복구 (양쪽 작업 모두 보존 병합)
+> 이 프로젝트 최신 작업이 GitHub에 push되기 전, 로컬 Claude Code가 구버전 기준으로 추가 작업+배포하여 히스토리가 분기됨. 어느 쪽도 버리지 않고 **양쪽 모두 살리는 merge**로 복구 (rebase·force push 금지).
+- **분기 진단** (merge-base `8ee304a`)
+  - 로컬 전용 6커밋: `4d5a629`(SEO Patient Grader) · `0d7aa40`(진료비 관리자 편집) · `ed098af`(차해나 원장) · `89eed92`(하누리) · `fb403c3`(SEO v8) · `2f840fe`(SEO v7)
+  - 원격 전용 4커밋(Claude Code): `d9cb91d`(MS Clarity) · `f91cd5d`(IndexNow 라우트) · `8929a81`(IndexNow 키 파일) · `9343710`(GA4)
+  - 공통 수정(충돌 후보) 파일: `src/renderer.tsx`, `src/routes/seo.tsx`
+- **병합 결과** — 병합 커밋 `cad2bae` (부모 `4d5a629` + `d9cb91d`)
+  - `git merge --no-commit --no-ff origin/main` → **자동 병합 성공, 충돌 0건** (양쪽이 서로 다른 라인을 건드려 겹치지 않음)
+  - 안전장치: 백업 브랜치 `backup-genspark-4d5a629`, `backup-remote-d9cb91d` 생성
+- **보존 확인** (빌드 후 로컬+프로덕션 curl 검증)
+  - [원격] GA4 `G-5G4T54KTZW` · MS Clarity `yc83itfgmi` · IndexNow 키 라우트+파일 ✅
+  - [로컬] 동적 저작권연도 · JSON-LD copyrightYear · hreflang(raw 6링크) · sitemap-encyclopedia · www→non-www 301 · 블로그 카드 `·` 구분자 ✅
+- **참고**: 로컬 dev에서 IndexNow `.txt`가 한때 404 → 병합 전 `.wrangler` 자산 매니페스트 캐시 잔여물. `rm -rf .wrangler dist && npm run build`로 해결 (코드/라우트는 처음부터 정상)
+- 배포: https://dd32e346.seoul365dental.pages.dev → https://seoul365dc.kr/ (양쪽 기능 전부 검증 완료)
+
 ## v12 (2026-08-18) — Patient Grader 감점 개선 1차 (F2·A4·데이터 정합성)
 > PF 병원 14곳 홈페이지 평가(Patient Grader) 리포트 기반. 서울365치과 80.5점 → 감점 항목 중 "코드로 확실히 고칠 수 있는 것" 우선 처리.
 - **[F2 기술 현대성 +2.5] 저작권 연도 방치 신호 제거**
