@@ -197,6 +197,71 @@ const AI_SOURCE_LABELS: Record<string, string> = {
   chatgpt: 'ChatGPT', perplexity: 'Perplexity', claude: 'Claude', gemini: 'Gemini', etc: '기타 AI',
 }
 
+// ---------- 행동 분석 (Microsoft Clarity) ----------
+const CLARITY_URL = 'https://clarity.microsoft.com/projects/view/yc83itfgmi/dashboard'
+
+function secFmt(n: any): string {
+  if (n == null || isNaN(Number(n))) return '—'
+  const s = Math.round(Number(n))
+  return s >= 60 ? `${Math.floor(s / 60)}분 ${s % 60}초` : `${s}초`
+}
+const pct1 = (n: any) => (n == null || isNaN(Number(n)) ? '—' : `${Number(n).toFixed(1)}%`)
+
+function clarityInsights(cl: any): string[] {
+  const out: string[] = []
+  if ((cl.rageClickPct ?? 0) >= 1 || (cl.deadClickPct ?? 0) >= 5) out.push('화면 반응이 없어 반복 클릭하는 사용자가 있습니다 (UI 답답 신호)')
+  if (cl.avgScrollDepth != null && cl.avgScrollDepth < 40 && (cl.sessions ?? 0) >= 30) out.push('첫 화면에서 이탈이 많습니다')
+  if ((cl.scriptErrors ?? 0) > 0) out.push(`스크립트 오류 ${fmt(cl.scriptErrors)}건 감지 — 점검 필요`)
+  if ((cl.quickbackPct ?? 0) >= 8) out.push('들어왔다 바로 나가는 비율이 높습니다')
+  if (!out.length && (cl.sessions ?? 0) > 0) out.push('특이 신호 없음')
+  return out
+}
+
+function ClaritySection({ cl }: { cl: any }) {
+  const ins = cl ? clarityInsights(cl) : []
+  return (
+    <>
+      <div class="text-white font-bold text-sm mb-3 mt-8 flex items-center flex-wrap gap-2">
+        행동 분석 <span class="text-white/25 text-xs font-medium">Clarity · 최근 3일</span>
+        <a
+          href={CLARITY_URL}
+          target="_blank"
+          rel="noopener"
+          class="text-[#0066FF] text-[0.68rem] font-bold border border-[#0066FF]/30 rounded-full px-2.5 py-0.5 hover:bg-[#0066FF]/10 transition"
+        >
+          Clarity 대시보드 <i class="fa-solid fa-arrow-up-right-from-square text-[0.58rem] ml-0.5"></i>
+        </a>
+      </div>
+      {!cl ? (
+        <div class="text-white/25 text-xs text-center py-6">Clarity 수집 대기 중</div>
+      ) : (
+        <>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <MetricCard label="세션" value={fmt(cl.sessions)} icon="fa-users" sub={cl.botSessions != null ? `봇 ${fmt(cl.botSessions)}` : undefined} />
+            <MetricCard label="사용자" value={fmt(cl.users)} icon="fa-user" />
+            <MetricCard label="평균 스크롤" value={pct1(cl.avgScrollDepth)} icon="fa-angles-down" />
+            <MetricCard label="참여시간" value={secFmt(cl.engagementSec)} icon="fa-stopwatch" sub={cl.activeSec != null ? `활성 ${secFmt(cl.activeSec)}` : undefined} />
+            <MetricCard label="레이지 클릭" value={cl.rageClicks != null ? `${fmt(cl.rageClicks)}건` : '—'} icon="fa-bolt" sub={pct1(cl.rageClickPct)} />
+            <MetricCard label="데드 클릭" value={cl.deadClicks != null ? `${fmt(cl.deadClicks)}건` : '—'} icon="fa-ban" sub={pct1(cl.deadClickPct)} />
+            <MetricCard label="퀵백" value={cl.quickbacks != null ? `${fmt(cl.quickbacks)}건` : '—'} icon="fa-rotate-left" sub={pct1(cl.quickbackPct)} />
+            <MetricCard label="스크립트 오류" value={cl.scriptErrors != null ? `${fmt(cl.scriptErrors)}건` : '—'} icon="fa-bug" sub={pct1(cl.scriptErrorPct)} />
+          </div>
+          {ins.length > 0 && (
+            <section class="bg-gradient-to-br from-[#0066FF]/10 to-white/[0.02] border border-[#0066FF]/20 rounded-2xl p-6 mb-2">
+              <h3 class="text-[#0066FF] text-sm font-bold mb-3"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i>행동 신호</h3>
+              <ul class="space-y-2">
+                {ins.map((l) => (
+                  <li class="text-white/60 text-sm leading-6 pl-4 relative"><span class="absolute left-0 text-[#0066FF] font-black">·</span>{l}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </>
+      )}
+    </>
+  )
+}
+
 // ---------- 라우트 ----------
 statsRoutes.get('/admin/stats', async (c) => {
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'))
@@ -297,6 +362,8 @@ statsRoutes.get('/admin/stats', async (c) => {
               ) : (
                 <div class="text-white/25 text-xs text-center py-6">{d.hasGa ? '애널리틱스 데이터 수집 중입니다' : '애널리틱스 연동 대기 중입니다'}</div>
               )}
+
+              <ClaritySection cl={d?.clarity} />
 
               <section class="bg-gradient-to-br from-[#0066FF]/10 to-white/[0.02] border border-[#0066FF]/20 rounded-2xl p-6 my-8">
                 <h3 class="text-[#0066FF] text-sm font-bold mb-3"><i class="fa-solid fa-lightbulb mr-2"></i>자동 인사이트</h3>
