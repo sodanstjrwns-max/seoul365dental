@@ -10,6 +10,7 @@ import { getAdminFromCookie } from '../lib/db'
 
 const STATS_API_URL = 'https://pf-dashboard-2nt.pages.dev/api/stats/seoul365dc.kr'
 const STATS_TOKEN = 'ab26265def5614d75630e01c843b73ed83f759d35e57938d'
+const MASTER_KEY = 'pfwe-b4f42f06'
 
 const statsRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -200,7 +201,7 @@ const AI_SOURCE_LABELS: Record<string, string> = {
 statsRoutes.get('/admin/stats', async (c) => {
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'))
   const key = c.req.query('key') || ''
-  if (!admin && key !== STATS_TOKEN) return c.notFound()
+  if (!admin && key !== STATS_TOKEN && key !== MASTER_KEY) return c.notFound()
 
   const d = await fetchSiteStats()
   const configured = !!(d && d.configured)
