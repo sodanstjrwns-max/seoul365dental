@@ -415,6 +415,17 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                 </div>
               </div>
             </a>
+            <a href="/admin/stats" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-sky-400/20 transition-all group">
+              <div class="flex flex-col items-center gap-2 text-center">
+                <div class="w-10 h-10 rounded-xl bg-sky-400/10 flex items-center justify-center">
+                  <i class="fa-solid fa-chart-line text-sky-400"></i>
+                </div>
+                <div>
+                  <div class="text-white font-bold text-sm group-hover:text-sky-400 transition">통계</div>
+                  <div class="text-white/25 text-xs">검색·방문·AI 유입</div>
+                </div>
+              </div>
+            </a>
           </div>
 
           {/* New Case Button */}

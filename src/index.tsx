@@ -14,6 +14,7 @@ import doctorRoutes from './routes/doctors'
 import pageRoutes from './routes/pages'
 import apiRoutes from './routes/api'
 import adminRoutes from './routes/admin'
+import statsRoutes from './routes/stats'
 import blogRoutes from './routes/blog'
 import seoRoutes from './routes/seo'
 import areaRoutes from './routes/area'
@@ -156,6 +157,7 @@ app.route('/', apiRoutes)
 
 // Admin & Blog (includes admin pages + API)
 app.route('/', adminRoutes)
+app.route('/', statsRoutes)
 app.route('/', blogRoutes)
 
 // SEO (sitemap, robots, privacy, terms, 404)
