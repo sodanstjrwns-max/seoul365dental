@@ -560,6 +560,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* Microsoft Clarity */}
         <script dangerouslySetInnerHTML={{ __html: '(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","yc83itfgmi");' }} />
 
+        {/* PF Web Engine 1st-party 비콘 */}
+        <script defer src="https://pf-dashboard-2nt.pages.dev/beacon.js"></script>
+
         {/* === PRECONNECT (Core Web Vitals LCP 최적화) === */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />

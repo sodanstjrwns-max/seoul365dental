@@ -263,6 +263,26 @@ function ClaritySection({ cl }: { cl: any }) {
 }
 
 // ---------- 라우트 ----------
+// 로컬 예약(상담) 통계 — 중앙 대시보드 수집용 (개인정보 없음, 건수만)
+statsRoutes.get('/api/local-stats', async (c) => {
+  const key = c.req.query('key') || ''
+  if (key !== STATS_TOKEN && key !== MASTER_KEY) return c.notFound()
+  try {
+    // consultations.created_at 은 UTC(CURRENT_TIMESTAMP) 기준 저장
+    const row = await c.env.DB.prepare(
+      `SELECT
+         SUM(CASE WHEN created_at >= datetime('now','-28 days') THEN 1 ELSE 0 END) AS cur,
+         SUM(CASE WHEN created_at >= datetime('now','-56 days') AND created_at < datetime('now','-28 days') THEN 1 ELSE 0 END) AS prev
+       FROM consultations`
+    ).first<{ cur: number | null; prev: number | null }>()
+    const cur = Number(row?.cur ?? 0)
+    const prev = Number(row?.prev ?? 0)
+    return c.json({ supported: true, tables: [{ name: 'consultations', cur, prev }], total: { cur, prev } })
+  } catch {
+    return c.json({ supported: false })
+  }
+})
+
 statsRoutes.get('/admin/stats', async (c) => {
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'))
   const key = c.req.query('key') || ''
