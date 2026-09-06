@@ -30,6 +30,7 @@ type PriceTier = {
   priceMax: number;         // 스키마용 (KRW)
   features: string[];
   recommended?: boolean;
+  published?: boolean;      // 공개 여부 (미지정 시 공개). 관리자 토글로 항목별 비공개 가능
 };
 type PricePage = {
   slug: string;
@@ -268,6 +269,11 @@ async function getPricePages(db: D1Database): Promise<Record<string, PricePage>>
   } catch { /* 파싱 실패 시 기본값 사용 */ }
   if (!override || typeof override !== 'object') return base;
 
+  // 기본값: 모든 항목 공개(published=true). 오버라이드에 명시적 false가 있을 때만 비공개.
+  for (const slug of Object.keys(base)) {
+    base[slug].tiers.forEach(t => { t.published = true; });
+  }
+
   for (const slug of Object.keys(base)) {
     const ov = override[slug];
     if (!ov) continue;
@@ -288,17 +294,32 @@ async function getPricePages(db: D1Database): Promise<Record<string, PricePage>>
         if (Array.isArray(ovTier.features) && ovTier.features.length) {
           t.features = ovTier.features.filter((f: any) => typeof f === 'string' && f.trim());
         }
+        // 공개/비공개: 명시적 false 만 비공개로 처리 (기존 데이터 호환: 필드 없으면 공개 유지)
+        if (ovTier.published === false) t.published = false;
       });
     }
   }
   return base;
 }
 
+// 공개용 병합 결과: 비공개(published===false) 항목 제거 + 공개 항목이 하나도 없는 과목(빈 그룹) 제거
+async function getPublicPricePages(db: D1Database): Promise<Record<string, PricePage>> {
+  const merged = await getPricePages(db);
+  const out: Record<string, PricePage> = {};
+  for (const slug of Object.keys(merged)) {
+    const page = merged[slug];
+    const visible = page.tiers.filter(t => t.published !== false);
+    if (visible.length === 0) continue; // 공개 항목 없는 과목은 목록/페이지에서 숨김
+    out[slug] = { ...page, tiers: visible };
+  }
+  return out;
+}
+
 // ────────────────────────────────────────────────
 // /prices — 가격 안내 인덱스
 // ────────────────────────────────────────────────
 app.get('/prices', async (c) => {
-  const PRICE_PAGES = await getPricePages(c.env.DB);
+  const PRICE_PAGES = await getPublicPricePages(c.env.DB);
   const canonicalUrl = `${SITE_URL}/prices`;
 
   // BreadcrumbList + ItemList (가격 인덱스)
@@ -370,9 +391,9 @@ app.get('/prices', async (c) => {
 // ────────────────────────────────────────────────
 app.get('/prices/:treatment', async (c) => {
   const treatment = decodeURIComponent(c.req.param('treatment'));
-  const PRICE_PAGES = await getPricePages(c.env.DB);
+  const PRICE_PAGES = await getPublicPricePages(c.env.DB);
   const page = PRICE_PAGES[treatment];
-  if (!page) return c.notFound();
+  if (!page) return c.notFound(); // 존재하지 않거나 공개 항목이 하나도 없는 과목
 
   const canonicalUrl = `${SITE_URL}/prices/${encodeURIComponent(treatment)}`;
 

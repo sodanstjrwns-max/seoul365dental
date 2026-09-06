@@ -2106,6 +2106,10 @@ adminRoutes.get('/admin/pricing', async (c) => {
 
   // ── 진료비 수가표(8과목) 현재값: 기본 PRICE_PAGES + DB 오버라이드 병합 ──
   const pricingTables: Record<string, any> = JSON.parse(JSON.stringify(PRICE_PAGES));
+  // 기본값: 모든 항목 공개 (편집기 토글 초기 상태)
+  for (const slug of Object.keys(pricingTables)) {
+    pricingTables[slug].tiers.forEach((t: any) => { t.published = true; });
+  }
   try {
     const rawOv = await getSetting(c.env.DB, PRICING_OVERRIDE_KEY, '');
     if (rawOv) {
@@ -2120,6 +2124,7 @@ adminRoutes.get('/admin/pricing', async (c) => {
             if (typeof t.price === 'string' && t.price.trim()) pricingTables[slug].tiers[i].price = t.price;
             if (typeof t.range === 'string' && t.range.trim()) pricingTables[slug].tiers[i].range = t.range;
             if (Array.isArray(t.features) && t.features.length) pricingTables[slug].tiers[i].features = t.features;
+            if (t.published === false) pricingTables[slug].tiers[i].published = false;
           });
         }
       }
@@ -2273,6 +2278,7 @@ adminRoutes.get('/admin/pricing', async (c) => {
               <p class="text-white/40 text-sm">가격 안내 페이지(<code class="text-emerald-300">/prices/[진료명]</code>)의 진료비 수가를 직접 수정합니다.<br/>과목별 가격·범위·특징을 변경하면 <strong class="text-white/60">코드 배포 없이</strong> 즉시 반영됩니다.</p>
             </div>
 
+            <style dangerouslySetInnerHTML={{__html: '.pt-tier.pt-hidden{opacity:.45}.pt-tier.pt-hidden::after{content:"비공개 · 사이트에 표시 안 됨";display:block;margin-top:.5rem;font-size:11px;font-weight:700;color:rgba(255,255,255,.35)}'}} />
             <div id="pricing-tables-root" class="space-y-5"></div>
 
             <div class="flex gap-3 mt-8">
@@ -2293,6 +2299,7 @@ adminRoutes.get('/admin/pricing', async (c) => {
                 <li>• <strong class="text-white/60">가격</strong>: 카드에 크게 표시되는 대표 가격입니다 (예: <code class="text-emerald-300">90만원~</code>).</li>
                 <li>• <strong class="text-white/60">범위</strong>: 가격 아래 작게 표시되는 상세 범위입니다 (예: <code class="text-emerald-300">90~120만원 / 1개</code>). 범위의 숫자는 검색엔진 가격 데이터(JSON-LD)에 자동 반영됩니다.</li>
                 <li>• <strong class="text-white/60">특징</strong>: 한 줄에 하나씩 입력하세요. 카드에 체크 목록으로 표시됩니다.</li>
+                <li>• <strong class="text-white/60">공개/비공개</strong>: 각 항목의 토글을 끄면 해당 항목이 <code class="text-emerald-300">/prices</code> 페이지에서 숨겨집니다. 한 과목의 모든 항목을 비공개하면 그 과목 자체가 목록에서 사라집니다. (가격 데이터는 지워지지 않고 보존됩니다.)</li>
                 <li>• <strong class="text-white/60">기본값 복원</strong>: 저장된 수정 내용을 모두 지우고 원래 코드 기본값으로 되돌립니다.</li>
               </ul>
             </div>
@@ -2324,8 +2331,15 @@ adminRoutes.get('/admin/pricing', async (c) => {
             html += '</summary>';
             html += '<div class="px-6 pb-6 pt-2 space-y-5">';
             page.tiers.forEach(function(t, ti) {
-              html += '<div class="bg-white/[0.03] border border-white/5 rounded-xl p-4 space-y-3" data-tier="'+ti+'">';
+              var isPub = t.published !== false;
+              html += '<div class="bg-white/[0.03] border border-white/5 rounded-xl p-4 space-y-3 pt-tier'+(isPub?'':' pt-hidden')+'" data-tier="'+ti+'">';
+              html += '<div class="flex items-center justify-between gap-3">';
               html += '<div class="text-emerald-400/70 text-xs font-bold">항목 '+(ti+1)+'</div>';
+              html += '<label class="flex items-center gap-2 cursor-pointer select-none">';
+              html += '<span class="pt-pub-label text-[11px] font-bold '+(isPub?'text-emerald-300':'text-white/30')+'">'+(isPub?'공개':'비공개')+'</span>';
+              html += '<input type="checkbox" data-field="published" class="pt-pub-toggle w-4 h-4 accent-emerald-500 cursor-pointer"'+(isPub?' checked':'')+'/>';
+              html += '</label>';
+              html += '</div>';
               html += '<div class="grid grid-cols-1 md:grid-cols-3 gap-3">';
               html += '<div><label class="block text-white/40 text-[11px] font-semibold mb-1">제품/항목명</label><input type="text" data-field="name" value="'+esc(t.name)+'" class="pt-input w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-emerald-400/50 focus:outline-none"/></div>';
               html += '<div><label class="block text-white/40 text-[11px] font-semibold mb-1">대표 가격</label><input type="text" data-field="price" value="'+esc(t.price)+'" placeholder="90만원~" class="pt-input w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-emerald-300 font-bold text-sm focus:border-emerald-400/50 focus:outline-none"/></div>';
@@ -2340,6 +2354,25 @@ adminRoutes.get('/admin/pricing', async (c) => {
         }
         renderPricingTables();
 
+        // 공개/비공개 토글: 라벨 텍스트 + 흐리게 표시 즉시 반영
+        (function wirePublishToggles() {
+          var root = document.getElementById('pricing-tables-root');
+          if (!root) return;
+          root.addEventListener('change', function(e) {
+            var el = e.target;
+            if (!el || el.getAttribute('data-field') !== 'published') return;
+            var wrap = el.closest('[data-tier]');
+            var label = el.parentNode.querySelector('.pt-pub-label');
+            if (el.checked) {
+              if (wrap) wrap.classList.remove('pt-hidden');
+              if (label) { label.textContent = '공개'; label.className = 'pt-pub-label text-[11px] font-bold text-emerald-300'; }
+            } else {
+              if (wrap) wrap.classList.add('pt-hidden');
+              if (label) { label.textContent = '비공개'; label.className = 'pt-pub-label text-[11px] font-bold text-white/30'; }
+            }
+          });
+        })();
+
         // 편집 내용 수집 → 오버라이드 JSON 생성
         function collectPricingOverride() {
           var out = {};
@@ -2352,7 +2385,9 @@ adminRoutes.get('/admin/pricing', async (c) => {
               var range = (tw.querySelector('[data-field="range"]')||{}).value || '';
               var featRaw = (tw.querySelector('[data-field="features"]')||{}).value || '';
               var features = featRaw.split('\\n').map(function(x){return x.trim();}).filter(function(x){return x;});
-              tiers.push({ name: name.trim(), price: price.trim(), range: range.trim(), features: features });
+              var pubEl = tw.querySelector('[data-field="published"]');
+              var published = pubEl ? !!pubEl.checked : true;
+              tiers.push({ name: name.trim(), price: price.trim(), range: range.trim(), features: features, published: published });
             });
             out[slug] = { tiers: tiers };
           });
@@ -2543,6 +2578,8 @@ adminRoutes.put('/api/admin/pricing/tables', async (c) => {
         features: Array.isArray(t?.features)
           ? t.features.map((f: any) => String(f).slice(0, 120)).filter((f: string) => f.trim()).slice(0, 12)
           : baseTiers[i].features,
+        // 공개 여부: 명시적 false 만 비공개로 저장(기본 공개)
+        published: t?.published === false ? false : true,
       }));
       clean[slug] = { tiers };
     }
