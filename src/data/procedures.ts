@@ -39,7 +39,7 @@ export const PROCEDURES: ProcedureGuide[] = [
     description: '서울365치과 임플란트 시술 단계별 완벽 가이드. CT 진단 → 픽스처 식립 → 골유착 → 보철 장착까지 약 3~6개월 소요.',
     category: '임플란트',
     totalTime: 'P3M',
-    estimatedCost: '64만원 ~ 129만원 (1개 기준)',
+    estimatedCost: '64만원 ~ 139만원 (1개 기준)',
     supplies: ['CT 영상 자료', '구강 본', '치료 동의서', '의료보험증'],
     steps: [
       { name: '1. 정밀진단 및 상담', text: 'CT, 파노라마, 구강스캐너로 정밀 진단. 잔존 골량·신경 위치·잇몸 상태 확인 후 환자 맞춤 치료계획 수립. 비용 안내 포함 1시간 소요.', duration: 'PT1H' },

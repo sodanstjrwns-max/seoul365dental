@@ -1214,7 +1214,7 @@ ${caseList}
 
 ## 가격 정보 (정찰제)
 - [전체 가격표](https://seoul365dc.kr/prices)
-- [임플란트 가격](https://seoul365dc.kr/prices/%EC%9E%84%ED%94%8C%EB%9E%80%ED%8A%B8): 오스템 이벤트 64만원~, 스트라우만 129만원~
+- [임플란트 가격](https://seoul365dc.kr/prices/%EC%9E%84%ED%94%8C%EB%9E%80%ED%8A%B8): 오스템 이벤트 64만원~, 스트라우만 139만원~
 - [교정 가격](https://seoul365dc.kr/prices/%EA%B5%90%EC%A0%95)
 - [응급 치과 진료](https://seoul365dc.kr/emergency): 365일 연중무휴
 - [야간진료 안내](https://seoul365dc.kr/night-clinic): 평일 21시까지

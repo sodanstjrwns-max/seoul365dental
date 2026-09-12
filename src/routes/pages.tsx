@@ -87,6 +87,9 @@ pageRoutes.get('/reservation', (c) => {
               <button type="submit" id="consultSubmitBtn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>상담 신청하기</button>
               <div id="consultResult" class="hidden text-center text-sm py-3 rounded-xl"></div>
             </form>
+            <p class="mt-6 text-center text-sm text-gray-400">
+              이미 문의하셨나요? <a href="/consultations/check" class="text-[#0066FF] font-semibold underline underline-offset-2">문의 답변 확인</a> — 접수번호 또는 이름+전화번호로 병원 답변을 확인하실 수 있습니다.
+            </p>
           </div>
           <script dangerouslySetInnerHTML={{__html: `
             document.getElementById('consultForm').addEventListener('submit', async function(e) {
@@ -111,7 +114,9 @@ pageRoutes.get('/reservation', (c) => {
                 const data = await res.json();
                 if (data.ok) {
                   result.className = 'text-center text-sm py-3 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200';
-                  result.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i>상담 신청이 완료되었습니다. 빠른 시일 내에 연락드리겠습니다!';
+                  var code = data.code ? String(data.code).replace(/[^A-Z0-9]/g, '') : '';
+                  result.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i>상담 신청이 완료되었습니다. 빠른 시일 내에 연락드리겠습니다!'
+                    + (code ? '<div class="mt-3 pt-3 border-t border-emerald-200 text-emerald-800"><span class="font-extrabold tracking-widest text-base">접수번호 ' + code + '</span> — 답변은 <a href="/consultations/check?code=' + code + '" class="font-bold underline underline-offset-2">\u2018문의 답변 확인\u2019 페이지</a>에서 접수번호 또는 전화번호로 확인하실 수 있습니다.</div>' : '');
                   result.classList.remove('hidden');
                   this.reset();
                 } else {
@@ -1991,6 +1996,157 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
       ]
     }
   )
+})
+
+// ============================================================
+// 문의 답변 확인 (공개) — 접수번호 또는 이름+전화번호로 본인 문의·답변 조회
+// GET ?code=XXXXXX (병원이 보낸 링크) / POST (폼: 접수번호 또는 이름+전화번호)
+// ============================================================
+function phoneDigits(v: string | null | undefined): string {
+  return String(v || '').replace(/\D/g, '');
+}
+function phoneKey(v: string | null | undefined): string {
+  const d = phoneDigits(v);
+  return d.slice(-8);
+}
+function fmtDate(v: string | null | undefined): string {
+  if (!v) return '';
+  return String(v).replace('T', ' ').slice(0, 16);
+}
+
+async function renderConsultCheck(c: any, input: { code?: string; name?: string; phone?: string }, submitted: boolean) {
+  await initAdminTables(c.env.DB);
+  const code = (input.code || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+  const name = (input.name || '').trim().slice(0, 50);
+  const phone = (input.phone || '').trim().slice(0, 40);
+
+  let matches: any[] = [];
+  let error = '';
+  if (submitted) {
+    try {
+      if (code) {
+        const row = await c.env.DB.prepare(
+          'SELECT id, name, treatment, message, status, reply, replied_at, created_at, lookup_code FROM consultations WHERE lookup_code = ?'
+        ).bind(code).first();
+        if (row) matches = [row];
+        else error = '접수번호에 해당하는 문의를 찾을 수 없습니다. 접수번호를 다시 확인해 주세요.';
+      } else if (name && phone) {
+        const key = phoneKey(phone);
+        if (key.length < 7) {
+          error = '전화번호를 정확히 입력해 주세요.';
+        } else {
+          const rows = await c.env.DB.prepare(
+            'SELECT id, name, phone, treatment, message, status, reply, replied_at, created_at, lookup_code FROM consultations WHERE name = ? ORDER BY created_at DESC LIMIT 50'
+          ).bind(name).all();
+          matches = (rows.results || []).filter((r: any) => phoneKey(r.phone) === key).slice(0, 10);
+          if (matches.length === 0) error = '입력하신 이름·전화번호로 접수된 문의를 찾을 수 없습니다. 문의 시 입력한 이름과 전화번호를 그대로 입력해 주세요.';
+        }
+      } else {
+        error = '접수번호 또는 이름과 전화번호를 입력해 주세요.';
+      }
+    } catch {
+      error = '조회 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.';
+    }
+  }
+
+  const inputCls = 'w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm';
+
+  return c.render(
+    <>
+      <section class="treatment-hero">
+        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
+          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">문의 답변 확인</h1>
+          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">온라인 상담 문의에 대한 병원 답변을 확인하실 수 있습니다.</p>
+        </div>
+      </section>
+
+      <section class="section-lg bg-mesh">
+        <div class="max-w-3xl mx-auto px-5 md:px-8">
+          <div class="premium-card p-8 md:p-10">
+            <form method="post" action="/consultations/check" class="space-y-6">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">접수번호로 확인</label>
+                <input type="text" name="code" value={code} maxlength={12} autocomplete="off" class={inputCls + ' tracking-widest uppercase'} placeholder="예: AB3K9Q (문의 접수 시 안내된 6자리)" />
+              </div>
+              <div class="flex items-center gap-3 text-xs text-gray-300">
+                <span class="flex-1 h-px bg-gray-100"></span>또는<span class="flex-1 h-px bg-gray-100"></span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">이름</label>
+                  <input type="text" name="name" value={name} maxlength={50} class={inputCls} placeholder="문의 시 입력한 이름" />
+                </div>
+                <div>
+                  <label class="block text-sm font-semibold text-gray-700 mb-2">전화번호</label>
+                  <input type="tel" name="phone" value={phone} maxlength={40} class={inputCls} placeholder="문의 시 입력한 번호 (해외번호 가능)" />
+                </div>
+              </div>
+              <button type="submit" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>답변 확인하기</button>
+            </form>
+
+            {error ? (
+              <div class="mt-6 text-center text-sm py-3 px-4 rounded-xl bg-amber-50 text-amber-700 border border-amber-200">
+                <i class="fa-solid fa-circle-info mr-1.5"></i>{error}
+              </div>
+            ) : null}
+
+            {matches.map((m: any) => (
+              <div class="mt-8 border border-gray-100 rounded-2xl overflow-hidden">
+                <div class="bg-gray-50 px-5 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
+                  <span>접수번호 <b class="text-gray-800 tracking-widest">{m.lookup_code || '-'}</b></span>
+                  <span>접수일 {fmtDate(m.created_at)}</span>
+                </div>
+                <div class="px-5 py-5 space-y-4 text-sm">
+                  <div>
+                    <div class="text-xs font-semibold text-gray-400 mb-1">관심 치료</div>
+                    <div class="text-gray-800">{m.treatment || '-'}</div>
+                  </div>
+                  <div>
+                    <div class="text-xs font-semibold text-gray-400 mb-1">문의 내용</div>
+                    <div class="text-gray-800 whitespace-pre-wrap leading-relaxed" style="word-break:keep-all">{m.message || '내용 없음'}</div>
+                  </div>
+                  <div class="pt-4 border-t border-gray-100">
+                    <div class="text-xs font-semibold text-[#0066FF] mb-2"><i class="fa-solid fa-comment-medical mr-1"></i>서울365치과 답변{m.replied_at ? <span class="text-gray-400 font-normal ml-2">{fmtDate(m.replied_at)}</span> : null}</div>
+                    {m.reply ? (
+                      <div class="bg-blue-50/60 border border-blue-100 rounded-xl px-5 py-4 text-gray-800 whitespace-pre-wrap leading-relaxed" style="word-break:keep-all">{m.reply}</div>
+                    ) : (
+                      <div class="bg-gray-50 border border-gray-100 rounded-xl px-5 py-4 text-gray-500">아직 답변 준비 중입니다. 답변이 등록되면 이 페이지에서 확인하실 수 있습니다.</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <div class="mt-8 text-center text-xs text-gray-400 space-y-1">
+              <p>접수번호를 모르시면 문의 시 입력한 이름과 전화번호로 확인할 수 있습니다.</p>
+              <p>추가 문의: <a href={CLINIC.phoneTel} class="text-[#0066FF] font-semibold">{CLINIC.phone}</a> · <a href="/reservation" class="text-[#0066FF] font-semibold">온라인 상담 신청</a></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>,
+    {
+      title: '문의 답변 확인 | 서울365치과',
+      description: '서울365치과 온라인 상담 문의 답변 확인. 접수번호 또는 이름·전화번호로 병원 답변을 확인하세요.',
+      canonical: 'https://seoul365dc.kr/consultations/check',
+      noindex: true,
+    }
+  )
+}
+
+pageRoutes.get('/consultations/check', async (c) => {
+  const code = c.req.query('code') || '';
+  return renderConsultCheck(c, { code }, !!code);
+})
+
+pageRoutes.post('/consultations/check', async (c) => {
+  let body: any = {};
+  try { body = await c.req.parseBody(); } catch {}
+  return renderConsultCheck(c, {
+    code: typeof body.code === 'string' ? body.code : '',
+    name: typeof body.name === 'string' ? body.name : '',
+    phone: typeof body.phone === 'string' ? body.phone : '',
+  }, true);
 })
 
 export default pageRoutes

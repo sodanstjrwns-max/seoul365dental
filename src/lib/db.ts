@@ -40,6 +40,10 @@ export async function initAdminTables(db: D1Database) {
   try { await db.prepare('ALTER TABLE notices ADD COLUMN is_popup INTEGER DEFAULT 0').run(); } catch {}
   // Ensure image column exists for notices (R2 image upload)
   try { await db.prepare('ALTER TABLE notices ADD COLUMN image TEXT').run(); } catch {}
+  // 상담문의 답변/접수번호 컬럼 (migrations/0002_consultation_reply.sql)
+  try { await db.prepare('ALTER TABLE consultations ADD COLUMN reply TEXT').run(); } catch {}
+  try { await db.prepare('ALTER TABLE consultations ADD COLUMN replied_at DATETIME').run(); } catch {}
+  try { await db.prepare('ALTER TABLE consultations ADD COLUMN lookup_code TEXT').run(); } catch {}
   _adminTablesReady = true;
 }
 

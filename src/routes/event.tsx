@@ -212,7 +212,7 @@ eventRoutes.get('/event/implant', async (c) => {
                       </div>
                     </td>
                     <td class="text-center px-4 py-4"><span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">🇨🇭 스위스</span></td>
-                    <td class="text-center px-4 py-4 font-bold text-gray-700">129만원</td>
+                    <td class="text-center px-4 py-4 font-bold text-gray-700">139만원</td>
                     <td class="text-center px-4 py-4 text-gray-500 text-xs">Roxolid® · SLActive® · 세계 1위</td>
                   </tr>
                   <tr>

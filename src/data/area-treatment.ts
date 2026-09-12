@@ -172,7 +172,7 @@ export const TREATMENT_PRICING: Record<MatrixTreatmentSlug, { rows: { item: stri
       { item: '메가젠 AnyRidge', price: '79만원', note: '국산 프리미엄' },
       { item: '오스템 임플란트', price: '89만원', note: '+임시치아 99만원' },
       { item: '오스템 프리미엄 SOI', price: '104만원', note: '+임시치아 114만원' },
-      { item: '스트라우만 (이벤트)', price: '129만원', note: '스위스 프리미엄' },
+      { item: '스트라우만 (이벤트)', price: '139만원', note: '스위스 프리미엄' },
       { item: '네비게이션 가이드 수술', price: '+10만원', note: '정밀도 ↑' },
       { item: '수면마취', price: '+20만원', note: '공포증 환자' },
     ],

@@ -110,6 +110,16 @@ apiRoutes.get('/api/auth/logout', handleLogout)
 // ============================================================
 // CONSULTATIONS API (상담문의)
 // ============================================================
+// 접수번호(6자리, 혼동되는 문자 I/O/0/1 제외) — 환자가 /consultations/check 에서 답변 확인용
+const LOOKUP_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function generateLookupCode(): string {
+  const bytes = new Uint8Array(6);
+  crypto.getRandomValues(bytes);
+  let out = '';
+  for (const b of bytes) out += LOOKUP_ALPHABET[b % LOOKUP_ALPHABET.length];
+  return out;
+}
+
 apiRoutes.post('/api/consultations', async (c) => {
   await initAdminTables(c.env.DB);
   try {
@@ -117,10 +127,17 @@ apiRoutes.post('/api/consultations', async (c) => {
     if (!name || !phone) {
       return c.json({ ok: false, error: '이름과 연락처를 입력해주세요.' }, 400);
     }
+    // 접수번호 생성 (중복 시 재시도)
+    let code = generateLookupCode();
+    for (let i = 0; i < 5; i++) {
+      const dup = await c.env.DB.prepare('SELECT 1 FROM consultations WHERE lookup_code = ?').bind(code).first();
+      if (!dup) break;
+      code = generateLookupCode();
+    }
     await c.env.DB.prepare(
-      'INSERT INTO consultations (name, phone, treatment, message) VALUES (?, ?, ?, ?)'
-    ).bind(name, phone, treatment || null, message || null).run();
-    return c.json({ ok: true });
+      'INSERT INTO consultations (name, phone, treatment, message, lookup_code) VALUES (?, ?, ?, ?, ?)'
+    ).bind(String(name).trim(), String(phone).trim(), treatment || null, message || null, code).run();
+    return c.json({ ok: true, code });
   } catch (e: any) {
     return c.json({ ok: false, error: '오류가 발생했습니다.' }, 500);
   }

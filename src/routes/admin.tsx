@@ -959,6 +959,7 @@ adminRoutes.get('/admin/consultations', async (c) => {
                           </td>
                           <td class="px-5 py-3 text-white font-medium">
                             {item.name}
+                            {item.reply ? <span class="ml-2 text-[10px] text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded" title="답변 등록됨"><i class="fa-solid fa-comment-dots"></i> 답변</span> : null}
                             <i class={`fa-solid fa-chevron-down text-white/20 text-[10px] ml-2 transition-transform`} id={`chevron-${item.id}`}></i>
                           </td>
                           <td class="px-5 py-3"><a href={`tel:${item.phone}`} class="text-[#0066FF] hover:underline" onclick="event.stopPropagation()">{item.phone}</a></td>
@@ -1005,6 +1006,33 @@ adminRoutes.get('/admin/consultations', async (c) => {
                                   <div class="text-yellow-400/70 text-sm leading-relaxed">{item.admin_memo}</div>
                                 </div>
                               ) : null}
+
+                              {/* 환자 답변 확인용 접수번호 + 링크 */}
+                              <div class="mt-4 pt-4 border-t border-white/5">
+                                <div class="text-white/30 text-xs mb-2 font-semibold uppercase tracking-wider">접수번호 · 답변 확인 링크 (환자에게 카톡/메일로 전달)</div>
+                                {item.lookup_code ? (
+                                  <div class="flex flex-wrap items-center gap-2">
+                                    <span class="text-white font-bold tracking-widest bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm">{item.lookup_code}</span>
+                                    <input type="text" readonly id={`checkurl-${item.id}`} value={`https://seoul365dc.kr/consultations/check?code=${item.lookup_code}`} class="flex-1 min-w-[260px] bg-white/5 border border-white/10 text-white/70 text-xs rounded-lg px-3 py-2 outline-none" onclick="this.select()" />
+                                    <button type="button" onclick={`copyCheckUrl(${item.id})`} class="text-xs px-3 py-2 rounded-lg bg-[#0066FF]/20 text-[#0066FF] hover:bg-[#0066FF]/30 transition font-semibold"><i class="fa-solid fa-copy mr-1"></i>링크 복사</button>
+                                  </div>
+                                ) : (
+                                  <div class="text-white/30 text-xs">접수번호 없음 (환자는 이름+전화번호로 조회 가능)</div>
+                                )}
+                              </div>
+
+                              {/* 답변 작성 */}
+                              <div class="mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center justify-between mb-2">
+                                  <div class="text-white/30 text-xs font-semibold uppercase tracking-wider">병원 답변 (환자가 사이트에서 확인)</div>
+                                  {item.replied_at ? <span class="text-emerald-400/70 text-xs">답변 등록 {String(item.replied_at).slice(0, 16)}</span> : <span class="text-white/20 text-xs">미답변</span>}
+                                </div>
+                                <textarea id={`reply-${item.id}`} rows={5} class="w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-[#0066FF]/50 resize-y leading-relaxed" placeholder="환자에게 보여질 답변을 입력하세요. 저장하면 환자가 '문의 답변 확인' 페이지에서 바로 볼 수 있습니다.">{item.reply || ''}</textarea>
+                                <div class="flex items-center justify-end gap-2 mt-2">
+                                  <span id={`reply-msg-${item.id}`} class="text-xs text-white/40"></span>
+                                  <button type="button" onclick={`saveReply(${item.id})`} class="text-xs px-4 py-2 rounded-lg bg-[#0066FF] hover:bg-[#0052cc] text-white font-bold transition"><i class="fa-solid fa-paper-plane mr-1"></i>답변 저장</button>
+                                </div>
+                              </div>
                             </div>
                           </td>
                         </tr>
@@ -1045,6 +1073,30 @@ adminRoutes.get('/admin/consultations', async (c) => {
             if (chevron) chevron.style.transform = 'rotate(0deg)';
           }
         }
+        async function saveReply(id) {
+          var ta = document.getElementById('reply-' + id);
+          var msg = document.getElementById('reply-msg-' + id);
+          if (!ta) return;
+          msg.textContent = '저장 중...';
+          try {
+            const res = await fetch('/api/admin/consultations/' + id, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ reply: ta.value })
+            });
+            const data = await res.json();
+            if (data.ok) { msg.textContent = '저장되었습니다. 환자가 확인 페이지에서 볼 수 있습니다.'; setTimeout(function(){ window.location.reload(); }, 900); }
+            else { msg.textContent = ''; alert(data.error || '오류 발생'); }
+          } catch(err) { msg.textContent = ''; alert('오류: ' + err.message); }
+        }
+        function copyCheckUrl(id) {
+          var input = document.getElementById('checkurl-' + id);
+          if (!input) return;
+          input.select();
+          var done = function(){ alert('링크가 복사되었습니다. 카카오톡·이메일로 환자에게 보내주세요.\n' + input.value); };
+          if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(input.value).then(done, function(){ document.execCommand('copy'); done(); });
+          else { document.execCommand('copy'); done(); }
+        }
         async function updateConsultStatus(id, status) {
           try {
             const res = await fetch('/api/admin/consultations/' + id, {
@@ -1069,9 +1121,23 @@ adminRoutes.put('/api/admin/consultations/:id', async (c) => {
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
   if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
   const id = c.req.param('id');
-  const { status, admin_memo } = await c.req.json();
-  await c.env.DB.prepare('UPDATE consultations SET status = ?, admin_memo = ?, updated_at = datetime(\'now\') WHERE id = ?')
-    .bind(status || 'new', admin_memo || null, id).run();
+  const body = await c.req.json().catch(() => ({}));
+  const { status, admin_memo, reply } = body || {};
+  const sets: string[] = [];
+  const binds: any[] = [];
+  if (typeof status === 'string' && ['new', 'contacted', 'done'].includes(status)) { sets.push('status = ?'); binds.push(status); }
+  if (admin_memo !== undefined) { sets.push('admin_memo = ?'); binds.push(admin_memo || null); }
+  if (reply !== undefined) {
+    const text = String(reply || '').trim().slice(0, 4000);
+    sets.push('reply = ?'); binds.push(text || null);
+    sets.push('replied_at = ?'); binds.push(text ? new Date().toISOString().replace('T', ' ').slice(0, 19) : null);
+    // 답변을 남기면 '새 문의' 상태는 자동으로 '연락 완료'로 변경
+    if (text && !sets.includes('status = ?')) { sets.push("status = CASE WHEN status = 'new' THEN 'contacted' ELSE status END"); }
+  }
+  if (sets.length === 0) return c.json({ ok: false, error: '변경할 내용이 없습니다.' }, 400);
+  sets.push("updated_at = datetime('now')");
+  binds.push(id);
+  await c.env.DB.prepare(`UPDATE consultations SET ${sets.join(', ')} WHERE id = ?`).bind(...binds).run();
   return c.json({ ok: true });
 })
 

@@ -858,6 +858,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
               <div class="flex gap-4">
                 <a href="/privacy" class="hover:text-white/50 transition-colors">개인정보처리방침</a>
                 <a href="/terms" class="hover:text-white/50 transition-colors">이용약관</a>
+                <a href="/consultations/check" class="hover:text-white/50 transition-colors">문의 답변 확인</a>
                 <a href="/sitemap.xml" class="hover:text-white/50 transition-colors">사이트맵</a>
               </div>
             </div>
