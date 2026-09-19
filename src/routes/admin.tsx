@@ -1093,7 +1093,7 @@ adminRoutes.get('/admin/consultations', async (c) => {
           var input = document.getElementById('checkurl-' + id);
           if (!input) return;
           input.select();
-          var done = function(){ alert('링크가 복사되었습니다. 카카오톡·이메일로 환자에게 보내주세요.\n' + input.value); };
+          var done = function(){ alert('링크가 복사되었습니다. 카카오톡·이메일로 환자에게 보내주세요.\\n' + input.value); };
           if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(input.value).then(done, function(){ document.execCommand('copy'); done(); });
           else { document.execCommand('copy'); done(); }
         }
