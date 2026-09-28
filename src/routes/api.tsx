@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clearSessionCookie, getSessionIdFromCookie, getCurrentUser } from '../lib/auth'
 import { initAdminTables, initUserTables } from '../lib/db'
+import { fetchActivePopups } from '../lib/popup'
 
 const apiRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -165,9 +166,10 @@ apiRoutes.get('/api/notices/popup', async (c) => {
     const result = await c.env.DB.prepare(
       'SELECT id, title, content, category, image, created_at FROM notices WHERE is_published = 1 AND is_popup = 1 ORDER BY is_pinned DESC, created_at DESC LIMIT 1'
     ).all();
-    return c.json({ ok: true, notices: result.results || [] });
+    // notices(1건)는 기존 형태 유지, popups에 이미지 팝업 최대 5건 추가
+    return c.json({ ok: true, notices: result.results || [], popups: await fetchActivePopups(c.env.DB) });
   } catch {
-    return c.json({ ok: true, notices: [] });
+    return c.json({ ok: true, notices: [], popups: [] });
   }
 })
 
@@ -344,9 +346,10 @@ apiRoutes.get('/api/popup-notices', async (c) => {
     const result = await c.env.DB.prepare(
       'SELECT id, title, content, category, image FROM notices WHERE is_popup = 1 AND is_published = 1 ORDER BY is_pinned DESC, created_at DESC LIMIT 1'
     ).all();
-    return c.json({ ok: true, notices: result.results || [] });
+    // notices(1건)는 기존 형태 유지(구버전 app.js 캐시 호환), popups = 동시 표시할 이미지 팝업 최대 5건
+    return c.json({ ok: true, notices: result.results || [], popups: await fetchActivePopups(c.env.DB) });
   } catch {
-    return c.json({ ok: true, notices: [] });
+    return c.json({ ok: true, notices: [], popups: [] });
   }
 })
 

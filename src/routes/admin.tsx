@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { hashPassword, verifyPassword, generateSessionId } from '../lib/auth'
 import { getAdminUser, getAdminFromCookie, initAdminTables, initUserTables, initSettingsTable, getSetting, setSetting, getAllSeoSettings } from '../lib/db'
+import { POPUP_MAX, isPopupCandidate } from '../lib/popup'
 import { treatments } from '../data/treatments'
 import { doctors } from '../data/doctors'
 import { PRICE_PAGES, PRICING_OVERRIDE_KEY } from './commercial'
@@ -1156,6 +1157,9 @@ adminRoutes.get('/admin/notices', async (c) => {
   } catch {}
 
   const noticeTotalViews = notices.reduce((s: number, n: any) => s + (n.view_count || 0), 0);
+  // 홈 팝업: 목록과 같은 순서(고정 우선 → 최신순)로 이미지 있는 공개 팝업 중 앞 POPUP_MAX개만 표시
+  const popupCandidates = notices.filter(isPopupCandidate);
+  const popupShownIds = new Set(popupCandidates.slice(0, POPUP_MAX).map((n: any) => n.id));
 
   return c.render(
     <>
@@ -1186,6 +1190,16 @@ adminRoutes.get('/admin/notices', async (c) => {
             <button onclick="openNoticeModal()" class="px-5 py-2.5 rounded-xl bg-purple-500 hover:bg-purple-600 text-white text-sm font-bold transition">
               <i class="fa-solid fa-plus mr-1.5"></i>새 공지 작성
             </button>
+          </div>
+
+          <div class="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-orange-400/15 bg-orange-400/5 px-4 py-3 text-xs text-orange-200/80">
+            <i class="fa-solid fa-window-restore text-orange-400/70"></i>
+            <span>팝업은 최대 {POPUP_MAX}개까지 동시에 표시됩니다 (PC는 나란히, 모바일은 넘겨보기). 이미지가 첨부된 공개 공지만 팝업으로 뜹니다.</span>
+            {popupCandidates.length > POPUP_MAX ? (
+              <span class="inline-flex items-center gap-1 rounded-full bg-red-500/15 px-2.5 py-0.5 font-bold text-red-300"><i class="fa-solid fa-triangle-exclamation text-[0.65rem]"></i>표시 중 {POPUP_MAX}/{popupCandidates.length} — 오래된 것은 숨겨짐</span>
+            ) : (
+              <span class="inline-flex items-center gap-1 rounded-full bg-orange-400/10 px-2.5 py-0.5 font-bold text-orange-300">표시 중 {popupCandidates.length}/{POPUP_MAX}</span>
+            )}
           </div>
 
           <div class="bg-white/5 border border-white/5 rounded-2xl overflow-hidden">
@@ -1228,7 +1242,14 @@ adminRoutes.get('/admin/notices', async (c) => {
                         </td>
                         <td class="px-5 py-3 hidden md:table-cell">
                           {n.is_popup ? (
-                            <span class="inline-flex items-center gap-1 text-xs text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-full"><i class="fa-solid fa-window-restore text-[0.6rem]"></i>팝업 ON</span>
+                            <span class="inline-flex flex-wrap items-center gap-1">
+                              <span class="inline-flex items-center gap-1 text-xs text-orange-400 bg-orange-400/10 px-2 py-0.5 rounded-full"><i class="fa-solid fa-window-restore text-[0.6rem]"></i>팝업 ON</span>
+                              {!isPopupCandidate(n) ? (
+                                <span class="text-[0.65rem] text-white/40 bg-white/5 px-2 py-0.5 rounded-full" title="이미지가 없거나 비공개라 홈에 뜨지 않습니다">미표시{!n.image ? ' · 이미지 없음' : ''}</span>
+                              ) : !popupShownIds.has(n.id) ? (
+                                <span class="text-[0.65rem] text-red-300 bg-red-500/15 px-2 py-0.5 rounded-full" title={`최대 ${POPUP_MAX}개 초과 — 더 최근/고정 팝업에 밀려 숨겨짐`}>숨겨짐</span>
+                              ) : null}
+                            </span>
                           ) : (
                             <span class="text-white/15 text-xs">—</span>
                           )}
@@ -1293,6 +1314,7 @@ adminRoutes.get('/admin/notices', async (c) => {
                 </label>
               </div>
             </div>
+            <p class="-mt-2 text-xs text-orange-200/50"><i class="fa-solid fa-circle-info mr-1"></i>팝업은 최대 {POPUP_MAX}개까지 동시에 표시됩니다 (PC는 나란히, 모바일은 넘겨보기). 팝업은 첨부 이미지로만 표시되니 이미지를 꼭 올려 주세요.</p>
             <div>
               <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">제목 *</label>
               <input id="noticeTitle" type="text" required class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-purple-400/50 placeholder-white/20" placeholder="공지사항 제목" />

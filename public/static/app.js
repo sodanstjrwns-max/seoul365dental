@@ -265,19 +265,22 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
   btn.addEventListener('mouseleave',function(){btn.style.transform='translate(0, 0) scale(1)'})
 })}
 
-// ====== POPUP NOTICE SYSTEM v3 ======
-// 이미지만 표시, 오버레이 없음, 커서 가림 없음
+// ====== POPUP NOTICE SYSTEM v4 (여러 개 동시 표시) ======
+// 이미지 팝업만 표시 · 최대 5개 (고정 우선 → 최신순, /api/popup-notices 의 popups 배열)
+//  - PC(≥768px): 딤 배경 한 장 위에 카드 나란히(줄바꿈 허용). 카드별 × / 닫기 / 오늘 하루 보지 않기
+//  - 모바일(≤767px): 우상단 "이벤트·공지 보기" 칩(기존 compact 모드) → 탭하면 한 장씩 넘겨보기
+// "오늘 하루 보지 않기" → 쿠키 popup_dismissed_{YYYY-MM-DD(KST)} 에 해당 카드 id만 추가(기존 키 형식 유지)
 (function(){
   if(window.location.pathname !== '/' && window.location.pathname !== '') return;
   if(window.location.pathname.startsWith('/admin')) return;
   if(window.__popupNoticeLoaded) return;
   window.__popupNoticeLoaded = true;
   // 이전 팝업 잔여물 제거
-  var old = document.getElementById('popup-notice-overlay');
-  if(old) old.parentNode.removeChild(old);
-  var oldCard = document.getElementById('popup-notice-card');
-  if(oldCard) oldCard.parentNode.removeChild(oldCard);
+  ['popup-notice-overlay','popup-notice-card','p365-popups'].forEach(function(id){
+    var el = document.getElementById(id); if(el && el.parentNode) el.parentNode.removeChild(el);
+  });
 
+  var MAX = 5;
   function getCookie(name){
     var match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
     return match ? decodeURIComponent(match[1]) : null;
@@ -286,90 +289,216 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
     var d = new Date(); d.setTime(d.getTime() + days*86400000);
     document.cookie = name + '=' + encodeURIComponent(val) + ';path=/;expires=' + d.toUTCString() + ';SameSite=Lax';
   }
+  function esc(s){
+    return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
 
-  var today = new Date().toISOString().split('T')[0];
+  var today = new Date(Date.now()+9*3600000).toISOString().split('T')[0];
+  var cookieName = 'popup_dismissed_' + today;
+  function dismissedIds(){ var v = getCookie(cookieName); return v ? v.split(',') : []; }
+  function hideToday(id){
+    var ids = dismissedIds();
+    if(ids.indexOf(String(id)) === -1) ids.push(String(id));
+    setCookie(cookieName, ids.join(','), 1);
+  }
+
+  var CSS = ''
+    + '#p365-popups{position:fixed;inset:0;z-index:99990;display:flex;padding:24px;overflow-y:auto;overscroll-behavior:contain;background:rgba(8,18,40,.55);opacity:0;transition:opacity .3s ease}'
+    + '#p365-popups[hidden]{display:none!important}'
+    + '#p365-popups.show{opacity:1}'
+    + '#p365-popups:not(.show){pointer-events:none}'
+    + '#p365-popups .p365-stack{margin:auto;display:flex;flex-wrap:wrap;gap:16px;justify-content:center;align-items:flex-start;max-width:100%}'
+    + '#p365-popups .p365-card{position:relative;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25);width:520px;max-width:100%;display:flex;flex-direction:column;transform:translateY(-10px);transition:opacity .3s ease,transform .35s cubic-bezier(.16,1,.3,1)}'
+    + '#p365-popups.n2 .p365-card{width:440px}#p365-popups.n3 .p365-card{width:380px}'
+    + '#p365-popups.show .p365-card{transform:translateY(0)}'
+    + '#p365-popups .p365-card.out{opacity:0;transform:translateY(-10px) scale(.97)}'
+    + '#p365-popups .p365-img img{width:100%;max-height:68vh;display:block;object-fit:contain;background:#fff}'
+    + '#p365-popups .p365-x{position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.4);border:none;color:#fff;font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:2}'
+    + '#p365-popups .p365-x:hover{background:rgba(0,0,0,.6)}'
+    + '#p365-popups .p365-foot{padding:6px 12px 6px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;flex:none}'
+    + '#p365-popups .p365-hide{display:flex;align-items:center;gap:6px;min-height:44px;padding:0;background:none;border:none;cursor:pointer;font-size:12px;color:#999}'
+    + '#p365-popups .p365-hide:hover{color:#555}'
+    + '#p365-popups .p365-hide input{width:15px;height:15px;accent-color:#0066FF;pointer-events:none;margin:0}'
+    + '#p365-popups .p365-close{min-height:36px;background:none;border:1px solid #ddd;padding:6px 16px;border-radius:8px;font-size:12px;font-weight:600;color:#666;cursor:pointer;transition:background .2s}'
+    + '#p365-popups .p365-close:hover{background:#f5f5f5}'
+    + '#p365-popups :focus-visible{outline:2px solid #0066FF;outline-offset:2px}'
+    + '#p365-popups .p365-chip,#p365-popups .p365-nav{display:none}'
+    // 모바일 compact 칩 (기존 compact 모드 유지: 우상단 88px, 260px, 흰 카드)
+    + '#p365-popups.compact{inset:88px 16px auto auto;padding:0;background:none;overflow:visible;width:260px;max-width:calc(100vw - 32px)}'
+    + '#p365-popups.compact .p365-stack,#p365-popups.compact .p365-nav{display:none}'
+    + '#p365-popups.compact .p365-chip{display:block;position:relative;width:100%;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25)}'
+    + '#p365-popups .p365-expand{display:block;min-height:48px;width:100%;padding:12px 52px 12px 16px;border:0;background:#fff;color:#0050cc;font-size:14px;font-weight:700;text-align:left;cursor:pointer}'
+    + '#p365-popups .p365-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;margin-left:6px;padding:0 6px;border-radius:99px;background:#0066FF;color:#fff;font-size:12px;font-weight:800;vertical-align:1px}'
+    + '#p365-popups .p365-chip .p365-x{top:2px;right:2px;background:none;color:#999}'
+    + '#p365-popups .p365-chip .p365-x:hover{background:#f2f5fa;color:#333}'
+    // 모바일 한 장씩 보기
+    + '#p365-popups.single{flex-direction:column;align-items:center;padding:16px}'
+    + '#p365-popups.single .p365-stack{margin:auto auto 0;width:100%;max-width:420px;flex-wrap:nowrap}'
+    + '#p365-popups.single .p365-card{display:none;width:100%}'
+    + '#p365-popups.single .p365-card.active{display:flex;animation:p365In .25s ease}'
+    + '#p365-popups.single .p365-img img{max-height:calc(100svh - 190px)}'
+    + '#p365-popups.single .p365-nav{display:flex;align-items:center;justify-content:center;gap:14px;margin:12px auto auto}'
+    + '#p365-popups.single .p365-nav[hidden]{display:none}'
+    + '#p365-popups .p365-nav button{width:44px;height:44px;border-radius:50%;border:none;background:#fff;color:#0050cc;font-size:24px;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.25)}'
+    + '#p365-popups .p365-ind{min-width:64px;text-align:center;font-size:14px;font-weight:700;color:#fff;letter-spacing:.04em;text-shadow:0 1px 4px rgba(0,0,0,.5)}'
+    + '@keyframes p365In{from{opacity:0;transform:translateX(var(--p365-dx,0))}to{opacity:1;transform:none}}'
+    + '@media(prefers-reduced-motion:reduce){#p365-popups,#p365-popups .p365-card{transition:none}#p365-popups.single .p365-card.active{animation:none}}';
+
+  function cardHtml(n){
+    var id = Number(n.id);
+    var title = n.title || '공지사항';
+    return '<div class="p365-card" id="p365-card-' + id + '" data-id="' + id + '" role="group" aria-label="' + esc(title) + '">'
+      + '<button type="button" class="p365-x" data-act="close" aria-label="' + esc(title) + ' 팝업 닫기">&times;</button>'
+      + '<div class="p365-img"><img src="' + esc(n.image) + '" alt="' + esc(title) + '" /></div>'
+      + '<div class="p365-foot">'
+      +   '<button type="button" class="p365-hide" data-act="hide"><input type="checkbox" tabindex="-1" aria-hidden="true" /><span>오늘 하루 보지 않기</span></button>'
+      +   '<button type="button" class="p365-close" data-act="close">닫기</button>'
+      + '</div>'
+      + '</div>';
+  }
 
   fetch('/api/popup-notices')
     .then(function(r){ return r.json(); })
     .then(function(data){
-      if(!data.ok || !data.notices || data.notices.length === 0) return;
-      // 이미 본 팝업 필터링
-      var dismissed = getCookie('popup_dismissed_' + today);
-      var dismissedIds = dismissed ? dismissed.split(',') : [];
-      var notices = data.notices.filter(function(n){ return dismissedIds.indexOf(String(n.id)) === -1; });
-      if(notices.length === 0) return;
-      // 중복 방지 재확인
-      if(document.getElementById('popup-notice-card')) return;
+      if(!data || !data.ok) return;
+      // popups(최대 5개) 우선, 구버전 응답이면 notices 사용
+      var list = Array.isArray(data.popups) ? data.popups : (data.notices || []);
+      var hidden = dismissedIds();
+      list = list.filter(function(n){
+        return n && n.image && String(n.image).length > 5 && hidden.indexOf(String(n.id)) === -1;
+      }).slice(0, MAX);
+      if(list.length === 0) return;
+      if(document.getElementById('p365-popups')) return;
 
-      // 이미지가 있는 첫 번째 공지만 표시
-      var n = null;
-      for(var i = 0; i < notices.length; i++){
-        if(notices[i].image && notices[i].image.length > 5){ n = notices[i]; break; }
+      var ov = document.createElement('div');
+      ov.id = 'p365-popups';
+      ov.setAttribute('role','dialog');
+      ov.setAttribute('aria-modal','true');
+      ov.setAttribute('aria-label','병원 소식');
+      ov.hidden = true;
+      ov.innerHTML = '<style>' + CSS + '</style>'
+        + '<div class="p365-chip"><button type="button" class="p365-expand" aria-expanded="false" aria-controls="p365-stack">이벤트·공지 보기</button>'
+        + '<button type="button" class="p365-x" data-act="close-all" aria-label="공지 닫기">&times;</button></div>'
+        + '<div class="p365-stack" id="p365-stack">' + list.map(cardHtml).join('') + '</div>'
+        + '<div class="p365-nav" hidden><button type="button" class="p365-prev" aria-label="이전 소식">&lsaquo;</button>'
+        + '<span class="p365-ind" aria-live="polite">1 / ' + list.length + '</span>'
+        + '<button type="button" class="p365-next" aria-label="다음 소식">&rsaquo;</button></div>';
+      document.body.appendChild(ov);
+
+      var stack = ov.querySelector('.p365-stack'), nav = ov.querySelector('.p365-nav'),
+          ind = ov.querySelector('.p365-ind'), chip = ov.querySelector('.p365-expand');
+      var mq = matchMedia('(max-width:767px)');
+      var compact = mq.matches, idx = 0, prevOverflow = '', locked = false, closed = false;
+
+      function cards(){ return Array.prototype.slice.call(stack.querySelectorAll('.p365-card:not(.out)')); }
+      function lock(){ if(!locked){ prevOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; locked = true; } }
+      function unlock(){ if(locked){ document.body.style.overflow = prevOverflow; locked = false; } }
+      function setCountClass(){
+        var n = cards().length;
+        ov.classList.toggle('n2', n === 2);
+        ov.classList.toggle('n3', n >= 3);
       }
-      if(!n) return;
-
-      // ★ 오버레이 없음 — 배경 블러/어두움 제거
-      // 팝업 카드 — 좌측상단 고정, 이미지만 표시
-      var card = document.createElement('div');
-      card.id = 'popup-notice-card';
-      card.style.cssText = 'position:fixed;z-index:99990;background:#fff;border-radius:16px;overflow:hidden;'
-        + 'box-shadow:0 20px 50px rgba(0,0,0,0.25);opacity:0;transform:translateY(-10px);'
-        + 'transition:opacity 0.35s ease, transform 0.35s cubic-bezier(0.16,1,0.3,1);'
-        + 'top:20px;left:20px;width:520px;max-width:calc(100vw - 40px);';
-
-      var html = '';
-
-      // ★ 이미지만 — 카테고리 뱃지, 제목, 본문 텍스트 모두 제거
-      html += '<div style="position:relative">';
-      html += '<img src="' + n.image + '" alt="' + (n.title||'공지사항').replace(/"/g,'&quot;') + '" style="width:100%;display:block;object-fit:cover" onerror="this.closest(\'#popup-notice-card\').style.display=\'none\'" />';
-      html += '</div>';
-
-      // 하단 액션 바 — 오늘 하루 보지 않기 + 닫기
-      html += '<div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff">';
-      html += '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none">';
-      html += '<input type="checkbox" id="popup-dismiss-check" style="width:15px;height:15px;accent-color:#0066FF;cursor:pointer" />';
-      html += '<span style="font-size:12px;color:#999">오늘 하루 보지 않기</span>';
-      html += '</label>';
-      html += '<button id="popup-close-btn" style="background:none;border:1px solid #ddd;padding:6px 16px;border-radius:8px;font-size:12px;font-weight:600;color:#666;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background=\'#f5f5f5\'" onmouseout="this.style.background=\'none\'">닫기</button>';
-      html += '</div>';
-
-      // 닫기(X) 버튼 — 이미지 우측 상단
-      html += '<button id="popup-x-btn" style="position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,0.4);border:none;color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s" onmouseover="this.style.background=\'rgba(0,0,0,0.6)\'" onmouseout="this.style.background=\'rgba(0,0,0,0.4)\'">&times;</button>';
-
-      card.innerHTML = html;
-
-      function closePopup(){
-        var chk = document.getElementById('popup-dismiss-check');
-        if(chk && chk.checked){
-          var allIds = notices.map(function(nn){ return String(nn.id); });
-          var merged = dismissedIds.concat(allIds);
-          var unique = merged.filter(function(v, i, a){ return a.indexOf(v) === i; });
-          setCookie('popup_dismissed_' + today, unique.join(','), 1);
+      function updateChip(){
+        var n = cards().length;
+        chip.innerHTML = '이벤트·공지 보기' + (n > 1 ? '<span class="p365-count">' + n + '</span>' : '');
+        chip.setAttribute('aria-label', '이벤트·공지 ' + n + '건 보기');
+      }
+      function show(i, dir){
+        var cs = cards(); if(!cs.length) return;
+        idx = (i + cs.length) % cs.length;
+        cs.forEach(function(c, k){
+          c.classList.toggle('active', k === idx);
+          c.style.setProperty('--p365-dx', dir ? (dir*40) + 'px' : '0');
+        });
+        ind.textContent = (idx + 1) + ' / ' + cs.length;
+        nav.hidden = cs.length < 2;
+      }
+      function focusFirst(){
+        var c = ov.classList.contains('single') ? stack.querySelector('.p365-card.active') : cards()[0];
+        var b = c && c.querySelector('.p365-x');
+        if(b){ try{ b.focus({preventScroll:true}); }catch(e){ b.focus(); } }
+      }
+      function applyMode(){
+        setCountClass();
+        if(compact){
+          ov.classList.add('compact'); ov.classList.remove('single');
+          ov.setAttribute('role','region'); ov.removeAttribute('aria-modal');
+          updateChip(); return;
         }
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(-10px)';
-        setTimeout(function(){
-          if(card.parentNode) card.parentNode.removeChild(card);
-        }, 300);
+        ov.classList.remove('compact');
+        ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true');
+        ov.classList.toggle('single', mq.matches);
+        if(mq.matches) show(idx, 0);
+      }
+      function open(){
+        applyMode();
+        ov.hidden = false;
+        var reveal = function(){ if(!closed) ov.classList.add('show'); };
+        requestAnimationFrame(reveal); setTimeout(reveal, 400); // rAF가 멈춘 백그라운드 탭 대비
+        if(!compact){ lock(); setTimeout(focusFirst, 60); }
+      }
+      function closeAll(){
+        if(closed) return; closed = true;
+        ov.classList.remove('show'); unlock();
+        setTimeout(function(){ if(ov.parentNode) ov.parentNode.removeChild(ov); }, 320);
+      }
+      function removeCard(c, instant){
+        if(!c || c.classList.contains('out')) return;
+        c.classList.add('out');
+        var single = ov.classList.contains('single');
+        var left = cards().length;
+        if(!left){ closeAll(); return; }
+        if(single || instant || compact){ if(c.parentNode) c.parentNode.removeChild(c); if(single) show(Math.min(idx, left-1), 0); }
+        else setTimeout(function(){ if(c.parentNode) c.parentNode.removeChild(c); }, 260);
+        updateChip();
+        if(!compact) setTimeout(focusFirst, (single || instant) ? 0 : 270);
       }
 
-      document.body.appendChild(card);
-
-      // Fade in
-      requestAnimationFrame(function(){
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
+      // 이미지 로드 실패 카드는 조용히 제거
+      Array.prototype.slice.call(stack.querySelectorAll('img')).forEach(function(img){
+        img.addEventListener('error', function(){ removeCard(img.closest('.p365-card'), true); });
       });
 
-      // 이벤트 바인딩
-      var closeBtn = document.getElementById('popup-close-btn');
-      var xBtn = document.getElementById('popup-x-btn');
-      if(closeBtn) closeBtn.addEventListener('click', closePopup);
-      if(xBtn) xBtn.addEventListener('click', closePopup);
-      // ESC 키로도 닫기
-      document.addEventListener('keydown', function escHandler(e){
-        if(e.key === 'Escape'){ closePopup(); document.removeEventListener('keydown', escHandler); }
+      stack.addEventListener('click', function(e){
+        var b = e.target.closest && e.target.closest('[data-act]');
+        if(!b){ if(e.target === stack && !ov.classList.contains('single')) closeAll(); return; }
+        e.preventDefault();
+        var c = b.closest('.p365-card');
+        if(b.getAttribute('data-act') === 'hide'){
+          var cb = b.querySelector('input'); if(cb) cb.checked = true;
+          hideToday(c.getAttribute('data-id'));
+        }
+        removeCard(c);
       });
+      ov.querySelector('[data-act="close-all"]').addEventListener('click', closeAll);
+      chip.addEventListener('click', function(){
+        compact = false; chip.setAttribute('aria-expanded','true');
+        applyMode(); lock(); focusFirst();
+      });
+      ov.querySelector('.p365-prev').addEventListener('click', function(){ show(idx-1, -1); focusFirst(); });
+      ov.querySelector('.p365-next').addEventListener('click', function(){ show(idx+1, 1); focusFirst(); });
+      // 모바일 스와이프
+      var sx = 0, sy = 0, tracking = false;
+      stack.addEventListener('touchstart', function(e){
+        if(!ov.classList.contains('single') || e.touches.length !== 1) return;
+        tracking = true; sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+      }, {passive:true});
+      stack.addEventListener('touchend', function(e){
+        if(!tracking) return; tracking = false;
+        var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+        if(Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)*1.3){ if(dx < 0) show(idx+1, 1); else show(idx-1, -1); }
+      }, {passive:true});
+      ov.addEventListener('click', function(e){ if(e.target === ov && !compact) closeAll(); });
+      document.addEventListener('keydown', function(e){
+        if(closed || ov.hidden) return;
+        if(e.key === 'Escape') closeAll();
+        else if(ov.classList.contains('single') && !compact){
+          if(e.key === 'ArrowRight') show(idx+1, 1); else if(e.key === 'ArrowLeft') show(idx-1, -1);
+        }
+      });
+      var onMq = function(){ if(!compact && !closed) applyMode(); };
+      if(mq.addEventListener) mq.addEventListener('change', onMq); else if(mq.addListener) mq.addListener(onMq);
+      open();
     })
     .catch(function(e){ /* 팝업 로드 실패 시 무시 */ });
 })();
