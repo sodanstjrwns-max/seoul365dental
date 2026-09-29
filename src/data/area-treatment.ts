@@ -430,7 +430,11 @@ export function buildVariantMeta(area: AreaInfo, t: Treatment, variantSlug: Matr
     seoTitle: titlePatterns[variantSlug],
     seoDesc: descPatterns[variantSlug],
     h1: `${aName} ${tName} ${variant.heading} - 서울365치과`,
-    canonical: `https://seoul365dc.kr/area/${area.slug}/${t.slug}/${variantSlug}`,
+    // 2026-09-29: intent 변형(비용·추천·후기·이벤트·잘하는곳·야간)은 본문 대부분이 기본 지역×진료 페이지와 겹침
+    // (best≈recommend 유사도 0.96) → 페이지는 유지하되 canonical·og:url·hreflang 을 기본 페이지로 통합, 사이트맵 제외
+    canonical: `https://seoul365dc.kr/area/${area.slug}/${t.slug}`,
+    /** 이 변형 페이지 자체 주소 (브레드크럼·구조화 데이터용) */
+    url: `https://seoul365dc.kr/area/${area.slug}/${t.slug}/${variantSlug}`,
     keywords: [
       `${aName} ${tName} ${variant.name}`,
       `${aName} ${tName}${variant.name}`,
@@ -442,7 +446,7 @@ export function buildVariantMeta(area: AreaInfo, t: Treatment, variantSlug: Matr
   };
 }
 
-/** 전체 롱테일 변형 페이지 목록 (sitemap용) */
+/** 전체 롱테일 변형 페이지 목록 (통계용 — 2026-09-29부터 사이트맵·IndexNow 제출 대상 아님, canonical=기본 페이지) */
 export function getAllVariantPages(): { areaSlug: string; treatmentSlug: string; variantSlug: string; priority: number }[] {
   const pages: { areaSlug: string; treatmentSlug: string; variantSlug: string; priority: number }[] = [];
   for (const a of AREAS) {

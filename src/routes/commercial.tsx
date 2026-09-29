@@ -381,7 +381,7 @@ app.get('/prices', async (c) => {
     {
       title: '인천 치과 진료 가격 안내 2026 — 구월동 서울365치과',
       description: '인천 구월동 서울365치과의 진료 가격을 투명하게 안내합니다. 임플란트·교정·라미네이트·신경치료·크라운 등 항목별 비용과 차이점을 자세히 비교하세요.',
-      canonicalUrl,
+      canonical: canonicalUrl, // renderer 는 canonical 키만 읽음 — 예전 canonicalUrl 키는 무시돼 홈으로 canonical 되던 문제 (2026-09-29)
     }
   );
 });
@@ -508,7 +508,7 @@ app.get('/prices/:treatment', async (c) => {
           <div class="flex justify-center gap-3 flex-wrap">
             <a href={`tel:${CLINIC.phone}`} class="btn-premium btn-premium-fill"><i class="fa-solid fa-phone mr-2"></i>{CLINIC.phone}</a>
             <a href="/reservation" class="btn-premium btn-premium-white">예약 상담</a>
-            <a href="/kakao" class="btn-premium btn-premium-white">카카오 상담</a>
+            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium btn-premium-white">카카오 상담</a>
           </div>
         </div>
       </section>
@@ -516,7 +516,7 @@ app.get('/prices/:treatment', async (c) => {
     {
       title: page.title,
       description: page.description,
-      canonicalUrl,
+      canonical: canonicalUrl,
     }
   );
 });
@@ -597,8 +597,10 @@ app.get('/emergency', (c) => {
           <div class="bg-white rounded-2xl p-8 border border-gray-100">
             <table class="w-full text-sm">
               <tbody>
-                <tr class="border-b border-gray-100"><td class="py-3 font-bold text-gray-700">평일 (월~금)</td><td class="py-3 text-emerald-600 font-bold">10:00 ~ 21:00 (야간진료)</td></tr>
-                <tr class="border-b border-gray-100"><td class="py-3 font-bold text-gray-700">토요일</td><td class="py-3 text-emerald-600 font-bold">10:00 ~ 18:00</td></tr>
+                {/* 2026-09-29: src/data/clinic.ts HOURS·스키마와 일치하도록 수정 (금 19시·토 14시) */}
+                <tr class="border-b border-gray-100"><td class="py-3 font-bold text-gray-700">평일 (월~목)</td><td class="py-3 text-emerald-600 font-bold">10:00 ~ 21:00 (야간진료)</td></tr>
+                <tr class="border-b border-gray-100"><td class="py-3 font-bold text-gray-700">금요일</td><td class="py-3 text-emerald-600 font-bold">10:00 ~ 19:00</td></tr>
+                <tr class="border-b border-gray-100"><td class="py-3 font-bold text-gray-700">토요일</td><td class="py-3 text-emerald-600 font-bold">10:00 ~ 14:00</td></tr>
                 <tr class="border-b border-gray-100"><td class="py-3 font-bold text-gray-700">일요일 · 공휴일</td><td class="py-3 text-emerald-600 font-bold">14:00 ~ 18:00</td></tr>
                 <tr><td class="py-3 font-bold text-red-500">365일 진료</td><td class="py-3 text-gray-600">설·추석 당일 외 연중 무휴</td></tr>
               </tbody>
@@ -638,7 +640,7 @@ app.get('/emergency', (c) => {
     {
       title: '인천 응급 치과 — 당일 진료 · 365일 운영 | 구월동 서울365치과',
       description: '인천 구월동 응급 치과. 365일 진료, 평일 21시까지 야간진료. 치통·외상·임플란트 응급 즉시 대응. 서울대 출신 5인 협진. 032-432-0365',
-      canonicalUrl,
+      canonical: canonicalUrl,
     }
   );
 });
@@ -664,7 +666,7 @@ app.get('/night-clinic', (c) => {
 
   // 야간 진료 FAQ
   const nightFaqs = [
-    { q: '평일 야간 진료는 몇 시까지인가요?', a: '월~금 21:00까지 진료합니다. 마지막 접수는 20:30까지이며, 18~20시 슬롯이 가장 인기 많아 예약을 권장드립니다.' },
+    { q: '평일 야간 진료는 몇 시까지인가요?', a: '월~목 21:00까지 진료합니다(금요일은 19:00까지). 마지막 접수는 20:30까지이며, 18~20시 슬롯이 가장 인기 많아 예약을 권장드립니다.' },
     { q: '야간에도 의료진이 동일한가요?', a: '네, 야간 시간대에도 서울대 출신 5인 협진 시스템이 그대로 유지됩니다. 주간과 동일한 진료 품질을 보장합니다.' },
     { q: '야간에도 수면진료가 가능한가요?', a: '가능합니다. 마취과 전문의가 직접 상주하여 야간 수면진료를 시행하고 있습니다. 사전 예약 시 상담드립니다.' },
   ];
@@ -695,7 +697,7 @@ app.get('/night-clinic', (c) => {
 
           <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { icon: 'moon', title: '평일 21시 마감', desc: '월~금 10:00~21:00 일관 운영. 퇴근 후 18~21시 슬롯 가장 인기' },
+              { icon: 'moon', title: '평일 21시 마감', desc: '월~목 10:00~21:00 운영(금 19시). 퇴근 후 18~21시 슬롯 가장 인기' },
               { icon: 'user-md', title: '야간에도 5인 협진', desc: '주간과 동일한 의료진. 단독 진료가 아닌 협진 시스템 유지' },
               { icon: 'syringe', title: '야간 수면진료 가능', desc: '마취과 전문의 직접 상주. 통증 공포 환자도 편안하게' },
               { icon: 'briefcase', title: '직장인 친화', desc: '퇴근 후 1~2시간 충분히 진료 가능. 예약 우선 확보' },
@@ -772,8 +774,8 @@ app.get('/night-clinic', (c) => {
     </>,
     {
       title: '구월동 야간 치과 — 평일 21시까지 · 인천 야간 진료 | 서울365치과',
-      description: '인천 구월동 야간 치과. 평일 21시까지 진료, 토 18시·일요일 18시 운영. 퇴근 후 야간 진료, 야간 수면진료 가능. 서울대 출신 5인 협진. 032-432-0365',
-      canonicalUrl,
+      description: '인천 구월동 야간 치과. 월~목 21시까지 진료(금 19시), 토 14시·일요일·공휴일 14~18시 운영. 퇴근 후 야간 진료, 야간 수면진료 가능. 서울대 출신 5인 협진. 032-432-0365',
+      canonical: canonicalUrl,
     }
   );
 });

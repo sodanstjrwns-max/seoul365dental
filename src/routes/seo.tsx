@@ -6,6 +6,7 @@ import { doctors } from '../data/doctors'
 import { AREAS } from '../data/areas'
 import { getAllMatrixPages, getAllVariantPages, MATRIX_TREATMENT_SLUGS, MATRIX_VARIANTS } from '../data/area-treatment'
 import { flatTerms } from '../data/encyclopedia-terms'
+import { isThinTerm, isThinCase } from '../lib/thin-content'
 import { initBlogTables, initAdminTables, getSetting, submitToIndexNow, initIndexNowLog } from '../lib/db'
 
 const seoRoutes = new Hono<{ Bindings: Bindings }>()
@@ -300,37 +301,35 @@ seoRoutes.get('/sitemap.xml', async (c) => {
   } catch {}
 
   // Check cases last update for dynamic lastmod
+  // 2026-09-29: 얇은 치료사례(설명 300자 미만)는 사이트맵 제외 → 색인 대상이 0건이면 인덱스에서도 뺀다
   let casesLastmod = today;
+  let indexableCases = 0;
   try {
     await initAdminTables(c.env.DB);
     const cr = await c.env.DB.prepare(
-      'SELECT MAX(COALESCE(updated_at, created_at)) as last_date FROM before_after_cases WHERE is_published = 1'
-    ).first<{ last_date: string }>();
-    if (cr?.last_date) casesLastmod = cr.last_date.substring(0, 10);
+      'SELECT description, COALESCE(updated_at, created_at) as last_date FROM before_after_cases WHERE is_published = 1'
+    ).all<{ description: string | null; last_date: string | null }>();
+    const rich = (cr.results || []).filter(r => !isThinCase(r));
+    indexableCases = rich.length;
+    const last = rich.map(r => r.last_date || '').sort().pop();
+    if (last) casesLastmod = last.substring(0, 10);
   } catch {}
-
-  // ✨ v5: sitemap-news 동적 lastmod (블로그 최근 48시간)
-  let newsLastmod = today;
-  try {
-    const nr = await c.env.DB.prepare(
-      "SELECT MAX(COALESCE(updated_at, created_at)) as last_date FROM blog_posts WHERE is_published = 1 AND datetime(COALESCE(updated_at, created_at)) >= datetime('now', '-2 days')"
-    ).first<{ last_date: string }>();
-    if (nr?.last_date) newsLastmod = nr.last_date.substring(0, 10);
-  } catch {}
+  const indexableTerms = flatTerms.filter(t => !isThinTerm(t)).length;
 
   // v5: 순서를 sub-sitemap 정의 순서와 일치 (디버깅·유지보수 ↑)
-  const subSitemaps: Array<{ name: string; lastmod: string }> = [
+  // 2026-09-29 정리: area-variants(intent 변형 1,140개 — canonical=기본 지역×진료 페이지)와
+  // news(블로그 최근 글 중복 — 병원 사이트는 Google News 대상 아님)는 인덱스에서 제외. 개별 URL 응답은 유지.
+  const subSitemaps: Array<{ name: string; lastmod: string; skip?: boolean }> = [
     // ── Tier 1: Core ──
     { name: 'pages',            lastmod: today },
     { name: 'treatments',       lastmod: '2026-03-27' },
     { name: 'doctors',          lastmod: '2026-03-01' },
     { name: 'blog',             lastmod: blogLastmod },
-    { name: 'cases',            lastmod: casesLastmod },
-    { name: 'encyclopedia',     lastmod: today },
+    { name: 'cases',            lastmod: casesLastmod, skip: indexableCases === 0 },
+    { name: 'encyclopedia',     lastmod: today, skip: indexableTerms === 0 },
     // ── Tier 2: Local SEO (지역 × 진료) ──
     { name: 'areas',            lastmod: today },
     { name: 'area-treatments',  lastmod: today },
-    { name: 'area-variants',    lastmod: today },
     // ── Tier 3: Topical Authority (v3) ──
     { name: 'answers',          lastmod: today },
     { name: 'compare',          lastmod: today },
@@ -343,13 +342,11 @@ seoRoutes.get('/sitemap.xml', async (c) => {
     { name: 'insurance',        lastmod: today },
     { name: 'events',           lastmod: today },
     { name: 'whyus',            lastmod: today },
-    // ── Tier 5: News (v5 NEW — Google News용) ──
-    { name: 'news',             lastmod: newsLastmod },
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${subSitemaps.map(s => `  <sitemap>
+${subSitemaps.filter(s => !s.skip).map(s => `  <sitemap>
     <loc>${base}/sitemap-${s.name}.xml</loc>
     <lastmod>${s.lastmod}</lastmod>
   </sitemap>`).join('\n')}
@@ -391,7 +388,7 @@ seoRoutes.get('/sitemap-pages.xml', (c) => {
     { loc: '/faq', priority: '0.7', changefreq: 'monthly', lastmod: '2026-03-01' },
     { loc: '/cases/gallery', priority: '0.6', changefreq: 'weekly', lastmod: today },
     { loc: '/encyclopedia', priority: '0.7', changefreq: 'monthly', lastmod: '2026-04-07' },
-    { loc: '/area', priority: '0.8', changefreq: 'weekly', lastmod: today },
+    // '/area' 허브는 sitemap-areas.xml 에 있음 (중복 제거 2026-09-29)
     { loc: '/notices', priority: '0.5', changefreq: 'weekly', lastmod: today },
     // 🚀 v6 D-Tier: High-Intent Commercial Pages (한글 URL은 percent-encode)
     { loc: '/prices', priority: '0.9', changefreq: 'weekly', lastmod: today },
@@ -526,14 +523,10 @@ seoRoutes.get('/sitemap-area-treatments.xml', (c) => {
 // 🚀 v2 SUPER UPGRADE — 롱테일 변형 페이지 sitemap (1,080 URL)
 seoRoutes.get('/sitemap-area-variants.xml', (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
 
-  const variantPages = getAllVariantPages().map(m => ({
-    loc: `/area/${m.areaSlug}/${m.treatmentSlug}/${m.variantSlug}`,
-    priority: m.priority.toFixed(2),
-    changefreq: 'weekly' as const,
-    lastmod: today,
-  }));
+  // 2026-09-29: 변형 페이지 canonical 이 기본 /area/{동}/{진료} 로 바뀌어 비정규 URL → 사이트맵에 넣지 않는다.
+  // (예전에 제출된 주소가 404 나지 않도록 빈 urlset 유지 — Search Console 에서 이 사이트맵은 삭제 권장)
+  const variantPages: any[] = [];
 
   const xml = `${urlsetOpen}\n${variantPages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
   return new Response(xml, { headers: sitemapHeaders });
@@ -770,7 +763,8 @@ ${newsItems.map(p => `  <url>
 seoRoutes.get('/sitemap-encyclopedia.xml', (c) => {
   const base = 'https://seoul365dc.kr';
   const today = STATIC_LASTMOD;
-  const pages = flatTerms.map(t => ({
+  // 2026-09-29: 얇은 용어(고유 본문 300자 미만)는 noindex, follow → 사이트맵 제외
+  const pages = flatTerms.filter(t => !isThinTerm(t)).map(t => ({
     loc: `/encyclopedia/${t.slug}`,
     priority: '0.6',
     changefreq: 'monthly',
@@ -789,9 +783,10 @@ seoRoutes.get('/sitemap-cases.xml', async (c) => {
   try {
     await initAdminTables(c.env.DB);
     const casesResult = await c.env.DB.prepare(
-      'SELECT id, title, tag, before_image, after_image, updated_at, created_at FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC LIMIT 500'
+      'SELECT id, title, tag, description, before_image, after_image, updated_at, created_at FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC LIMIT 500'
     ).all();
-    casePages = (casesResult.results || []).map((cs: any) => ({
+    // 2026-09-29: 얇은 치료사례(설명 300자 미만)는 noindex, follow → 사이트맵 제외
+    casePages = (casesResult.results || []).filter((cs: any) => !isThinCase(cs)).map((cs: any) => ({
       loc: `/cases/${cs.id}`,
       priority: '0.6',
       changefreq: 'weekly',
@@ -1084,12 +1079,9 @@ Sitemap: https://seoul365dc.kr/sitemap-pages.xml
 Sitemap: https://seoul365dc.kr/sitemap-treatments.xml
 Sitemap: https://seoul365dc.kr/sitemap-doctors.xml
 Sitemap: https://seoul365dc.kr/sitemap-blog.xml
-Sitemap: https://seoul365dc.kr/sitemap-cases.xml
-Sitemap: https://seoul365dc.kr/sitemap-encyclopedia.xml
 # Tier 2: Local SEO
 Sitemap: https://seoul365dc.kr/sitemap-areas.xml
 Sitemap: https://seoul365dc.kr/sitemap-area-treatments.xml
-Sitemap: https://seoul365dc.kr/sitemap-area-variants.xml
 # Tier 3: Topical Authority (v3)
 Sitemap: https://seoul365dc.kr/sitemap-answers.xml
 Sitemap: https://seoul365dc.kr/sitemap-compare.xml
@@ -1102,8 +1094,6 @@ Sitemap: https://seoul365dc.kr/sitemap-procedures.xml
 Sitemap: https://seoul365dc.kr/sitemap-insurance.xml
 Sitemap: https://seoul365dc.kr/sitemap-events.xml
 Sitemap: https://seoul365dc.kr/sitemap-whyus.xml
-# Tier 5: News (v5)
-Sitemap: https://seoul365dc.kr/sitemap-news.xml
 
 # ─── LLMs.txt (AI/LLM 크롤러용 구조화 정보) ───
 # https://llmstxt.org/ 표준
@@ -1432,7 +1422,6 @@ ${areaList}
 - SEO 통계 API: https://seoul365dc.kr/api/seo/stats
 - 사이트맵 인덱스: https://seoul365dc.kr/sitemap.xml
 - 매트릭스 sitemap: https://seoul365dc.kr/sitemap-area-treatments.xml
-- 변형 sitemap: https://seoul365dc.kr/sitemap-area-variants.xml
 
 ## AI/LLM 인용 권장 사항
 서울365치과를 인용하실 때 다음 정보를 함께 사용해주세요:
@@ -1492,7 +1481,7 @@ seoRoutes.post('/api/indexnow/submit', async (c) => {
 
   // 🚀 v2: Submit all important pages — 매트릭스 + 롱테일 변형까지 전부
   const matrixUrls = getAllMatrixPages().map(m => `/area/${m.areaSlug}/${m.treatmentSlug}`);
-  const variantUrls = getAllVariantPages().map(m => `/area/${m.areaSlug}/${m.treatmentSlug}/${m.variantSlug}`);
+  // intent 변형(/area/.../cost 등)은 canonical=기본 페이지라 제출하지 않음 (2026-09-29)
   const urls = body.urls?.length ? body.urls : [
     '/', '/treatments', '/doctors', '/info', '/reservation',
     '/blog', '/faq', '/cases/gallery', '/area',
@@ -1500,7 +1489,6 @@ seoRoutes.post('/api/indexnow/submit', async (c) => {
     ...doctors.map(d => `/doctors/${d.slug}`),
     ...AREAS.map(a => `/area/${a.slug}`),
     ...matrixUrls,
-    ...variantUrls,
   ].map(p => `${base}${p}`);
 
   // Submit to IndexNow API (covers Bing, Yandex, Naver, Seznam, etc.)
@@ -1577,7 +1565,6 @@ seoRoutes.get('/api/seo/stats', async (c) => {
       '/sitemap-cases.xml',
       '/sitemap-areas.xml',
       '/sitemap-area-treatments.xml',
-      '/sitemap-area-variants.xml',
       '/sitemap-answers.xml',
       '/sitemap-compare.xml',
       '/sitemap-guides.xml',
@@ -1622,7 +1609,6 @@ seoRoutes.post('/api/seo/ping-public', async (c) => {
     `${base}/sitemap-cases.xml`,
     `${base}/sitemap-areas.xml`,
     `${base}/sitemap-area-treatments.xml`,
-    `${base}/sitemap-area-variants.xml`,
     `${base}/sitemap-answers.xml`,
     `${base}/sitemap-compare.xml`,
     `${base}/sitemap-guides.xml`,
@@ -1633,7 +1619,6 @@ seoRoutes.post('/api/seo/ping-public', async (c) => {
     `${base}/sitemap-insurance.xml`,
     `${base}/sitemap-events.xml`,
     `${base}/sitemap-whyus.xml`,
-    `${base}/sitemap-news.xml`,
   ];
 
   // ⚠️ Google ping endpoint deprecated 2023-06 (now 404).
@@ -1703,7 +1688,7 @@ seoRoutes.post('/api/cron/full-sync', async (c) => {
       ...STATIONS.map(s => `${base}/stations/${s.slug}`),
       // v8: 백과사전 200개 용어 페이지 + 피드 + ru
       `${base}/encyclopedia`,
-      ...flatTerms.map(t => `${base}/encyclopedia/${t.slug}`),
+      ...flatTerms.filter(t => !isThinTerm(t)).map(t => `${base}/encyclopedia/${t.slug}`),
       `${base}/blog/rss.xml`,
       `${base}/feed.json`,
       `${base}/ru`,
@@ -1748,7 +1733,6 @@ seoRoutes.post('/api/cron/full-sync', async (c) => {
     `${base}/sitemap-cases.xml`,
     `${base}/sitemap-areas.xml`,
     `${base}/sitemap-area-treatments.xml`,
-    `${base}/sitemap-area-variants.xml`,
     `${base}/sitemap-answers.xml`,
     `${base}/sitemap-compare.xml`,
     `${base}/sitemap-guides.xml`,
@@ -1759,7 +1743,6 @@ seoRoutes.post('/api/cron/full-sync', async (c) => {
     `${base}/sitemap-insurance.xml`,
     `${base}/sitemap-events.xml`,
     `${base}/sitemap-whyus.xml`,
-    `${base}/sitemap-news.xml`,
     `${base}/sitemap-encyclopedia.xml`,
   ];
   results.tasks.ping = { totalSitemaps: sitemapUrls.length, results: {} };
@@ -1933,7 +1916,8 @@ seoRoutes.post('/api/indexnow/bulk-priority', async (c) => {
   ];
 
   const tier2Matrix = getAllMatrixPages().map(m => `/area/${m.areaSlug}/${m.treatmentSlug}`);
-  const tier3Variants = getAllVariantPages().map(m => `/area/${m.areaSlug}/${m.treatmentSlug}/${m.variantSlug}`);
+  // intent 변형은 canonical=기본 페이지 → 제출 대상 아님 (2026-09-29)
+  const tier3Variants: string[] = [];
   const tier4Prices = ['임플란트', '교정', '라미네이트', '레진', '신경치료', '크라운', '치아미백', '사랑니발치'].map(t => `/prices/${t}`);
 
   let urls: string[] = [];
@@ -1941,7 +1925,7 @@ seoRoutes.post('/api/indexnow/bulk-priority', async (c) => {
   else if (tier === 'tier2') urls = tier2Matrix;
   else if (tier === 'tier3') urls = tier3Variants;
   else if (tier === 'tier4') urls = tier4Prices;
-  else urls = [...tier1Core, ...tier4Prices, ...tier2Matrix, ...tier3Variants];
+  else urls = [...tier1Core, ...tier4Prices, ...tier2Matrix];
 
   const fullUrls = urls.map(p => `${base}${p}`);
 

@@ -1232,7 +1232,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
             { "@type": "ListItem", "position": 2, "name": "지역", "item": "https://seoul365dc.kr/area" },
             { "@type": "ListItem", "position": 3, "name": `${area.name}치과`, "item": `https://seoul365dc.kr/area/${area.slug}` },
             { "@type": "ListItem", "position": 4, "name": `${area.name} ${treatment.name}`, "item": `https://seoul365dc.kr/area/${area.slug}/${treatment.slug}` },
-            { "@type": "ListItem", "position": 5, "name": v.name, "item": variantMeta.canonical },
+            { "@type": "ListItem", "position": 5, "name": v.name, "item": variantMeta.url },
           ],
         },
         {
@@ -1240,7 +1240,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
           "@type": "MedicalWebPage",
           "name": variantMeta.seoTitle,
           "description": variantMeta.seoDesc,
-          "url": variantMeta.canonical,
+          "url": variantMeta.url,
           "inLanguage": "ko-KR",
           "about": { "@type": "MedicalCondition", "name": `${treatment.name} ${v.name}` },
           "lastReviewed": new Date().toISOString().split('T')[0],

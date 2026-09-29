@@ -15,7 +15,7 @@ import { AGGREGATE_RATING, REVIEWS } from './data/reviews'
 let _currentSeoSettings: Record<string, string> = {};
 export function setCurrentSeoSettings(s: Record<string, string>) { _currentSeoSettings = s; }
 
-export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified, ogImage: customOgImage, ogType, datePublished, articleSection, articleTags, keywords: pageKeywords, noindex }) => {
+export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified, ogImage: customOgImage, ogType, datePublished, articleSection, articleTags, keywords: pageKeywords, noindex, noindexFollow }) => {
   const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·인비절라인 투명교정·수면진료 전문. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
@@ -487,8 +487,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <meta name="keywords" content={metaKeywords} />
         <link rel="canonical" href={canonicalUrl} />
         {/* v8: noindex prop — admin/login/register 등 비공개 페이지는 색인 차단 (크롤 버짓 절약) */}
-        <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
-        <meta name="googlebot" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+        {/* noindexFollow — 얇은 상세(백과 용어·치료사례 등): 색인 제외하되 링크는 따라가게 (2026-09-29) */}
+        <meta name="robots" content={noindex ? 'noindex, nofollow' : noindexFollow ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
+        <meta name="googlebot" content={noindex ? 'noindex, nofollow' : noindexFollow ? 'noindex, follow' : 'index, follow'} />
         <meta name="date" content={lastModified} />
         <meta property="article:modified_time" content={lastModified} />
 
@@ -784,6 +785,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                   ].map(t => (
                     <li><a href={`/treatments/${t.slug}`} class="text-white/35 hover:text-[#00E5FF] transition-colors">{t.name}</a></li>
                   ))}
+                  {/* 2026-09-29: 링크가 거의 없던 응급·야간 진료 안내 페이지 연결 */}
+                  <li><a href="/emergency" class="text-white/35 hover:text-[#00E5FF] transition-colors">응급 진료</a></li>
+                  <li><a href="/night-clinic" class="text-white/35 hover:text-[#00E5FF] transition-colors">야간 진료</a></li>
                 </ul>
               </nav>
 
@@ -798,6 +802,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                   <li><a href="/answers" class="text-white/35 hover:text-[#00E5FF] transition-colors">자주 묻는 질문 직답</a></li>
                   <li><a href="/encyclopedia" class="text-white/35 hover:text-[#00E5FF] transition-colors">치과 백과사전</a></li>
                   <li><a href="/reviews" class="text-white/35 hover:text-[#00E5FF] transition-colors">환자 후기</a></li>
+                  <li><a href="/why-us" class="text-white/35 hover:text-[#00E5FF] transition-colors">서울365를 선택하는 이유</a></li>
                 </ul>
               </nav>
 

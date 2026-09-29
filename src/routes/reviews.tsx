@@ -102,15 +102,25 @@ app.get('/reviews', (c) => {
           {/* 카테고리별 평점 카드 */}
           <h2 class="text-2xl font-bold text-gray-900 mb-6">진료 분야별 평점</h2>
           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-12">
-            {Object.entries(RATING_BY_CATEGORY).map(([cat, stat]) => (
-              <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
-                <div class="text-xs text-gray-500 mb-1">{cat}</div>
-                <div class="text-2xl font-bold text-blue-600">{stat.avg.toFixed(2)}</div>
-                <div class="text-xs text-yellow-500 mt-1">
-                  <i class="fas fa-star"></i> {stat.count}건
-                </div>
-              </div>
-            ))}
+            {Object.entries(RATING_BY_CATEGORY).map(([cat, stat]) => {
+              // 2026-09-29: 분야별 후기 페이지(/reviews/:slug)로 가는 내부 링크 — 후기가 있는 분야만
+              const slug = Object.keys(CATEGORY_SLUG_MAP).find((k) => CATEGORY_SLUG_MAP[k] === cat);
+              const href = slug && getReviewsByCategory(cat).length > 0 ? `/reviews/${slug}` : null;
+              const inner = (
+                <>
+                  <div class="text-xs text-gray-500 mb-1">{cat}</div>
+                  <div class="text-2xl font-bold text-blue-600">{stat.avg.toFixed(2)}</div>
+                  <div class="text-xs text-yellow-500 mt-1">
+                    <i class="fas fa-star"></i> {stat.count}건
+                  </div>
+                </>
+              );
+              return href ? (
+                <a href={href} class="block bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center hover:border-blue-300 transition" aria-label={`${cat} 후기 보기`}>{inner}</a>
+              ) : (
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">{inner}</div>
+              );
+            })}
           </div>
 
           {/* 리뷰 리스트 */}

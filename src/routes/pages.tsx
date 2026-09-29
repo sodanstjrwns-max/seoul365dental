@@ -8,6 +8,7 @@ import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clea
 import { initAdminTables, initBlogTables } from '../lib/db'
 import { getTreatmentBySlug } from '../data/treatments'
 import { terms, totalTerms, flatTerms, getTermBySlug, getRelatedTerms } from '../data/encyclopedia-terms'
+import { isThinTerm, isThinCase, NOINDEX_FOLLOW } from '../lib/thin-content'
 
 const pageRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -1147,6 +1148,10 @@ pageRoutes.get('/cases/:id', async (c) => {
     const caseTitle = `${cs.title} | 치료사례 Before & After`;
     const caseDesc = `${cs.description || cs.title}. 담당: ${cs.doctor_name}${cs.duration ? ', 치료기간: ' + cs.duration : ''}. 서울365치과 서울대 출신 5인 전문의 협진.`;
 
+    // 얇은 치료사례(설명 300자 미만, AFTER는 회원 전용): noindex, follow + 사이트맵 제외 — 설명 보강 시 자동 복귀
+    const thinCase = isThinCase(cs)
+    if (thinCase) c.header('X-Robots-Tag', NOINDEX_FOLLOW)
+
     // Check if user is logged in (for after image display)
     const user = await getCurrentUser(c.env.DB, c.req.header('cookie'));
     const isLoggedIn = !!user;
@@ -1294,6 +1299,7 @@ pageRoutes.get('/cases/:id', async (c) => {
         title: `${caseTitle} | 서울365치과`,
         description: caseDesc.substring(0, 160),
         canonical: `https://seoul365dc.kr/cases/${id}`,
+        noindexFollow: thinCase,
         ogImage: ogImg,
         ogType: 'article',
         datePublished: cs.created_at,
@@ -1891,6 +1897,9 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
   const pageUrl = `https://seoul365dc.kr/encyclopedia/${term.slug}`;
   const title = `${term.term}(${term.en})이란? 뜻·정의 | 치과 백과사전 — 서울365치과`;
   const desc = term.def.length > 150 ? term.def.slice(0, 147) + '…' : term.def;
+  // 얇은 용어(고유 본문 300자 미만 — 현재 정의 한 문장뿐): noindex, follow + 사이트맵 제외, 허브 /encyclopedia 는 색인 유지
+  const thinTerm = isThinTerm(term);
+  if (thinTerm) c.header('X-Robots-Tag', NOINDEX_FOLLOW);
 
   return c.render(
     <>
@@ -1953,6 +1962,7 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
       title,
       description: desc,
       canonical: pageUrl,
+      noindexFollow: thinTerm,
       keywords: `${term.term}, ${term.term} 뜻, ${term.term}이란, ${term.en}, 치과 용어, ${term.cat}`,
       jsonLd: [
         {
