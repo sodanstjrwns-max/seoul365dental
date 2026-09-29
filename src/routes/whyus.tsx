@@ -30,41 +30,7 @@ const COMPARISONS_VS_GENERAL = {
 app.get('/why-us', (c) => {
   const canonicalUrl = `${SITE_URL}/why-us`;
 
-  const dentistSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Dentist',
-    name: '서울365치과의원',
-    url: SITE_URL,
-    description: '인천 남동구 구월동 예술회관역 5번 출구 도보 3분. 서울대 출신 5인 협진 · 400평+ 시설 · 365일 진료 · 평점 4.9/5.0',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: '인천 남동구 인하로507번길 7 9층',
-      addressLocality: '인천광역시',
-      addressRegion: '남동구',
-      postalCode: '21577',
-      addressCountry: 'KR',
-    },
-    telephone: '+82-32-432-0365',
-    priceRange: '₩₩',
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: '진료 분야',
-      itemListElement: [
-        { '@type': 'Offer', itemOffered: { '@type': 'MedicalProcedure', name: '임플란트' } },
-        { '@type': 'Offer', itemOffered: { '@type': 'MedicalProcedure', name: '인비절라인' } },
-        { '@type': 'Offer', itemOffered: { '@type': 'MedicalProcedure', name: '교정치료' } },
-        { '@type': 'Offer', itemOffered: { '@type': 'MedicalProcedure', name: '수면진료' } },
-        { '@type': 'Offer', itemOffered: { '@type': 'MedicalProcedure', name: '소아치과' } },
-      ],
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: 4.9,
-      bestRating: 5,
-      worstRating: 1,
-      reviewCount: 2156,
-    },
-  };
+  // 중복 Dentist(@id 없음·잘못된 주소·별점) 스키마 제거 — 병원 엔티티는 전역 #dentist (2026-09-29)
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -77,7 +43,6 @@ app.get('/why-us', (c) => {
 
   return c.render(
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(dentistSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       <section class="hero-premium" style="min-height:45vh">

@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { CONTENT_DATES } from '../lib/content-dates'
 import type { Bindings } from '../lib/types'
 import { CLINIC, HOURS } from '../data/clinic'
 import { treatments } from '../data/treatments'
@@ -176,7 +177,7 @@ pageRoutes.get('/reservation', (c) => {
             "reservationFor": { "@id": "https://seoul365dc.kr/#dentist" }
           },
           "agent": { "@id": "https://seoul365dc.kr/#dentist" },
-          "object": { "@type": "MedicalClinic", "name": "서울365치과의원" }
+          "object": { "@id": "https://seoul365dc.kr/#dentist" }
         },
         // CommunicateAction — multiple communication channels
         {
@@ -200,7 +201,7 @@ pageRoutes.get('/reservation', (c) => {
             "urlTemplate": "https://booking.naver.com/booking/13/bizes/426166",
           },
           "agent": { "@type": "Person", "name": "환자" },
-          "object": { "@type": "MedicalClinic", "name": "서울365치과의원" },
+          "object": { "@id": "https://seoul365dc.kr/#dentist" },
         },
         // Speakable for AEO (reservation page)
         {
@@ -1859,8 +1860,8 @@ pageRoutes.get('/encyclopedia', (c) => {
           "about": { "@id": "https://seoul365dc.kr/#dentist" },
           "specialty": "Dentistry",
           "inLanguage": "ko-KR",
-          "lastReviewed": new Date().toISOString().split('T')[0],
-          "reviewedBy": { "@type": "Physician", "name": "박준규", "worksFor": { "@id": "https://seoul365dc.kr/#dentist" } },
+          "lastReviewed": CONTENT_DATES.encyclopedia,
+          "reviewedBy": { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/park-junkyu#physician", "name": "박준규", "jobTitle": "대표원장" },
           "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", "h3", "dt"] },
           "mainEntity": {
             "@type": "DefinedTermSet",

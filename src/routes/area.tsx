@@ -3,6 +3,7 @@
 // /area/:slug — 각 동별 고유 콘텐츠 SEO 최적화 페이지
 // ============================================================
 import { Hono } from 'hono'
+import { CONTENT_DATES } from '../lib/content-dates'
 import type { Bindings } from '../lib/types'
 import { CLINIC, HOURS, DIFF_CARDS } from '../data/clinic'
 import { AREAS, getAreaBySlug, getAreasSorted, getAreasByGu, type AreaInfo } from '../data/areas'
@@ -411,7 +412,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       <article class="bg-white py-16 md:py-20" itemscope itemtype="https://schema.org/Article">
         <meta itemprop="headline" content={`${area.name} ${treatment.name} 안내 - 서울365치과`} />
         <meta itemprop="datePublished" content="2025-01-01" />
-        <meta itemprop="dateModified" content={new Date().toISOString().split('T')[0]} />
+        <meta itemprop="dateModified" content={CONTENT_DATES.area} />
         <div itemprop="author" itemscope itemtype="https://schema.org/Dentist" style="display:none">
           <meta itemprop="name" content="서울365치과의원" />
           <meta itemprop="url" content="https://seoul365dc.kr" />
@@ -571,11 +572,8 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
             {matrixContent.reviewQuotes.map((review, idx) => (
-              <div class="premium-card p-6" itemscope itemtype="https://schema.org/Review">
-                <meta itemprop="itemReviewed" content={`${area.name} ${treatment.name} - 서울365치과의원`} />
-                <div class="flex items-center gap-1 mb-3" itemprop="reviewRating" itemscope itemtype="https://schema.org/Rating">
-                  <meta itemprop="ratingValue" content="5" />
-                  <meta itemprop="bestRating" content="5" />
+              <div class="premium-card p-6">
+                <div class="flex items-center gap-1 mb-3">
                   {[1, 2, 3, 4, 5].map(() => (
                     <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
                   ))}
@@ -749,66 +747,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
             { "@type": "ListItem", "position": 4, "name": `${area.name} ${treatment.name}`, "item": canonicalUrl },
           ],
         },
-        // LocalBusiness with area + medical procedure
-        {
-          "@context": "https://schema.org",
-          "@type": "Dentist",
-          "name": `서울365치과의원 - ${area.name} ${treatment.name}`,
-          "alternateName": `Seoul 365 Dental - ${area.name} ${treatment.name}`,
-          "url": canonicalUrl,
-          "telephone": CLINIC.phone,
-          "image": "https://seoul365dc.kr/static/og-image.png",
-          "priceRange": "₩₩",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "예술로 138 이토타워 2층 212호",
-            "addressLocality": "인천광역시 남동구",
-            "addressRegion": "인천",
-            "postalCode": CLINIC.postalCode,
-            "addressCountry": "KR",
-          },
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": CLINIC.geo.lat,
-            "longitude": CLINIC.geo.lng,
-          },
-          "areaServed": [
-            {
-              "@type": "AdministrativeArea",
-              "name": `인천광역시 ${area.gu} ${area.name}`,
-            },
-            {
-              "@type": "GeoCircle",
-              "geoMidpoint": {
-                "@type": "GeoCoordinates",
-                "latitude": area.lat,
-                "longitude": area.lng,
-              },
-              "geoRadius": "3000",
-            },
-          ],
-          "openingHoursSpecification": [
-            { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"], "opens": "10:00", "closes": "21:00" },
-            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "10:00", "closes": "19:00" },
-            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "10:00", "closes": "14:00" },
-            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "14:00", "closes": "18:00" },
-          ],
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.9",
-            "ratingCount": "2150",
-            "reviewCount": "1840",
-            "bestRating": "5",
-          },
-          "medicalSpecialty": "Dentistry",
-          "availableService": {
-            "@type": "MedicalProcedure",
-            "name": treatment.name,
-            "alternateName": [`${area.name} ${treatment.name}`, `${area.gu} ${treatment.name}`, `인천 ${treatment.name}`],
-            "url": `https://seoul365dc.kr/treatments/${treatment.slug}`,
-            "description": treatment.metaDesc,
-          },
-        },
+        // @id 없는 중복 Dentist 노드 제거 — 병원 엔티티는 전역 #dentist 하나 (2026-09-29)
         // MedicalProcedure 자체
         {
           "@context": "https://schema.org",
@@ -818,11 +757,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           "description": meta.seoDesc,
           "url": canonicalUrl,
           "procedureType": "https://schema.org/TherapeuticProcedure",
-          "performer": {
-            "@type": "Dentist",
-            "name": "서울365치과의원",
-            "url": "https://seoul365dc.kr",
-          },
+          "performer": { "@id": "https://seoul365dc.kr/#dentist" },
         },
         // FAQPage
         {
@@ -855,7 +790,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
             "@type": "MedicalSpecialty",
             "name": "Dentistry",
           },
-          "lastReviewed": new Date().toISOString().split('T')[0],
+          "lastReviewed": CONTENT_DATES.area,
           "mainContentOfPage": {
             "@type": "WebPageElement",
             "cssSelector": "h1",
@@ -873,7 +808,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           "description": meta.seoDesc,
           "image": "https://seoul365dc.kr/static/og-image.png",
           "datePublished": "2025-01-01",
-          "dateModified": new Date().toISOString().split('T')[0],
+          "dateModified": CONTENT_DATES.area,
           "author": {
             "@type": "Organization",
             "name": "서울365치과의원",
@@ -930,10 +865,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
             "description": row.note || '',
             "availability": "https://schema.org/InStock",
             "url": canonicalUrl,
-            "seller": {
-              "@type": "Dentist",
-              "name": "서울365치과의원",
-            },
+            "seller": { "@id": "https://seoul365dc.kr/#dentist" },
           })),
         }] : []),
         // 🚀 v2: Place (지역 강조)
@@ -1243,7 +1175,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
           "url": variantMeta.url,
           "inLanguage": "ko-KR",
           "about": { "@type": "MedicalCondition", "name": `${treatment.name} ${v.name}` },
-          "lastReviewed": new Date().toISOString().split('T')[0],
+          "lastReviewed": CONTENT_DATES.area,
         },
       ],
     }
@@ -1658,66 +1590,7 @@ areaRoutes.get('/area/:slug', (c) => {
             { "@type": "ListItem", "position": 3, "name": `${area.name}치과`, "item": canonicalUrl },
           ],
         },
-        // LocalBusiness with geo
-        {
-          "@context": "https://schema.org",
-          "@type": "Dentist",
-          "name": "서울365치과의원",
-          "alternateName": "Seoul 365 Dental Clinic",
-          "url": "https://seoul365dc.kr",
-          "telephone": CLINIC.phone,
-          "image": "https://seoul365dc.kr/static/og-image.png",
-          "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "예술로 138 이토타워 2층 212호",
-            "addressLocality": "인천광역시 남동구",
-            "addressRegion": "인천",
-            "postalCode": CLINIC.postalCode,
-            "addressCountry": "KR",
-          },
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": CLINIC.geo.lat,
-            "longitude": CLINIC.geo.lng,
-          },
-          "areaServed": [
-            {
-              "@type": "GeoCircle",
-              "geoMidpoint": {
-                "@type": "GeoCoordinates",
-                "latitude": CLINIC.geo.lat,
-                "longitude": CLINIC.geo.lng,
-              },
-              "geoRadius": "10000",
-            },
-            {
-              "@type": "AdministrativeArea",
-              "name": `인천광역시 ${area.gu} ${area.name}`,
-            },
-          ],
-          "openingHoursSpecification": [
-            { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday"], "opens": "10:00", "closes": "21:00" },
-            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Friday", "opens": "10:00", "closes": "19:00" },
-            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "10:00", "closes": "14:00" },
-            { "@type": "OpeningHoursSpecification", "dayOfWeek": "Sunday", "opens": "14:00", "closes": "18:00" },
-          ],
-          "aggregateRating": {
-            "@type": "AggregateRating",
-            "ratingValue": "4.9",
-            "ratingCount": "2150",
-            "reviewCount": "1840",
-            "bestRating": "5",
-          },
-          "medicalSpecialty": [
-            "Implantology", "Orthodontics", "Cosmetic Dentistry",
-            "Pediatric Dentistry", "Sedation Dentistry",
-          ],
-          "availableService": area.recommendTreatments.map(name => ({
-            "@type": "MedicalProcedure",
-            "name": name,
-            "url": `https://seoul365dc.kr/treatments/${treatmentMap[name] || 'implant'}`,
-          })),
-        },
+        // @id 없는 중복 Dentist 노드 제거 — 병원 엔티티는 전역 #dentist 하나 (2026-09-29)
         // FAQPage
         {
           "@context": "https://schema.org",
@@ -1749,7 +1622,7 @@ areaRoutes.get('/area/:slug', (c) => {
             "@type": "MedicalSpecialty",
             "name": "Dentistry",
           },
-          "lastReviewed": new Date().toISOString().split('T')[0],
+          "lastReviewed": CONTENT_DATES.area,
         },
       ],
     }

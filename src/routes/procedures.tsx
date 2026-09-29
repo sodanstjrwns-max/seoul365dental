@@ -8,6 +8,9 @@ import { PROCEDURES, getProcedureBySlug, getAllProcedureSlugs } from '../data/pr
 
 const app = new Hono<{ Bindings: Bindings }>();
 const SITE_URL = 'https://seoul365dc.kr';
+// 절차 가이드 최종 검토일 — 기존 HowTo.dateModified 고정값과 동일하게 화면·스키마에 사용 (2026-09-29)
+const PROC_REVIEWED = '2026-05-26';
+const LEAD_REVIEWER_ID = `${SITE_URL}/doctors/park-junkyu#physician`;
 
 // ── /procedures 인덱스 ──
 app.get('/procedures', (c) => {
@@ -113,20 +116,10 @@ app.get('/procedures/:slug', (c) => {
       ...(s.duration ? { performTime: s.duration } : {}),
     })),
     // 의료 E-E-A-T
-    author: {
-      '@type': 'Person',
-      name: '박준규',
-      jobTitle: '대표원장',
-      worksFor: { '@type': 'Dentist', name: '서울365치과의원' },
-      alumniOf: { '@type': 'CollegeOrUniversity', name: '서울대학교 치과대학' },
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: '서울365치과의원',
-      url: SITE_URL,
-    },
+    author: { '@type': 'Physician', '@id': LEAD_REVIEWER_ID, name: '박준규', jobTitle: '대표원장' },
+    publisher: { '@id': `${SITE_URL}/#dentist` },
     datePublished: '2026-01-01',
-    dateModified: '2026-05-26',
+    dateModified: PROC_REVIEWED,
     inLanguage: 'ko-KR',
   };
 
@@ -143,15 +136,26 @@ app.get('/procedures/:slug', (c) => {
   const medicalSchema = {
     '@context': 'https://schema.org',
     '@type': 'MedicalProcedure',
+    '@id': `${canonicalUrl}#procedure`,
     name: proc.title,
     description: proc.description,
-    procedureType: 'Diagnostic',
     audience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
-    performer: {
-      '@type': 'Dentist',
-      name: '서울365치과의원',
-      url: SITE_URL,
-    },
+    performer: { '@id': `${SITE_URL}/#dentist` },
+  };
+
+  const webPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalWebPage',
+    '@id': `${canonicalUrl}#webpage`,
+    name: `${proc.title} | 서울365치과`,
+    url: canonicalUrl,
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+    about: { '@id': `${canonicalUrl}#procedure` },
+    lastReviewed: PROC_REVIEWED,
+    dateModified: PROC_REVIEWED,
+    reviewedBy: { '@type': 'Physician', '@id': LEAD_REVIEWER_ID, name: '박준규', jobTitle: '대표원장' },
+    speakable: { '@type': 'SpeakableSpecification', cssSelector: ['h1', '#tx-answer'] },
+    inLanguage: 'ko-KR',
   };
 
   const breadcrumbSchema = {
@@ -169,6 +173,7 @@ app.get('/procedures/:slug', (c) => {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(medicalSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       <section class="hero-premium" style="min-height:40vh">
@@ -182,7 +187,10 @@ app.get('/procedures/:slug', (c) => {
           <h1 class="text-3xl md:text-4xl font-black gradient-text-white leading-tight mb-4">
             {proc.title}
           </h1>
-          <p class="text-white/60 text-lg mb-6">{proc.description}</p>
+          <p id="tx-answer" class="text-white/60 text-lg mb-3">{proc.description}</p>
+          <p class="tx-reviewer text-white/40 text-xs mb-6">
+            감수: <a href="/doctors/park-junkyu" class="underline underline-offset-2 hover:text-white">박준규 대표원장</a> · 최종 검토 <time datetime={PROC_REVIEWED}>{PROC_REVIEWED}</time>
+          </p>
           <div class="flex flex-wrap gap-3 text-xs">
             <span class="px-3 py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-200">
               <i class="fas fa-list-ol"></i> {proc.steps.length}단계
@@ -265,6 +273,7 @@ app.get('/procedures/:slug', (c) => {
     {
       title: `${proc.title} | 서울365치과`,
       description: proc.description,
+      dateModified: PROC_REVIEWED,
       keywords: `${proc.category} 절차, ${proc.category} 시술 단계, ${proc.category} 과정, ${proc.category} 가이드`,
       canonical: canonicalUrl,
     }

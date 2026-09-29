@@ -30,7 +30,6 @@ intlRoutes.get('/en', (c) => {
     "inLanguage": ["ko-KR", "en", "zh"],
     "openingHours": ["Mo-Th 10:00-21:00", "Fr 10:00-19:00", "Sa 10:00-14:00", "Su 14:00-18:00"],
     "priceRange": "$$",
-    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "2150" },
   };
 
   return c.render(
@@ -149,7 +148,6 @@ intlRoutes.get('/zh', (c) => {
     },
     "geo": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
     "inLanguage": ["zh-CN", "ko-KR"],
-    "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.9", "ratingCount": "2150" },
   };
 
   return c.render(

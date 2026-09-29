@@ -6,6 +6,15 @@ import { TREATMENT_EMPATHY } from '../data/brand'
 import { initAdminTables } from '../lib/db'
 import { AREAS, getAreasSorted } from '../data/areas'
 import { MATRIX_TREATMENT_SLUGS } from '../data/area-treatment'
+import { CONTENT_DATES, LEAD_REVIEWER } from '../lib/content-dates'
+
+// 진료 페이지 상단 핵심 답변 — 기존 본문 첫 상세 섹션('○○란?')의 앞 2문장 (새 주장 없음, 2026-09-29)
+function txAnswer(t: any): string {
+  const src: string = t.detailSections?.[0]?.content || t.heroSub || t.metaDesc
+  const sentences = src.split(/(?<=[.!?])\s+/).filter(Boolean)
+  return sentences.slice(0, 2).join(' ')
+}
+const REVIEWER_REF = { "@type": "Physician", "@id": LEAD_REVIEWER.id, "name": LEAD_REVIEWER.name, "jobTitle": LEAD_REVIEWER.jobTitle }
 
 const treatmentRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -113,8 +122,8 @@ treatmentRoutes.get('/treatments', (c) => {
           "@type": "MedicalWebPage",
           "name": "서울365치과 전체 진료 안내",
           "url": "https://seoul365dc.kr/treatments",
-          "lastReviewed": new Date().toISOString().split('T')[0],
-          "reviewedBy": { "@type": "Physician", "name": "박준규", "worksFor": { "@id": "https://seoul365dc.kr/#dentist" } },
+          "lastReviewed": CONTENT_DATES.treatments,
+          "reviewedBy": REVIEWER_REF,
           "specialty": "Dentistry",
           "speakable": {
             "@type": "SpeakableSpecification",
@@ -164,6 +173,9 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
   const t = getTreatmentBySlug(slug);
   if (!t) return c.notFound();
   const empathy = TREATMENT_EMPATHY[slug];
+  const answer = txAnswer(t);
+  const reviewed = CONTENT_DATES.treatments;
+  const pageUrl = `https://seoul365dc.kr/treatments/${t.slug}`;
 
   // Fetch published Before/After cases for this treatment from DB
   let dbCases: any[] = [];
@@ -195,6 +207,19 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
           <div class="flex flex-wrap gap-3 reveal" style="transition-delay:0.8s">
             <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 상담 예약</a>
             <a href="/info" class="btn-premium btn-premium-white" data-cursor-hover><i class="fa-solid fa-won-sign"></i> 비용 안내</a>
+          </div>
+        </div>
+      </section>
+
+      {/* 핵심 답변 + 감수 줄 (AEO 답변 우선 블록, 2026-09-29) */}
+      <section class="bg-white pt-10 md:pt-12 pb-2">
+        <div class="max-w-4xl mx-auto px-5 md:px-8">
+          <div class="glass-card p-6 md:p-7">
+            <p class="text-xs font-bold text-[#0066FF] tracking-wider mb-2">{t.name} 핵심 요약</p>
+            <p id="tx-answer" class="text-gray-800 text-[0.95rem] leading-[1.85]">{answer}</p>
+            <p class="tx-reviewer text-xs text-gray-400 mt-4">
+              감수: <a href="/doctors/park-junkyu" class="underline underline-offset-2 hover:text-[#0066FF]">{LEAD_REVIEWER.name} {LEAD_REVIEWER.jobTitle}</a> · 최종 검토 <time datetime={reviewed}>{reviewed}</time>
+            </p>
           </div>
         </div>
       </section>
@@ -807,19 +832,27 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
       title: t.metaTitle,
       description: t.metaDesc,
       canonical: `https://seoul365dc.kr/treatments/${t.slug}`,
+      dateModified: reviewed,
       jsonLd: [
         // MedicalWebPage
         {
           "@context": "https://schema.org",
           "@type": "MedicalWebPage",
+          "@id": `${pageUrl}#webpage`,
           "name": t.metaTitle,
           "description": t.metaDesc,
-          "url": `https://seoul365dc.kr/treatments/${t.slug}`,
+          "url": pageUrl,
           "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
-          "about": { "@type": "MedicalProcedure", "name": t.name },
+          "about": { "@id": `${pageUrl}#procedure` },
           "specialty": "Dentistry",
-          "lastReviewed": new Date().toISOString().split('T')[0],
-          "reviewedBy": { "@type": "Physician", "name": "박준규", "worksFor": { "@id": "https://seoul365dc.kr/#dentist" } },
+          "lastReviewed": reviewed,
+          "dateModified": reviewed,
+          "reviewedBy": REVIEWER_REF,
+          "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": ["h1", "#tx-answer"]
+          },
           "inLanguage": "ko-KR"
         },
         // MedicalProcedure (detailed)
@@ -829,7 +862,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
           "name": t.name,
           "procedureType": t.slug.includes('orthodontic') || t.slug.includes('invisalign') ? "NonSurgicalProcedure" : "SurgicalProcedure",
           "bodyLocation": "Oral cavity",
-          "description": t.metaDesc,
+          "description": answer,
           "howPerformed": t.process?.map((s: any) => s.step).join(' → '),
           "preparation": "정밀 CT 촬영 및 디지털 스캔 진단",
           "followup": "정기 검진 및 유지 관리",
@@ -966,17 +999,6 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
           ],
           "legalStatus": "의료기관에서만 시행 가능한 의료 행위",
           "recognizingAuthority": { "@type": "Organization", "name": "보건복지부" },
-        },
-        // Speakable for this treatment page (AEO)
-        {
-          "@context": "https://schema.org",
-          "@type": "WebPage",
-          "name": t.metaTitle,
-          "speakable": {
-            "@type": "SpeakableSpecification",
-            "cssSelector": ["h1", ".hero-sub", "h2", "[itemprop='name']", "[itemprop='text']"]
-          },
-          "url": `https://seoul365dc.kr/treatments/${t.slug}`,
         },
       ]
     }

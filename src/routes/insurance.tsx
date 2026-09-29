@@ -227,13 +227,13 @@ app.get('/insurance/:slug', (c) => {
     inLanguage: 'ko-KR',
     audience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
     author: {
-      '@type': 'Person',
+      '@type': 'Physician',
+      '@id': 'https://seoul365dc.kr/doctors/park-junkyu#physician',
       name: '박준규',
       jobTitle: '대표원장',
-      worksFor: { '@type': 'Dentist', name: '서울365치과의원' },
-      memberOf: { '@type': 'Organization', name: '대한치과의사협회' },
+      worksFor: { '@id': 'https://seoul365dc.kr/#dentist' },
     },
-    publisher: { '@type': 'Organization', name: '서울365치과의원' },
+    publisher: { '@id': 'https://seoul365dc.kr/#dentist' },
     dateModified: '2026-05-26',
     mainEntity: {
       '@type': 'Question',

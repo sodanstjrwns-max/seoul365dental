@@ -3,7 +3,6 @@
 // 페이지별 스키마 빌더 공통 모듈
 // ============================================================
 import { CLINIC, HOURS_DETAIL } from '../data/clinic';
-import { AGGREGATE_RATING } from '../data/reviews';
 
 export const SITE_URL = 'https://seoul365dc.kr';
 export const DENTIST_ID = `${SITE_URL}/#dentist`;
@@ -109,14 +108,6 @@ export function buildServiceWithOffers(args: {
         seller: { '@id': DENTIST_ID },
       })),
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: String(AGGREGATE_RATING.ratingValue),
-      bestRating: String(AGGREGATE_RATING.bestRating),
-      worstRating: String(AGGREGATE_RATING.worstRating),
-      ratingCount: String(AGGREGATE_RATING.reviewCount),
-      reviewCount: String(AGGREGATE_RATING.reviewCount),
-    },
   };
 }
 
@@ -201,14 +192,6 @@ export function buildClinicWithEmphasis(args: {
       ? args.hoursOverride.map(h => ({ '@type': 'OpeningHoursSpecification', ...h }))
       : defaultHours,
     parentOrganization: { '@id': DENTIST_ID },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: String(AGGREGATE_RATING.ratingValue),
-      bestRating: String(AGGREGATE_RATING.bestRating),
-      worstRating: String(AGGREGATE_RATING.worstRating),
-      ratingCount: String(AGGREGATE_RATING.reviewCount),
-      reviewCount: String(AGGREGATE_RATING.reviewCount),
-    },
   };
 
   if (args.emphasis === 'emergency') {

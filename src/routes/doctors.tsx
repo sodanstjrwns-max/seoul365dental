@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { CONTENT_DATES } from '../lib/content-dates'
 import type { Bindings } from '../lib/types'
 import { CLINIC } from '../data/clinic'
 import { doctors, getDoctorBySlug } from '../data/doctors'
@@ -148,7 +149,7 @@ doctorRoutes.get('/doctors', (c) => {
           "url": "https://seoul365dc.kr/doctors",
           "speakable": {
             "@type": "SpeakableSpecification",
-            "cssSelector": ["h1", "h2", "blockquote", ".hero-sub"]
+            "cssSelector": ["h1", ".hero-sub", "h2"]
           }
         },
         // EducationalOrganization — alma mater emphasis (AEO)
@@ -341,7 +342,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
           "mainEntity": { "@id": `https://seoul365dc.kr/doctors/${doc.slug}#physician` },
           "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
           "inLanguage": "ko-KR",
-          "dateModified": new Date().toISOString().split('T')[0]
+          "dateModified": CONTENT_DATES.doctors
         },
         // BreadcrumbList
         {
@@ -398,7 +399,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
           "url": `https://seoul365dc.kr/doctors/${doc.slug}`,
           "speakable": {
             "@type": "SpeakableSpecification",
-            "cssSelector": ["h1", "h3", "blockquote", ".hero-sub"]
+            "cssSelector": story ? ["h1", "h3"] : ["h1", "blockquote", "h3"]
           }
         },
         // Occupation schema — structured job data

@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { treatments, getTreatmentBySlug } from '../data/treatments'
+import { doctors } from '../data/doctors'
 import { getAdminFromCookie, initAdminTables, initBlogTables, renderContent, extractFAQs, extractHeadings, slugify, generateSeoSlug, autoGenerateExcerpt, estimateReadingTime, extractFirstImage, submitToIndexNow, pingSitemapUpdate } from '../lib/db'
 
 const blogRoutes = new Hono<{ Bindings: Bindings }>()
@@ -1397,6 +1398,12 @@ blogRoutes.get('/blog/:slug', async (c) => {
 
   const contentHtml = renderContent(post.content);
   const linkedTreatment = post.treatment_slug ? getTreatmentBySlug(post.treatment_slug) : null;
+  // 작성자: DB author_name 이 의료진 이름(예: '하누리 원장')이면 해당 Physician @id, 아니면 병원(#dentist) — 2026-09-29
+  const authorName = String(post.author_name || '').replace(/\s*(대표원장|원장).*$/, '').trim();
+  const authorDoc = doctors.find((d: any) => d.name === authorName);
+  const authorLd = authorDoc
+    ? { "@type": "Physician", "@id": `https://seoul365dc.kr/doctors/${authorDoc.slug}#physician`, "name": authorDoc.name, "jobTitle": authorDoc.title, "url": `https://seoul365dc.kr/doctors/${authorDoc.slug}` }
+    : { "@type": "Organization", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원", "url": "https://seoul365dc.kr" };
   const tagsArray = post.tags ? post.tags.split(',').map((t: string) => t.trim()) : [];
 
   // Build TOC from H2 + H3 headings (SEO-enhanced)
@@ -1599,15 +1606,7 @@ blogRoutes.get('/blog/:slug', async (c) => {
             "width": 1200,
             "height": 630,
           } : ogImg,
-          "author": {
-            "@type": "Organization",
-            "name": "서울365치과의원",
-            "url": "https://seoul365dc.kr",
-            "logo": {
-              "@type": "ImageObject",
-              "url": "https://seoul365dc.kr/static/og-image.png",
-            },
-          },
+          "author": authorLd,
           "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
           "mainEntityOfPage": {
             "@type": "WebPage",
@@ -1626,10 +1625,10 @@ blogRoutes.get('/blog/:slug', async (c) => {
           // AEO: Speakable — AI voice assistants can read these sections
           "speakable": {
             "@type": "SpeakableSpecification",
+            // 실제 DOM 기준 (본문 h2 없음 → 제외, 요약은 excerpt 있을 때만 렌더) — 2026-09-29
             "cssSelector": [
               "[itemprop='headline']",
-              "[itemprop='description']",
-              "[itemprop='articleBody'] h2",
+              ...(post.excerpt ? ["[itemprop='description']"] : []),
               "[itemprop='articleBody'] p:first-of-type",
             ],
           },

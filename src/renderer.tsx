@@ -3,7 +3,7 @@ import { raw } from 'hono/html'
 import { CLINIC, HOURS } from './data/clinic'
 import { MESSAGING } from './data/brand'
 import { AREAS } from './data/areas'
-import { AGGREGATE_RATING, REVIEWS } from './data/reviews'
+import { doctors as DOCTORS } from './data/doctors'
 
 // SEO/AEO Optimized Renderer — v3.0
 // - Rich Schema.org (Dentist + MedicalOrganization + WebSite + Speakable)
@@ -24,7 +24,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const metaKeywords = pageKeywords ? `${pageKeywords}, ${defaultKeywords}` : defaultKeywords;
   const ogImage = customOgImage || 'https://seoul365dc.kr/static/og-image.png';
   const resolvedOgType = ogType || 'website';
-  const lastModified = dateModified || new Date().toISOString().split('T')[0];
+  // 페이지가 넘긴 고정 날짜만 사용 — 없으면 date/modified 메타 생략 (매일 '오늘' 자동 갱신 금지, 2026-09-29)
+  const lastModified = dateModified || '';
   const currentYear = new Date().getFullYear(); // 푸터·저작권 연도 자동 갱신 (F2 방치 신호 제거)
 
   // Dynamic SEO/Analytics settings (from DB or env via global cache)
@@ -69,7 +70,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "telephone": "+82-32-432-0365",
     "email": "seoul365dental@gmail.com",
     "image": ogImage,
-    "logo": "https://seoul365dc.kr/static/logo-v2.png",
+    "logo": { "@type": "ImageObject", "url": "https://seoul365dc.kr/static/logo-v2.png", "width": 174, "height": 180 },
     "priceRange": "₩₩",
     "currenciesAccepted": "KRW",
     "paymentAccepted": "현금, 신용카드, 카카오페이",
@@ -148,25 +149,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         "howPerformed": "치아 표면을 미세하게 삭제 후 자체 기공실에서 정밀 제작한 세라믹 보철 부착",
       },
     ],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "itemReviewed": { "@type": "Dentist", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원" },
-      "ratingValue": String(AGGREGATE_RATING.ratingValue),
-      "bestRating": String(AGGREGATE_RATING.bestRating),
-      "worstRating": String(AGGREGATE_RATING.worstRating),
-      "ratingCount": String(AGGREGATE_RATING.reviewCount),
-      "reviewCount": String(AGGREGATE_RATING.reviewCount),
-    },
-    // 실제 reviews.ts에서 최신 3건 추출 (가공 후기 — 비식별화된 author명 패턴 'OO님' 그대로 노출)
-    "review": REVIEWS.slice(0, 3).map(r => ({
-      "@type": "Review",
-      "itemReviewed": { "@type": "Dentist", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원" },
-      "reviewRating": { "@type": "Rating", "ratingValue": String(r.rating), "bestRating": "5" },
-      "author": { "@type": "Person", "name": r.author },
-      "datePublished": r.date,
-      "reviewBody": r.body.length > 300 ? r.body.slice(0, 297) + '…' : r.body,
-      "publisher": { "@type": "Organization", "name": r.source || "서울365치과" },
-    })),
+    // aggregateRating/review 제거 (2026-09-29, PFWE-SPEC §6 — 근거 없는 별점 스키마 금지)
     "sameAs": [
       CLINIC.instagram,
       CLINIC.naverBlog,
@@ -214,11 +197,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       "주안동치과", "주안역치과", "관교동치과", "청학동치과", "연수동치과", "송도치과",
       "부평치과", "부평역치과", "십정동치과", "검암동치과", "계양구치과", "미추홀구치과", "연수구치과",
     ],
-    // Speakable for AEO (AI engines extracting quick answers)
-    "speakable": {
-      "@type": "SpeakableSpecification",
-      "cssSelector": ["h1", ".hero-sub", ".section-headline", "[itemprop='name']", "[itemprop='text']"],
-    },
+    // speakable 은 페이지(WebPage)별 스키마에서 실제 DOM 셀렉터로 지정 (전역 Dentist 에서 제거, 2026-09-29)
     // ContactPoint — multiple channels
     "contactPoint": [
       {
@@ -249,13 +228,12 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
       }
     ],
     // Member doctors
-    "employee": [
-      { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/park-junkyu#physician", "name": "박준규", "jobTitle": "대표원장" },
-      { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/choi-dabin#physician", "name": "최다빈", "jobTitle": "원장" },
-      { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/jung-moonhee#physician", "name": "정문희", "jobTitle": "원장" },
-      { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/sang-sehoon#physician", "name": "상세훈", "jobTitle": "원장" },
-      { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/ha-nuri#physician", "name": "하누리", "jobTitle": "원장" },
-    ],
+    "employee": DOCTORS.map(d => ({
+      "@type": "Physician",
+      "@id": `https://seoul365dc.kr/doctors/${d.slug}#physician`,
+      "name": d.name,
+      "jobTitle": d.title,
+    })),
     // Potential reservation action
     "potentialAction": [
       {
@@ -288,38 +266,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "hasCredential": [
       { "@type": "EducationalOccupationalCredential", "credentialCategory": "의료기관 개설 허가", "recognizedBy": { "@type": "Organization", "name": "보건복지부" } }
     ],
-    "parentOrganization": { "@type": "Organization", "name": "서울365치과의원" },
   };
 
-  // Organization schema (supplementary corporate identity)
-  const organizationSchema = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": "https://seoul365dc.kr/#organization",
-    "name": "서울365치과의원",
-    "url": "https://seoul365dc.kr",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://seoul365dc.kr/static/logo-v2.png",
-      "width": 512,
-      "height": 512
-    },
-    "image": ogImage,
-    "sameAs": [
-      CLINIC.instagram,
-      CLINIC.naverBlog,
-      CLINIC.kakao,
-      CLINIC.naverBooking,
-    ],
-    "founder": { "@type": "Person", "name": "박준규" },
-    "foundingDate": "2019",
-    "contactPoint": {
-      "@type": "ContactPoint",
-      "telephone": "+82-32-432-0365",
-      "contactType": "customer service",
-      "availableLanguage": ["Korean", "English"]
-    }
-  };
+  // 별도 Organization(#organization) 노드 제거 — 병원 엔티티는 #dentist 하나로 통일 (2026-09-29)
 
   // SiteNavigationElement — helps search engines understand site structure
   const navigationSchema = {
@@ -490,8 +439,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* noindexFollow — 얇은 상세(백과 용어·치료사례 등): 색인 제외하되 링크는 따라가게 (2026-09-29) */}
         <meta name="robots" content={noindex ? 'noindex, nofollow' : noindexFollow ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
         <meta name="googlebot" content={noindex ? 'noindex, nofollow' : noindexFollow ? 'noindex, follow' : 'index, follow'} />
-        <meta name="date" content={lastModified} />
-        <meta property="article:modified_time" content={lastModified} />
+        {lastModified && <meta name="date" content={lastModified} />}
+        {lastModified && <meta property="article:modified_time" content={lastModified} />}
 
         {/* === LANGUAGE & GEO (v7: hreflang 정밀화) ===
             hreflang은 "같은 콘텐츠의 언어 버전" 간에만 상호 선언해야 함.
@@ -596,7 +545,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {/* === STRUCTURED DATA (JSON-LD) === */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(websiteSchema)}} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(dentistSchema)}} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(organizationSchema)}} />
         {jsonLd && (Array.isArray(jsonLd)
           ? jsonLd.map((ld: any) => <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(ld)}} />)
           : <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}} />

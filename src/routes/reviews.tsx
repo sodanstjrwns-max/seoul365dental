@@ -1,6 +1,6 @@
 // ============================================================
 // 🚀 v4 SUPER UPGRADE — Reviews Routes (Weapon 8)
-// AggregateRating + Review JSON-LD로 ⭐ 별점 리치 스니펫 노출
+// (2026-09-29) 별점·후기 JSON-LD 제거 — 화면 후기 목록만 유지
 // ============================================================
 import { Hono } from 'hono';
 import type { Bindings } from '../lib/types';
@@ -16,48 +16,7 @@ const SITE_URL = 'https://seoul365dc.kr';
 app.get('/reviews', (c) => {
   const canonicalUrl = `${SITE_URL}/reviews`;
 
-  // AggregateRating JSON-LD + Dentist 결합
-  const aggregateSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Dentist',
-    name: '서울365치과의원',
-    url: SITE_URL,
-    image: `${SITE_URL}/static/og-image.jpg`,
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: '인천 남동구 인하로507번길 7 9층',
-      addressLocality: '인천광역시',
-      addressRegion: '남동구',
-      postalCode: '21577',
-      addressCountry: 'KR',
-    },
-    telephone: '+82-32-432-0365',
-    priceRange: '₩₩',
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: AGGREGATE_RATING.ratingValue,
-      bestRating: AGGREGATE_RATING.bestRating,
-      worstRating: AGGREGATE_RATING.worstRating,
-      reviewCount: AGGREGATE_RATING.reviewCount,
-    },
-    review: REVIEWS.slice(0, 12).map((r) => ({
-      '@type': 'Review',
-      author: { '@type': 'Person', name: r.author },
-      datePublished: r.date,
-      reviewBody: r.body,
-      name: r.title,
-      reviewRating: {
-        '@type': 'Rating',
-        ratingValue: r.rating,
-        bestRating: 5,
-        worstRating: 1,
-      },
-      itemReviewed: {
-        '@type': 'Dentist',
-        name: '서울365치과의원',
-      },
-    })),
-  };
+  // 별점/후기 스키마(AggregateRating·Review)와 중복 Dentist 노드 제거 (2026-09-29, PFWE-SPEC §6). 화면 후기 목록은 그대로.
 
   const breadcrumbSchema = {
     '@context': 'https://schema.org',
@@ -70,7 +29,6 @@ app.get('/reviews', (c) => {
 
   return c.render(
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(aggregateSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       <section class="hero-premium" style="min-height:40vh">
@@ -211,30 +169,8 @@ app.get('/reviews/:slug', (c) => {
     url: canonicalUrl,
     description: `서울365치과 ${koCategory} 진료 환자 ${stat.count}+ 건의 실제 후기. 평균 평점 ${stat.avg}/5.0`,
     inLanguage: 'ko-KR',
-    isPartOf: { '@type': 'WebSite', name: '서울365치과의원', url: SITE_URL },
-    mainEntity: {
-      '@type': 'Dentist',
-      name: '서울365치과의원',
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: stat.avg,
-        bestRating: 5,
-        worstRating: 1,
-        reviewCount: stat.count,
-      },
-      review: categoryReviews.map((r) => ({
-        '@type': 'Review',
-        author: { '@type': 'Person', name: r.author },
-        datePublished: r.date,
-        reviewBody: r.body,
-        name: r.title,
-        reviewRating: {
-          '@type': 'Rating',
-          ratingValue: r.rating,
-          bestRating: 5,
-        },
-      })),
-    },
+    isPartOf: { '@id': 'https://seoul365dc.kr/#website' },
+    about: { '@id': 'https://seoul365dc.kr/#dentist' },
     audience: { '@type': 'MedicalAudience', audienceType: 'Patient' },
   };
 
