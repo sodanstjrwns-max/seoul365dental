@@ -9,6 +9,8 @@ const FALLBACK = {
   area: '2026-09-29',
   home: '2026-08-18',
   encyclopedia: '2026-06-11',
+  llmsTxt: '2026-09-12',
+  llmsFull: '2026-09-29',
 }
 
 const injected = typeof __CONTENT_DATES__ !== 'undefined' ? __CONTENT_DATES__ : {}
@@ -23,7 +25,13 @@ export const CONTENT_DATES = {
   area: pick('area'),
   home: pick('home'),
   encyclopedia: pick('encyclopedia'),
+  llmsTxt: pick('llmsTxt'),
+  llmsFull: pick('llmsFull'),
 }
+
+/** 날짜 문자열들(YYYY-MM-DD… / DB datetime) 중 가장 최근 날짜(YYYY-MM-DD). 유효한 값이 없으면 '' */
+export const latestYmd = (...dates: Array<string | null | undefined>): string =>
+  dates.map((d) => String(d || '').slice(0, 10)).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort().pop() || ''
 
 // 진료 페이지 감수자 — 대표원장 (src/data/doctors.ts park-junkyu)
 export const LEAD_REVIEWER = {

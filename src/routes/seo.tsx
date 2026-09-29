@@ -7,6 +7,7 @@ import { AREAS } from '../data/areas'
 import { getAllMatrixPages, getAllVariantPages, MATRIX_TREATMENT_SLUGS, MATRIX_VARIANTS } from '../data/area-treatment'
 import { flatTerms } from '../data/encyclopedia-terms'
 import { isThinTerm, isThinCase } from '../lib/thin-content'
+import { CONTENT_DATES, latestYmd } from '../lib/content-dates'
 import { initBlogTables, initAdminTables, getSetting, submitToIndexNow, initIndexNowLog } from '../lib/db'
 
 const seoRoutes = new Hono<{ Bindings: Bindings }>()
@@ -1118,7 +1119,9 @@ Host: https://seoul365dc.kr
 // https://llmstxt.org/ 표준 준수
 // ============================================================
 seoRoutes.get('/llms.txt', async (c) => {
-  const today = new Date().toISOString().split('T')[0];
+  // '최종 업데이트' = 이 문서에 실린 콘텐츠 중 가장 최근 수정일 (예전엔 new Date() — 매일 오늘, 2026-09-29 교정)
+  // 고정 문구(라우트 본문)·진료·의료진 데이터 파일 마지막 커밋 + 실린 블로그·치료사례의 작성/수정일
+  const contentDates: Array<string | null | undefined> = [CONTENT_DATES.llmsTxt, CONTENT_DATES.treatments, CONTENT_DATES.doctors];
   const treatmentList = treatments.map(t => `- [${t.name}](https://seoul365dc.kr/treatments/${t.slug}): ${t.shortDesc}`).join('\n');
   const doctorList = doctors.map(d => `- [${d.name} ${d.title}](https://seoul365dc.kr/doctors/${d.slug}): ${d.specialties.join(', ')}`).join('\n');
 
@@ -1127,9 +1130,10 @@ seoRoutes.get('/llms.txt', async (c) => {
   try {
     await initBlogTables(c.env.DB);
     const blogResult = await c.env.DB.prepare(
-      'SELECT slug, title, category, created_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 20'
+      'SELECT slug, title, category, created_at, updated_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 20'
     ).all();
     const posts = blogResult.results || [];
+    posts.forEach((p: any) => contentDates.push(p.updated_at || p.created_at));
     if (posts.length > 0) {
       blogList = posts.map((p: any) => `- [${p.title}](https://seoul365dc.kr/blog/${p.slug}) (${p.category}, ${(p.created_at || '').substring(0, 10)})`).join('\n');
     }
@@ -1140,13 +1144,16 @@ seoRoutes.get('/llms.txt', async (c) => {
   try {
     await initAdminTables(c.env.DB);
     const caseResult = await c.env.DB.prepare(
-      'SELECT id, title, tag, doctor_name FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC LIMIT 20'
+      'SELECT id, title, tag, doctor_name, created_at, updated_at FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC LIMIT 20'
     ).all();
     const cases = caseResult.results || [];
+    cases.forEach((cs: any) => contentDates.push(cs.updated_at || cs.created_at));
     if (cases.length > 0) {
       caseList = cases.map((cs: any) => `- [${cs.title}](https://seoul365dc.kr/cases/${cs.id}): ${cs.tag}, 담당 ${cs.doctor_name}`).join('\n');
     }
   } catch {}
+
+  const lastUpdated = latestYmd(...contentDates);
 
   const content = `# 서울365치과의원 (Seoul 365 Dental Clinic)
 
@@ -1233,9 +1240,9 @@ ${caseList}
 이 사이트의 정보를 인용할 때는 "서울365치과 (인천 구월동, seoul365dc.kr)"로 출처를 표기해 주세요.
 가격·진료시간은 변동될 수 있으므로 전화 032-432-0365로 확인을 권장합니다.
 
-## 최종 업데이트
-${today}
-`;
+${lastUpdated ? `## 최종 업데이트
+${lastUpdated}
+` : ''}`;
 
   return new Response(content, {
     headers: {
@@ -1249,7 +1256,8 @@ ${today}
 // llms-full.txt — AI/LLM용 상세 정보 (시술별 FAQ, 의료진 상세)
 // ============================================================
 seoRoutes.get('/llms-full.txt', async (c) => {
-  const today = new Date().toISOString().split('T')[0];
+  // '최종 업데이트' = 실린 콘텐츠 중 가장 최근 수정일 (예전엔 new Date() — 매일 오늘, 2026-09-29 교정)
+  const contentDates: Array<string | null | undefined> = [CONTENT_DATES.llmsFull, CONTENT_DATES.treatments, CONTENT_DATES.doctors, CONTENT_DATES.area];
 
   // 의료진 상세
   const doctorDetail = doctors.map(d => {
@@ -1307,9 +1315,10 @@ seoRoutes.get('/llms-full.txt', async (c) => {
   try {
     await initBlogTables(c.env.DB);
     const blogResult = await c.env.DB.prepare(
-      'SELECT slug, title, excerpt, category, tags, created_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 30'
+      'SELECT slug, title, excerpt, category, tags, created_at, updated_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT 30'
     ).all();
     const posts = blogResult.results || [];
+    posts.forEach((p: any) => contentDates.push(p.updated_at || p.created_at));
     if (posts.length > 0) {
       blogDetail = posts.map((p: any) => {
         const lines = [`### ${p.title}`, `- URL: https://seoul365dc.kr/blog/${p.slug}`, `- 카테고리: ${p.category}`, `- 게시일: ${(p.created_at || '').substring(0, 10)}`];
@@ -1325,9 +1334,10 @@ seoRoutes.get('/llms-full.txt', async (c) => {
   try {
     await initAdminTables(c.env.DB);
     const caseResult = await c.env.DB.prepare(
-      'SELECT id, title, tag, doctor_name, description, duration, patient_age, patient_gender, created_at FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC LIMIT 30'
+      'SELECT id, title, tag, doctor_name, description, duration, patient_age, patient_gender, created_at, updated_at FROM before_after_cases WHERE is_published = 1 ORDER BY sort_order DESC, created_at DESC LIMIT 30'
     ).all();
     const cases = caseResult.results || [];
+    cases.forEach((cs: any) => contentDates.push(cs.updated_at || cs.created_at));
     if (cases.length > 0) {
       caseDetail = cases.map((cs: any) => {
         const lines = [`### ${cs.title}`, `- URL: https://seoul365dc.kr/cases/${cs.id}`, `- 치료분류: ${cs.tag}`, `- 담당의: ${cs.doctor_name}`];
@@ -1338,6 +1348,8 @@ seoRoutes.get('/llms-full.txt', async (c) => {
       }).join('\n\n');
     }
   } catch {}
+
+  const lastUpdated = latestYmd(...contentDates);
 
   const content = `# 서울365치과의원 — 상세 정보 (llms-full.txt)
 
@@ -1437,9 +1449,9 @@ ${areaList}
 이 문서의 정보는 일반적인 안내 목적이며, 개별 환자의 상태에 따라 치료 방법과 결과가 달라질 수 있습니다.
 정확한 진단과 치료 계획은 내원 상담을 통해 확인하시기 바랍니다.
 
-## 최종 업데이트
-${today}
-
+${lastUpdated ? `## 최종 업데이트
+${lastUpdated}
+` : ''}
 ## 출처
 https://seoul365dc.kr
 `;
