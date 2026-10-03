@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { kstYmd } from '../lib/column-seo'
 import type { Bindings } from '../lib/types'
 import { CLINIC } from '../data/clinic'
 import { treatments } from '../data/treatments'
@@ -472,7 +473,7 @@ seoRoutes.get('/sitemap-blog.xml', async (c) => {
       loc: `/blog/${p.slug}`,
       priority: '0.6',
       changefreq: 'weekly',
-      lastmod: (p.updated_at || p.created_at || today).substring(0, 10),
+      lastmod: kstYmd(p.updated_at || p.created_at) || today, // D1 UTC → KST (스키마 dateModified 와 일치)
     }));
   } catch {}
 

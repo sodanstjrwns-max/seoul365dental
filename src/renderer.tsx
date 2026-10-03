@@ -546,8 +546,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(websiteSchema)}} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(dentistSchema)}} />
         {jsonLd && (Array.isArray(jsonLd)
-          ? jsonLd.map((ld: any) => <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(ld)}} />)
-          : <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}} />
+          ? jsonLd.map((ld: any) => <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(ld).replace(/</g, '\\u003c')}} />)
+          : <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd).replace(/</g, '\\u003c')}} />
         )}
       </head>
       <body class="font-sans text-gray-900 bg-white antialiased">

@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { treatments, getTreatmentBySlug } from '../data/treatments'
 import { doctors } from '../data/doctors'
+import { normalizePostMarkdown, faqsFromMarkdown, answerSummaryText, fillEmptyAlts, doctorByName, LEAD_DOCTOR, physicianRef, isoKst, kstYmd, SITE, ORG_ID, WEBSITE_ID, DEFAULT_OG } from '../lib/column-seo'
 import { getAdminFromCookie, initAdminTables, initBlogTables, renderContent, extractFAQs, extractHeadings, slugify, generateSeoSlug, autoGenerateExcerpt, estimateReadingTime, extractFirstImage, submitToIndexNow, pingSitemapUpdate } from '../lib/db'
 
 const blogRoutes = new Hono<{ Bindings: Bindings }>()
@@ -1033,7 +1034,7 @@ blogRoutes.post('/api/admin/blog', async (c) => {
   if (data.is_published) {
     const postUrl = `https://seoul365dc.kr/blog/${slug}`;
     // Fire-and-forget: submit to IndexNow + ping sitemaps
-    submitToIndexNow(c.env.DB, c.env as any, [postUrl]).catch(() => {});
+    { const p = submitToIndexNow(c.env.DB, c.env as any, [postUrl]).catch(() => {}); try { c.executionCtx.waitUntil(p) } catch {} } // 응답 뒤에도 핑 유지
     pingSitemapUpdate().catch(() => {});
   }
   
@@ -1069,7 +1070,7 @@ blogRoutes.put('/api/admin/blog/:id', async (c) => {
     const post = await c.env.DB.prepare('SELECT slug FROM blog_posts WHERE id = ?').bind(c.req.param('id')).first<{slug: string}>();
     if (post) {
       const postUrl = `https://seoul365dc.kr/blog/${post.slug}`;
-      submitToIndexNow(c.env.DB, c.env as any, [postUrl]).catch(() => {});
+      { const p = submitToIndexNow(c.env.DB, c.env as any, [postUrl]).catch(() => {}); try { c.executionCtx.waitUntil(p) } catch {} } // 응답 뒤에도 핑 유지
       pingSitemapUpdate().catch(() => {});
     }
   }
@@ -1088,19 +1089,33 @@ blogRoutes.delete('/api/admin/blog/:id', async (c) => {
 // --- Public Blog Pages ---
 blogRoutes.get('/blog', async (c) => {
   await initBlogTables(c.env.DB);
-  const category = c.req.query('category');
-  let query = 'SELECT id, slug, title, excerpt, category, tags, cover_image, author_name, view_count, created_at FROM blog_posts WHERE is_published = 1';
+  const category = c.req.query('category') || '';
+  // 서버 페이지네이션(?page=N, a 링크) — 기존 LIMIT 50 은 51번째 이후 글이 목록에서 사라졌음 (2026-10-03)
+  const PER_PAGE = 24;
+  let page = parseInt(c.req.query('page') || '1', 10);
+  if (!page || page < 1) page = 1;
+  let where = 'WHERE is_published = 1';
   const params: any[] = [];
-  if (category) { query += ' AND category = ?'; params.push(category); }
-  query += ' ORDER BY created_at DESC LIMIT 50';
+  if (category) { where += ' AND category = ?'; params.push(category); }
 
   let posts: any[] = [];
+  let total = 0;
+  let catCounts: Record<string, number> = {};
   try {
-    const result = params.length ? await c.env.DB.prepare(query).bind(...params).all() : await c.env.DB.prepare(query).all();
+    const cnt = await c.env.DB.prepare(`SELECT COUNT(*) AS n FROM blog_posts ${where}`).bind(...params).first<any>();
+    total = Number(cnt?.n) || 0;
+    const result = await c.env.DB.prepare(`SELECT id, slug, title, excerpt, category, tags, cover_image, author_name, view_count, created_at FROM blog_posts ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`).bind(...params, PER_PAGE, (page - 1) * PER_PAGE).all();
     posts = result.results || [];
+    const cc = await c.env.DB.prepare('SELECT category, COUNT(*) AS n FROM blog_posts WHERE is_published = 1 GROUP BY category').all();
+    for (const r of (cc.results || []) as any[]) catCounts[r.category] = Number(r.n) || 0;
   } catch {}
+  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+  const baseQs = category ? `?category=${encodeURIComponent(category)}` : '';
+  const pageHref = (n: number) => n === 1 ? `/blog${baseQs}` : `/blog${baseQs ? baseQs + '&' : '?'}page=${n}`;
+  const selfUrl = `https://seoul365dc.kr${pageHref(page)}`;
 
-  const categories = ['전체', '치과상식', '임플란트', '교정', '심미치료', '소아치과', '잇몸/외과', '수면진료', '병원소식'];
+  // 글이 있는 분류만 필터 링크로 노출
+  const categories = ['전체', ...['치과상식', '임플란트', '교정', '심미치료', '소아치과', '잇몸/외과', '수면진료', '병원소식'].filter(k => catCounts[k] || k === category)];
 
   return c.render(
     <>
@@ -1138,7 +1153,7 @@ blogRoutes.get('/blog', async (c) => {
                 <a href={`/blog/${post.slug}`} class="premium-card overflow-hidden group hover:shadow-xl transition-all duration-300 tilt-card">
                   <div class="aspect-[16/9] bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.03] flex items-center justify-center">
                     {post.cover_image ? (
-                      <img src={post.cover_image} alt={post.title} class="w-full h-full object-cover" />
+                      <img src={post.cover_image} alt={post.title} class="w-full h-full object-cover" loading="lazy" decoding="async" />
                     ) : (
                       <i class="fa-solid fa-tooth text-4xl text-[#0066FF]/10"></i>
                     )}
@@ -1147,7 +1162,7 @@ blogRoutes.get('/blog', async (c) => {
                     <div class="flex items-center gap-2 mb-2">
                       <span class="text-[0.65rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{post.category}</span>
                       <span class="text-gray-200" aria-hidden="true">·</span>
-                      <span class="text-[0.6rem] text-gray-300">{post.created_at?.split('T')[0] || post.created_at?.split(' ')[0]}</span>
+                      <span class="text-[0.6rem] text-gray-300">{kstYmd(post.created_at)}</span>
                     </div>
                     <h3 class="font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors line-clamp-2">{post.title}</h3>
                     {post.excerpt && <p class="text-gray-500 text-[0.82rem] mt-2 line-clamp-2">{post.excerpt}</p>}
@@ -1163,25 +1178,35 @@ blogRoutes.get('/blog', async (c) => {
               ))}
             </div>
           )}
+          {totalPages > 1 && (
+            <div class="flex flex-wrap justify-center gap-2 mt-12" role="navigation" aria-label="페이지">
+              {page > 1 && <a href={pageHref(page - 1)} rel="prev" class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#0066FF] hover:text-[#0066FF]">이전</a>}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => n === page
+                ? <span aria-current="page" class="px-3 py-2 rounded-lg bg-[#0066FF] text-white text-sm font-semibold">{n}</span>
+                : <a href={pageHref(n)} class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#0066FF] hover:text-[#0066FF]">{n}</a>)}
+              {page < totalPages && <a href={pageHref(page + 1)} rel="next" class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#0066FF] hover:text-[#0066FF]">다음</a>}
+            </div>
+          )}
         </div>
       </section>
     </>,
     {
-      title: `서울365치과 블로그${category ? ' - ' + category : ''} | 치아 건강 정보`,
-      description: '서울365치과 치과 전문 블로그. 임플란트, 교정, 충치치료, 잇몸치료 등 치아 건강에 대한 전문 정보와 치료 가이드.',
-      canonical: 'https://seoul365dc.kr/blog',
+      title: `서울365치과 블로그${category ? ' - ' + category : ''}${page > 1 ? ` (${page}페이지)` : ''} | 치아 건강 정보`,
+      description: category
+        ? `서울365치과 ${category} 칼럼 모음${page > 1 ? ` ${page}페이지` : ''}. 인천 구월동 서울365치과 의료진이 ${category} 관련 진료 정보를 설명합니다.`
+        : `서울365치과 치과 전문 블로그${page > 1 ? ` ${page}페이지` : ''}. 임플란트, 교정, 충치치료, 잇몸치료 등 치아 건강에 대한 전문 정보와 치료 가이드.`,
+      canonical: selfUrl,
+      noindexFollow: posts.length === 0,
       jsonLd: [
         { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
           { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
           { "@type": "ListItem", "position": 2, "name": "블로그", "item": "https://seoul365dc.kr/blog" }
         ]},
         { "@context": "https://schema.org", "@type": "Blog", "name": "서울365치과 블로그", "description": "치아 건강 전문 정보 블로그", "url": "https://seoul365dc.kr/blog", "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "inLanguage": "ko-KR",
-          "blogPost": posts.slice(0, 10).map((p: any) => ({
-            "@type": "BlogPosting", "headline": p.title, "description": p.excerpt || '', "url": `https://seoul365dc.kr/blog/${p.slug}`,
-            "datePublished": p.created_at, "author": { "@type": "Organization", "name": "서울365치과" }
-          }))
+          "blogPost": posts.slice(0, 10).map((p: any) => ({ "@id": `https://seoul365dc.kr/blog/${p.slug}#article` }))
         },
-        { "@context": "https://schema.org", "@type": "CollectionPage", "name": "서울365치과 블로그", "url": "https://seoul365dc.kr/blog", "isPartOf": { "@id": "https://seoul365dc.kr/#website" } }
+        { "@context": "https://schema.org", "@type": "CollectionPage", "@id": `${selfUrl}#webpage`, "name": `서울365치과 블로그${category ? ' - ' + category : ''}${page > 1 ? ` ${page}페이지` : ''}`, "url": selfUrl, "isPartOf": { "@id": "https://seoul365dc.kr/#website" }, "inLanguage": "ko-KR",
+          "mainEntity": { "@type": "ItemList", "numberOfItems": posts.length, "itemListElement": posts.map((p: any, i: number) => ({ "@type": "ListItem", "position": (page - 1) * PER_PAGE + i + 1, "url": `https://seoul365dc.kr/blog/${p.slug}`, "name": p.title })) } }
       ]
     }
   )
@@ -1229,7 +1254,7 @@ blogRoutes.post('/api/admin/blog/migrate-slugs', async (c) => {
   // If any posts were migrated, trigger sitemap ping
   if (migrated > 0) {
     const urls = changes.map(ch => `https://seoul365dc.kr/blog/${ch.newSlug}`);
-    submitToIndexNow(c.env.DB, c.env as any, urls).catch(() => {});
+    { const p = submitToIndexNow(c.env.DB, c.env as any, urls).catch(() => {}); try { c.executionCtx.waitUntil(p) } catch {} } // 응답 뒤에도 핑 유지
     pingSitemapUpdate().catch(() => {});
   }
 
@@ -1396,81 +1421,145 @@ blogRoutes.get('/blog/:slug', async (c) => {
     related = r.results || [];
   } catch {}
 
-  const contentHtml = renderContent(post.content);
+  // 관련 치료사례 (같은 진료) — 사례 상세 내부 링크
+  let relatedCases: any[] = [];
+  if (post.treatment_slug) {
+    try {
+      const r = await c.env.DB.prepare('SELECT id, title, tag, duration FROM before_after_cases WHERE is_published = 1 AND treatment_slug = ? ORDER BY sort_order DESC, created_at DESC LIMIT 3').bind(post.treatment_slug).all();
+      relatedCases = r.results || [];
+    } catch {}
+  }
+
+  // 본문 구조 정리(제목줄·목차·한 줄 Q/A → H2/H3) 후 렌더 — 글자는 그대로 (2026-10-03 칼럼 표준)
+  const md = normalizePostMarkdown(post.content);
+  const contentHtml = fillEmptyAlts(renderContent(md), post.title);
   const linkedTreatment = post.treatment_slug ? getTreatmentBySlug(post.treatment_slug) : null;
-  // 작성자: DB author_name 이 의료진 이름(예: '하누리 원장')이면 해당 Physician @id, 아니면 병원(#dentist) — 2026-09-29
-  const authorName = String(post.author_name || '').replace(/\s*(대표원장|원장).*$/, '').trim();
-  const authorDoc = doctors.find((d: any) => d.name === authorName);
-  const authorLd = authorDoc
-    ? { "@type": "Physician", "@id": `https://seoul365dc.kr/doctors/${authorDoc.slug}#physician`, "name": authorDoc.name, "jobTitle": authorDoc.title, "url": `https://seoul365dc.kr/doctors/${authorDoc.slug}` }
-    : { "@type": "Organization", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원", "url": "https://seoul365dc.kr" };
-  const tagsArray = post.tags ? post.tags.split(',').map((t: string) => t.trim()) : [];
+  // 작성자: DB author_name 이 의료진 이름이면 해당 Physician, 아니면 병원 명의(Organization) 유지 — author 날조 금지.
+  // 병원 명의 글은 대표원장을 reviewedBy(감수)로 연결.
+  const authorDoc = doctorByName(post.author_name);
+  const reviewerDoc = authorDoc || LEAD_DOCTOR;
+  const authorLd = authorDoc ? physicianRef(authorDoc) : { "@id": ORG_ID };
+  const tagsArray = post.tags ? post.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [];
 
-  // Build TOC from H2 + H3 headings (SEO-enhanced)
-  const headings = extractHeadings(post.content);
+  const headings = extractHeadings(md);
+  // FAQ: 질문형 H3(+ 기존 **Q.** 형식) — 화면에 렌더되는 문장만
+  const faqs: { question: string; answer: string }[] = [];
+  for (const f of [...faqsFromMarkdown(md), ...extractFAQs(md)]) {
+    if (!faqs.some(x => x.question === f.question)) faqs.push(f);
+  }
+  const summary = answerSummaryText(post.excerpt, md);
 
-  // Auto-extract FAQs for JSON-LD FAQPage schema (AEO)
-  const faqs = extractFAQs(post.content);
-
-  // SEO/AEO enhanced data
   const readingTime = estimateReadingTime(post.content);
-  const ogImg = post.cover_image || extractFirstImage(post.content) || 'https://seoul365dc.kr/static/og-image.png';
-  const postDate = post.created_at?.split('T')[0] || post.created_at?.split(' ')[0] || '';
-  const updateDate = post.updated_at?.split('T')[0] || post.updated_at?.split(' ')[0] || postDate;
+  const ogImg = post.cover_image || extractFirstImage(post.content) || DEFAULT_OG;
+  const ogAbs = ogImg.startsWith('http') ? ogImg : `${SITE}${ogImg}`;
+  const publishedIso = isoKst(post.created_at);
+  const modifiedIso = isoKst(post.updated_at || post.created_at) || publishedIso;
+  const postDate = kstYmd(post.created_at);
+  const updateDate = kstYmd(post.updated_at || post.created_at) || postDate;
   const wordCount = post.content.replace(/[#*_~`>\[\]()!-]/g, '').replace(/\s+/g, '').length;
+  const pageUrl = `${SITE}/blog/${post.slug}`;
+  const catCrumb = post.category && post.category !== '치과상식';
+  const metaDesc = (summary || post.excerpt || `${post.title} - 서울365치과 칼럼`).replace(/\s+/g, ' ').trim();
+
+  const graph: any[] = [
+    { "@type": "BreadcrumbList", "@id": `${pageUrl}#breadcrumb`, "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "홈", "item": SITE },
+      { "@type": "ListItem", "position": 2, "name": "블로그", "item": `${SITE}/blog` },
+      ...(catCrumb ? [{ "@type": "ListItem", "position": 3, "name": post.category, "item": `${SITE}/blog?category=${encodeURIComponent(post.category)}` }] : []),
+      { "@type": "ListItem", "position": catCrumb ? 4 : 3, "name": post.title, "item": pageUrl },
+    ]},
+    {
+      "@type": "MedicalWebPage",
+      "@id": `${pageUrl}#webpage`,
+      "url": pageUrl,
+      "name": post.title,
+      "description": metaDesc,
+      "inLanguage": "ko-KR",
+      "isPartOf": { "@id": WEBSITE_ID },
+      "breadcrumb": { "@id": `${pageUrl}#breadcrumb` },
+      "datePublished": publishedIso,
+      "dateModified": modifiedIso,
+      "reviewedBy": physicianRef(reviewerDoc),
+      "specialty": { "@type": "MedicalSpecialty", "name": "Dentistry" },
+      "medicalAudience": { "@type": "MedicalAudience", "audienceType": "Patient" },
+      ...(linkedTreatment ? { "about": { "@type": "MedicalProcedure", "@id": `${SITE}/treatments/${linkedTreatment.slug}#procedure`, "name": linkedTreatment.name, "url": `${SITE}/treatments/${linkedTreatment.slug}` } } : {}),
+      "primaryImageOfPage": { "@type": "ImageObject", "url": ogAbs },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ...(summary ? [".answer-summary"] : [])] },
+    },
+    {
+      "@type": "BlogPosting",
+      "@id": `${pageUrl}#article`,
+      "headline": post.title,
+      "description": metaDesc,
+      "url": pageUrl,
+      "mainEntityOfPage": { "@id": `${pageUrl}#webpage` },
+      "isPartOf": { "@id": WEBSITE_ID },
+      "inLanguage": "ko-KR",
+      "datePublished": publishedIso,
+      "dateModified": modifiedIso,
+      "image": { "@type": "ImageObject", "url": ogAbs },
+      "author": authorLd,
+      "reviewedBy": { "@id": `${SITE}/doctors/${reviewerDoc.slug}#physician` },
+      "publisher": { "@id": ORG_ID },
+      "keywords": tagsArray.join(', ') || undefined,
+      "articleSection": post.category,
+      "wordCount": wordCount,
+      "timeRequired": `PT${readingTime}M`,
+      "isAccessibleForFree": true,
+      ...(linkedTreatment ? { "about": { "@id": `${SITE}/treatments/${linkedTreatment.slug}#procedure` } } : {}),
+    },
+    ...(faqs.length > 0 ? [{
+      "@type": "FAQPage",
+      "@id": `${pageUrl}#faq`,
+      "isPartOf": { "@id": `${pageUrl}#webpage` },
+      "mainEntity": faqs.map(f => ({ "@type": "Question", "name": f.question, "acceptedAnswer": { "@type": "Answer", "text": f.answer } })),
+    }] : []),
+  ];
 
   return c.render(
     <>
-      <article class="pt-24 pb-16" itemscope itemtype="https://schema.org/BlogPosting">
-        <meta itemprop="datePublished" content={post.created_at} />
-        <meta itemprop="dateModified" content={post.updated_at} />
-        <meta itemprop="author" content="서울365치과" />
-
-        {/* Cover Image — Full width hero */}
+      <article class="pt-24 pb-16">
         {post.cover_image && (
           <div class="max-w-5xl mx-auto px-5 md:px-8 mb-8">
             <div class="relative rounded-2xl overflow-hidden shadow-lg">
-              <img
-                src={post.cover_image}
-                alt={post.title}
-                class="w-full h-[280px] md:h-[400px] object-cover"
-                itemprop="image"
-                loading="eager"
-              />
+              <img src={post.cover_image} alt={post.title} class="w-full h-[280px] md:h-[400px] object-cover" id="blogCover" loading="eager" fetchpriority="high" decoding="async" />
               <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
           </div>
         )}
 
         <div class="max-w-4xl mx-auto px-5 md:px-8">
+          <nav class="flex flex-wrap items-center gap-2 text-xs text-gray-400 mb-6" aria-label="Breadcrumb">
+            <a href="/" class="hover:text-[#0066FF] transition">홈</a>
+            <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
+            <a href="/blog" class="hover:text-[#0066FF] transition">블로그</a>
+            {catCrumb && <><i class="fa-solid fa-chevron-right text-[0.5rem]"></i><a href={`/blog?category=${encodeURIComponent(post.category)}`} class="hover:text-[#0066FF] transition">{post.category}</a></>}
+          </nav>
 
-          {/* Header */}
-          <header class="mb-10">
+          <header class="mb-8">
             <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-3 py-1 rounded-full font-semibold">{post.category}</span>
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mt-4 mb-4 leading-tight" itemprop="headline">{post.title}</h1>
-            {post.excerpt && <p class="text-gray-500 text-base leading-relaxed" itemprop="description">{post.excerpt}</p>}
-            <div class="flex items-center gap-4 mt-6 pt-6 border-t border-gray-100 text-sm text-gray-400">
-              <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-full bg-[#0066FF]/10 flex items-center justify-center">
-                  <i class="fa-solid fa-tooth text-[#0066FF] text-xs"></i>
-                </div>
-                <span class="font-medium text-gray-600" itemprop="author">{post.author_name}</span>
-              </div>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mt-4 mb-4 leading-tight">{post.title}</h1>
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-400">
+              <span class="font-medium text-gray-600">{authorDoc ? `${authorDoc.name} ${authorDoc.title}` : post.author_name}</span>
               <span>·</span>
-              <time datetime={post.created_at}>{postDate}</time>
+              <time datetime={publishedIso}>{postDate}</time>
+              {updateDate !== postDate && <><span>·</span><span>수정 <time datetime={modifiedIso}>{updateDate}</time></span></>}
               <span>·</span>
               <span><i class="fa-regular fa-clock mr-1"></i>{readingTime}분 읽기</span>
-              <span>·</span>
-              <span><i class="fa-regular fa-eye mr-1"></i>{post.view_count || 0}</span>
             </div>
           </header>
 
-          <div class="flex gap-10">
-            {/* Main Content */}
-            <div class="flex-1 min-w-0">
-              <div class="text-[0.92rem] leading-relaxed" itemprop="articleBody" dangerouslySetInnerHTML={{__html: contentHtml}} />
+          {summary && (
+            <div class="answer-summary mb-10 rounded-2xl border border-[#0066FF]/15 border-l-4 border-l-[#0066FF] bg-[#0066FF]/[0.03] px-5 py-4">
+              <p class="text-[0.7rem] font-bold text-[#0066FF] tracking-wider mb-1.5">핵심 답변</p>
+              <p class="text-gray-800 text-[0.95rem] leading-relaxed">{summary}</p>
+            </div>
+          )}
 
-              {/* Tags */}
+          <div class="flex gap-10">
+            <div class="flex-1 min-w-0">
+              <div class="blog-body text-[0.92rem] leading-relaxed" dangerouslySetInnerHTML={{__html: contentHtml}} />
+
               {tagsArray.length > 0 && (
                 <div class="flex flex-wrap gap-2 mt-10 pt-6 border-t border-gray-100">
                   {tagsArray.map((tag: string) => (
@@ -1479,7 +1568,19 @@ blogRoutes.get('/blog/:slug', async (c) => {
                 </div>
               )}
 
-              {/* Linked Treatment */}
+              {/* 작성자·감수 박스 */}
+              <div class="mt-10 flex items-start gap-4 p-5 rounded-2xl border border-gray-100 bg-white">
+                <a href={`/doctors/${reviewerDoc.slug}`} class="shrink-0">
+                  <img src={reviewerDoc.photo} alt={`${reviewerDoc.name} ${reviewerDoc.title}`} width="64" height="64" loading="lazy" decoding="async" class="w-16 h-16 rounded-full object-cover object-top border border-gray-100" />
+                </a>
+                <div class="min-w-0 text-sm">
+                  <p class="text-gray-400 text-xs mb-0.5">{authorDoc ? '작성' : `작성: ${post.author_name} · 감수`}</p>
+                  <a href={`/doctors/${reviewerDoc.slug}`} class="font-bold text-gray-900 hover:text-[#0066FF] transition">{reviewerDoc.name} {reviewerDoc.title}</a>
+                  {reviewerDoc.credentials?.[0] && <p class="text-gray-500 text-xs mt-1">{reviewerDoc.credentials[0]}</p>}
+                  <p class="text-gray-400 text-xs mt-1">최종 업데이트 <time datetime={modifiedIso}>{updateDate}</time></p>
+                </div>
+              </div>
+
               {linkedTreatment && (
                 <div class="mt-8 p-5 rounded-2xl bg-[#0066FF]/[0.03] border border-[#0066FF]/10">
                   <div class="flex items-center gap-2 mb-2">
@@ -1489,22 +1590,29 @@ blogRoutes.get('/blog/:slug', async (c) => {
                   <a href={`/treatments/${linkedTreatment.slug}`} class="text-gray-900 font-bold hover:text-[#0066FF] transition">
                     {linkedTreatment.name} — 자세히 보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
                   </a>
+                  {relatedCases.length > 0 && (
+                    <ul class="mt-3 space-y-1">
+                      {relatedCases.map((rc: any) => (
+                        <li><a href={`/cases/${rc.id}`} class="text-sm text-gray-600 hover:text-[#0066FF] transition">치료 사례: {rc.title}{rc.duration ? ` (${rc.duration})` : ''}</a></li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               )}
 
-              {/* CTA */}
+              <p class="text-[0.72rem] text-gray-400 mt-8">※ 이 글은 일반적인 치과 정보이며, 정확한 진단과 치료 방법은 검사 후 결정됩니다. 개인에 따라 치료 결과가 다를 수 있습니다.</p>
+
               <div class="mt-10 p-6 rounded-2xl bg-gradient-to-br from-navy to-navy-lighter text-center">
-                <h3 class="text-white font-bold text-lg mb-2">더 궁금한 점이 있으신가요?</h3>
+                <h2 class="text-white font-bold text-lg mb-2">더 궁금한 점이 있으신가요?</h2>
                 <p class="text-white/40 text-sm mb-5">서울365치과에서 직접 상담받아 보세요.</p>
                 <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>무료 상담 예약 <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>
               </div>
             </div>
 
-            {/* Sidebar TOC (Desktop) — H2 + H3 */}
             {headings.length > 1 && (
               <aside class="hidden lg:block w-56 shrink-0">
                 <div class="sticky top-24">
-                  <h4 class="text-[0.68rem] font-bold text-gray-400 uppercase tracking-wider mb-3">목차</h4>
+                  <p class="text-[0.68rem] font-bold text-gray-400 uppercase tracking-wider mb-3">목차</p>
                   <nav class="space-y-1.5" aria-label="목차">
                     {headings.map((h: any) => (
                       <a href={`#${h.id}`} class={`block text-xs transition truncate ${h.level === 2 ? 'text-gray-500 hover:text-[#0066FF] font-medium' : 'text-gray-400 hover:text-[#0066FF] pl-3 text-[0.7rem]'}`}>{h.text}</a>
@@ -1515,48 +1623,44 @@ blogRoutes.get('/blog/:slug', async (c) => {
             )}
           </div>
 
-          {/* Related Posts */}
           {related.length > 0 && (
             <div class="mt-16 pt-10 border-t border-gray-100">
-              <h3 class="text-lg font-bold text-gray-900 mb-6">관련 글</h3>
+              <h2 class="text-lg font-bold text-gray-900 mb-6">관련 칼럼</h2>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {related.map((r: any) => (
                   <a href={`/blog/${r.slug}`} class="glass-card p-5 hover:border-[#0066FF]/20 transition group">
                     <span class="text-[0.6rem] text-[#0066FF] font-semibold">{r.category}</span>
-                    <h4 class="font-bold text-gray-900 text-sm mt-1 group-hover:text-[#0066FF] transition line-clamp-2">{r.title}</h4>
-                    <p class="text-xs text-gray-400 mt-2">{r.created_at?.split('T')[0] || r.created_at?.split(' ')[0]}</p>
+                    <h3 class="font-bold text-gray-900 text-sm mt-1 group-hover:text-[#0066FF] transition line-clamp-2">{r.title}</h3>
+                    <p class="text-xs text-gray-400 mt-2">{kstYmd(r.created_at)}</p>
                   </a>
                 ))}
               </div>
+              {catCrumb && <p class="mt-4 text-sm"><a href={`/blog?category=${encodeURIComponent(post.category)}`} class="text-[#0066FF] font-semibold">{post.category} 칼럼 더 보기 →</a></p>}
             </div>
           )}
         </div>
       </article>
 
-      {/* Image Lightbox overlay */}
       <div id="imgLightbox" class="hidden fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out" onclick="this.classList.add('hidden')">
         <img id="lbImg" src="" alt="" class="max-w-full max-h-[90vh] rounded-xl shadow-2xl object-contain" />
-        <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white text-xl flex items-center justify-center transition" onclick="event.stopPropagation(); document.getElementById('imgLightbox').classList.add('hidden')">
+        <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white text-xl flex items-center justify-center transition" aria-label="닫기" onclick="event.stopPropagation(); document.getElementById('imgLightbox').classList.add('hidden')">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
 
-      {/* Blog image lightbox script */}
       <script dangerouslySetInnerHTML={{__html: `
         (function(){
           var lb = document.getElementById('imgLightbox');
           var lbImg = document.getElementById('lbImg');
           if(!lb || !lbImg) return;
-          // Intercept clicks on article figure images
-          document.querySelectorAll('[itemprop="articleBody"] figure a').forEach(function(a){
+          document.querySelectorAll('.blog-body figure a').forEach(function(a){
             a.addEventListener('click', function(e){
               e.preventDefault();
               lbImg.src = this.href || this.querySelector('img').src;
               lb.classList.remove('hidden');
             });
           });
-          // Also handle cover image click
-          var coverImg = document.querySelector('[itemprop="image"]');
+          var coverImg = document.getElementById('blogCover');
           if(coverImg){
             coverImg.style.cursor = 'zoom-in';
             coverImg.addEventListener('click', function(){
@@ -1564,7 +1668,6 @@ blogRoutes.get('/blog/:slug', async (c) => {
               lb.classList.remove('hidden');
             });
           }
-          // ESC to close
           document.addEventListener('keydown', function(e){
             if(e.key === 'Escape') lb.classList.add('hidden');
           });
@@ -1572,124 +1675,18 @@ blogRoutes.get('/blog/:slug', async (c) => {
       `}} />
     </>,
     {
-      title: `${post.title} | 서울365치과 블로그`,
-      description: post.excerpt || post.title + ' - 서울365치과 치과 전문 블로그',
-      canonical: `https://seoul365dc.kr/blog/${post.slug}`,
-      // Dynamic OG: article type, custom cover image, publish/update dates, tags
-      ogImage: ogImg,
+      title: `${post.title} | 서울365치과`,
+      description: metaDesc.length > 160 ? metaDesc.slice(0, 157).replace(/\s+\S*$/, '') + '…' : metaDesc,
+      canonical: pageUrl,
+      ogImage: ogAbs,
       ogType: 'article',
-      datePublished: post.created_at,
-      dateModified: post.updated_at || post.created_at,
+      datePublished: publishedIso,
+      dateModified: modifiedIso,
       articleSection: post.category,
       articleTags: tagsArray,
-      jsonLd: [
-        // 1. BreadcrumbList — Google rich result
-        { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
-          { "@type": "ListItem", "position": 2, "name": "블로그", "item": "https://seoul365dc.kr/blog" },
-          ...(post.category !== '치과상식' ? [{ "@type": "ListItem", "position": 3, "name": post.category, "item": `https://seoul365dc.kr/blog?category=${encodeURIComponent(post.category)}` }] : []),
-          { "@type": "ListItem", "position": post.category !== '치과상식' ? 4 : 3, "name": post.title, "item": `https://seoul365dc.kr/blog/${post.slug}` }
-        ]},
-        // 2. BlogPosting — Core article schema (MEGA enhanced)
-        {
-          "@context": "https://schema.org", "@type": "BlogPosting",
-          "@id": `https://seoul365dc.kr/blog/${post.slug}#article`,
-          "headline": post.title,
-          "name": post.title,
-          "description": post.excerpt || post.title,
-          "datePublished": post.created_at,
-          "dateModified": post.updated_at || post.created_at,
-          "dateCreated": post.created_at,
-          "image": ogImg !== 'https://seoul365dc.kr/static/og-image.png' ? {
-            "@type": "ImageObject",
-            "url": ogImg,
-            "width": 1200,
-            "height": 630,
-          } : ogImg,
-          "author": authorLd,
-          "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
-          "mainEntityOfPage": {
-            "@type": "WebPage",
-            "@id": `https://seoul365dc.kr/blog/${post.slug}`,
-          },
-          "url": `https://seoul365dc.kr/blog/${post.slug}`,
-          "inLanguage": "ko-KR",
-          "keywords": tagsArray.join(', '),
-          "articleSection": post.category,
-          "articleBody": post.content.replace(/[#*_~`>\[\]()!-]/g, '').substring(0, 500),
-          "wordCount": wordCount,
-          "timeRequired": `PT${readingTime}M`,
-          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
-          "isAccessibleForFree": true,
-          ...(linkedTreatment ? { "about": { "@type": "MedicalProcedure", "name": linkedTreatment.name, "url": `https://seoul365dc.kr/treatments/${linkedTreatment.slug}` } } : {}),
-          // AEO: Speakable — AI voice assistants can read these sections
-          "speakable": {
-            "@type": "SpeakableSpecification",
-            // 실제 DOM 기준 (본문 h2 없음 → 제외, 요약은 excerpt 있을 때만 렌더) — 2026-09-29
-            "cssSelector": [
-              "[itemprop='headline']",
-              ...(post.excerpt ? ["[itemprop='description']"] : []),
-              "[itemprop='articleBody'] p:first-of-type",
-            ],
-          },
-          // Citation/credibility
-          "citation": linkedTreatment ? `https://seoul365dc.kr/treatments/${linkedTreatment.slug}` : undefined,
-        },
-        // 3. MedicalWebPage — For dental/medical content (Google Health panel)
-        ...(linkedTreatment ? [{
-          "@context": "https://schema.org", "@type": "MedicalWebPage",
-          "about": {
-            "@type": "MedicalCondition",
-            "name": linkedTreatment.name,
-            "url": `https://seoul365dc.kr/treatments/${linkedTreatment.slug}`,
-          },
-          "specialty": {
-            "@type": "MedicalSpecialty",
-            "name": "Dentistry",
-          },
-          "lastReviewed": post.updated_at || post.created_at,
-          "reviewedBy": {
-            "@type": "Organization",
-            "name": "서울365치과의원",
-            "@id": "https://seoul365dc.kr/#dentist",
-          },
-          "mainContentOfPage": {
-            "@type": "WebPageElement",
-            "cssSelector": "[itemprop='articleBody']",
-          },
-        }] : []),
-        // 4. FAQPage — Auto-extracted Q&A pairs (Google FAQ rich result + AEO)
-        ...(faqs.length > 0 ? [{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": faqs.map((faq: any) => ({
-            "@type": "Question",
-            "name": faq.question,
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": faq.answer,
-              "url": `https://seoul365dc.kr/blog/${post.slug}`,
-            },
-          })),
-        }] : []),
-        // 5. HowTo — If content has numbered steps (treatment process posts)
-        ...(headings.filter((h: any) => h.text.match(/^\d/)).length >= 3 ? [{
-          "@context": "https://schema.org",
-          "@type": "HowTo",
-          "name": post.title,
-          "description": post.excerpt || post.title,
-          "totalTime": `PT${readingTime}M`,
-          "step": headings.filter((h: any) => h.text.match(/^\d/)).map((h: any, i: number) => ({
-            "@type": "HowToStep",
-            "position": i + 1,
-            "name": h.text,
-            "url": `https://seoul365dc.kr/blog/${post.slug}#${h.id}`,
-          })),
-        }] : []),
-      ]
+      jsonLd: [{ "@context": "https://schema.org", "@graph": graph }],
     }
   )
 })
-
 
 export default blogRoutes

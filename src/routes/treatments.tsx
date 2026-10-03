@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { kstYmd } from '../lib/column-seo'
 import type { Bindings } from '../lib/types'
 import { CLINIC } from '../data/clinic'
 import { treatments, getTreatmentBySlug, treatmentCategories } from '../data/treatments'
@@ -185,6 +186,13 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
       'SELECT id, treatment_slug, title, patient_age, patient_gender, tag, doctor_name, description, duration, before_image, after_image, sort_order, view_count, created_at FROM before_after_cases WHERE is_published = 1 AND treatment_slug = ? ORDER BY sort_order DESC, created_at DESC'
     ).bind(slug).all();
     dbCases = result.results || [];
+  } catch {}
+
+  // 같은 진료 최신 칼럼 (진료 ↔ 칼럼 내부 링크, 2026-10-03)
+  let txPosts: any[] = [];
+  try {
+    const rp = await c.env.DB.prepare('SELECT slug, title, excerpt, created_at FROM blog_posts WHERE is_published = 1 AND treatment_slug = ? ORDER BY created_at DESC LIMIT 5').bind(slug).all();
+    txPosts = rp.results || [];
   } catch {}
 
   return c.render(
@@ -437,18 +445,18 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
                     {cs.before_image && cs.after_image ? (
                       <div class="absolute inset-0 flex">
                         <div class="w-1/2 overflow-hidden border-r-2 border-white relative">
-                          <img src={cs.before_image} alt="Before" class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%" loading="lazy" />
+                          <img src={cs.before_image} alt={`${t.name} 치료 전`} class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%" loading="lazy" />
                           <span class="absolute top-2.5 left-2.5 text-[0.55rem] font-bold tracking-widest uppercase text-white bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded">Before</span>
                         </div>
                         <div class="w-1/2 overflow-hidden relative">
-                          <img src={cs.after_image} alt="After" class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%;margin-left:-100%" loading="lazy" />
+                          <img src={cs.after_image} alt={`${t.name} 치료 후`} class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%;margin-left:-100%" loading="lazy" />
                           <span class="absolute top-2.5 right-2.5 text-[0.55rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/70 backdrop-blur-sm px-2 py-0.5 rounded">After</span>
                         </div>
                       </div>
                     ) : cs.after_image ? (
-                      <img src={cs.after_image} alt="After" class="w-full h-full object-cover" loading="lazy" />
+                      <img src={cs.after_image} alt={`${t.name} 치료 후`} class="w-full h-full object-cover" loading="lazy" />
                     ) : cs.before_image ? (
-                      <img src={cs.before_image} alt="Before" class="w-full h-full object-cover" loading="lazy" />
+                      <img src={cs.before_image} alt={`${t.name} 치료 전`} class="w-full h-full object-cover" loading="lazy" />
                     ) : (
                       <div class="w-full h-full flex items-center justify-center">
                         <i class="fa-solid fa-images text-gray-200 text-3xl"></i>
@@ -467,7 +475,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
                       <span class="text-[0.65rem] bg-[#0066FF]/8 text-[#0066FF] px-2 py-0.5 rounded-full font-semibold">{cs.tag}</span>
                       {cs.duration && <span class="text-[0.6rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
                     </div>
-                    <h3 class="font-bold text-gray-900 text-[0.85rem] group-hover:text-[#0066FF] transition-colors line-clamp-1">{cs.title}</h3>
+                    <h3 class="font-bold text-gray-900 text-[0.85rem] group-hover:text-[#0066FF] transition-colors line-clamp-1"><a href={`/cases/${cs.id}`} onclick="event.stopPropagation()">{cs.title}</a></h3>
                     <p class="text-[0.75rem] text-gray-400 mt-1">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender && cs.patient_gender !== '선택안함' ? ` ${cs.patient_gender}` : ''}</p>
                   </div>
                 </div>
@@ -479,6 +487,20 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
               </a>
             </div>
             <p class="text-[0.7rem] text-gray-300 text-center mt-6">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
+          </div>
+        </section>
+      )}
+
+      {/* 관련 칼럼 (같은 진료 최신 5편) */}
+      {txPosts.length > 0 && (
+        <section class="section-lg bg-white" style="padding-top:0">
+          <div class="max-w-5xl mx-auto px-5 md:px-8">
+            <h2 class="section-sub-headline text-gray-900 mb-6">{t.name} 관련 칼럼</h2>
+            <ul class="divide-y divide-gray-100 border-y border-gray-100">
+              {txPosts.map((bp: any) => (
+                <li><a href={`/blog/${bp.slug}`} class="flex justify-between gap-4 py-3 text-gray-700 hover:text-[#0066FF] transition text-[0.92rem]"><span>{bp.title}</span><time class="text-gray-300 text-xs whitespace-nowrap" datetime={kstYmd(bp.created_at)}>{kstYmd(bp.created_at)}</time></a></li>
+              ))}
+            </ul>
           </div>
         </section>
       )}
@@ -506,11 +528,11 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
                 <div class="p-6">
                   <div class="grid grid-cols-2 gap-3 mb-6">
                     <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
-                      <img id="txModalBefore" src="" alt="Before" class="w-full h-full object-cover" />
+                      <img id="txModalBefore" src="" alt={`${t.name} 치료 전`} class="w-full h-full object-cover" />
                       <span class="absolute top-3 left-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded-lg">Before</span>
                     </div>
                     <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
-                      <img id="txModalAfter" src="" alt="After" class="w-full h-full object-cover" />
+                      <img id="txModalAfter" src="" alt={`${t.name} 치료 후`} class="w-full h-full object-cover" />
                       <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/80 backdrop-blur-sm px-3 py-1 rounded-lg">After</span>
                     </div>
                   </div>

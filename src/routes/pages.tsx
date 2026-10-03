@@ -10,6 +10,7 @@ import { initAdminTables, initBlogTables } from '../lib/db'
 import { getTreatmentBySlug } from '../data/treatments'
 import { terms, totalTerms, flatTerms, getTermBySlug, getRelatedTerms } from '../data/encyclopedia-terms'
 import { isThinTerm, isThinCase, NOINDEX_FOLLOW } from '../lib/thin-content'
+import { isoKst, kstYmd, doctorByName, LEAD_DOCTOR, physicianRef } from '../lib/column-seo'
 
 const pageRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -1144,10 +1145,31 @@ pageRoutes.get('/cases/:id', async (c) => {
     } catch {}
 
     const linkedTreatment = cs.treatment_slug ? getTreatmentBySlug(cs.treatment_slug) : null;
+    // 같은 진료 칼럼 (사례 ↔ 칼럼 내부 링크)
+    let relatedPosts: any[] = [];
+    if (cs.treatment_slug) {
+      try {
+        const rp = await c.env.DB.prepare('SELECT slug, title FROM blog_posts WHERE is_published = 1 AND treatment_slug = ? ORDER BY created_at DESC LIMIT 3').bind(cs.treatment_slug).all();
+        relatedPosts = rp.results || [];
+      } catch {}
+    }
     const caseDate = cs.created_at?.split('T')[0] || cs.created_at?.split(' ')[0] || '';
-    const ogImg = cs.after_image || cs.before_image || 'https://seoul365dc.kr/static/og-image.png';
-    const caseTitle = `${cs.title} | 치료사례 Before & After`;
-    const caseDesc = `${cs.description || cs.title}. 담당: ${cs.doctor_name}${cs.duration ? ', 치료기간: ' + cs.duration : ''}. 서울365치과 서울대 출신 5인 전문의 협진.`;
+    // 사례 사진은 AFTER 가 회원 전용(게이트)이라 og:image 는 사이트 기본 이미지 (의료법 — 2026-10-03 표준)
+    const ogImg = 'https://seoul365dc.kr/static/og-image.png';
+    const txName = linkedTreatment?.name || cs.tag || '치료';
+    const caseTitle = `${cs.title}${cs.title.includes(txName) ? '' : ` — ${txName} 사례`}${cs.duration && !cs.title.includes(cs.duration) ? `, ${cs.duration}` : ''}`;
+    // 자동 요약: 저장된 구조 필드(진료·분류·기간·담당)만 사용
+    const caseDoc = doctorByName(cs.doctor_name);
+    const caseSummary = [
+      `${txName} 치료 사례입니다.`,
+      cs.tag && cs.tag !== txName ? `분류: ${cs.tag}.` : '',
+      cs.duration ? `치료 기간은 ${cs.duration}입니다.` : '',
+      cs.doctor_name ? `담당 의료진: ${caseDoc ? `${caseDoc.name} ${caseDoc.title}` : cs.doctor_name}.` : '',
+    ].filter(Boolean).join(' ');
+    const caseDesc = `${cs.description ? cs.description.replace(/\s+/g, ' ').trim() + ' ' : ''}${caseSummary} 개인에 따라 결과가 다를 수 있습니다.`;
+    const casePublished = isoKst(cs.created_at);
+    const caseModified = isoKst(cs.updated_at || cs.created_at) || casePublished;
+    const caseUrl = `https://seoul365dc.kr/cases/${id}`;
 
     // 얇은 치료사례(설명 300자 미만, AFTER는 회원 전용): noindex, follow + 사이트맵 제외 — 설명 보강 시 자동 복귀
     const thinCase = isThinCase(cs)
@@ -1159,9 +1181,7 @@ pageRoutes.get('/cases/:id', async (c) => {
 
     return c.render(
       <>
-        <article class="pt-24 pb-16" itemscope itemtype="https://schema.org/MedicalStudy">
-          <meta itemprop="datePublished" content={cs.created_at} />
-          <meta itemprop="dateModified" content={cs.updated_at || cs.created_at} />
+        <article class="pt-24 pb-16">
 
           <div class="max-w-4xl mx-auto px-5 md:px-8">
             {/* Breadcrumb navigation */}
@@ -1169,6 +1189,7 @@ pageRoutes.get('/cases/:id', async (c) => {
               <a href="/" class="hover:text-[#0066FF] transition">홈</a>
               <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
               <a href="/cases/gallery" class="hover:text-[#0066FF] transition">치료사례</a>
+              {linkedTreatment && <><i class="fa-solid fa-chevron-right text-[0.5rem]"></i><a href={`/treatments/${linkedTreatment.slug}`} class="hover:text-[#0066FF] transition">{linkedTreatment.name}</a></>}
               <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
               <span class="text-gray-600 font-medium">{cs.title}</span>
             </nav>
@@ -1179,14 +1200,15 @@ pageRoutes.get('/cases/:id', async (c) => {
                 <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-3 py-1 rounded-full font-semibold">{cs.tag}</span>
                 {cs.duration && <span class="text-[0.65rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
               </div>
-              <h1 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight" itemprop="name">{cs.title}</h1>
-              {cs.description && <p class="text-gray-500 text-base leading-relaxed mt-3" itemprop="description">{cs.description}</p>}
+              <h1 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">{cs.title}</h1>
+              {cs.description && <p class="case-description text-gray-500 text-base leading-relaxed mt-3">{cs.description}</p>}
+              <p class="case-summary text-gray-600 text-sm leading-relaxed mt-3">{caseSummary}</p>
               <div class="flex items-center gap-4 mt-5 text-sm text-gray-400">
                 <span><i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i>담당: <span class="text-gray-600 font-medium">{cs.doctor_name}</span></span>
                 {cs.patient_age && <span>·</span>}
                 {cs.patient_age && <span>{cs.patient_age}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</span>}
                 <span>·</span>
-                <time datetime={cs.created_at}>{caseDate}</time>
+                <time datetime={casePublished}>{kstYmd(cs.created_at) || caseDate}</time>
               </div>
             </header>
 
@@ -1195,7 +1217,7 @@ pageRoutes.get('/cases/:id', async (c) => {
               {/* Before */}
               <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3] shadow-lg">
                 {cs.before_image ? (
-                  <img src={cs.before_image} alt={`${cs.title} 치료 전 (Before)`} class="w-full h-full object-cover" loading="eager" itemprop="image" />
+                  <img src={cs.before_image} alt={`${txName} 치료 전`} class="w-full h-full object-cover" loading="eager" decoding="async" />
                 ) : (
                   <div class="w-full h-full flex items-center justify-center bg-gray-100">
                     <span class="text-gray-300 text-lg font-bold tracking-widest uppercase">Before</span>
@@ -1206,7 +1228,7 @@ pageRoutes.get('/cases/:id', async (c) => {
               {/* After */}
               <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3] shadow-lg">
                 {isLoggedIn && cs.after_image ? (
-                  <img src={cs.after_image} alt={`${cs.title} 치료 후 (After)`} class="w-full h-full object-cover" loading="eager" />
+                  <img src={cs.after_image} alt={`${txName} 치료 후`} class="w-full h-full object-cover" loading="eager" decoding="async" />
                 ) : (
                   <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 relative">
                     <div class="text-center">
@@ -1276,7 +1298,7 @@ pageRoutes.get('/cases/:id', async (c) => {
                     <a href={`/cases/${rc.id}`} class="premium-card overflow-hidden group hover:shadow-lg transition">
                       <div class="aspect-[4/3] bg-gray-50 relative overflow-hidden">
                         {rc.before_image ? (
-                          <img src={rc.before_image} alt={`${rc.title} Before`} class="w-full h-full object-cover" loading="lazy" />
+                          <img src={rc.before_image} alt={`${rc.tag || txName} 치료 전`} class="w-full h-full object-cover" loading="lazy" decoding="async" />
                         ) : (
                           <div class="w-full h-full flex items-center justify-center"><span class="text-gray-300 text-xs">Before</span></div>
                         )}
@@ -1292,66 +1314,59 @@ pageRoutes.get('/cases/:id', async (c) => {
               </div>
             )}
 
+            {relatedPosts.length > 0 && (
+              <div class="pt-10 mt-10 border-t border-gray-100">
+                <h2 class="text-lg font-bold text-gray-900 mb-4">{txName} 관련 칼럼</h2>
+                <ul class="space-y-2">
+                  {relatedPosts.map((bp: any) => (
+                    <li><a href={`/blog/${bp.slug}`} class="text-sm text-gray-600 hover:text-[#0066FF] transition">{bp.title}</a></li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <p class="text-[0.72rem] text-gray-300 text-center mt-10">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
           </div>
         </article>
       </>,
       {
         title: `${caseTitle} | 서울365치과`,
-        description: caseDesc.substring(0, 160),
-        canonical: `https://seoul365dc.kr/cases/${id}`,
+        description: caseDesc.length > 160 ? caseDesc.slice(0, 157).replace(/\s+\S*$/, '') + '…' : caseDesc,
+        canonical: caseUrl,
         noindexFollow: thinCase,
         ogImage: ogImg,
         ogType: 'article',
-        datePublished: cs.created_at,
-        dateModified: cs.updated_at || cs.created_at,
+        datePublished: casePublished,
+        dateModified: caseModified,
         articleSection: cs.tag,
-        jsonLd: [
-          // BreadcrumbList
-          { "@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+        // 표준: MedicalWebPage(about·reviewedBy·lastReviewed) + BreadcrumbList (+ 공개 사진 ImageObject). Review/Rating·MedicalStudy 없음
+        jsonLd: [{ "@context": "https://schema.org", "@graph": [
+          { "@type": "BreadcrumbList", "@id": `${caseUrl}#breadcrumb`, "itemListElement": [
             { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
             { "@type": "ListItem", "position": 2, "name": "치료사례", "item": "https://seoul365dc.kr/cases/gallery" },
-            { "@type": "ListItem", "position": 3, "name": cs.title, "item": `https://seoul365dc.kr/cases/${id}` }
+            ...(linkedTreatment ? [{ "@type": "ListItem", "position": 3, "name": linkedTreatment.name, "item": `https://seoul365dc.kr/treatments/${linkedTreatment.slug}` }] : []),
+            { "@type": "ListItem", "position": linkedTreatment ? 4 : 3, "name": cs.title, "item": caseUrl },
           ]},
-          // MedicalStudy — Google Health Panel + AEO
           {
-            "@context": "https://schema.org",
-            "@type": "MedicalStudy",
-            "name": cs.title,
-            "description": cs.description || cs.title,
-            "url": `https://seoul365dc.kr/cases/${id}`,
-            "studySubject": {
-              "@type": "MedicalCondition",
-              "name": cs.tag,
-            },
-            "outcome": `치료 기간: ${cs.duration || '상담 시 결정'}`,
-            "sponsor": { "@id": "https://seoul365dc.kr/#dentist" },
-            "datePublished": cs.created_at,
-            ...(cs.before_image ? { "image": [cs.before_image, ...(cs.after_image ? [cs.after_image] : [])] } : {}),
-            "speakable": {
-              "@type": "SpeakableSpecification",
-              "cssSelector": ["h1", "[itemprop='description']"],
-            },
-          },
-          // ImageObject for Before/After (Google Image Search)
-          ...(cs.before_image ? [{
-            "@context": "https://schema.org",
-            "@type": "ImageObject",
-            "contentUrl": cs.before_image,
-            "name": `${cs.title} 치료 전 (Before)`,
-            "description": `서울365치과 ${cs.tag} 치료 전 사진. 담당: ${cs.doctor_name}`,
-            "creditText": "서울365치과의원",
-            "copyrightHolder": { "@id": "https://seoul365dc.kr/#dentist" },
-          }] : []),
-          // MedicalWebPage
-          ...(linkedTreatment ? [{
-            "@context": "https://schema.org",
             "@type": "MedicalWebPage",
-            "about": { "@type": "MedicalProcedure", "name": linkedTreatment.name, "url": `https://seoul365dc.kr/treatments/${linkedTreatment.slug}` },
+            "@id": `${caseUrl}#webpage`,
+            "url": caseUrl,
+            "name": caseTitle,
+            "description": caseDesc,
+            "inLanguage": "ko-KR",
+            "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
+            "breadcrumb": { "@id": `${caseUrl}#breadcrumb` },
+            "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
+            "datePublished": casePublished,
+            "dateModified": caseModified,
+            "lastReviewed": kstYmd(cs.updated_at || cs.created_at),
+            "reviewedBy": physicianRef(caseDoc || LEAD_DOCTOR),
             "specialty": { "@type": "MedicalSpecialty", "name": "Dentistry" },
-            "lastReviewed": cs.updated_at || cs.created_at,
-          }] : []),
-        ],
+            ...(linkedTreatment ? { "about": { "@type": "MedicalProcedure", "@id": `https://seoul365dc.kr/treatments/${linkedTreatment.slug}#procedure`, "name": linkedTreatment.name, "url": `https://seoul365dc.kr/treatments/${linkedTreatment.slug}` } } : {}),
+            "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", ".case-summary"] },
+            ...(cs.before_image ? { "image": { "@type": "ImageObject", "contentUrl": cs.before_image.startsWith('http') ? cs.before_image : `https://seoul365dc.kr${cs.before_image}`, "name": `${txName} 치료 전`, "creditText": "서울365치과의원" } } : {}),
+          },
+        ] }],
       }
     );
   } catch {
