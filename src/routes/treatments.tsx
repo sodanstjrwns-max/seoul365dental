@@ -440,23 +440,13 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children" id="txCasesGrid">
               {dbCases.map((cs: any, idx: number) => (
                 <div class="premium-card overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300 tx-case-card" onclick={`openTxCaseModal(${idx})`}>
-                  {/* Thumbnail — Before/After split */}
+                  {/* Thumbnail — Before only (After 공개 제한) */}
                   <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
-                    {cs.before_image && cs.after_image ? (
-                      <div class="absolute inset-0 flex">
-                        <div class="w-1/2 overflow-hidden border-r-2 border-white relative">
-                          <img src={cs.before_image} alt={`${t.name} 치료 전`} class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%" loading="lazy" />
-                          <span class="absolute top-2.5 left-2.5 text-[0.55rem] font-bold tracking-widest uppercase text-white bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded">Before</span>
-                        </div>
-                        <div class="w-1/2 overflow-hidden relative">
-                          <img src={cs.after_image} alt={`${t.name} 치료 후`} class="absolute inset-0 w-full h-full object-cover" style="max-width:none;width:200%;margin-left:-100%" loading="lazy" />
-                          <span class="absolute top-2.5 right-2.5 text-[0.55rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/70 backdrop-blur-sm px-2 py-0.5 rounded">After</span>
-                        </div>
-                      </div>
-                    ) : cs.after_image ? (
-                      <img src={cs.after_image} alt={`${t.name} 치료 후`} class="w-full h-full object-cover" loading="lazy" />
-                    ) : cs.before_image ? (
-                      <img src={cs.before_image} alt={`${t.name} 치료 전`} class="w-full h-full object-cover" loading="lazy" />
+                    {cs.before_image ? (
+                      <>
+                        <img src={cs.before_image} alt={`${t.name} 치료 전`} class="w-full h-full object-cover" loading="lazy" />
+                        <span class="absolute top-2.5 left-2.5 text-[0.55rem] font-bold tracking-widest uppercase text-white bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded">Before</span>
+                      </>
                     ) : (
                       <div class="w-full h-full flex items-center justify-center">
                         <i class="fa-solid fa-images text-gray-200 text-3xl"></i>
