@@ -11,6 +11,21 @@ const FALLBACK = {
   encyclopedia: '2026-06-11',
   llmsTxt: '2026-09-12',
   llmsFull: '2026-09-29',
+  // 사이트맵 lastmod 용(2026-10-08 기준 각 파일 마지막 커밋 날짜) — vite 주입값이 없을 때(얕은 클론) 폴백
+  treatmentsPage: '2026-10-04',
+  doctorsPage: '2026-09-29',
+  answers: '2026-09-12',
+  compare: '2026-09-12',
+  guides: '2026-09-12',
+  stations: '2026-05-26',
+  intl: '2026-09-29',
+  ru: '2026-08-18',
+  reviews: '2026-09-29',
+  procedures: '2026-09-29',
+  insurance: '2026-09-29',
+  events: '2026-09-29',
+  whyus: '2026-09-29',
+  commercial: '2026-09-29',
 }
 
 const injected = typeof __CONTENT_DATES__ !== 'undefined' ? __CONTENT_DATES__ : {}
@@ -27,6 +42,25 @@ export const CONTENT_DATES = {
   encyclopedia: pick('encyclopedia'),
   llmsTxt: pick('llmsTxt'),
   llmsFull: pick('llmsFull'),
+}
+
+/** 사이트맵 lastmod — 페이지군별 실제 수정일(라우트·데이터 파일 마지막 커밋). 2026-10-08 */
+export const PAGE_DATES = {
+  home: pick('home'),
+  treatments: pick('treatmentsPage'),
+  doctors: pick('doctorsPage'),
+  answers: pick('answers'),
+  compare: pick('compare'),
+  guides: pick('guides'),
+  stations: pick('stations'),
+  intl: pick('intl'),
+  ru: pick('ru'),
+  reviews: pick('reviews'),
+  procedures: pick('procedures'),
+  insurance: pick('insurance'),
+  events: pick('events'),
+  whyus: pick('whyus'),
+  commercial: pick('commercial'),
 }
 
 /** 날짜 문자열들(YYYY-MM-DD… / DB datetime) 중 가장 최근 날짜(YYYY-MM-DD). 유효한 값이 없으면 '' */

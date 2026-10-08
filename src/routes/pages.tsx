@@ -8,7 +8,7 @@ import { MESSAGING } from '../data/brand'
 import { hashPassword, verifyPassword, generateSessionId, getSessionCookie, clearSessionCookie, getCurrentUser } from '../lib/auth'
 import { initAdminTables, initBlogTables } from '../lib/db'
 import { getTreatmentBySlug } from '../data/treatments'
-import { terms, totalTerms, flatTerms, getTermBySlug, getRelatedTerms } from '../data/encyclopedia-terms'
+import { terms, totalTerms, flatTerms, getTermBySlug, getRelatedTerms, TERM_REDIRECTS } from '../data/encyclopedia-terms'
 import { isThinTerm, isThinCase, NOINDEX_FOLLOW } from '../lib/thin-content'
 import { isoKst, kstYmd, doctorByName, LEAD_DOCTOR, physicianRef } from '../lib/column-seo'
 
@@ -395,7 +395,7 @@ pageRoutes.get('/info', (c) => {
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 stagger-children">
             {[
               { icon: 'fa-location-dot', title: '주소', main: CLINIC.address, sub: '(우) 21556' },
-              { icon: 'fa-train-subway', title: '지하철', main: '인천 2호선 예술회관역 5번 출구', sub: '도보 약 3분 (250m)' },
+              { icon: 'fa-train-subway', title: '지하철', main: '인천 1호선 예술회관역 5번 출구', sub: '도보 약 3분 (250m)' },
               { icon: 'fa-car', title: '주차', main: '이토타워 건물 내 주차장 이용', sub: '진료 시 주차 지원 가능' },
               { icon: 'fa-bus', title: '버스', main: '예술회관역 정류장 하차', sub: '다수 시내버스 이용 가능' },
             ].map(info => (
@@ -485,7 +485,7 @@ pageRoutes.get('/info', (c) => {
           "@type": "HowTo",
           "name": "서울365치과 찾아오는 방법",
           "step": [
-            { "@type": "HowToStep", "position": 1, "name": "지하철", "text": "인천 2호선 예술회관역 5번 출구로 나오세요." },
+            { "@type": "HowToStep", "position": 1, "name": "지하철", "text": "인천 1호선 예술회관역 5번 출구로 나오세요." },
             { "@type": "HowToStep", "position": 2, "name": "도보 이동", "text": "5번 출구에서 직진 약 250m (도보 3분)." },
             { "@type": "HowToStep", "position": 3, "name": "도착", "text": "이토타워 건물 2층 서울365치과의원입니다." },
           ]
@@ -516,8 +516,8 @@ pageRoutes.get('/faq', (c) => {
     { q: '응급 상황에 방문해도 되나요?', a: '네, 365일 진료하므로 갑작스러운 치통이나 외상 시 바로 내원하세요.' },
     { q: '분할 결제가 가능한가요?', a: '네, 카드 분할 결제가 가능합니다.' },
     { q: '첫 방문 시 무엇을 준비해야 하나요?', a: '신분증과 건강보험증을 지참해 주세요.' },
-    { q: '위치가 어디인가요?', a: '인천 남동구 구월동 이토타워 내 위치합니다. 인천 1호선 예술회관역 도보 5분 거리입니다.' },
-    { q: '진료 시간은 어떻게 되나요?', a: '평일(월~목) 09:30~21:00, 금요일 09:30~18:00, 토·일·공휴일 14:00~18:00 (점심시간 없이 연속 진료).' },
+    { q: '위치가 어디인가요?', a: '인천 남동구 구월동 예술로 138 이토타워 2층입니다. 인천 1호선 예술회관역 5번 출구에서 약 250m, 도보 3분 거리입니다.' },
+    { q: '진료 시간은 어떻게 되나요?', a: '월~목 10:00~21:00, 금요일 10:00~19:00, 토요일 10:00~14:00, 일요일·공휴일 14:00~18:00 (점심시간 없이 연속 진료).' },
   ];
 
   // 치료별 FAQ를 카테고리로 그룹핑
@@ -1902,20 +1902,29 @@ pageRoutes.get('/encyclopedia', (c) => {
 
 // ============================================================
 // 🚀 v7: 백과사전 용어 개별 페이지 — /encyclopedia/:slug
-// 201개 DefinedTerm 롱테일 SEO 페이지 (용어 검색 + AI 인용 타겟)
+// 192개 DefinedTerm 페이지 — 2026-10-08 용어별 상세 본문·FAQ 보강(동의어 8개는 TERM_REDIRECTS 로 301)
 // ============================================================
 pageRoutes.get('/encyclopedia/:slug', (c) => {
   const slug = c.req.param('slug');
   const term = getTermBySlug(slug);
-  if (!term) return c.notFound();
+  if (!term) {
+    // 동의어·중복 용어는 합친 용어로 301 (2026-10-08)
+    const target = TERM_REDIRECTS[slug];
+    if (target) return c.redirect(`/encyclopedia/${target}`, 301);
+    return c.notFound();
+  }
 
+  const detail = term.detail;
   const related = getRelatedTerms(term, 8);
   const pageUrl = `https://seoul365dc.kr/encyclopedia/${term.slug}`;
   const title = `${term.term}(${term.en})이란? 뜻·정의 | 치과 백과사전 — 서울365치과`;
   const desc = term.def.length > 150 ? term.def.slice(0, 147) + '…' : term.def;
-  // 얇은 용어(고유 본문 300자 미만 — 현재 정의 한 문장뿐): noindex, follow + 사이트맵 제외, 허브 /encyclopedia 는 색인 유지
+  // 얇은 용어(고유 본문 300자 미만): noindex, follow + 사이트맵 제외. 2026-10-08 192개 전부 보강 → 색인 복귀
   const thinTerm = isThinTerm(term);
   if (thinTerm) c.header('X-Robots-Tag', NOINDEX_FOLLOW);
+  const modified = term.updated || CONTENT_DATES.encyclopedia;
+  // 관련 진료 링크: 상세 본문 links 우선, 없으면 기존 link 하나
+  const links = detail?.links?.length ? detail.links : term.link ? [{ href: term.link, label: '관련 진료 안내' }] : [];
 
   return c.render(
     <>
@@ -1930,7 +1939,7 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
               <li class="text-white/70" aria-current="page">{term.term}</li>
             </ol>
           </nav>
-          <span class="inline-block text-xs font-bold text-[#5BA9FF] bg-white/5 px-3 py-1 rounded-full mb-4 reveal">{term.cat}</span>
+          <span class="inline-block text-xs font-bold text-[#5BA9FF] bg-white/5 px-3 py-1 rounded-full mb-4 reveal">{term.cat}{detail ? ` · ${detail.kind}` : ''}</span>
           <h1 class="section-headline text-white mb-3 reveal" style="transition-delay:0.2s">{term.term}</h1>
           <p class="text-white/40 text-lg font-medium reveal" style="transition-delay:0.4s">{term.en}</p>
         </div>
@@ -1940,33 +1949,66 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
         <article class="max-w-3xl mx-auto px-5 md:px-8">
           <h2 class="text-xl font-bold text-gray-900 mb-4">{term.term}이란?</h2>
           {/* AI 인용 최적화: 정의를 첫 문단에 직답 형태로 배치 */}
-          <p class="text-gray-700 text-[1.02rem] leading-[2] mb-8" id="term-definition">{term.def}</p>
+          <p class="text-gray-700 text-[1.02rem] leading-[2] mb-3" id="term-definition">{term.def}</p>
+          <p class="text-xs text-gray-400 mb-10">최종 수정 <time datetime={modified}>{modified}</time> · 서울365치과 치과 백과사전</p>
 
-          {term.link && (
-            <aside class="glass-card p-5 mb-10 flex items-center justify-between gap-4" aria-label="관련 진료 안내">
-              <div>
-                <p class="text-sm font-bold text-gray-900 mb-1">이 용어와 관련된 진료가 궁금하신가요?</p>
-                <p class="text-xs text-gray-500">서울365치과의 관련 진료 상세 안내를 확인해 보세요.</p>
+          {detail?.sections.map((s) => (
+            <section class="mb-9">
+              <h2 class="text-lg font-bold text-gray-900 mb-3">{s.h}</h2>
+              {(s.p || []).map((p) => <p class="text-gray-700 text-[0.98rem] leading-[1.95] mb-3">{p}</p>)}
+              {s.ol && (
+                <ol class="list-decimal pl-5 space-y-2 text-gray-700 text-[0.96rem] leading-[1.85] mb-3">
+                  {s.ol.map((li) => <li>{li}</li>)}
+                </ol>
+              )}
+              {s.ul && (
+                <ul class="list-disc pl-5 space-y-2 text-gray-700 text-[0.96rem] leading-[1.85] mb-3">
+                  {s.ul.map((li) => <li>{li}</li>)}
+                </ul>
+              )}
+            </section>
+          ))}
+
+          {detail && detail.faq.length > 0 && (
+            <section aria-labelledby="term-faq-heading" class="mb-10">
+              <h2 id="term-faq-heading" class="text-lg font-bold text-gray-900 mb-4">{term.term} 자주 묻는 질문</h2>
+              <div class="space-y-3">
+                {detail.faq.map((f) => (
+                  <details class="glass-card px-5 py-4" open>
+                    <summary class="font-semibold text-gray-900 text-[0.96rem] cursor-pointer">{f.q}</summary>
+                    <p class="text-gray-600 text-[0.95rem] leading-[1.85] mt-3">{f.a}</p>
+                  </details>
+                ))}
               </div>
-              <a href={term.link} class="btn-premium btn-premium-fill shrink-0 text-sm" data-cursor-hover>진료 안내 보기</a>
+            </section>
+          )}
+
+          {links.length > 0 && (
+            <aside class="glass-card p-5 mb-10" aria-label="관련 진료 안내">
+              <p class="text-sm font-bold text-gray-900 mb-3">{term.term}과(와) 관련된 진료 안내</p>
+              <div class="flex flex-wrap gap-2">
+                {links.map((l) => (
+                  <a href={l.href} class="btn-premium btn-premium-outline text-sm" data-cursor-hover>{l.label}</a>
+                ))}
+              </div>
             </aside>
           )}
 
           {related.length > 0 && (
             <section aria-labelledby="related-terms-heading" class="mb-12">
-              <h2 id="related-terms-heading" class="text-lg font-bold text-gray-900 mb-5">함께 보면 좋은 {term.cat} 용어</h2>
+              <h2 id="related-terms-heading" class="text-lg font-bold text-gray-900 mb-5">함께 보면 좋은 용어</h2>
               <div class="grid sm:grid-cols-2 gap-3">
                 {related.map((r) => (
                   <a href={`/encyclopedia/${r.slug}`} class="glass-card px-4 py-3.5 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
                     <span class="block font-semibold text-gray-800 group-hover:text-[#0066FF] text-sm transition-colors">{r.term}</span>
-                    <span class="block text-xs text-gray-400 mt-0.5">{r.en}</span>
+                    <span class="block text-xs text-gray-400 mt-0.5">{r.en} · {r.cat}</span>
                   </a>
                 ))}
               </div>
             </section>
           )}
 
-          <p class="text-gray-300 text-xs mb-8">※ 본 내용은 일반적인 치과 정보 제공 목적이며, 정확한 진단과 치료 계획은 반드시 전문의와의 상담을 통해 결정하셔야 합니다.</p>
+          <p class="text-gray-400 text-xs mb-8">※ 본 내용은 일반적인 치과 정보 제공 목적이며, 개인에 따라 상태와 결과가 다를 수 있습니다. 정확한 진단과 치료 계획은 반드시 치과의사와 상담해 결정하시기 바랍니다.</p>
           <div class="flex flex-wrap gap-3">
             <a href="/encyclopedia" class="btn-premium btn-premium-outline text-sm" data-cursor-hover><i class="fa-solid fa-book"></i> 전체 용어 사전</a>
             <a href="/reservation" class="btn-premium btn-premium-fill text-sm" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 상담 예약</a>
@@ -1979,6 +2021,7 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
       description: desc,
       canonical: pageUrl,
       noindexFollow: thinTerm,
+      dateModified: modified,
       keywords: `${term.term}, ${term.term} 뜻, ${term.term}이란, ${term.en}, 치과 용어, ${term.cat}`,
       jsonLd: [
         {
@@ -2009,16 +2052,21 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
           "inLanguage": "ko-KR",
           "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
           "about": { "@id": `${pageUrl}#term` },
+          "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
           "specialty": "Dentistry",
-          "lastReviewed": "2026-06-11",
-          "reviewedBy": { "@type": "Physician", "name": "박준규", "jobTitle": "대표원장", "worksFor": { "@id": "https://seoul365dc.kr/#dentist" } },
+          "dateModified": modified,
           "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "#term-definition"] },
-          "mainEntity": {
+        },
+        ...(detail && detail.faq.length > 0 ? [{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "@id": `${pageUrl}#faq`,
+          "mainEntity": detail.faq.map((f) => ({
             "@type": "Question",
-            "name": `${term.term}(${term.en})이란 무엇인가요?`,
-            "acceptedAnswer": { "@type": "Answer", "text": term.def }
-          }
-        }
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a },
+          })),
+        }] : []),
       ]
     }
   )

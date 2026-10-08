@@ -57,6 +57,12 @@ home.get('/', async (c) => {
             {/* LEFT COLUMN — Copy */}
             <div class="flex-1 min-w-0 lg:max-w-[58%]">
 
+              {/* 지역 키워드 첫 문단 — "구월동 치과" 허브 앵커 (2026-10-08) */}
+              <p class="text-white/45 text-xs md:text-sm font-medium mb-4 reveal" style="transition-delay:0.4s">
+                <i class="fa-solid fa-location-dot text-[#00E5FF]/70 mr-1.5"></i>
+                인천 남동구 <a href="/area/guwol-dong" class="text-white/70 underline decoration-white/20 underline-offset-4 hover:text-white">구월동 치과</a> · 예술회관역 5번 출구 도보 3분 · 365일 진료
+              </p>
+
               {/* H1 — 3-Line Emotional Headline */}
               <h1 class="reveal" style="transition-delay:0.5s">
                 <span class="block text-white/40 mb-1 text-words" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
@@ -819,6 +825,11 @@ home.get('/', async (c) => {
             <p class="text-gray-400 text-sm mt-3">
               인천 {AREAS.length}개 지역 × {MATRIX_TREATMENT_SLUGS.length}개 핵심 진료 — 클릭 한 번으로 우리 지역 전문 진료 페이지로 이동
             </p>
+            <p class="text-sm mt-4">
+              <a href="/area/guwol-dong" class="text-[#0066FF] font-semibold hover:underline" data-cursor-hover>구월동 치과 안내 — 진료시간·오시는 길·의료진</a>
+              <span class="text-gray-300 mx-2">|</span>
+              <a href="/area/namdong-gu" class="text-[#0066FF] font-semibold hover:underline" data-cursor-hover>인천 남동구 치과 안내</a>
+            </p>
           </div>
 
           {/* 지역별 빠른 진입 — 거리순 */}
@@ -911,8 +922,9 @@ home.get('/', async (c) => {
       </section>
     </>,
     {
-      title: '서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료',
-      description: '인천 구월동 서울365치과. 서울대 5인 전문의, 365일·야간21시 진료. 인비절라인 인증의 직접 진료, 수면진료·자체 기공실. 032-432-0365',
+      // 대표 키워드 "구월동 치과"를 title 맨 앞에 (브랜드 유지) — 2026-10-08 지역 SEO
+      title: '구월동 치과 서울365치과 | 인천 남동구 예술회관역 임플란트·인비절라인·수면진료, 365일 야간진료',
+      description: '인천 남동구 구월동 치과 서울365치과. 예술회관역 5번 출구 도보 3분, 월~목 21시·일요일·공휴일 진료. 서울대 출신 원장 협진, 인비절라인 인증의 진료, 수면진료·자체 기공실. 032-432-0365',
       canonical: 'https://seoul365dc.kr',
       dateModified: CONTENT_DATES.home,
       jsonLd: [
@@ -927,7 +939,7 @@ home.get('/', async (c) => {
           "@type": ["WebPage", "MedicalWebPage"],
           "@id": "https://seoul365dc.kr/#webpage",
           "url": "https://seoul365dc.kr",
-          "name": "서울365치과 | 인천 구월동 서울대 5인 전문의 치과",
+          "name": "구월동 치과 서울365치과 | 인천 남동구 예술회관역 365일 야간진료",
           "description": "치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원.",
           "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
           "about": { "@id": "https://seoul365dc.kr/#dentist" },

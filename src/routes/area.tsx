@@ -20,6 +20,7 @@ import {
   getAreaTreatments,
   type MatrixVariantSlug,
 } from '../data/area-treatment'
+import { AREA_HUBS, type AreaHub, type HubSection } from '../data/area-hubs'
 
 const areaRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -58,6 +59,13 @@ areaRoutes.get('/area', (c) => {
               <div>
                 <h2 class="text-xl font-bold text-gray-900">{gu}</h2>
                 <p class="text-xs text-gray-400">{grouped[gu].length}개 지역</p>
+                {gu === '남동구' && (
+                  <p class="text-xs mt-1">
+                    <a href="/area/namdong-gu" class="text-[#0066FF] font-medium hover:underline">인천 남동구 치과 안내</a>
+                    <span class="text-gray-300 mx-1.5">·</span>
+                    <a href="/area/guwol-dong" class="text-[#0066FF] font-medium hover:underline">구월동 치과 안내</a>
+                  </p>
+                )}
               </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
@@ -1183,11 +1191,252 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
 })
 
 // ── 개별 동 페이지 (/area/:slug) ──
+// ── 대표 지역 키워드 허브 렌더 (2026-10-08) — /area/guwol-dong("구월동 치과"), /area/namdong-gu("인천 남동구 치과") ──
+function renderAreaHub(c: any, hub: AreaHub) {
+  const pageUrl = `https://seoul365dc.kr/area/${hub.slug}`;
+  const guAreas = getAreasSorted().filter(a => a.gu === '남동구');
+  const hubArea = getAreaBySlug(hub.slug);
+  const nearby = getAreasSorted().filter(a => a.slug !== hub.slug).slice(0, 8);
+  const mapQuery = encodeURIComponent(CLINIC.address);
+
+  const renderBlock = (block?: HubSection['block']) => {
+    if (block === 'hours') return (
+      <table class="w-full max-w-md text-sm border border-gray-100 rounded-xl overflow-hidden mt-2 mb-2">
+        <caption class="sr-only">서울365치과 진료시간</caption>
+        <tbody>
+          {HOURS.map(h => (
+            <tr class="border-b border-gray-100 last:border-0">
+              <th scope="row" class="text-left font-semibold text-gray-700 bg-gray-50 px-4 py-2.5 w-28">{h.day}</th>
+              <td class="px-4 py-2.5 text-gray-800 tabular-nums">{h.time}{h.note ? <span class="ml-2 text-[11px] text-[#0066FF]">{h.note}</span> : null}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+    if (block === 'doctors') return (
+      <ul class="grid sm:grid-cols-2 gap-3 mt-3">
+        {doctors.map(d => (
+          <li>
+            <a href={`/doctors/${d.slug}`} class="block premium-card px-4 py-3 hover:border-[#0066FF]/30 transition-all" data-cursor-hover>
+              <span class="font-bold text-gray-900">{d.name} {d.titleShort}</span>
+              <span class="block text-xs text-gray-500 mt-0.5">{d.metaDesc.replace(/^서울365치과\s*\S+\s*\S*원장\.\s*/, '')}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    );
+    if (block === 'gu-areas') return (
+      <div class="overflow-x-auto mt-3">
+        <table class="w-full text-sm border border-gray-100 rounded-xl overflow-hidden">
+          <caption class="sr-only">인천 남동구 동별 서울365치과까지 거리·소요시간</caption>
+          <thead class="bg-gray-50 text-gray-600">
+            <tr><th scope="col" class="text-left px-3 py-2.5">동</th><th scope="col" class="text-right px-3 py-2.5">직선거리</th><th scope="col" class="text-right px-3 py-2.5">소요시간</th><th scope="col" class="text-left px-3 py-2.5">이동 방법</th></tr>
+          </thead>
+          <tbody>
+            {guAreas.map(a => (
+              <tr class="border-t border-gray-100">
+                <td class="px-3 py-2.5"><a href={`/area/${a.slug}`} class="font-semibold text-[#0066FF] hover:underline">{a.name}</a></td>
+                <td class="px-3 py-2.5 text-right tabular-nums">{a.distKm === 0 ? '—' : `${a.distKm}km`}</td>
+                <td class="px-3 py-2.5 text-right tabular-nums">{a.distKm === 0 ? '도보 3분' : `약 ${a.travelMin}분`}</td>
+                <td class="px-3 py-2.5 text-gray-600">{a.travelDesc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+    if (block === 'map') return (
+      <div class="flex flex-wrap gap-2 mt-3">
+        <a href={`https://map.naver.com/p/search/${mapQuery}`} target="_blank" rel="noopener" class="btn-premium btn-premium-outline text-sm" data-cursor-hover><i class="fa-solid fa-map text-xs"></i> 네이버 지도</a>
+        <a href={`https://map.kakao.com/link/search/${mapQuery}`} target="_blank" rel="noopener" class="btn-premium btn-premium-outline text-sm" data-cursor-hover><i class="fa-solid fa-location-dot text-xs"></i> 카카오맵</a>
+        <a href={`https://www.google.com/maps/search/?api=1&query=${CLINIC.geo.lat},${CLINIC.geo.lng}`} target="_blank" rel="noopener" class="btn-premium btn-premium-outline text-sm" data-cursor-hover><i class="fa-brands fa-google text-xs"></i> 구글 지도</a>
+      </div>
+    );
+    return null;
+  };
+
+  return c.render(
+    <section class="min-h-screen">
+      {/* Hero */}
+      <div class="hero-premium" style="min-height:52vh">
+        <div class="hero-grid"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:14vh">
+          <nav aria-label="브레드크럼" class="mb-5">
+            <ol class="flex flex-wrap justify-center items-center gap-2 text-xs text-white/40">
+              <li><a href="/" class="hover:text-white/70">홈</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="/area" class="hover:text-white/70">지역 안내</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-white/70" aria-current="page">{hub.breadcrumbName}</li>
+            </ol>
+          </nav>
+          <h1 class="text-3xl md:text-5xl font-black text-white mb-5">{hub.h1}</h1>
+          <p id="hub-answer" class="text-white/60 text-sm md:text-base max-w-2xl mx-auto leading-relaxed mb-8">{hub.answer}</p>
+          <div class="flex flex-wrap justify-center gap-3">
+            <a href="/reservation" class="btn-premium btn-premium-fill ripple-effect" data-cursor-hover>
+              <i class="fa-solid fa-calendar-check mr-1.5"></i> 상담 예약
+            </a>
+            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white" data-cursor-hover>
+              <i class="fa-solid fa-phone mr-1.5"></i> {CLINIC.phone}
+            </a>
+            <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="btn-premium btn-premium-outline text-[#00E5FF] border-[#00E5FF]/20" data-cursor-hover>
+              <i class="fa-solid fa-n mr-1.5"></i> 네이버 예약
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* 핵심 정보 요약 */}
+      <div class="bg-white pt-14 md:pt-16">
+        <div class="max-w-3xl mx-auto px-5 md:px-8">
+          <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-sm premium-card p-6">
+            <div><dt class="text-gray-400 text-xs">주소</dt><dd class="text-gray-900 font-medium">{CLINIC.address} (우 {CLINIC.postalCode})</dd></div>
+            <div><dt class="text-gray-400 text-xs">가까운 역</dt><dd class="text-gray-900 font-medium">인천 1호선 예술회관역 5번 출구 약 250m</dd></div>
+            <div><dt class="text-gray-400 text-xs">평일 야간</dt><dd class="text-gray-900 font-medium">월~목 10:00~21:00</dd></div>
+            <div><dt class="text-gray-400 text-xs">주말·공휴일</dt><dd class="text-gray-900 font-medium">토 10:00~14:00 · 일·공휴일 14:00~18:00</dd></div>
+            <div><dt class="text-gray-400 text-xs">전화</dt><dd class="text-gray-900 font-medium"><a href={CLINIC.phoneTel} class="hover:text-[#0066FF]">{CLINIC.phone}</a></dd></div>
+            <div><dt class="text-gray-400 text-xs">주차</dt><dd class="text-gray-900 font-medium">이토타워 건물 내 주차장</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      {/* 본문 */}
+      <article class="bg-white py-12 md:py-16">
+        <div class="max-w-3xl mx-auto px-5 md:px-8">
+          {hub.sections.map(s => (
+            <section class="mb-12">
+              <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-4">{s.h}</h2>
+              {(s.p || []).map(p => <p class="text-gray-700 leading-[1.95] mb-3">{p}</p>)}
+              {s.ul && (
+                <ul class="list-disc pl-5 space-y-2 text-gray-700 leading-[1.85] mb-3">
+                  {s.ul.map(li => <li>{li}</li>)}
+                </ul>
+              )}
+              {renderBlock(s.block)}
+              {s.links && (
+                <div class="flex flex-wrap gap-2 mt-4">
+                  {s.links.map(l => (
+                    <a href={l.href} class="text-sm bg-gray-50 hover:bg-[#0066FF]/8 text-gray-700 hover:text-[#0066FF] px-3 py-1.5 rounded-full border border-gray-200 transition-all" data-cursor-hover>{l.label}</a>
+                  ))}
+                </div>
+              )}
+            </section>
+          ))}
+
+          {/* FAQ — 화면과 FAQPage 스키마가 같은 배열 */}
+          <section aria-labelledby="hub-faq-heading" class="mb-12">
+            <h2 id="hub-faq-heading" class="text-xl md:text-2xl font-bold text-gray-900 mb-4">{hub.keyword} 자주 묻는 질문</h2>
+            <div class="space-y-3">
+              {hub.faq.map(f => (
+                <details class="premium-card px-5 py-4" open>
+                  <summary class="font-semibold text-gray-900 cursor-pointer">{f.q}</summary>
+                  <p class="text-gray-600 leading-[1.85] mt-3">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </section>
+
+          <p class="text-xs text-gray-400">최종 수정 <time datetime={hub.updated}>{hub.updated}</time> · 진료시간·주차 지원은 병원 사정으로 바뀔 수 있으니 방문 전 전화로 확인해 주세요.</p>
+        </div>
+      </article>
+
+      {/* 구월동 × 진료 (구월동 허브만) */}
+      {hubArea && (
+        <div class="bg-gradient-to-b from-gray-50 to-white py-14 md:py-16">
+          <div class="max-w-5xl mx-auto px-5 md:px-8">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-6 text-center">{hubArea.name} 진료별 안내</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+              {MATRIX_TREATMENT_SLUGS.map(tSlug => {
+                const info = MATRIX_TREATMENT_INFO[tSlug];
+                return (
+                  <a href={`/area/${hubArea.slug}/${tSlug}`} class="premium-card p-4 text-center hover:border-[#0066FF]/20 transition-all block" data-cursor-hover>
+                    <p class="font-bold text-gray-900 text-xs">{hubArea.name} {info.name}</p>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 인근 지역 */}
+      <div class="bg-white py-14 md:py-16">
+        <div class="max-w-5xl mx-auto px-5 md:px-8 text-center">
+          <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-6">{hub.level === 'gu' ? '다른 인천 지역에서 오시는 길' : '구월동 주변 지역에서 오시는 길'}</h2>
+          <div class="flex flex-wrap justify-center gap-2">
+            {(hub.level === 'gu' ? getAreasSorted().filter(a => a.gu !== '남동구') : nearby).map(n => (
+              <a href={`/area/${n.slug}`} class="text-xs bg-white hover:bg-[#0066FF]/8 text-gray-700 hover:text-[#0066FF] px-3 py-2 rounded-full border border-gray-200 transition-all" data-cursor-hover>
+                {n.gu} {n.name} · {n.distKm}km
+              </a>
+            ))}
+            {hub.slug !== 'namdong-gu' && (
+              <a href="/area/namdong-gu" class="text-xs bg-[#0066FF]/5 text-[#0066FF] px-3 py-2 rounded-full border border-[#0066FF]/20" data-cursor-hover>인천 남동구 치과 안내</a>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>,
+    {
+      title: hub.title,
+      description: hub.description,
+      canonical: pageUrl,
+      dateModified: hub.updated,
+      keywords: `${hub.keyword}, ${hub.keyword.replace(/ /g, '')}, ${hub.level === 'dong' ? '구월동 임플란트, 예술회관역 치과, 인천 구월동 치과' : '남동구 치과, 남동구 임플란트, 남동구 야간치과'}`,
+      jsonLd: [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "홈", "item": "https://seoul365dc.kr" },
+            { "@type": "ListItem", "position": 2, "name": "지역 안내", "item": "https://seoul365dc.kr/area" },
+            { "@type": "ListItem", "position": 3, "name": hub.breadcrumbName, "item": pageUrl },
+          ],
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": ["WebPage", "MedicalWebPage"],
+          "@id": `${pageUrl}#webpage`,
+          "name": hub.title,
+          "description": hub.description,
+          "url": pageUrl,
+          "inLanguage": "ko-KR",
+          "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
+          "about": {
+            "@id": "https://seoul365dc.kr/#dentist",
+            "areaServed": hub.areaServed.map(name => ({ "@type": "AdministrativeArea", "name": name })),
+          },
+          "specialty": "Dentistry",
+          "dateModified": hub.updated,
+          "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "#hub-answer"] },
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "@id": `${pageUrl}#faq`,
+          "mainEntity": hub.faq.map(f => ({
+            "@type": "Question",
+            "name": f.q,
+            "acceptedAnswer": { "@type": "Answer", "text": f.a },
+          })),
+        },
+      ],
+    }
+  );
+}
+
 areaRoutes.get('/area/:slug', (c) => {
   const slug = c.req.param('slug');
+  // 대표 키워드 허브(구월동 치과·인천 남동구 치과) — 2026-10-08
+  const hub = AREA_HUBS[slug];
+  if (hub) return renderAreaHub(c, hub);
   const area = getAreaBySlug(slug);
 
   if (!area) {
+    // soft 404 방지 (2026-10-08): 없는 지역은 HTTP 404 + noindex (기존: 200 + index + canonical 홈)
+    c.status(404);
+    c.header('X-Robots-Tag', 'noindex');
     return c.render(
       <section class="hero-premium" style="min-height:80vh">
         <div class="hero-grid"></div>
@@ -1197,7 +1446,7 @@ areaRoutes.get('/area/:slug', (c) => {
           <a href="/area" class="btn-premium btn-premium-fill" data-cursor-hover>지역 목록 보기</a>
         </div>
       </section>,
-      { title: '404 - 지역을 찾을 수 없습니다 | 서울365치과' }
+      { title: '404 - 지역을 찾을 수 없습니다 | 서울365치과', noindex: true }
     );
   }
 

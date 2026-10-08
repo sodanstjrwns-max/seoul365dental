@@ -8,7 +8,9 @@ import { AREAS } from '../data/areas'
 import { getAllMatrixPages, getAllVariantPages, MATRIX_TREATMENT_SLUGS, MATRIX_VARIANTS } from '../data/area-treatment'
 import { flatTerms } from '../data/encyclopedia-terms'
 import { isThinTerm, isThinCase } from '../lib/thin-content'
-import { CONTENT_DATES, latestYmd } from '../lib/content-dates'
+import { CONTENT_DATES, PAGE_DATES, latestYmd } from '../lib/content-dates'
+import { GU_HUB_SLUGS, areaLastmod, AREA_INDEX_LASTMOD, AREA_TREATMENT_LASTMOD } from '../data/area-hubs'
+import { TERM_DETAILS_UPDATED } from '../data/encyclopedia-detail'
 import { initBlogTables, initAdminTables, getSetting, submitToIndexNow, initIndexNowLog } from '../lib/db'
 
 const seoRoutes = new Hono<{ Bindings: Bindings }>()
@@ -249,8 +251,34 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 
 // ⚠️ Fake-freshness 방지: 정적 페이지 lastmod는 "실제 콘텐츠 변경일"이어야 함.
 // 매 요청마다 오늘 날짜를 찍으면 Google이 lastmod 신호 자체를 무시하게 됨 (신뢰도 하락).
-// 콘텐츠를 실질적으로 수정·배포할 때 이 날짜를 갱신할 것.
+// 2026-10-08: 사이트맵 전체의 68%(308/454)가 이 고정값 하나('2026-06-11')로 찍혀 있던 것을
+// 페이지군별 실제 수정일(PAGE_DATES = 라우트·데이터 파일 마지막 커밋, area-hubs 의 지역 고정값,
+// D1 최신 글 날짜)로 교체. 아래 값은 실제 날짜를 구할 수 없을 때만 쓰는 최후 폴백.
 export const STATIC_LASTMOD = '2026-06-11';
+/** /info — 지하철 노선 표기 교정(인천 1호선) 2026-10-08 */
+const INFO_LASTMOD = '2026-10-08';
+/** /faq — 진료시간·위치 답변을 clinic.ts 값과 일치시킴 2026-10-08 */
+const FAQ_LASTMOD = '2026-10-08';
+/** /encyclopedia 허브 — 용어 정의 보강·동의어 통합 2026-10-08 */
+const ENCYCLOPEDIA_HUB_LASTMOD = TERM_DETAILS_UPDATED;
+
+/** 목록 페이지(블로그·치료사례·공지) lastmod = 공개 항목 중 최신 수정일(D1 읽기) */
+async function coreListLastmods(db: any): Promise<{ blog: string; cases: string; notices: string }> {
+  const out = { blog: '', cases: '', notices: '' };
+  try {
+    await initBlogTables(db);
+    const r = await db.prepare('SELECT MAX(COALESCE(updated_at, created_at)) as d FROM blog_posts WHERE is_published = 1').first();
+    out.blog = kstYmd(r?.d) || '';
+  } catch {}
+  try {
+    await initAdminTables(db);
+    const r = await db.prepare('SELECT MAX(COALESCE(updated_at, created_at)) as d FROM before_after_cases WHERE is_published = 1').first();
+    out.cases = kstYmd(r?.d) || '';
+    const n = await db.prepare('SELECT MAX(COALESCE(updated_at, created_at)) as d FROM notices WHERE is_published = 1').first();
+    out.notices = kstYmd(n?.d) || '';
+  } catch {}
+  return out;
+}
 
 // Common XML header for sub-sitemaps
 const urlsetOpen = `<?xml version="1.0" encoding="UTF-8"?>
@@ -261,8 +289,8 @@ const urlsetOpen = `<?xml version="1.0" encoding="UTF-8"?>
 
 // Render a single <url> entry
 const renderUrl = (base: string, p: any) => `  <url>
-    <loc>${base}${p.loc}</loc>
-    <lastmod>${p.lastmod}</lastmod>
+    <loc>${base}${p.loc}</loc>${p.lastmod ? `
+    <lastmod>${p.lastmod}</lastmod>` : ''}
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
     <xhtml:link rel="alternate" hreflang="ko-KR" href="${base}${p.loc}" />
@@ -290,21 +318,22 @@ const sitemapHeaders = {
 // ── 1) SITEMAP INDEX (master) ──
 seoRoutes.get('/sitemap.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  // 하위 사이트맵 lastmod = 그 사이트맵 안 URL 중 최신 실제 수정일 (2026-10-08 — 고정값 일괄 표기 대체)
+  const lm = await coreListLastmods(c.env.DB);
 
   // Check blog last update for dynamic lastmod
-  let blogLastmod = today;
+  let blogLastmod = lm.blog;
   try {
     await initBlogTables(c.env.DB);
     const r = await c.env.DB.prepare(
       'SELECT MAX(COALESCE(updated_at, created_at)) as last_date FROM blog_posts WHERE is_published = 1'
     ).first<{ last_date: string }>();
-    if (r?.last_date) blogLastmod = r.last_date.substring(0, 10);
+    if (r?.last_date) blogLastmod = kstYmd(r.last_date) || blogLastmod;
   } catch {}
 
   // Check cases last update for dynamic lastmod
   // 2026-09-29: 얇은 치료사례(설명 300자 미만)는 사이트맵 제외 → 색인 대상이 0건이면 인덱스에서도 뺀다
-  let casesLastmod = today;
+  let casesLastmod = '';
   let indexableCases = 0;
   try {
     await initAdminTables(c.env.DB);
@@ -323,48 +352,48 @@ seoRoutes.get('/sitemap.xml', async (c) => {
   // news(블로그 최근 글 중복 — 병원 사이트는 Google News 대상 아님)는 인덱스에서 제외. 개별 URL 응답은 유지.
   const subSitemaps: Array<{ name: string; lastmod: string; skip?: boolean }> = [
     // ── Tier 1: Core ──
-    { name: 'pages',            lastmod: today },
-    { name: 'treatments',       lastmod: '2026-03-27' },
-    { name: 'doctors',          lastmod: '2026-03-01' },
+    { name: 'pages',            lastmod: latestYmd(PAGE_DATES.home, PAGE_DATES.treatments, PAGE_DATES.doctors, PAGE_DATES.commercial, INFO_LASTMOD, FAQ_LASTMOD, ENCYCLOPEDIA_HUB_LASTMOD, lm.blog, lm.cases, lm.notices) },
+    { name: 'treatments',       lastmod: PAGE_DATES.treatments },
+    { name: 'doctors',          lastmod: PAGE_DATES.doctors },
     { name: 'blog',             lastmod: blogLastmod },
     { name: 'cases',            lastmod: casesLastmod, skip: indexableCases === 0 },
-    { name: 'encyclopedia',     lastmod: today, skip: indexableTerms === 0 },
+    { name: 'encyclopedia',     lastmod: latestYmd(...flatTerms.filter(t => !isThinTerm(t)).map(t => t.updated || CONTENT_DATES.encyclopedia)), skip: indexableTerms === 0 },
     // ── Tier 2: Local SEO (지역 × 진료) ──
-    { name: 'areas',            lastmod: today },
-    { name: 'area-treatments',  lastmod: today },
+    { name: 'areas',            lastmod: latestYmd(AREA_INDEX_LASTMOD, ...AREAS.map(a => areaLastmod(a.slug)), ...GU_HUB_SLUGS.map(areaLastmod)) },
+    { name: 'area-treatments',  lastmod: AREA_TREATMENT_LASTMOD },
     // ── Tier 3: Topical Authority (v3) ──
-    { name: 'answers',          lastmod: today },
-    { name: 'compare',          lastmod: today },
-    { name: 'guides',           lastmod: today },
-    { name: 'stations',         lastmod: today },
-    { name: 'intl',             lastmod: today },
+    { name: 'answers',          lastmod: PAGE_DATES.answers },
+    { name: 'compare',          lastmod: PAGE_DATES.compare },
+    { name: 'guides',           lastmod: PAGE_DATES.guides },
+    { name: 'stations',         lastmod: PAGE_DATES.stations },
+    { name: 'intl',             lastmod: latestYmd(PAGE_DATES.intl, PAGE_DATES.ru) },
     // ── Tier 4: Rich Snippets (v4) ──
-    { name: 'reviews',          lastmod: today },
-    { name: 'procedures',       lastmod: today },
-    { name: 'insurance',        lastmod: today },
-    { name: 'events',           lastmod: today },
-    { name: 'whyus',            lastmod: today },
+    { name: 'reviews',          lastmod: PAGE_DATES.reviews },
+    { name: 'procedures',       lastmod: PAGE_DATES.procedures },
+    { name: 'insurance',        lastmod: PAGE_DATES.insurance },
+    { name: 'events',           lastmod: PAGE_DATES.events },
+    { name: 'whyus',            lastmod: PAGE_DATES.whyus },
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${subSitemaps.filter(s => !s.skip).map(s => `  <sitemap>
     <loc>${base}/sitemap-${s.name}.xml</loc>
-    <lastmod>${s.lastmod}</lastmod>
-  </sitemap>`).join('\n')}
+${s.lastmod ? `    <lastmod>${s.lastmod}</lastmod>\n` : ''}  </sitemap>`).join('\n')}
 </sitemapindex>`;
 
   return new Response(xml, { headers: sitemapHeaders });
 })
 
 // ── 2) SITEMAP — Core Pages ──
-seoRoutes.get('/sitemap-pages.xml', (c) => {
+seoRoutes.get('/sitemap-pages.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  // 페이지별 실제 수정일 (2026-10-08 — 고정 STATIC_LASTMOD 일괄 표기 대체)
+  const lm = await coreListLastmods(c.env.DB);
 
   const pages = [
     {
-      loc: '', priority: '1.0', changefreq: 'daily', lastmod: today,
+      loc: '', priority: '1.0', changefreq: 'weekly', lastmod: PAGE_DATES.home,
       images: [
         { url: `${base}/static/og-image.png`, title: '서울365치과 메인 이미지', caption: '인천 구월동 서울대 출신 5인 전문의 치과' },
         { url: `${base}/static/dr-park.jpg`, title: '박준규 대표원장', caption: '서울대 통합치의학과 전문의' },
@@ -376,34 +405,34 @@ seoRoutes.get('/sitemap-pages.xml', (c) => {
         description: '서울365치과 진료 환경 및 첨단 장비, 감염관리 시스템 클리닉 투어 영상',
       },
     },
-    { loc: '/treatments', priority: '0.9', changefreq: 'weekly', lastmod: '2026-03-27' },
+    { loc: '/treatments', priority: '0.9', changefreq: 'monthly', lastmod: PAGE_DATES.treatments },
     {
-      loc: '/doctors', priority: '0.9', changefreq: 'monthly', lastmod: '2026-03-01',
+      loc: '/doctors', priority: '0.9', changefreq: 'monthly', lastmod: PAGE_DATES.doctors,
       images: [
         { url: `${base}/static/team-photo.jpg`, title: '서울365치과 의료진 단체사진', caption: '서울대 출신 5인 원장 — 인천 구월동' },
         { url: `${base}/static/dr-park-profile.jpg`, title: '박준규 대표원장 프로필', caption: '서울대 통합치의학과 전문의' },
       ],
     },
-    { loc: '/info', priority: '0.8', changefreq: 'monthly', lastmod: '2026-03-01' },
+    { loc: '/info', priority: '0.8', changefreq: 'monthly', lastmod: INFO_LASTMOD },
     { loc: '/reservation', priority: '0.8', changefreq: 'monthly', lastmod: '2026-03-01' },
-    { loc: '/blog', priority: '0.8', changefreq: 'daily', lastmod: today },
-    { loc: '/faq', priority: '0.7', changefreq: 'monthly', lastmod: '2026-03-01' },
-    { loc: '/cases/gallery', priority: '0.6', changefreq: 'weekly', lastmod: today },
-    { loc: '/encyclopedia', priority: '0.7', changefreq: 'monthly', lastmod: '2026-04-07' },
+    { loc: '/blog', priority: '0.8', changefreq: 'daily', lastmod: lm.blog },
+    { loc: '/faq', priority: '0.7', changefreq: 'monthly', lastmod: FAQ_LASTMOD },
+    { loc: '/cases/gallery', priority: '0.6', changefreq: 'weekly', lastmod: lm.cases },
+    { loc: '/encyclopedia', priority: '0.7', changefreq: 'monthly', lastmod: ENCYCLOPEDIA_HUB_LASTMOD },
     // '/area' 허브는 sitemap-areas.xml 에 있음 (중복 제거 2026-09-29)
-    { loc: '/notices', priority: '0.5', changefreq: 'weekly', lastmod: today },
+    { loc: '/notices', priority: '0.5', changefreq: 'weekly', lastmod: lm.notices },
     // 🚀 v6 D-Tier: High-Intent Commercial Pages (한글 URL은 percent-encode)
-    { loc: '/prices', priority: '0.9', changefreq: 'weekly', lastmod: today },
-    { loc: `/prices/${encodeURIComponent('임플란트')}`, priority: '0.95', changefreq: 'weekly', lastmod: today },
-    { loc: `/prices/${encodeURIComponent('교정')}`, priority: '0.95', changefreq: 'weekly', lastmod: today },
-    { loc: `/prices/${encodeURIComponent('라미네이트')}`, priority: '0.85', changefreq: 'monthly', lastmod: today },
-    { loc: `/prices/${encodeURIComponent('레진')}`, priority: '0.8', changefreq: 'monthly', lastmod: today },
-    { loc: `/prices/${encodeURIComponent('신경치료')}`, priority: '0.8', changefreq: 'monthly', lastmod: today },
-    { loc: `/prices/${encodeURIComponent('크라운')}`, priority: '0.8', changefreq: 'monthly', lastmod: today },
-    { loc: `/prices/${encodeURIComponent('치아미백')}`, priority: '0.8', changefreq: 'monthly', lastmod: today },
-    { loc: `/prices/${encodeURIComponent('사랑니발치')}`, priority: '0.8', changefreq: 'monthly', lastmod: today },
-    { loc: '/emergency', priority: '0.95', changefreq: 'weekly', lastmod: today },
-    { loc: '/night-clinic', priority: '0.9', changefreq: 'weekly', lastmod: today },
+    { loc: '/prices', priority: '0.9', changefreq: 'weekly', lastmod: PAGE_DATES.commercial },
+    { loc: `/prices/${encodeURIComponent('임플란트')}`, priority: '0.95', changefreq: 'weekly', lastmod: PAGE_DATES.commercial },
+    { loc: `/prices/${encodeURIComponent('교정')}`, priority: '0.95', changefreq: 'weekly', lastmod: PAGE_DATES.commercial },
+    { loc: `/prices/${encodeURIComponent('라미네이트')}`, priority: '0.85', changefreq: 'monthly', lastmod: PAGE_DATES.commercial },
+    { loc: `/prices/${encodeURIComponent('레진')}`, priority: '0.8', changefreq: 'monthly', lastmod: PAGE_DATES.commercial },
+    { loc: `/prices/${encodeURIComponent('신경치료')}`, priority: '0.8', changefreq: 'monthly', lastmod: PAGE_DATES.commercial },
+    { loc: `/prices/${encodeURIComponent('크라운')}`, priority: '0.8', changefreq: 'monthly', lastmod: PAGE_DATES.commercial },
+    { loc: `/prices/${encodeURIComponent('치아미백')}`, priority: '0.8', changefreq: 'monthly', lastmod: PAGE_DATES.commercial },
+    { loc: `/prices/${encodeURIComponent('사랑니발치')}`, priority: '0.8', changefreq: 'monthly', lastmod: PAGE_DATES.commercial },
+    { loc: '/emergency', priority: '0.95', changefreq: 'weekly', lastmod: PAGE_DATES.commercial },
+    { loc: '/night-clinic', priority: '0.9', changefreq: 'weekly', lastmod: PAGE_DATES.commercial },
     { loc: '/privacy', priority: '0.2', changefreq: 'yearly', lastmod: '2026-03-14' },
     { loc: '/terms', priority: '0.2', changefreq: 'yearly', lastmod: '2026-03-14' },
   ];
@@ -415,7 +444,7 @@ seoRoutes.get('/sitemap-pages.xml', (c) => {
 // ── 3) SITEMAP — Treatment Pages ──
 seoRoutes.get('/sitemap-treatments.xml', (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = PAGE_DATES.treatments; // treatments.ts·treatments.tsx 마지막 커밋 (2026-10-08)
 
   const highPriority = new Set([
     'full-implant', 'digital-full-arch', 'implant', 'orthodontics', 'invisalign',
@@ -426,7 +455,7 @@ seoRoutes.get('/sitemap-treatments.xml', (c) => {
     loc: `/treatments/${t.slug}`,
     priority: highPriority.has(t.slug) ? '0.9' : '0.7',
     changefreq: 'monthly' as const,
-    lastmod: t.slug === 'invisalign' ? today : '2026-03-27',
+    lastmod: today,
     images: [
       { url: `${base}/static/og-image.png`, title: `${t.name} | 서울365치과`, caption: t.metaDesc || `인천 구월동 서울365치과 ${t.name} 안내` },
     ],
@@ -444,7 +473,7 @@ seoRoutes.get('/sitemap-doctors.xml', (c) => {
     loc: `/doctors/${d.slug}`,
     priority: d.slug === 'park-junkyu' ? '0.8' : '0.7',
     changefreq: 'monthly' as const,
-    lastmod: '2026-03-01',
+    lastmod: PAGE_DATES.doctors, // doctors.ts·doctors.tsx 마지막 커밋 (2026-10-08)
     images: [
       {
         url: `${base}/static/dr-${d.slug.split('-').pop()}-profile.jpg`,
@@ -461,7 +490,6 @@ seoRoutes.get('/sitemap-doctors.xml', (c) => {
 // ── 5) SITEMAP — Blog Posts (Dynamic from DB) ──
 seoRoutes.get('/sitemap-blog.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
 
   let blogPages: any[] = [];
   try {
@@ -473,7 +501,7 @@ seoRoutes.get('/sitemap-blog.xml', async (c) => {
       loc: `/blog/${p.slug}`,
       priority: '0.6',
       changefreq: 'weekly',
-      lastmod: kstYmd(p.updated_at || p.created_at) || today, // D1 UTC → KST (스키마 dateModified 와 일치)
+      lastmod: kstYmd(p.updated_at || p.created_at) || '', // D1 UTC → KST (스키마 dateModified 와 일치), 없으면 lastmod 생략
     }));
   } catch {}
 
@@ -484,21 +512,24 @@ seoRoutes.get('/sitemap-blog.xml', async (c) => {
 // ── 6) SITEMAP — Area (동별) Pages ──
 seoRoutes.get('/sitemap-areas.xml', (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
-
+  // lastmod = 동 페이지별 실제 수정일(src/data/area-hubs.ts areaLastmod) — 2026-06-11 일괄 고정값 대체 (2026-10-08)
   const pages = AREAS.map(a => ({
     loc: `/area/${a.slug}`,
-    priority: a.distKm <= 2 ? '0.8' : a.distKm <= 5 ? '0.7' : '0.6',
-    changefreq: 'weekly' as const,
-    lastmod: today,
+    priority: a.slug === 'guwol-dong' ? '0.9' : a.distKm <= 2 ? '0.8' : a.distKm <= 5 ? '0.7' : '0.6',
+    changefreq: 'monthly' as const,
+    lastmod: areaLastmod(a.slug),
   }));
+  // 구 단위 허브(남동구) — AREAS 밖의 실제 페이지
+  for (const h of GU_HUB_SLUGS) {
+    pages.push({ loc: `/area/${h}`, priority: '0.8', changefreq: 'monthly' as const, lastmod: areaLastmod(h) });
+  }
 
   // Also include the area index page
   pages.unshift({
     loc: '/area',
     priority: '0.8',
-    changefreq: 'weekly' as const,
-    lastmod: today,
+    changefreq: 'monthly' as const,
+    lastmod: AREA_INDEX_LASTMOD,
   });
 
   const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
@@ -509,7 +540,7 @@ seoRoutes.get('/sitemap-areas.xml', (c) => {
 // 18개 지역 × 10개 핵심 진료 = 180개 자동 SEO 랜딩 페이지
 seoRoutes.get('/sitemap-area-treatments.xml', (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = AREA_TREATMENT_LASTMOD; // 지역×진료 템플릿·데이터 마지막 실제 변경 (2026-10-08 확인)
 
   const matrixPages = getAllMatrixPages().map(m => ({
     loc: `/area/${m.areaSlug}/${m.treatmentSlug}`,
@@ -537,7 +568,7 @@ seoRoutes.get('/sitemap-area-variants.xml', (c) => {
 // ── v3 SITEMAP — AI Answer Hub ──
 seoRoutes.get('/sitemap-answers.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = PAGE_DATES.answers; // 라우트·데이터 파일 마지막 커밋 날짜(2026-10-08 고정값 일괄 표기 대체)
   // dynamic import (avoid circular ref)
   const { ANSWER_HUB } = await import('../data/answer-hub');
   const { getAllAnswerSlugs } = await import('./answers');
@@ -560,7 +591,7 @@ seoRoutes.get('/sitemap-answers.xml', async (c) => {
 // ── v3 SITEMAP — Comparison Pages ──
 seoRoutes.get('/sitemap-compare.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = PAGE_DATES.compare; // 라우트·데이터 파일 마지막 커밋 날짜(2026-10-08 고정값 일괄 표기 대체)
   const { COMPARISONS } = await import('../data/answer-hub');
 
   const pages = [
@@ -580,7 +611,7 @@ seoRoutes.get('/sitemap-compare.xml', async (c) => {
 // ── v3 SITEMAP — Topic Cluster Guides ──
 seoRoutes.get('/sitemap-guides.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = PAGE_DATES.guides; // 라우트·데이터 파일 마지막 커밋 날짜(2026-10-08 고정값 일괄 표기 대체)
   const { TOPIC_CLUSTERS } = await import('../data/answer-hub');
 
   const pages: any[] = [
@@ -600,7 +631,7 @@ seoRoutes.get('/sitemap-guides.xml', async (c) => {
 // ── v3 SITEMAP — Stations & Landmarks ──
 seoRoutes.get('/sitemap-stations.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = PAGE_DATES.stations; // 라우트·데이터 파일 마지막 커밋 날짜(2026-10-08 고정값 일괄 표기 대체)
   const { STATIONS } = await import('../data/stations');
 
   const pages = [
@@ -620,12 +651,12 @@ seoRoutes.get('/sitemap-stations.xml', async (c) => {
 // ── v3 SITEMAP — International (EN/ZH) ──
 seoRoutes.get('/sitemap-intl.xml', (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  // 라우트 파일 마지막 커밋 날짜 (2026-10-08)
 
   const pages = [
-    { loc: '/en', priority: '0.85', changefreq: 'weekly' as const, lastmod: today },
-    { loc: '/zh', priority: '0.85', changefreq: 'weekly' as const, lastmod: today },
-    { loc: '/ru', priority: '0.85', changefreq: 'weekly' as const, lastmod: today },
+    { loc: '/en', priority: '0.85', changefreq: 'weekly' as const, lastmod: PAGE_DATES.intl },
+    { loc: '/zh', priority: '0.85', changefreq: 'weekly' as const, lastmod: PAGE_DATES.intl },
+    { loc: '/ru', priority: '0.85', changefreq: 'weekly' as const, lastmod: PAGE_DATES.ru },
   ];
 
   const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
@@ -635,7 +666,7 @@ seoRoutes.get('/sitemap-intl.xml', (c) => {
 // ── v4 SITEMAP — Reviews (AggregateRating ⭐) ──
 seoRoutes.get('/sitemap-reviews.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = PAGE_DATES.reviews; // 라우트·데이터 파일 마지막 커밋 날짜(2026-10-08 고정값 일괄 표기 대체)
   const { getAllReviewCategorySlugs } = await import('./reviews');
   const slugs = getAllReviewCategorySlugs();
 
@@ -655,7 +686,7 @@ seoRoutes.get('/sitemap-reviews.xml', async (c) => {
 // ── v4 SITEMAP — Procedures (HowTo) ──
 seoRoutes.get('/sitemap-procedures.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = PAGE_DATES.procedures; // 라우트·데이터 파일 마지막 커밋 날짜(2026-10-08 고정값 일괄 표기 대체)
   const { getAllProcedureSlugs } = await import('./procedures');
   const slugs = getAllProcedureSlugs();
 
@@ -675,7 +706,7 @@ seoRoutes.get('/sitemap-procedures.xml', async (c) => {
 // ── v4 SITEMAP — Insurance ──
 seoRoutes.get('/sitemap-insurance.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = PAGE_DATES.insurance; // 라우트·데이터 파일 마지막 커밋 날짜(2026-10-08 고정값 일괄 표기 대체)
   const { getAllInsuranceSlugs } = await import('./insurance');
   const slugs = getAllInsuranceSlugs();
 
@@ -695,7 +726,7 @@ seoRoutes.get('/sitemap-insurance.xml', async (c) => {
 // ── v4 SITEMAP — Events (Event schema) ──
 seoRoutes.get('/sitemap-events.xml', async (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = PAGE_DATES.events; // 라우트·데이터 파일 마지막 커밋 날짜(2026-10-08 고정값 일괄 표기 대체)
   const { getAllEventSlugs } = await import('./events');
   const slugs = getAllEventSlugs();
 
@@ -715,7 +746,7 @@ seoRoutes.get('/sitemap-events.xml', async (c) => {
 // ── v4 SITEMAP — Why Us ──
 seoRoutes.get('/sitemap-whyus.xml', (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
+  const today = PAGE_DATES.whyus; // 라우트·데이터 파일 마지막 커밋 날짜(2026-10-08 고정값 일괄 표기 대체)
 
   const pages = [
     { loc: '/why-us', priority: '0.85', changefreq: 'monthly' as const, lastmod: today },
@@ -764,13 +795,13 @@ ${newsItems.map(p => `  <url>
 // ── 🚀 v7 SITEMAP — Encyclopedia Terms (201 DefinedTerm 페이지) ──
 seoRoutes.get('/sitemap-encyclopedia.xml', (c) => {
   const base = 'https://seoul365dc.kr';
-  const today = STATIC_LASTMOD;
   // 2026-09-29: 얇은 용어(고유 본문 300자 미만)는 noindex, follow → 사이트맵 제외
+  // 2026-10-08: 192개 전부 상세 본문 보강 → 색인 복귀, lastmod = 보강한 실제 날짜(용어별 고정값)
   const pages = flatTerms.filter(t => !isThinTerm(t)).map(t => ({
     loc: `/encyclopedia/${t.slug}`,
     priority: '0.6',
     changefreq: 'monthly',
-    lastmod: today,
+    lastmod: t.updated || CONTENT_DATES.encyclopedia,
   }));
   const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
   return new Response(xml, { headers: sitemapHeaders });
@@ -813,7 +844,7 @@ seoRoutes.get('/robots.txt', (c) => {
 # 서울365치과의원 (Seoul 365 Dental Clinic)
 # https://seoul365dc.kr
 # robots.txt v5.0 — SEO/AEO Optimized
-# Last updated: ${new Date().toISOString().split('T')[0]}
+# Last updated: 2026-10-08
 # ====================================================
 
 # ─── GENERAL RULES (all crawlers) ───
@@ -1081,7 +1112,7 @@ Sitemap: https://seoul365dc.kr/sitemap-pages.xml
 Sitemap: https://seoul365dc.kr/sitemap-treatments.xml
 Sitemap: https://seoul365dc.kr/sitemap-doctors.xml
 Sitemap: https://seoul365dc.kr/sitemap-blog.xml
-# Tier 2: Local SEO
+${flatTerms.some(t => !isThinTerm(t)) ? 'Sitemap: https://seoul365dc.kr/sitemap-encyclopedia.xml\n' : ''}# Tier 2: Local SEO
 Sitemap: https://seoul365dc.kr/sitemap-areas.xml
 Sitemap: https://seoul365dc.kr/sitemap-area-treatments.xml
 # Tier 3: Topical Authority (v3)
@@ -1699,7 +1730,7 @@ seoRoutes.post('/api/cron/full-sync', async (c) => {
         ...cl.spokes.map(s => `${base}/guides/${cl.slug}/${s.slug}`),
       ]),
       ...STATIONS.map(s => `${base}/stations/${s.slug}`),
-      // v8: 백과사전 200개 용어 페이지 + 피드 + ru
+      // v8: 백과사전 용어 페이지(색인 대상만) + 피드 + ru
       `${base}/encyclopedia`,
       ...flatTerms.filter(t => !isThinTerm(t)).map(t => `${base}/encyclopedia/${t.slug}`),
       `${base}/blog/rss.xml`,

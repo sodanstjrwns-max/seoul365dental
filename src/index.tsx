@@ -182,7 +182,7 @@ app.notFound((c) => {
         </div>
       </div>
     </section>,
-    { title: '404 - 페이지를 찾을 수 없습니다 | 서울365치과' }
+    { title: '404 - 페이지를 찾을 수 없습니다 | 서울365치과', noindex: true }
   )
 })
 

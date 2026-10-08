@@ -1,4 +1,7 @@
-// 치과 백과사전 용어 데이터 — 약 200개 용어, 12개 카테고리
+// 치과 백과사전 용어 데이터 — 192개 용어, 12개 카테고리
+// 2026-10-08: 동의어 8개는 301로 합침(TERM_REDIRECTS), 용어별 상세 본문은 ./encyclopedia-detail (얇은 용어 보강)
+import { TERM_DETAILS, TERM_DETAILS_UPDATED } from './encyclopedia-detail'
+import type { TermDetail } from './encyclopedia-detail/types'
 export interface TermItem {
   term: string
   en: string
@@ -116,7 +119,6 @@ export const terms: TermCategory[] = [
     { term: '침윤마취', en: 'Infiltration Anesthesia', def: '치료 부위 잇몸에 직접 마취액을 주입하는 가장 일반적인 국소마취법입니다.' },
     { term: '전달마취', en: 'Nerve Block', def: '신경 줄기 근처에 마취액을 주입하여 넓은 영역을 마취하는 방법. 아래턱 치료에 주로 사용됩니다.' },
     { term: '아산화질소', en: 'Nitrous Oxide', def: '웃음가스(N₂O). 흡입 진정법으로 가벼운 불안을 해소하며, 소아와 경미한 공포 환자에게 적용합니다.' },
-    { term: '펄스옥시미터', en: 'Pulse Oximeter', def: '손가락에 장착하여 산소포화도와 맥박을 실시간 측정하는 모니터링 기기입니다.' },
     { term: 'BIS 모니터', en: 'BIS Monitor', def: '뇌파(EEG)를 분석하여 진정 깊이를 수치화하는 장비. 수면진료 중 과진정·각성을 실시간 관리합니다.' },
   ]},
 
@@ -153,15 +155,11 @@ export const terms: TermCategory[] = [
     { term: '금 크라운', en: 'Gold Crown', def: '금합금으로 제작한 크라운. 생체 적합성과 내구성이 우수하며 어금니에 많이 사용됩니다.' },
     { term: '부분 틀니', en: 'Partial Denture', def: '일부 치아만 상실한 경우 사용하는 가철식 보철. 클래스프(걸쇠)로 잔존 치아에 고정합니다.' },
     { term: '총의치', en: 'Complete Denture', def: '한 악궁의 모든 치아를 상실한 경우 사용하는 전체 틀니. 흡착력으로 유지됩니다.' },
-    { term: 'CAD/CAM', en: 'CAD/CAM', def: '컴퓨터 설계(CAD)와 컴퓨터 가공(CAM)으로 보철물을 제작하는 디지털 기술입니다.' },
-    { term: '디지털 인상', en: 'Digital Impression', def: '구강 스캐너로 3D 데이터를 채득하는 방법. 기존 인상재(본뜨기)보다 정확하고 환자가 편안합니다.' },
     { term: '포스트', en: 'Post', def: '신경치료 후 치질이 많이 남지 않은 치아에 삽입하는 기둥. 크라운을 지지하는 보강재 역할을 합니다.' },
     { term: '클래스프', en: 'Clasp', def: '부분 틀니를 잔존 치아에 고정하는 금속 걸쇠. 탄성으로 유지력을 제공합니다.' },
     { term: '코핑', en: 'Coping', def: '크라운 내부의 핵심 구조물(내관). 지르코니아·금속 등으로 제작하며 그 위에 도재를 축성합니다.' },
-    { term: '프로비져널', en: 'Provisional Crown', def: '최종 보철 장착 전 임시로 사용하는 크라운. 심미·기능·잇몸 안정화 역할을 합니다.' },
     { term: '바이트', en: 'Bite Registration', def: '윗니와 아랫니의 교합 관계를 기록하는 과정. 보철물이 정확히 맞물리도록 하는 데 필수적입니다.' },
-    { term: '매립형 의치', en: 'Implant-Retained Denture', def: '임플란트에 볼 어태치먼트나 바 구조물을 연결하여 고정하는 의치. 탈착이 가능하면서도 안정적입니다.' },
-    { term: '연결 관계', en: 'Pontic', def: '브릿지에서 상실 치아를 대체하는 인공 치아 부분. 양옆 기둥 치아(지대치) 사이에 위치합니다.' },
+    { term: '가공치(폰틱)', en: 'Pontic', def: '브릿지에서 상실 치아를 대체하는 인공 치아 부분. 양옆 기둥 치아(지대치) 사이에 위치합니다.' },
     { term: '서베이드 크라운', en: 'Surveyed Crown', def: '부분 틀니의 걸쇠(클래스프)가 잘 유지되도록 형태를 설계한 크라운. 틀니 계획 시 미리 제작합니다.' },
   ]},
 
@@ -221,13 +219,11 @@ export const terms: TermCategory[] = [
     { term: '치과 AI', en: 'Dental AI', def: '인공지능이 X-ray·CBCT 이미지를 분석하여 충치·치주질환·병소를 자동 탐지하는 진단 보조 기술입니다.' },
     { term: '밀링 머신', en: 'Milling Machine', def: '세라믹·지르코니아 블록을 깎아 보철물을 제작하는 CNC 장비. CEREC 시스템의 핵심입니다.' },
     { term: 'DICOM', en: 'DICOM', def: '의료 영상 표준 파일 형식. CBCT 데이터를 다른 소프트웨어(임플란트 가이드, 교정 분석 등)와 공유할 때 사용합니다.' },
-    { term: '디지털 미소 분석', en: 'Digital Smile Analysis', def: '환자의 얼굴 사진·동영상을 분석하여 이상적인 치아 비율과 스마일 라인을 수치화하는 기술입니다.' },
   ]},
 
   // ──── 11. 치과 재료 (14) ────
   { cat: '치과 재료', items: [
     { term: '티타늄', en: 'Titanium', def: '임플란트 픽스쳐의 주 소재. 생체 적합성이 우수하고 뼈와 결합(골유착)하는 특성이 있습니다.' },
-    { term: '복합 레진', en: 'Composite Resin', def: '치아색 수복 재료. 유기질 매트릭스와 무기질 필러로 구성되며 접착 기술로 치아에 결합합니다.' },
     { term: '아말감', en: 'Amalgam', def: '수은·은·주석 합금의 치과 수복 재료. 내구성이 우수하나 심미성 문제로 사용이 감소하는 추세입니다.' },
     { term: '세라믹', en: 'Dental Ceramic', def: '도자기 계열 보철 재료. 자연치아와 유사한 색상·투명도를 재현하며 생체 친화적입니다.' },
     { term: '금합금', en: 'Gold Alloy', def: '금을 주성분으로 한 치과용 합금. 생체 적합성, 내식성, 내구성이 모두 우수한 전통적 보철 재료입니다.' },
@@ -249,7 +245,6 @@ export const terms: TermCategory[] = [
     { term: '급여', en: 'Insurance-Covered', def: '건강보험이 적용되는 진료 항목. 스케일링(연 1회), 충치 치료, 발치, 신경치료 등이 포함됩니다.' },
     { term: '비급여', en: 'Non-Covered', def: '건강보험이 적용되지 않는 진료. 임플란트(65세 미만), 교정, 미백, 라미네이트 등이 해당됩니다.' },
     { term: '본인부담금', en: 'Co-payment', def: '건강보험 적용 시 환자가 직접 부담하는 금액. 보통 총 진료비의 30~50%입니다.' },
-    { term: '노인 임플란트', en: 'Senior Implant Benefit', def: '만 65세 이상 환자에게 평생 2개까지 임플란트 건강보험을 적용하는 제도. 본인부담 30%입니다.' },
     { term: '치과 실비보험', en: 'Dental Indemnity Insurance', def: '민간 보험사의 실손의료비보험 중 치과 항목. 급여 본인부담금과 일부 비급여를 보상합니다.' },
     { term: '진단서', en: 'Medical Certificate', def: '의사가 발급하는 공식 진단 문서. 보험 청구, 병가 증명 등에 필요하며 발급 수수료가 부과됩니다.' },
     { term: '치료 계획서', en: 'Treatment Plan', def: '진단 결과를 바탕으로 필요한 치료 항목·순서·예상 비용을 정리한 문서. 상담 시 제공됩니다.' },
@@ -270,6 +265,12 @@ export interface FlatTerm extends TermItem {
   slug: string
   cat: string
   catIndex: number
+  /** 용어 상세 본문(보강분) — 없으면 정의 한 문장뿐 */
+  detail?: TermDetail
+  /** 얇은 페이지 판정용 상세 본문 텍스트(섹션+FAQ) */
+  body?: string
+  /** 사이트맵 lastmod·dateModified — 보강한 실제 날짜(고정값) */
+  updated?: string
 }
 
 function slugifyEn(en: string): string {
@@ -281,6 +282,14 @@ function slugifyEn(en: string): string {
     .slice(0, 60) || 'term'
 }
 
+/** 상세 본문 → 화면 텍스트(얇은 페이지 판정용) */
+export function detailText(d: TermDetail): string {
+  return [
+    ...d.sections.flatMap((s) => [s.h, ...(s.p || []), ...(s.ol || []), ...(s.ul || [])]),
+    ...d.faq.flatMap((f) => [f.q, f.a]),
+  ].join('\n')
+}
+
 export const flatTerms: FlatTerm[] = (() => {
   const seen = new Map<string, number>()
   const out: FlatTerm[] = []
@@ -290,16 +299,46 @@ export const flatTerms: FlatTerm[] = (() => {
       const n = seen.get(slug) || 0
       seen.set(slug, n + 1)
       if (n > 0) slug = `${slug}-${n + 1}`
-      out.push({ ...item, slug, cat: cat.cat, catIndex })
+      const detail = TERM_DETAILS[slug]
+      // 보강 정의(쉬운 말)가 있으면 허브 목록·스키마도 같은 정의를 쓰도록 원본 항목에도 반영
+      if (detail) item.def = detail.def
+      out.push({
+        ...item,
+        slug,
+        cat: cat.cat,
+        catIndex,
+        ...(detail ? { detail, body: detailText(detail), updated: TERM_DETAILS_UPDATED } : {}),
+      })
     })
   })
   return out
 })()
+
+/** 동의어·중복 용어 → 합친 용어 slug (301). 2026-10-08 */
+export const TERM_REDIRECTS: Record<string, string> = {
+  'senior-implant-benefit': 'insurance-covered-implant', // 노인 임플란트 → 건강보험 임플란트
+  'cad-cam': 'cad-cam-prosthetics', // CAD/CAM → CAD/CAM 보철
+  'provisional-crown': 'provisional-prosthesis', // 프로비져널 → 임시 보철
+  'digital-impression': 'intraoral-scanner', // 디지털 인상 → 구강 스캐너
+  'implant-retained-denture': 'implant-overdenture', // 매립형 의치 → 임플란트 오버덴쳐
+  'pulse-oximeter': 'spo', // 펄스옥시미터 → 산소포화도
+  'digital-smile-analysis': 'digital-smile-design', // 디지털 미소 분석 → DSD
+  'composite-resin-2': 'composite-resin', // 복합 레진 → 레진
+}
 
 export function getTermBySlug(slug: string): FlatTerm | undefined {
   return flatTerms.find(t => t.slug === slug)
 }
 
 export function getRelatedTerms(term: FlatTerm, limit = 8): FlatTerm[] {
-  return flatTerms.filter(t => t.catIndex === term.catIndex && t.slug !== term.slug).slice(0, limit)
+  const picked: FlatTerm[] = []
+  for (const s of term.detail?.related || []) {
+    const t = getTermBySlug(s)
+    if (t && t.slug !== term.slug && !picked.includes(t)) picked.push(t)
+  }
+  for (const t of flatTerms) {
+    if (picked.length >= limit) break
+    if (t.catIndex === term.catIndex && t.slug !== term.slug && !picked.includes(t)) picked.push(t)
+  }
+  return picked.slice(0, limit)
 }

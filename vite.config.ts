@@ -50,6 +50,22 @@ const CONTENT_DATES = {
   // llms.txt·llms-full.txt 본문(고정 문구) 마지막 수정일 — '최종 업데이트' 계산용
   llmsTxt: lastCommitDateOfLlmsText('src/routes/seo.tsx', "seoRoutes.get('/llms.txt'"),
   llmsFull: lastCommitDateOfLlmsText('src/routes/seo.tsx', "seoRoutes.get('/llms-full.txt'"),
+  // 사이트맵 lastmod 용 페이지군별 실제 수정일(라우트·데이터 파일 마지막 커밋) — 2026-10-08
+  // 고정 STATIC_LASTMOD('2026-06-11') 일괄 표기 대체. seo.tsx 자체(사이트맵 코드) 수정은 넣지 않는다.
+  treatmentsPage: lastCommitDate(['src/data/treatments.ts', 'src/routes/treatments.tsx']),
+  doctorsPage: lastCommitDate(['src/data/doctors.ts', 'src/routes/doctors.tsx']),
+  answers: lastCommitDate(['src/routes/answers.tsx', 'src/data/answer-hub.ts']),
+  compare: lastCommitDate(['src/routes/compare.tsx', 'src/data/answer-hub.ts']),
+  guides: lastCommitDate(['src/routes/guides.tsx', 'src/data/answer-hub.ts']),
+  stations: lastCommitDate(['src/routes/stations.tsx', 'src/data/stations.ts']),
+  intl: lastCommitDate(['src/routes/intl.tsx']),
+  ru: lastCommitDate(['src/routes/ru.tsx']),
+  reviews: lastCommitDate(['src/routes/reviews.tsx', 'src/data/reviews.ts']),
+  procedures: lastCommitDate(['src/routes/procedures.tsx', 'src/data/procedures.ts']),
+  insurance: lastCommitDate(['src/routes/insurance.tsx']),
+  events: lastCommitDate(['src/routes/events.tsx', 'src/routes/event.tsx']),
+  whyus: lastCommitDate(['src/routes/whyus.tsx']),
+  commercial: lastCommitDate(['src/routes/commercial.tsx']),
 }
 
 export default defineConfig({

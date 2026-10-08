@@ -19,6 +19,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·인비절라인 투명교정·수면진료 전문. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
+  // noindex 페이지(404·관리자 등)가 canonical 을 따로 넘기지 않으면 canonical·hreflang 을 내보내지 않는다
+  // (기존: 홈으로 canonical → soft 404 신호). 2026-10-08
+  const emitCanonical = !!canonical || !noindex;
   const defaultKeywords = '인천치과, 구월동치과, 남동구치과, 인천임플란트, 구월동임플란트, 오스템임플란트, 스트라우만임플란트, 메가젠임플란트, 오스템SOI, 임플란트가격, 임플란트비용, 인천치아교정, 인비절라인, 인천인비절라인, 구월동인비절라인, 투명교정, 인천투명교정, 인비절라인비용, 인비절라인가격, 수면진료, 전체임플란트, 디지털풀아치, 인천전체임플란트, 서울365치과, 인천교정, 야간진료치과, 365일치과, 자체기공실, 무통마취, 인천소아치과, 심미치료, 신경치료, 서울대치과, 인천수면치과, 간석동치과, 간석동임플란트, 만수동치과, 만수동임플란트, 논현동치과, 논현동임플란트, 서창동치과, 고잔동치과, 남촌동치과, 장수동치과, 도림동치과, 운연동치과, 주안동치과, 관교동치과, 청학동치과, 연수동치과, 송도치과, 송도임플란트, 부평치과, 부평임플란트, 십정동치과, 검암동치과, 계양구치과, 미추홀구치과, 연수구치과, 인천남동구임플란트';
   // 페이지별 키워드가 있으면 기본 키워드와 합쳐서 노출 (페이지 키워드 먼저)
   const metaKeywords = pageKeywords ? `${pageKeywords}, ${defaultKeywords}` : defaultKeywords;
@@ -434,7 +437,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
         <meta name="keywords" content={metaKeywords} />
-        <link rel="canonical" href={canonicalUrl} />
+        {emitCanonical && <link rel="canonical" href={canonicalUrl} />}
         {/* v8: noindex prop — admin/login/register 등 비공개 페이지는 색인 차단 (크롤 버짓 절약) */}
         {/* noindexFollow — 얇은 상세(백과 용어·치료사례 등): 색인 제외하되 링크는 따라가게 (2026-09-29) */}
         <meta name="robots" content={noindex ? 'noindex, nofollow' : noindexFollow ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
@@ -448,9 +451,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <meta http-equiv="content-language" content="ko-KR" />
         {/* raw() 사용 이유: Hono JSX는 동일 href <link>를 dedup하므로 canonical과 같은 href인
             ko-KR/x-default hreflang이 제거됨 → raw HTML로 우회 */}
-        {raw(`<link rel="alternate" hreflang="ko-KR" href="${canonicalUrl}" />`)}
+        {emitCanonical && raw(`<link rel="alternate" hreflang="ko-KR" href="${canonicalUrl}" />`)}
         {(canonicalUrl === 'https://seoul365dc.kr' || canonicalUrl === 'https://seoul365dc.kr/' || canonicalUrl === 'https://seoul365dc.kr/en' || canonicalUrl === 'https://seoul365dc.kr/zh' || canonicalUrl === 'https://seoul365dc.kr/ru') && raw(`<link rel="alternate" hreflang="ko" href="https://seoul365dc.kr" /><link rel="alternate" hreflang="en" href="https://seoul365dc.kr/en" /><link rel="alternate" hreflang="zh-CN" href="https://seoul365dc.kr/zh" /><link rel="alternate" hreflang="ru" href="https://seoul365dc.kr/ru" />`)}
-        {raw(`<link rel="alternate" hreflang="x-default" href="${canonicalUrl}" />`)}
+        {emitCanonical && raw(`<link rel="alternate" hreflang="x-default" href="${canonicalUrl}" />`)}
         <meta name="geo.region" content="KR-28" />
         <meta name="geo.placename" content="인천 남동구 구월동" />
         <meta name="geo.position" content="37.4482;126.7042" />
