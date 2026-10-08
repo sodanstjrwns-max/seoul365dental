@@ -7,6 +7,7 @@ import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { ANSWER_HUB, type AnswerEntry } from '../data/answer-hub'
 import { CLINIC } from '../data/clinic'
+import { ORG_ID, AGENCY_HUB_PUBLISHED, CLINIC_GENERAL_INFO_NOTE } from '../lib/column-seo'
 
 const answersRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -58,8 +59,7 @@ answersRoutes.get('/answers', (c) => {
       "acceptedAnswer": {
         "@type": "Answer",
         "text": entry.detailedAnswer,
-        "dateCreated": "2025-01-01",
-        "upvoteCount": 50,
+        "dateCreated": AGENCY_HUB_PUBLISHED,
         "url": `https://seoul365dc.kr/answers/${questionToSlug(entry)}`,
         "author": {
           "@type": "MedicalOrganization",
@@ -97,7 +97,7 @@ answersRoutes.get('/answers', (c) => {
           </h1>
           <p class="text-white/40 text-sm md:text-base max-w-2xl mx-auto reveal reveal-fade" style="transition-delay:0.4s">
             임플란트·교정·인비절라인·수면진료 등 가장 많이 묻는 질문에<br/>
-            서울대 출신 5인 전문의가 직접 답변합니다. ({ANSWER_HUB.length}개 답변)
+            서울365치과가 정리한 일반 건강정보입니다. ({ANSWER_HUB.length}개 답변)
           </p>
         </div>
       </div>
@@ -130,10 +130,10 @@ answersRoutes.get('/answers', (c) => {
                     </h3>
                     <p class="text-sm text-gray-600 leading-relaxed pl-6">{entry.shortAnswer}</p>
                     <div class="flex items-center gap-2 mt-3 pl-6 text-xs text-gray-400">
-                      <i class="fa-solid fa-user-doctor"></i>
-                      <span>검토: {entry.reviewedBy}</span>
+                      <i class="fa-solid fa-hospital"></i>
+                      <span>서울365치과</span>
                       <span class="mx-1">·</span>
-                      <span>{entry.lastReviewed}</span>
+                      <span>{entry.updated}</span>
                     </div>
                   </a>
                 ))}
@@ -159,7 +159,7 @@ answersRoutes.get('/answers', (c) => {
     </section>,
     {
       title: `자주 묻는 질문 ${ANSWER_HUB.length}선 | 서울365치과 AI Answer Hub`,
-      description: `인천 구월동 서울365치과 자주 묻는 질문 ${ANSWER_HUB.length}선. 임플란트 가격, 인비절라인 비용, 수면진료, 보험 적용까지 서울대 출신 전문의가 직접 답변. AI 검색 최적화.`,
+      description: `인천 구월동 서울365치과 자주 묻는 질문 ${ANSWER_HUB.length}선. 임플란트 가격, 인비절라인 비용, 수면진료, 보험 적용까지 서울365치과가 정리한 답변.`,
       canonical: 'https://seoul365dc.kr/answers',
       keywords: allKeywords,
       jsonLd: [qaPageSchema, breadcrumb],
@@ -194,17 +194,17 @@ answersRoutes.get('/answers/:slug', (c) => {
       "name": entry.question,
       "text": entry.question,
       "answerCount": 1,
-      "dateCreated": "2025-01-01",
+      "dateCreated": AGENCY_HUB_PUBLISHED,
       "author": {
-        "@type": "Organization",
-        "name": "서울365치과의원 환자",
+        "@type": "MedicalOrganization",
+        "@id": ORG_ID,
+        "name": "서울365치과의원",
       },
       "acceptedAnswer": {
         "@type": "Answer",
         "text": entry.detailedAnswer,
-        "dateCreated": entry.lastReviewed,
+        "dateCreated": AGENCY_HUB_PUBLISHED,
         "url": canonicalUrl,
-        "upvoteCount": 100,
         "author": {
           "@type": "MedicalOrganization",
           "@id": "https://seoul365dc.kr/#dentist",
@@ -215,7 +215,7 @@ answersRoutes.get('/answers/:slug', (c) => {
     }
   };
 
-  // === 🏅 E-E-A-T Article Schema with Reviewer (무기 2) ===
+  // === MedicalWebPage — 작성·발행 = 병원 (원장 검토 근거 없음 → reviewedBy 없음, 2026-10-08) ===
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "MedicalWebPage",
@@ -223,8 +223,8 @@ answersRoutes.get('/answers/:slug', (c) => {
     "headline": entry.question,
     "description": entry.shortAnswer,
     "url": canonicalUrl,
-    "datePublished": "2025-01-01",
-    "dateModified": entry.lastReviewed,
+    "datePublished": AGENCY_HUB_PUBLISHED,
+    "dateModified": entry.updated,
     "inLanguage": "ko-KR",
     "isAccessibleForFree": true,
     "specialty": {
@@ -245,25 +245,6 @@ answersRoutes.get('/answers/:slug', (c) => {
       "name": "서울365치과의원",
       "url": "https://seoul365dc.kr",
     },
-    "reviewedBy": {
-      "@type": "Person",
-      "name": entry.reviewedBy.split('(')[0].trim(),
-      "jobTitle": "대표원장",
-      "worksFor": {
-        "@type": "MedicalOrganization",
-        "@id": "https://seoul365dc.kr/#dentist",
-        "name": "서울365치과의원"
-      },
-      "memberOf": {
-        "@type": "Organization",
-        "name": "대한치과의사협회"
-      },
-      "alumniOf": {
-        "@type": "EducationalOrganization",
-        "name": "서울대학교 치과대학"
-      },
-    },
-    "lastReviewed": entry.lastReviewed,
     "publisher": {
       "@type": "MedicalOrganization",
       "@id": "https://seoul365dc.kr/#dentist",
@@ -345,22 +326,19 @@ answersRoutes.get('/answers/:slug', (c) => {
           </p>
         </div>
 
-        {/* E-E-A-T 시그널 (검토 정보) */}
+        {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
         <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-8">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-user-doctor text-white"></i>
+              <i class="fa-solid fa-hospital text-white"></i>
             </div>
             <div class="flex-1">
-              <div class="text-xs text-gray-500 mb-1">의료진 검토</div>
-              <div class="font-bold text-gray-900">{entry.reviewedBy}</div>
-              <div class="text-sm text-gray-600 mt-1">
-                <i class="fa-solid fa-graduation-cap mr-1 text-[#0066FF]"></i>
-                서울대학교 치과대학 출신 · 대한치과의사협회 정회원
-              </div>
+              <div class="text-xs text-gray-500 mb-1">작성·발행</div>
+              <div class="font-bold text-gray-900">서울365치과</div>
+              <div class="text-sm text-gray-600 mt-1">{CLINIC_GENERAL_INFO_NOTE}</div>
               <div class="text-xs text-gray-400 mt-2">
                 <i class="fa-solid fa-calendar-check mr-1"></i>
-                마지막 검토: {entry.lastReviewed}
+                최종 업데이트: {entry.updated}
               </div>
             </div>
           </div>
@@ -421,12 +399,12 @@ answersRoutes.get('/answers/:slug', (c) => {
     </section>,
     {
       title: `${entry.question} | 서울365치과 답변`,
-      description: `${entry.shortAnswer} - 서울대 출신 5인 전문의가 직접 답변합니다.`,
+      description: `${entry.shortAnswer} - 서울365치과가 정리한 답변입니다.`,
       canonical: canonicalUrl,
       keywords: entry.keywords.join(', '),
       ogType: 'article',
-      datePublished: '2025-01-01',
-      dateModified: entry.lastReviewed,
+      datePublished: AGENCY_HUB_PUBLISHED,
+      dateModified: entry.updated,
       articleSection: entry.category,
       articleTags: entry.keywords,
       jsonLd: [qaSchema, articleSchema, breadcrumb],

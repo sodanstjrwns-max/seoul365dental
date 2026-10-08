@@ -6,6 +6,7 @@
 import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { COMPARISONS, type ComparisonEntry } from '../data/answer-hub'
+import { AGENCY_HUB_PUBLISHED, CLINIC_GENERAL_INFO_NOTE } from '../lib/column-seo'
 import { CLINIC } from '../data/clinic'
 
 const compareRoutes = new Hono<{ Bindings: Bindings }>()
@@ -109,7 +110,7 @@ compareRoutes.get('/compare/:slug', (c) => {
     "headline": `${cmp.itemA} vs ${cmp.itemB} 비교`,
     "description": cmp.description,
     "url": canonicalUrl,
-    "datePublished": "2025-01-01",
+    "datePublished": AGENCY_HUB_PUBLISHED,
     "dateModified": "2026-05-26",
     "inLanguage": "ko-KR",
     "isAccessibleForFree": true,
@@ -124,14 +125,6 @@ compareRoutes.get('/compare/:slug', (c) => {
       "@id": "https://seoul365dc.kr/#dentist",
       "name": "서울365치과의원",
     },
-    "reviewedBy": {
-      "@type": "Person",
-      "name": "박준규",
-      "jobTitle": "대표원장",
-      "worksFor": { "@type": "MedicalOrganization", "@id": "https://seoul365dc.kr/#dentist" },
-      "alumniOf": { "@type": "EducationalOrganization", "name": "서울대학교 치과대학" },
-    },
-    "lastReviewed": "2026-05-26",
     "publisher": {
       "@type": "MedicalOrganization",
       "@id": "https://seoul365dc.kr/#dentist",
@@ -291,20 +284,17 @@ compareRoutes.get('/compare/:slug', (c) => {
           </div>
         </div>
 
-        {/* E-E-A-T 검토자 */}
+        {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
         <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-12">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-user-doctor text-white"></i>
+              <i class="fa-solid fa-hospital text-white"></i>
             </div>
             <div>
-              <div class="text-xs text-gray-500 mb-1">의료진 검토</div>
-              <div class="font-bold text-gray-900">박준규 대표원장</div>
-              <div class="text-sm text-gray-600 mt-1">
-                <i class="fa-solid fa-graduation-cap mr-1 text-[#0066FF]"></i>
-                서울대학교 치과대학 출신 · 대한치과의사협회 정회원
-              </div>
-              <div class="text-xs text-gray-400 mt-2">마지막 검토: 2026-05-26</div>
+              <div class="text-xs text-gray-500 mb-1">작성·발행</div>
+              <div class="font-bold text-gray-900">서울365치과</div>
+              <div class="text-sm text-gray-600 mt-1">{CLINIC_GENERAL_INFO_NOTE}</div>
+              <div class="text-xs text-gray-400 mt-2">최종 업데이트: 2026-05-26</div>
             </div>
           </div>
         </div>
@@ -345,7 +335,7 @@ compareRoutes.get('/compare/:slug', (c) => {
       canonical: canonicalUrl,
       keywords: cmp.keywords.join(', '),
       ogType: 'article',
-      datePublished: '2025-01-01',
+      datePublished: AGENCY_HUB_PUBLISHED,
       dateModified: '2026-05-26',
       articleSection: cmp.category,
       articleTags: cmp.keywords,

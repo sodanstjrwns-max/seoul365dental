@@ -1024,15 +1024,15 @@ home.get('/', async (c) => {
           "itemListElement": [
             {
               "@type": "ListItem", "position": 1,
-              "item": { "@type": "Article", "headline": "전체임플란트, 틀니보다 좋은 이유 5가지", "datePublished": "2026-02-15", "author": { "@type": "Physician", "name": "박준규" }, "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "articleSection": "임플란트", "inLanguage": "ko-KR" }
+              "item": { "@type": "Article", "headline": "전체임플란트, 틀니보다 좋은 이유 5가지", "datePublished": "2026-02-15", "author": { "@id": "https://seoul365dc.kr/#dentist" }, "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "articleSection": "임플란트", "inLanguage": "ko-KR" }
             },
             {
               "@type": "ListItem", "position": 2,
-              "item": { "@type": "Article", "headline": "치아교정 나이 제한? 성인교정 궁금증 해결", "datePublished": "2026-02-10", "author": { "@type": "Physician", "name": "하누리" }, "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "articleSection": "교정", "inLanguage": "ko-KR" }
+              "item": { "@type": "Article", "headline": "치아교정 나이 제한? 성인교정 궁금증 해결", "datePublished": "2026-02-10", "author": { "@id": "https://seoul365dc.kr/#dentist" }, "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "articleSection": "교정", "inLanguage": "ko-KR" }
             },
             {
               "@type": "ListItem", "position": 3,
-              "item": { "@type": "Article", "headline": "수면진료, 정말 안전한가요?", "datePublished": "2026-02-05", "author": { "@type": "Physician", "name": "박준규" }, "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "articleSection": "수면진료", "inLanguage": "ko-KR" }
+              "item": { "@type": "Article", "headline": "수면진료, 정말 안전한가요?", "datePublished": "2026-02-05", "author": { "@id": "https://seoul365dc.kr/#dentist" }, "publisher": { "@id": "https://seoul365dc.kr/#dentist" }, "articleSection": "수면진료", "inLanguage": "ko-KR" }
             },
           ]
         },

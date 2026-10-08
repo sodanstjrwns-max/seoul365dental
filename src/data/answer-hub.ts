@@ -17,10 +17,8 @@ export interface AnswerEntry {
   keywords: string[];
   /** 관련 페이지 URL */
   relatedUrl?: string;
-  /** 마지막 검토일 */
-  lastReviewed: string;
-  /** 검토 의료진 */
-  reviewedBy: string;
+  /** 최종 업데이트일 (원장 검토일 아님 — 2026-10-08 대행사 허위 '의료진 검토' 표기 제거, column-seo.ts AGENCY_HUB_PUBLISHED 참고) */
+  updated: string;
 }
 
 export const ANSWER_HUB: AnswerEntry[] = [
@@ -32,8 +30,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '임플란트',
     keywords: ['인천 임플란트 가격', '구월동 임플란트 비용', '오스템 임플란트', '스트라우만 임플란트', '임플란트 가격'],
     relatedUrl: '/treatments/implant',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '박준규 대표원장 (서울대학교 치과대학 출신)',
+    updated: '2026-05-26',
   },
   {
     question: '구월동에서 임플란트 잘하는 치과는 어디인가요?',
@@ -42,8 +39,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '임플란트',
     keywords: ['구월동 임플란트 잘하는곳', '구월동 임플란트 추천', '인천 임플란트 추천', '남동구 임플란트'],
     relatedUrl: '/area/guwol-dong/implant',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '박준규 대표원장',
+    updated: '2026-05-26',
   },
   {
     question: '임플란트 수술 시간은 얼마나 걸리나요?',
@@ -52,8 +48,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '임플란트',
     keywords: ['임플란트 수술 시간', '임플란트 시간', '임플란트 당일'],
     relatedUrl: '/treatments/implant',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '박준규 대표원장',
+    updated: '2026-05-26',
   },
 
   // ── 인비절라인 ──
@@ -64,8 +59,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '인비절라인',
     keywords: ['인비절라인 비용', '인비절라인 가격', '투명교정 비용', '인천 인비절라인'],
     relatedUrl: '/treatments/invisalign',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '하누리 원장 (교정과 전문의)',
+    updated: '2026-05-26',
   },
   {
     question: '인비절라인 치료 기간은 얼마나 걸리나요?',
@@ -74,8 +68,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '인비절라인',
     keywords: ['인비절라인 기간', '투명교정 기간', '인비절라인 치료기간'],
     relatedUrl: '/treatments/invisalign',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '하누리 원장 (교정과 전문의)',
+    updated: '2026-05-26',
   },
 
   // ── 치아교정 ──
@@ -86,8 +79,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '교정',
     keywords: ['치아교정 비용', '교정 가격', '메탈 교정', '세라믹 교정', '데이몬 교정'],
     relatedUrl: '/treatments/orthodontics',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '하누리 원장 (교정과 전문의)',
+    updated: '2026-05-26',
   },
 
   // ── 수면진료 ──
@@ -98,8 +90,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '수면진료',
     keywords: ['수면진료', '수면치과', '수면마취', '치과 공포증', '인천 수면치과'],
     relatedUrl: '/treatments/sedation',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '박준규 대표원장',
+    updated: '2026-05-26',
   },
 
   // ── 미백 ──
@@ -110,8 +101,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '미백',
     keywords: ['치아미백', '치아미백 비용', '오피스 미백', '홈블리칭', '인천 미백'],
     relatedUrl: '/treatments/whitening',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '박준규 대표원장',
+    updated: '2026-05-26',
   },
 
   // ── 사랑니 ──
@@ -122,8 +112,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '응급',
     keywords: ['사랑니 발치', '사랑니 비용', '사랑니 보험', '매복 사랑니'],
     relatedUrl: '/treatments/wisdom-tooth',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '박준규 대표원장',
+    updated: '2026-05-26',
   },
 
   // ── 소아치과 ──
@@ -134,8 +123,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '소아',
     keywords: ['소아치과', '소아 충치', '실란트', '어린이 치과', '인천 소아치과'],
     relatedUrl: '/treatments/pediatric',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '정문희 원장 (보존과 전문의)',
+    updated: '2026-05-26',
   },
 
   // ── 비용/보험 ──
@@ -146,8 +134,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '비용',
     keywords: ['치과 보험', '건강보험 치과', '치과 보험적용', '임플란트 보험', '치아교정 보험'],
     relatedUrl: '/info',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '박준규 대표원장',
+    updated: '2026-05-26',
   },
 
   // ── 병원소개 ──
@@ -158,8 +145,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '병원소개',
     keywords: ['서울365치과 시간', '치과 진료시간', '구월동 야간치과', '인천 일요일 치과', '365일 진료 치과'],
     relatedUrl: '/info',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '박준규 대표원장',
+    updated: '2026-05-26',
   },
   {
     question: '서울365치과 위치와 오시는 길은?',
@@ -168,8 +154,7 @@ export const ANSWER_HUB: AnswerEntry[] = [
     category: '병원소개',
     keywords: ['서울365치과 위치', '서울365치과 주소', '예술회관역 치과', '구월동 치과 위치'],
     relatedUrl: '/info',
-    lastReviewed: '2026-05-26',
-    reviewedBy: '박준규 대표원장',
+    updated: '2026-05-26',
   },
 ];
 

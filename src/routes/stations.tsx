@@ -4,6 +4,7 @@
 // ============================================================
 import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
+import { AGENCY_HUB_PUBLISHED } from '../lib/column-seo'
 import { STATIONS, getStationBySlug, type StationInfo } from '../data/stations'
 import { MATRIX_TREATMENT_INFO, TREATMENT_PRICING } from '../data/area-treatment'
 import { CLINIC } from '../data/clinic'
@@ -102,19 +103,11 @@ stationsRoutes.get('/stations/:slug', (c) => {
     "headline": `${st.name} 근처 치과 - 서울365치과 길안내`,
     "description": `${st.name}에서 서울365치과까지 ${st.travelDesc}.`,
     "url": canonicalUrl,
-    "datePublished": "2025-01-01",
+    "datePublished": AGENCY_HUB_PUBLISHED,
     "dateModified": "2026-05-26",
     "inLanguage": "ko-KR",
     "specialty": { "@type": "MedicalSpecialty", "name": "Dentistry" },
     "author": { "@type": "MedicalOrganization", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원" },
-    "reviewedBy": {
-      "@type": "Person",
-      "name": "박준규",
-      "jobTitle": "대표원장",
-      "worksFor": { "@type": "MedicalOrganization", "@id": "https://seoul365dc.kr/#dentist" },
-      "alumniOf": { "@type": "EducationalOrganization", "name": "서울대학교 치과대학" },
-    },
-    "lastReviewed": "2026-05-26",
   };
 
   const breadcrumb = {
@@ -264,7 +257,7 @@ stationsRoutes.get('/stations/:slug', (c) => {
       canonical: canonicalUrl,
       keywords: st.keywords.join(', '),
       ogType: 'article',
-      datePublished: '2025-01-01',
+      datePublished: AGENCY_HUB_PUBLISHED,
       dateModified: '2026-05-26',
       jsonLd: [placeSchema, articleSchema, breadcrumb],
     }

@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { treatments, getTreatmentBySlug } from '../data/treatments'
 import { doctors } from '../data/doctors'
-import { normalizePostMarkdown, faqsFromMarkdown, answerSummaryText, fillEmptyAlts, doctorByName, LEAD_DOCTOR, physicianRef, isoKst, kstYmd, SITE, ORG_ID, WEBSITE_ID, DEFAULT_OG } from '../lib/column-seo'
+import { normalizePostMarkdown, faqsFromMarkdown, answerSummaryText, fillEmptyAlts, attestedPostDoctor, postCreatorName, CLINIC_GENERAL_INFO_NOTE, physicianRef, isoKst, kstYmd, SITE, ORG_ID, WEBSITE_ID, DEFAULT_OG } from '../lib/column-seo'
 import { getAdminFromCookie, initAdminTables, initBlogTables, renderContent, extractFAQs, extractHeadings, slugify, generateSeoSlug, autoGenerateExcerpt, estimateReadingTime, extractFirstImage, submitToIndexNow, pingSitemapUpdate } from '../lib/db'
 
 const blogRoutes = new Hono<{ Bindings: Bindings }>()
@@ -1273,7 +1273,7 @@ async function getFeedPosts(db: D1Database, limit = 30): Promise<any[]> {
   try {
     await initBlogTables(db);
     const r = await db.prepare(
-      'SELECT slug, title, excerpt, content, category, tags, cover_image, author_name, created_at, updated_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT ?'
+      'SELECT id, slug, title, excerpt, content, category, tags, cover_image, author_name, created_at, updated_at FROM blog_posts WHERE is_published = 1 ORDER BY created_at DESC LIMIT ?'
     ).bind(limit).all();
     return r.results || [];
   } catch { return []; }
@@ -1297,7 +1297,7 @@ blogRoutes.get('/blog/rss.xml', async (c) => {
       <guid isPermaLink="true">${url}</guid>
       <pubDate>${new Date(p.created_at).toUTCString()}</pubDate>
       <category>${xmlEsc(p.category || '치과상식')}</category>
-      <dc:creator>${xmlEsc(p.author_name || '서울365치과')}</dc:creator>
+      <dc:creator>${xmlEsc(postCreatorName(p))}</dc:creator>
       <description>${xmlEsc(desc)}</description>${p.cover_image ? `
       <enclosure url="${xmlEsc(p.cover_image.startsWith('http') ? p.cover_image : FEED_SITE + p.cover_image)}" type="image/jpeg" length="0" />` : ''}
     </item>`;
@@ -1338,7 +1338,7 @@ blogRoutes.get('/blog/atom.xml', async (c) => {
     <id>${url}</id>
     <published>${new Date(p.created_at).toISOString()}</published>
     <updated>${new Date(p.updated_at || p.created_at).toISOString()}</updated>
-    <author><name>${xmlEsc(p.author_name || '서울365치과')}</name></author>
+    <author><name>${xmlEsc(postCreatorName(p))}</name></author>
     <category term="${xmlEsc(p.category || '치과상식')}" />
     <summary>${xmlEsc(desc)}</summary>
   </entry>`;
@@ -1383,7 +1383,7 @@ blogRoutes.get('/feed.json', async (c) => {
       date_modified: new Date(p.updated_at || p.created_at).toISOString(),
       tags: (p.tags || '').split(',').map((t: string) => t.trim()).filter(Boolean),
       ...(p.cover_image ? { image: p.cover_image.startsWith('http') ? p.cover_image : FEED_SITE + p.cover_image } : {}),
-      authors: [{ name: p.author_name || '서울365치과' }],
+      authors: [{ name: postCreatorName(p) }],
     })),
   };
   return new Response(JSON.stringify(feed, null, 2), { headers: feedHeaders('application/feed+json; charset=utf-8') });
@@ -1434,10 +1434,9 @@ blogRoutes.get('/blog/:slug', async (c) => {
   const md = normalizePostMarkdown(post.content);
   const contentHtml = fillEmptyAlts(renderContent(md), post.title);
   const linkedTreatment = post.treatment_slug ? getTreatmentBySlug(post.treatment_slug) : null;
-  // 작성자: DB author_name 이 의료진 이름이면 해당 Physician, 아니면 병원 명의(Organization) 유지 — author 날조 금지.
-  // 병원 명의 글은 대표원장을 reviewedBy(감수)로 연결.
-  const authorDoc = doctorByName(post.author_name);
-  const reviewerDoc = authorDoc || LEAD_DOCTOR;
+  // 작성자: 병원이 관리자에서 의료진 이름으로 직접 입력한 글만 해당 Physician(작성), 그 외(병원 명의·대행사 투입 글)는
+  // 병원(Organization) 발행 — reviewedBy 없음. 대표원장 자동 감수 부착 중단 (2026-10-08, column-seo.ts attestedPostDoctor)
+  const authorDoc = attestedPostDoctor(post);
   const authorLd = authorDoc ? physicianRef(authorDoc) : { "@id": ORG_ID };
   const tagsArray = post.tags ? post.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [];
 
@@ -1479,7 +1478,7 @@ blogRoutes.get('/blog/:slug', async (c) => {
       "breadcrumb": { "@id": `${pageUrl}#breadcrumb` },
       "datePublished": publishedIso,
       "dateModified": modifiedIso,
-      "reviewedBy": physicianRef(reviewerDoc),
+      ...(authorDoc ? { "reviewedBy": physicianRef(authorDoc) } : {}),
       "specialty": { "@type": "MedicalSpecialty", "name": "Dentistry" },
       "medicalAudience": { "@type": "MedicalAudience", "audienceType": "Patient" },
       ...(linkedTreatment ? { "about": { "@type": "MedicalProcedure", "@id": `${SITE}/treatments/${linkedTreatment.slug}#procedure`, "name": linkedTreatment.name, "url": `${SITE}/treatments/${linkedTreatment.slug}` } } : {}),
@@ -1499,7 +1498,7 @@ blogRoutes.get('/blog/:slug', async (c) => {
       "dateModified": modifiedIso,
       "image": { "@type": "ImageObject", "url": ogAbs },
       "author": authorLd,
-      "reviewedBy": { "@id": `${SITE}/doctors/${reviewerDoc.slug}#physician` },
+      ...(authorDoc ? { "reviewedBy": { "@id": `${SITE}/doctors/${authorDoc.slug}#physician` } } : {}),
       "publisher": { "@id": ORG_ID },
       "keywords": tagsArray.join(', ') || undefined,
       "articleSection": post.category,
@@ -1540,7 +1539,7 @@ blogRoutes.get('/blog/:slug', async (c) => {
             <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-3 py-1 rounded-full font-semibold">{post.category}</span>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mt-4 mb-4 leading-tight">{post.title}</h1>
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-400">
-              <span class="font-medium text-gray-600">{authorDoc ? `${authorDoc.name} ${authorDoc.title}` : post.author_name}</span>
+              <span class="font-medium text-gray-600">{authorDoc ? `${authorDoc.name} ${authorDoc.title}` : '서울365치과 발행'}</span>
               <span>·</span>
               <time datetime={publishedIso}>{postDate}</time>
               {updateDate !== postDate && <><span>·</span><span>수정 <time datetime={modifiedIso}>{updateDate}</time></span></>}
@@ -1568,18 +1567,30 @@ blogRoutes.get('/blog/:slug', async (c) => {
                 </div>
               )}
 
-              {/* 작성자·감수 박스 */}
+              {/* 작성자 박스 — 의료진 작성 글(병원 직접 입력)만 원장 표시, 그 외 병원 발행 */}
+              {authorDoc ? (
               <div class="mt-10 flex items-start gap-4 p-5 rounded-2xl border border-gray-100 bg-white">
-                <a href={`/doctors/${reviewerDoc.slug}`} class="shrink-0">
-                  <img src={reviewerDoc.photo} alt={`${reviewerDoc.name} ${reviewerDoc.title}`} width="64" height="64" loading="lazy" decoding="async" class="w-16 h-16 rounded-full object-cover object-top border border-gray-100" />
+                <a href={`/doctors/${authorDoc.slug}`} class="shrink-0">
+                  <img src={authorDoc.photo} alt={`${authorDoc.name} ${authorDoc.title}`} width="64" height="64" loading="lazy" decoding="async" class="w-16 h-16 rounded-full object-cover object-top border border-gray-100" />
                 </a>
                 <div class="min-w-0 text-sm">
-                  <p class="text-gray-400 text-xs mb-0.5">{authorDoc ? '작성' : `작성: ${post.author_name} · 감수`}</p>
-                  <a href={`/doctors/${reviewerDoc.slug}`} class="font-bold text-gray-900 hover:text-[#0066FF] transition">{reviewerDoc.name} {reviewerDoc.title}</a>
-                  {reviewerDoc.credentials?.[0] && <p class="text-gray-500 text-xs mt-1">{reviewerDoc.credentials[0]}</p>}
+                  <p class="text-gray-400 text-xs mb-0.5">작성</p>
+                  <a href={`/doctors/${authorDoc.slug}`} class="font-bold text-gray-900 hover:text-[#0066FF] transition">{authorDoc.name} {authorDoc.title}</a>
+                  {authorDoc.credentials?.[0] && <p class="text-gray-500 text-xs mt-1">{authorDoc.credentials[0]}</p>}
                   <p class="text-gray-400 text-xs mt-1">최종 업데이트 <time datetime={modifiedIso}>{updateDate}</time></p>
                 </div>
               </div>
+              ) : (
+              <div class="mt-10 flex items-start gap-4 p-5 rounded-2xl border border-gray-100 bg-white">
+                <img src="/static/logo-192.png" alt="서울365치과 로고" width="64" height="64" loading="lazy" decoding="async" class="shrink-0 w-16 h-16 rounded-full object-contain border border-gray-100 bg-white" />
+                <div class="min-w-0 text-sm">
+                  <p class="text-gray-400 text-xs mb-0.5">작성·발행</p>
+                  <p class="font-bold text-gray-900">서울365치과</p>
+                  <p class="text-gray-500 text-xs mt-1">{CLINIC_GENERAL_INFO_NOTE}</p>
+                  <p class="text-gray-400 text-xs mt-1">최종 업데이트 <time datetime={modifiedIso}>{updateDate}</time></p>
+                </div>
+              </div>
+              )}
 
               {linkedTreatment && (
                 <div class="mt-8 p-5 rounded-2xl bg-[#0066FF]/[0.03] border border-[#0066FF]/10">

@@ -7,6 +7,7 @@ import { Hono } from 'hono'
 import type { Bindings } from '../lib/types'
 import { TOPIC_CLUSTERS, type TopicCluster } from '../data/answer-hub'
 import { CLINIC } from '../data/clinic'
+import { AGENCY_HUB_PUBLISHED, CLINIC_GENERAL_INFO_NOTE } from '../lib/column-seo'
 
 const guidesRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -186,7 +187,7 @@ guidesRoutes.get('/guides', (c) => {
           </h1>
           <p class="text-white/40 text-sm md:text-base max-w-2xl mx-auto reveal reveal-fade" style="transition-delay:0.4s">
             임플란트·인비절라인·치아교정에 대한 모든 정보<br/>
-            서울대 출신 5인 전문의가 직접 작성한 깊이 있는 가이드.
+            서울365치과가 정리한 일반 건강정보 가이드.
           </p>
         </div>
       </div>
@@ -220,7 +221,7 @@ guidesRoutes.get('/guides', (c) => {
     </section>,
     {
       title: '치과 진료 완벽 가이드 2026 | 서울365치과',
-      description: '임플란트·인비절라인·치아교정 완벽 가이드. 비용, 기간, 종류, 부작용, 사후관리까지 서울대 출신 전문의가 정리한 16개 세부 가이드.',
+      description: '임플란트·인비절라인·치아교정 완벽 가이드. 비용, 기간, 종류, 부작용, 사후관리까지 서울365치과가 정리한 16개 세부 가이드.',
       canonical: 'https://seoul365dc.kr/guides',
       keywords: allKeywords,
       jsonLd: [breadcrumb],
@@ -245,27 +246,19 @@ guidesRoutes.get('/guides/:cluster', (c) => {
     "headline": cluster.pillarName,
     "description": cluster.pillarDesc,
     "url": canonicalUrl,
-    "datePublished": "2025-01-01",
+    "datePublished": AGENCY_HUB_PUBLISHED,
     "dateModified": "2026-05-26",
     "inLanguage": "ko-KR",
     "isAccessibleForFree": true,
     "specialty": { "@type": "MedicalSpecialty", "name": "Dentistry" },
     "audience": { "@type": "MedicalAudience", "audienceType": "Patient" },
     "author": { "@type": "MedicalOrganization", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원" },
-    "reviewedBy": {
-      "@type": "Person",
-      "name": "박준규",
-      "jobTitle": "대표원장",
-      "worksFor": { "@type": "MedicalOrganization", "@id": "https://seoul365dc.kr/#dentist" },
-      "alumniOf": { "@type": "EducationalOrganization", "name": "서울대학교 치과대학" },
-    },
     "hasPart": cluster.spokes.map(s => ({
       "@type": "WebPage",
       "name": s.title,
       "url": `${canonicalUrl}/${s.slug}`,
       "description": s.description,
     })),
-    "lastReviewed": "2026-05-26",
   };
 
   const breadcrumb = {
@@ -334,20 +327,17 @@ guidesRoutes.get('/guides/:cluster', (c) => {
           ))}
         </div>
 
-        {/* E-E-A-T */}
+        {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
         <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-12">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-user-doctor text-white"></i>
+              <i class="fa-solid fa-hospital text-white"></i>
             </div>
             <div>
-              <div class="text-xs text-gray-500 mb-1">의료진 검토</div>
-              <div class="font-bold text-gray-900">박준규 대표원장</div>
-              <div class="text-sm text-gray-600 mt-1">
-                <i class="fa-solid fa-graduation-cap mr-1 text-[#0066FF]"></i>
-                서울대학교 치과대학 출신 · 대한치과의사협회 정회원
-              </div>
-              <div class="text-xs text-gray-400 mt-2">마지막 검토: 2026-05-26</div>
+              <div class="text-xs text-gray-500 mb-1">작성·발행</div>
+              <div class="font-bold text-gray-900">서울365치과</div>
+              <div class="text-sm text-gray-600 mt-1">{CLINIC_GENERAL_INFO_NOTE}</div>
+              <div class="text-xs text-gray-400 mt-2">최종 업데이트: 2026-05-26</div>
             </div>
           </div>
         </div>
@@ -372,7 +362,7 @@ guidesRoutes.get('/guides/:cluster', (c) => {
       canonical: canonicalUrl,
       keywords: allKeywords,
       ogType: 'article',
-      datePublished: '2025-01-01',
+      datePublished: AGENCY_HUB_PUBLISHED,
       dateModified: '2026-05-26',
       articleSection: cluster.category,
       jsonLd: [articleSchema, breadcrumb],
@@ -403,7 +393,7 @@ guidesRoutes.get('/guides/:cluster/:spoke', (c) => {
     "headline": spoke.title,
     "description": spoke.description,
     "url": canonicalUrl,
-    "datePublished": "2025-01-01",
+    "datePublished": AGENCY_HUB_PUBLISHED,
     "dateModified": "2026-05-26",
     "inLanguage": "ko-KR",
     "isAccessibleForFree": true,
@@ -414,19 +404,11 @@ guidesRoutes.get('/guides/:cluster/:spoke', (c) => {
       "geographicArea": { "@type": "AdministrativeArea", "name": "인천광역시" }
     },
     "author": { "@type": "MedicalOrganization", "@id": "https://seoul365dc.kr/#dentist", "name": "서울365치과의원" },
-    "reviewedBy": {
-      "@type": "Person",
-      "name": "박준규",
-      "jobTitle": "대표원장",
-      "worksFor": { "@type": "MedicalOrganization", "@id": "https://seoul365dc.kr/#dentist" },
-      "alumniOf": { "@type": "EducationalOrganization", "name": "서울대학교 치과대학" },
-    },
     "isPartOf": {
       "@type": "WebPage",
       "name": cluster.pillarName,
       "url": `https://seoul365dc.kr/guides/${clusterSlug}`,
     },
-    "lastReviewed": "2026-05-26",
   };
 
   const breadcrumb = {
@@ -474,20 +456,17 @@ guidesRoutes.get('/guides/:cluster/:spoke', (c) => {
           ))}
         </div>
 
-        {/* E-E-A-T */}
+        {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
         <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-10">
           <div class="flex items-start gap-4">
             <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-user-doctor text-white"></i>
+              <i class="fa-solid fa-hospital text-white"></i>
             </div>
             <div>
-              <div class="text-xs text-gray-500 mb-1">의료진 검토</div>
-              <div class="font-bold text-gray-900">박준규 대표원장</div>
-              <div class="text-sm text-gray-600 mt-1">
-                <i class="fa-solid fa-graduation-cap mr-1 text-[#0066FF]"></i>
-                서울대학교 치과대학 출신 · 대한치과의사협회 정회원
-              </div>
-              <div class="text-xs text-gray-400 mt-2">마지막 검토: 2026-05-26</div>
+              <div class="text-xs text-gray-500 mb-1">작성·발행</div>
+              <div class="font-bold text-gray-900">서울365치과</div>
+              <div class="text-sm text-gray-600 mt-1">{CLINIC_GENERAL_INFO_NOTE}</div>
+              <div class="text-xs text-gray-400 mt-2">최종 업데이트: 2026-05-26</div>
             </div>
           </div>
         </div>
@@ -529,7 +508,7 @@ guidesRoutes.get('/guides/:cluster/:spoke', (c) => {
       canonical: canonicalUrl,
       keywords: spoke.keywords.join(', '),
       ogType: 'article',
-      datePublished: '2025-01-01',
+      datePublished: AGENCY_HUB_PUBLISHED,
       dateModified: '2026-05-26',
       articleSection: cluster.category,
       articleTags: spoke.keywords,

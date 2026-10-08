@@ -33,6 +33,32 @@ export function physicianRef(d: { slug: string; name: string; title: string }) {
   return { "@type": "Physician", "@id": `${SITE}/doctors/${d.slug}#physician`, "name": d.name, "jobTitle": d.title, "url": `${SITE}/doctors/${d.slug}` }
 }
 
+// ===== 칼럼 작성 주체 (2026-10-08, 사용자 승인) =====
+// 원장을 저자·감수자로 표시하는 건 원장이 쓰거나 검토했다는 근거가 있을 때만.
+// - 대행사(GenSpark) 투입 글 id 7(orthodontics-complete-guide, '하누리 원장')·id 8(laminate, '최다빈 원장'):
+//   블로그 시스템 구축 커밋 cd198dd(2026-03-10 01:13 UTC) 직전 개발 중 투입된 샘플 글. 두 글 created_at 시각이
+//   00:47:36 으로 동일(날짜만 이틀 차이 → 일괄 투입), 같은 묶음의 id 1~6·9 는 삭제됨. 원장 작성 근거 없음.
+// - author_name='서울365치과'(병원 명의) 글은 원장 감수 근거 없음 → 예전 코드가 대표원장을 reviewedBy 로 자동 부착하던 것 중단.
+// → 근거 없는 글: 저자·발행 = 병원(Organization ORG_ID), reviewedBy 없음, 화면엔 일반 건강정보 안내.
+//   관리자 에디터에서 병원이 의료진 이름을 작성자로 직접 입력한 글(대행사 투입 글 제외)만 그 원장을 저자로 표시.
+export const AGENCY_SEED_POST_IDS = new Set([7, 8])
+export const CLINIC_NAME = '서울365치과'
+export const CLINIC_GENERAL_INFO_NOTE = '일반 건강정보입니다. 진료 판단은 내원 상담에서 원장이 직접 합니다.'
+/** 병원이 관리자에서 의료진 이름으로 직접 입력한 글이면 그 의사, 아니면 undefined(병원 발행) */
+export function attestedPostDoctor(p: { id?: number | string | null; author_name?: string | null }) {
+  if (p.id != null && AGENCY_SEED_POST_IDS.has(Number(p.id))) return undefined
+  return doctorByName(p.author_name)
+}
+/** RSS dc:creator·Atom author·JSON Feed author 표기 */
+export function postCreatorName(p: { id?: number | string | null; author_name?: string | null }): string {
+  const d = attestedPostDoctor(p)
+  return d ? `${d.name} ${d.title}` : CLINIC_NAME
+}
+
+// /answers·/guides·/compare·/stations: 대행사 일괄 커밋 8703c18(2026-05-26 22:43:52 +0000, GenSpark "SEO v3")로 투입.
+// 원장 검토 근거 없음 → reviewedBy·'의료진 검토' 표시 삭제, 작성 = 병원. 발행일은 지어낸 2025-01-01 대신 그 커밋 날짜.
+export const AGENCY_HUB_PUBLISHED = '2026-05-26'
+
 /**
  * 제목줄·목차가 일반 텍스트로 들어간 글(최근 자동 작성분)을 마크다운 구조로 정리.
  * - '목차' 다음 줄들 중 본문에 같은 문장이 단독 줄로 다시 나오는 항목 → 그 단독 줄을 '## 항목'(H2)으로
