@@ -1875,8 +1875,7 @@ pageRoutes.get('/encyclopedia', (c) => {
           "about": { "@id": "https://seoul365dc.kr/#dentist" },
           "specialty": "Dentistry",
           "inLanguage": "ko-KR",
-          "lastReviewed": CONTENT_DATES.encyclopedia,
-          "reviewedBy": { "@type": "Physician", "@id": "https://seoul365dc.kr/doctors/park-junkyu#physician", "name": "박준규", "jobTitle": "대표원장" },
+          "publisher": { "@id": "https://seoul365dc.kr/#dentist" },
           "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1", "h2", "h3", "dt"] },
           "mainEntity": {
             "@type": "DefinedTermSet",
