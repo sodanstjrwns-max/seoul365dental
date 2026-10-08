@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { BlogHubNote } from '../lib/hub-links'
 import type { Bindings } from '../lib/types'
 import { treatments, getTreatmentBySlug } from '../data/treatments'
 import { doctors } from '../data/doctors'
@@ -1566,6 +1567,9 @@ blogRoutes.get('/blog/:slug', async (c) => {
                   ))}
                 </div>
               )}
+
+              {/* 지역 안내 — "구월동 치과"/"인천 남동구 치과" 허브 링크 (2026-10-08) */}
+              <BlogHubNote slug={String(post.slug || '')} topic={linkedTreatment?.name} />
 
               {/* 작성자 박스 — 의료진 작성 글(병원 직접 입력)만 원장 표시, 그 외 병원 발행 */}
               {authorDoc ? (

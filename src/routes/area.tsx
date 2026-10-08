@@ -21,6 +21,7 @@ import {
   type MatrixVariantSlug,
 } from '../data/area-treatment'
 import { AREA_HUBS, type AreaHub, type HubSection } from '../data/area-hubs'
+import { HubA, HUB_NAMDONG } from '../lib/hub-links'
 
 const areaRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -61,15 +62,16 @@ areaRoutes.get('/area', (c) => {
                 <p class="text-xs text-gray-400">{grouped[gu].length}개 지역</p>
                 {gu === '남동구' && (
                   <p class="text-xs mt-1">
-                    <a href="/area/namdong-gu" class="text-[#0066FF] font-medium hover:underline">인천 남동구 치과 안내</a>
+                    <a href="/area/namdong-gu" class="text-[#0066FF] font-medium hover:underline">인천 남동구 치과</a>
                     <span class="text-gray-300 mx-1.5">·</span>
-                    <a href="/area/guwol-dong" class="text-[#0066FF] font-medium hover:underline">구월동 치과 안내</a>
+                    <a href="/area/guwol-dong" class="text-[#0066FF] font-medium hover:underline">구월동 치과</a>
                   </p>
                 )}
               </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
-              {grouped[gu].sort((a, b) => a.distKm - b.distKm).map(area => (
+              {/* 구월동은 위 "구월동 치과" 허브 링크로 대신 (페이지당 허브 링크 최대 2개, 2026-10-08) */}
+              {grouped[gu].filter(area => area.slug !== 'guwol-dong').sort((a, b) => a.distKm - b.distKm).map(area => (
                 <a href={`/area/${area.slug}`}
                    class="group premium-card p-5 hover:border-[#0066FF]/20 transition-all duration-300 block"
                    data-cursor-hover>
@@ -278,7 +280,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           <div class="inline-flex items-center gap-2 flex-wrap justify-center bg-white/[0.06] backdrop-blur-sm border border-white/[0.08] rounded-full px-4 py-1.5 mb-6 reveal reveal-fade">
             <a href="/area" class="text-white/40 text-xs hover:text-white/80 transition-colors">지역안내</a>
             <i class="fa-solid fa-chevron-right text-white/20 text-[8px]"></i>
-            <a href={`/area/${area.slug}`} class="text-white/50 text-xs font-medium hover:text-white/90 transition-colors">{area.gu} {area.name}</a>
+            <a href={`/area/${area.slug}`} class="text-white/50 text-xs font-medium hover:text-white/90 transition-colors">{area.slug === 'guwol-dong' ? '구월동 치과' : `${area.gu} ${area.name}`}</a>
             <i class="fa-solid fa-chevron-right text-white/20 text-[8px]"></i>
             <span class="text-[#00E5FF] text-xs font-bold">{treatment.name}</span>
           </div>
@@ -292,6 +294,10 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           <p class="text-white/30 text-xs md:text-sm max-w-md mx-auto mb-8 reveal reveal-fade" style="transition-delay:0.4s">
             {meta.highlight}
           </p>
+          {/* 허브 링크 (2026-10-08) — 구월동은 위 breadcrumb 가 허브 링크 */}
+          {area.slug !== 'guwol-dong' && (
+            <p class="text-white/45 text-xs md:text-sm max-w-md mx-auto -mt-4 mb-8">병원 위치·주차·진료시간은 <HubA cls="text-[#00E5FF] font-semibold hover:underline" /> 안내에서 확인하실 수 있습니다.</p>
+          )}
           <div class="flex flex-wrap justify-center gap-3 reveal reveal-fade" style="transition-delay:0.5s">
             <a href="/reservation" class="btn-premium btn-premium-fill ripple-effect" data-cursor-hover>
               <i class="fa-solid fa-calendar-check mr-1.5"></i> {treatment.name} 무료 상담
@@ -1100,7 +1106,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
           <div class="inline-flex items-center gap-2 flex-wrap justify-center bg-white/[0.06] backdrop-blur-sm border border-white/[0.08] rounded-full px-4 py-1.5 mb-6">
             <a href="/area" class="text-white/40 text-xs">지역</a>
             <i class="fa-solid fa-chevron-right text-white/20 text-[8px]"></i>
-            <a href={`/area/${area.slug}`} class="text-white/50 text-xs">{area.name}</a>
+            <a href={`/area/${area.slug}`} class="text-white/50 text-xs">{area.slug === 'guwol-dong' ? '구월동 치과' : area.name}</a>
             <i class="fa-solid fa-chevron-right text-white/20 text-[8px]"></i>
             <a href={`/area/${area.slug}/${treatment.slug}`} class="text-white/60 text-xs">{treatment.name}</a>
             <i class="fa-solid fa-chevron-right text-white/20 text-[8px]"></i>
@@ -1112,6 +1118,9 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
           <p class="text-white/40 text-sm max-w-xl mx-auto mb-8">
             서울365치과 · {area.distKm === 0 ? '도보 3분' : `${area.travelMin}분`} · 서울대 전문의 5인 협진
           </p>
+          {area.slug !== 'guwol-dong' && (
+            <p class="text-white/45 text-xs md:text-sm max-w-xl mx-auto -mt-4 mb-8">병원 위치·주차·진료시간: <HubA cls="text-[#00E5FF] font-semibold hover:underline" /></p>
+          )}
           <div class="flex flex-wrap justify-center gap-3">
             <a href="/reservation" class="btn-premium btn-premium-fill">
               <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담
@@ -1235,7 +1244,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
           <tbody>
             {guAreas.map(a => (
               <tr class="border-t border-gray-100">
-                <td class="px-3 py-2.5"><a href={`/area/${a.slug}`} class="font-semibold text-[#0066FF] hover:underline">{a.name}</a></td>
+                <td class="px-3 py-2.5">{a.slug === 'guwol-dong' ? <span class="font-semibold text-gray-800">{a.name}</span> : <a href={`/area/${a.slug}`} class="font-semibold text-[#0066FF] hover:underline">{a.name}</a>}</td>
                 <td class="px-3 py-2.5 text-right tabular-nums">{a.distKm === 0 ? '—' : `${a.distKm}km`}</td>
                 <td class="px-3 py-2.5 text-right tabular-nums">{a.distKm === 0 ? '도보 3분' : `약 ${a.travelMin}분`}</td>
                 <td class="px-3 py-2.5 text-gray-600">{a.travelDesc}</td>
@@ -1372,7 +1381,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
               </a>
             ))}
             {hub.slug !== 'namdong-gu' && (
-              <a href="/area/namdong-gu" class="text-xs bg-[#0066FF]/5 text-[#0066FF] px-3 py-2 rounded-full border border-[#0066FF]/20" data-cursor-hover>인천 남동구 치과 안내</a>
+              <a href="/area/namdong-gu" class="text-xs bg-[#0066FF]/5 text-[#0066FF] px-3 py-2 rounded-full border border-[#0066FF]/20" data-cursor-hover>인천 남동구 치과</a>
             )}
           </div>
         </div>
@@ -1452,7 +1461,7 @@ areaRoutes.get('/area/:slug', (c) => {
 
   // 인근 동 추천 (같은 구 우선, 거리순)
   const nearby = getAreasSorted()
-    .filter(a => a.slug !== slug)
+    .filter(a => a.slug !== slug && a.slug !== 'guwol-dong') // 구월동 = 허브(푸터·상단 링크로 연결, 페이지당 최대 2개)
     .slice(0, 6);
 
   // 추천 진료 매핑
@@ -1524,6 +1533,12 @@ areaRoutes.get('/area/:slug', (c) => {
             {area.travelDesc}
             {area.distKm > 0 && ` · 약 ${area.travelMin}분`}<br/>
             서울대 출신 5인 원장 · 365일 야간21시 · 자체 기공실
+          </p>
+          {/* 허브 링크 (2026-10-08): 남동구 동 → "인천 남동구 치과", 그 외 → "구월동 치과" */}
+          <p class="text-white/45 text-xs md:text-sm max-w-lg mx-auto -mt-4 mb-8">
+            {area.gu === '남동구'
+              ? <>남동구 동별 거리·교통편과 진료시간은 <HubA hub={HUB_NAMDONG} cls="text-[#00E5FF] font-semibold hover:underline" /> 안내에 정리돼 있습니다.</>
+              : <>서울365치과 위치·진료시간·의료진 전체 안내: <HubA cls="text-[#00E5FF] font-semibold hover:underline" /></>}
           </p>
           <div class="flex flex-wrap justify-center gap-3 reveal reveal-fade" style="transition-delay:0.5s">
             <a href="/reservation" class="btn-premium btn-premium-fill ripple-effect" data-cursor-hover>

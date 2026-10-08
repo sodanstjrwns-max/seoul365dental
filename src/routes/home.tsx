@@ -826,9 +826,8 @@ home.get('/', async (c) => {
               인천 {AREAS.length}개 지역 × {MATRIX_TREATMENT_SLUGS.length}개 핵심 진료 — 클릭 한 번으로 우리 지역 전문 진료 페이지로 이동
             </p>
             <p class="text-sm mt-4">
-              <a href="/area/guwol-dong" class="text-[#0066FF] font-semibold hover:underline" data-cursor-hover>구월동 치과 안내 — 진료시간·오시는 길·의료진</a>
-              <span class="text-gray-300 mx-2">|</span>
-              <a href="/area/namdong-gu" class="text-[#0066FF] font-semibold hover:underline" data-cursor-hover>인천 남동구 치과 안내</a>
+              {/* 허브 링크는 페이지당 최대 2개(2026-10-08): 구월동 치과 = 히어로·푸터, 여기서는 구 단위 허브만 */}
+              남동구 동별 거리·교통편: <a href="/area/namdong-gu" class="text-[#0066FF] font-semibold hover:underline" data-cursor-hover>인천 남동구 치과</a>
             </p>
           </div>
 
@@ -839,7 +838,7 @@ home.get('/', async (c) => {
               지역별 안내
             </h3>
             <div class="flex flex-wrap gap-2">
-              {getAreasSorted().map(a => (
+              {getAreasSorted().filter(a => a.slug !== 'guwol-dong').map(a => (
                 <a href={`/area/${a.slug}`}
                    class="inline-flex items-center gap-1.5 text-xs bg-white hover:bg-[#0066FF]/8 text-gray-700 hover:text-[#0066FF] px-3 py-2 rounded-full border border-gray-200 hover:border-[#0066FF]/30 transition-all"
                    data-cursor-hover

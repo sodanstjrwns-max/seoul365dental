@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { HubA } from '../lib/hub-links'
 import { CONTENT_DATES } from '../lib/content-dates'
 import type { Bindings } from '../lib/types'
 import { CLINIC, HOURS } from '../data/clinic'
@@ -2007,6 +2008,7 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
             </section>
           )}
 
+          <p class="text-gray-500 text-sm mb-4"><i class="fa-solid fa-location-dot text-[#0066FF]/60 mr-1.5" aria-hidden="true"></i>서울365치과 위치·진료시간 안내: <HubA /></p>
           <p class="text-gray-400 text-xs mb-8">※ 본 내용은 일반적인 치과 정보 제공 목적이며, 개인에 따라 상태와 결과가 다를 수 있습니다. 정확한 진단과 치료 계획은 반드시 치과의사와 상담해 결정하시기 바랍니다.</p>
           <div class="flex flex-wrap gap-3">
             <a href="/encyclopedia" class="btn-premium btn-premium-outline text-sm" data-cursor-hover><i class="fa-solid fa-book"></i> 전체 용어 사전</a>

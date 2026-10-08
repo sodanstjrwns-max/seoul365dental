@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { HubA } from '../lib/hub-links'
 import { kstYmd } from '../lib/column-seo'
 import type { Bindings } from '../lib/types'
 import { CLINIC } from '../data/clinic'
@@ -778,6 +779,8 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
             <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium" style="background:#FEE500;color:#3C1E1E;border:none;" data-cursor-hover><i class="fa-solid fa-comment"></i> 카카오톡</a>
             <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 예약하기</a>
           </div>
+          {/* 오시는 길·진료 안내 — "구월동 치과" 허브 링크 (2026-10-08) */}
+          <p class="text-white/45 text-sm mt-8">{t.name} 진료 위치·주차·진료시간은 <HubA cls="text-[#00E5FF] font-semibold hover:underline" /> 안내에서 확인하실 수 있습니다.</p>
         </div>
       </section>
 

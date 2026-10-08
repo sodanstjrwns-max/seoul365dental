@@ -823,9 +823,10 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
             <nav class="border-t border-white/[0.04] pt-5 pb-3" aria-label="인천 지역별 치과 안내">
               <p class="text-[0.65rem] font-bold text-white/15 tracking-[0.15em] uppercase mb-3">서울365치과 인근 지역 안내</p>
               <div class="flex flex-wrap gap-x-2 gap-y-1.5">
-                {AREAS.map(a => (
+                {/* 구월동 = "구월동 치과" 허브(정확 앵커), 허브 자신에서는 자기 링크 생략 (2026-10-08) */}
+                {AREAS.filter(a => !(a.slug === 'guwol-dong' && canonicalUrl === 'https://seoul365dc.kr/area/guwol-dong')).map(a => (
                   <a href={`/area/${a.slug}`} class="text-[0.68rem] text-white/15 hover:text-[#00E5FF]/60 transition-colors whitespace-nowrap">
-                    {a.name}치과
+                    {a.slug === 'guwol-dong' ? '구월동 치과' : `${a.name}치과`}
                   </a>
                 ))}
                 <a href="/area" class="text-[0.68rem] text-[#0066FF]/30 hover:text-[#00E5FF]/60 transition-colors whitespace-nowrap font-medium">

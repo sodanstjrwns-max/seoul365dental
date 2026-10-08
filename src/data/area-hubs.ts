@@ -197,7 +197,7 @@ export const AREA_HUBS: Record<string, AreaHub> = {
         ],
         links: [
           { href: '/doctors', label: '의료진 소개' },
-          { href: '/area/guwol-dong', label: '구월동 치과 안내' },
+          { href: '/area/guwol-dong', label: '구월동 치과' },
         ],
       },
     ],
