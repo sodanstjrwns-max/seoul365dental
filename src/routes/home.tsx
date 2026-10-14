@@ -9,6 +9,7 @@ import { initAdminTables, initBlogTables } from '../lib/db'
 import { AREAS, getAreasSorted } from '../data/areas'
 import { MATRIX_TREATMENT_SLUGS, MATRIX_TREATMENT_INFO } from '../data/area-treatment'
 import { CONTENT_DATES } from '../lib/content-dates'
+import { GuwolCardGrid, GUWOL_CARD_CSS, guwolCardItemList } from '../lib/guwol-cards'
 
 const home = new Hono<{ Bindings: Bindings }>()
 
@@ -385,6 +386,19 @@ home.get('/', async (c) => {
               </a>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ===== S5.5: 구월동 진료 안내 사진 카드 (2026-10-14) — /area/guwol-dong/* 핵심 6, ItemList 와 1:1 ===== */}
+      <section class="bg-white py-16 md:py-20" aria-labelledby="gw-home-h">
+        <style dangerouslySetInnerHTML={{ __html: GUWOL_CARD_CSS }} />
+        <div class="max-w-[1200px] mx-auto px-5 md:px-8">
+          <div class="mb-8 text-center">
+            <span class="section-eyebrow text-[#0066FF] mb-3 block">GUWOL-DONG GUIDE</span>
+            <h2 id="gw-home-h" class="text-2xl md:text-3xl font-black text-gray-900 mb-2">구월동 진료 안내</h2>
+            <p class="text-sm text-gray-500">예술회관역 5번 출구 도보 3분. 구월동에서 많이 찾으시는 진료 여섯 가지를 사진과 함께 정리했습니다.</p>
+          </div>
+          <GuwolCardGrid idPrefix="home" />
         </div>
       </section>
 
@@ -927,6 +941,7 @@ home.get('/', async (c) => {
       canonical: 'https://seoul365dc.kr',
       dateModified: CONTENT_DATES.home,
       jsonLd: [
+        guwolCardItemList('https://seoul365dc.kr/'),
         // BreadcrumbList
         {
           "@context": "https://schema.org", "@type": "BreadcrumbList",

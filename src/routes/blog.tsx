@@ -1450,7 +1450,12 @@ blogRoutes.get('/blog/:slug', async (c) => {
   const summary = answerSummaryText(post.excerpt, md);
 
   const readingTime = estimateReadingTime(post.content);
-  const ogImg = post.cover_image || extractFirstImage(post.content) || DEFAULT_OG;
+  let ogImg = post.cover_image || extractFirstImage(post.content) || DEFAULT_OG;
+  // 칼럼 표지 PNG(0.8~1.9MB) → 가로 1200 JPEG(300KB 이하) 사본이 R2 og/ 에 있으면 og 로 사용 (2026-10-14)
+  const pngCover = ogImg.match(/^\/r2\/(blog\/[^/]+)\.png$/);
+  if (pngCover) {
+    try { if (await c.env.R2.head(`og/${pngCover[1]}.jpg`)) ogImg = `/r2/og/${pngCover[1]}.jpg`; } catch { /* PNG 유지 */ }
+  }
   const ogAbs = ogImg.startsWith('http') ? ogImg : `${SITE}${ogImg}`;
   const publishedIso = isoKst(post.created_at);
   const modifiedIso = isoKst(post.updated_at || post.created_at) || publishedIso;

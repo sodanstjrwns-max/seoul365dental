@@ -10,6 +10,8 @@ import { flatTerms } from '../data/encyclopedia-terms'
 import { isThinTerm, isThinCase } from '../lib/thin-content'
 import { CONTENT_DATES, PAGE_DATES, latestYmd } from '../lib/content-dates'
 import { GU_HUB_SLUGS, areaLastmod, AREA_INDEX_LASTMOD, AREA_TREATMENT_LASTMOD } from '../data/area-hubs'
+import { GUWOL_CARDS, matrixCardImage } from '../lib/guwol-cards'
+import { getAreaBySlug } from '../data/areas'
 import { TERM_DETAILS_UPDATED } from '../data/encyclopedia-detail'
 import { initBlogTables, initAdminTables, getSetting, submitToIndexNow, initIndexNowLog } from '../lib/db'
 
@@ -513,11 +515,13 @@ seoRoutes.get('/sitemap-blog.xml', async (c) => {
 seoRoutes.get('/sitemap-areas.xml', (c) => {
   const base = 'https://seoul365dc.kr';
   // lastmod = 동 페이지별 실제 수정일(src/data/area-hubs.ts areaLastmod) — 2026-06-11 일괄 고정값 대체 (2026-10-08)
-  const pages = AREAS.map(a => ({
+  const pages: any[] = AREAS.map(a => ({
     loc: `/area/${a.slug}`,
     priority: a.slug === 'guwol-dong' ? '0.9' : a.distKm <= 2 ? '0.8' : a.distKm <= 5 ? '0.7' : '0.6',
     changefreq: 'monthly' as const,
     lastmod: areaLastmod(a.slug),
+    // 구월동 허브: 진료 안내 사진 카드 6장 (2026-10-14)
+    ...(a.slug === 'guwol-dong' ? { images: GUWOL_CARDS.map(g => ({ url: `${base}/static/cards/guwol-${g.slug}-600.webp`, title: `${g.name} - 서울365치과`, caption: g.line })) } : {}),
   }));
   // 구 단위 허브(남동구) — AREAS 밖의 실제 페이지
   for (const h of GU_HUB_SLUGS) {
@@ -542,12 +546,19 @@ seoRoutes.get('/sitemap-area-treatments.xml', (c) => {
   const base = 'https://seoul365dc.kr';
   const today = AREA_TREATMENT_LASTMOD; // 지역×진료 템플릿·데이터 마지막 실제 변경 (2026-10-08 확인)
 
-  const matrixPages = getAllMatrixPages().map(m => ({
-    loc: `/area/${m.areaSlug}/${m.treatmentSlug}`,
-    priority: m.priority.toFixed(1),
-    changefreq: 'weekly' as const,
-    lastmod: today,
-  }));
+  const matrixPages = getAllMatrixPages().map(m => {
+    // 대표 사진(og·본문 첫 사진과 같은 사진) — 2026-10-14
+    const img = matrixCardImage(m.treatmentSlug);
+    const area = getAreaBySlug(m.areaSlug);
+    const tName = GUWOL_CARDS.find(g => g.slug === m.treatmentSlug)?.name.replace(/^구월동 /, '');
+    return {
+      loc: `/area/${m.areaSlug}/${m.treatmentSlug}`,
+      priority: m.priority.toFixed(1),
+      changefreq: 'weekly' as const,
+      lastmod: today,
+      ...(img && area ? { images: [{ url: `${base}${img}`, title: `${area.name} ${tName} - 서울365치과`, caption: `${area.name} ${tName}` }] } : {}),
+    };
+  });
 
   const xml = `${urlsetOpen}\n${matrixPages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
   return new Response(xml, { headers: sitemapHeaders });

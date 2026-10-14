@@ -22,6 +22,7 @@ import {
 } from '../data/area-treatment'
 import { AREA_HUBS, type AreaHub, type HubSection } from '../data/area-hubs'
 import { HubA, HUB_NAMDONG } from '../lib/hub-links'
+import { GuwolCardGrid, GUWOL_CARD_CSS, guwolCardItemList, matrixCardImage } from '../lib/guwol-cards'
 
 const areaRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -217,6 +218,9 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
 
   const meta = buildAreaTreatmentMeta(area, treatment);
   const tInfo = MATRIX_TREATMENT_INFO[treatmentSlug as keyof typeof MATRIX_TREATMENT_INFO];
+  // 대표 사진(2026-10-14): og·본문 첫 사진·스키마 image·사이트맵 image:image 공통 1200×630
+  const cardImg = matrixCardImage(treatmentSlug);
+  const cardImgAbs = cardImg ? `https://seoul365dc.kr${cardImg}` : 'https://seoul365dc.kr/static/og-image.png';
 
   // 같은 지역의 다른 진료들 (내부 링크)
   const otherTreatmentsInArea = MATRIX_TREATMENT_SLUGS
@@ -308,6 +312,15 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           </div>
         </div>
       </div>
+
+      {/* 대표 사진 (2026-10-14) — og:image 와 같은 사진 */}
+      {cardImg && (
+        <div class="bg-white pt-10 md:pt-14">
+          <figure class="max-w-5xl mx-auto px-5 md:px-8">
+            <img src={cardImg} width="1200" height="630" fetchpriority="high" decoding="async" alt={`${area.name} ${treatment.name}`} class="block w-full h-auto rounded-2xl border border-gray-100 shadow-sm" />
+          </figure>
+        </div>
+      )}
 
       {/* 🎯 핵심 정보 3-card: 거리·소요시간·진료 */}
       <div class="bg-white py-12 md:py-16">
@@ -643,6 +656,12 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
               {area.name}에서 받을 수 있는 다른 진료
             </h2>
           </div>
+          {area.slug === 'guwol-dong' && (
+            <div class="mb-8">
+              <style dangerouslySetInnerHTML={{ __html: GUWOL_CARD_CSS }} />
+              <GuwolCardGrid idPrefix="sib" exclude={treatmentSlug} />
+            </div>
+          )}
           <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 stagger-children">
             {otherTreatmentsInArea.map(o => (
               <a href={o.url}
@@ -749,6 +768,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       description: meta.seoDesc,
       canonical: canonicalUrl,
       keywords: meta.keywords.join(', '),
+      ...(cardImg ? { ogImage: cardImgAbs, ogImageWidth: 1200, ogImageHeight: 630, ogImageAlt: `${area.name} ${treatment.name}` } : {}),
       jsonLd: [
         // Breadcrumb
         {
@@ -795,6 +815,10 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           "url": canonicalUrl,
           "inLanguage": "ko-KR",
           "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
+          ...(cardImg ? {
+            "image": { "@type": "ImageObject", "url": cardImgAbs, "width": 1200, "height": 630, "caption": `${area.name} ${treatment.name}` },
+            "primaryImageOfPage": { "@type": "ImageObject", "url": cardImgAbs },
+          } : {}),
           "about": {
             "@type": "MedicalCondition",
             "name": `${treatment.name} 진료`,
@@ -820,7 +844,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           "@type": "Article",
           "headline": `${area.name} ${treatment.name} 안내 - 서울365치과`,
           "description": meta.seoDesc,
-          "image": "https://seoul365dc.kr/static/og-image.png",
+          "image": cardImgAbs,
           "datePublished": "2025-01-01",
           "dateModified": CONTENT_DATES.area,
           "author": {
@@ -849,7 +873,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           "@type": "HowTo",
           "name": `${area.name} ${treatment.name} 진행 과정`,
           "description": `${area.name} 거주 환자분의 ${treatment.name} 진료 진행 절차 안내`,
-          "image": "https://seoul365dc.kr/static/og-image.png",
+          "image": cardImgAbs,
           "totalTime": treatment.slug === 'orthodontics' || treatment.slug === 'invisalign' ? "P18M" : treatment.slug === 'implant' || treatment.slug === 'full-implant' ? "P3M" : "PT1H",
           "tool": [
             { "@type": "HowToTool", "name": "디지털 X-ray·CT" },
@@ -1311,6 +1335,18 @@ function renderAreaHub(c: any, hub: AreaHub) {
         </div>
       </div>
 
+      {/* 구월동 진료 안내 사진 카드 (2026-10-14) — 구월동 허브만, ItemList 와 1:1 */}
+      {hub.slug === 'guwol-dong' && (
+        <div class="bg-white pt-12 md:pt-14">
+          <div class="max-w-5xl mx-auto px-5 md:px-8">
+            <style dangerouslySetInnerHTML={{ __html: GUWOL_CARD_CSS }} />
+            <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-2 text-center">구월동 진료 안내</h2>
+            <p class="text-sm text-gray-500 mb-6 text-center">구월동에서 많이 찾으시는 진료 여섯 가지를 사진과 함께 정리했습니다.</p>
+            <GuwolCardGrid idPrefix="hub" />
+          </div>
+        </div>
+      )}
+
       {/* 본문 */}
       <article class="bg-white py-12 md:py-16">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
@@ -1430,6 +1466,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
             "acceptedAnswer": { "@type": "Answer", "text": f.a },
           })),
         },
+        ...(hub.slug === 'guwol-dong' ? [guwolCardItemList(pageUrl)] : []),
       ],
     }
   );

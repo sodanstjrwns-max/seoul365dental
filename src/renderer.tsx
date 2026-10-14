@@ -15,7 +15,7 @@ import { doctors as DOCTORS } from './data/doctors'
 let _currentSeoSettings: Record<string, string> = {};
 export function setCurrentSeoSettings(s: Record<string, string>) { _currentSeoSettings = s; }
 
-export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified, ogImage: customOgImage, ogType, datePublished, articleSection, articleTags, keywords: pageKeywords, noindex, noindexFollow }) => {
+export const renderer = jsxRenderer(({ children, title, description, canonical, jsonLd, dateModified, ogImage: customOgImage, ogImageWidth, ogImageHeight, ogImageAlt, ogType, datePublished, articleSection, articleTags, keywords: pageKeywords, noindex, noindexFollow }) => {
   const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·인비절라인 투명교정·수면진료 전문. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
@@ -26,6 +26,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   // 페이지별 키워드가 있으면 기본 키워드와 합쳐서 노출 (페이지 키워드 먼저)
   const metaKeywords = pageKeywords ? `${pageKeywords}, ${defaultKeywords}` : defaultKeywords;
   const ogImage = customOgImage || 'https://seoul365dc.kr/static/og-image.png';
+  // og:image 크기(2026-10-14): 기본 og-image(1200×630)·명시한 크기만 내보낸다 — 칼럼 표지 등 크기 모르는 이미지에 1200×630 을 붙이지 않는다
+  const ogSize: [number, number] | null = ogImageWidth && ogImageHeight ? [ogImageWidth, ogImageHeight]
+    : (!customOgImage || /\/static\/og-image\.(png|jpg)$/.test(customOgImage)) ? [1200, 630] : null;
   const resolvedOgType = ogType || 'website';
   // 페이지가 넘긴 고정 날짜만 사용 — 없으면 date/modified 메타 생략 (매일 '오늘' 자동 갱신 금지, 2026-09-29)
   const lastModified = dateModified || '';
@@ -476,9 +479,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <meta property="og:description" content={pageDesc} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:image" content={ogImage} />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content={pageTitle} />
+        {ogSize && <meta property="og:image:width" content={String(ogSize[0])} />}
+        {ogSize && <meta property="og:image:height" content={String(ogSize[1])} />}
+        <meta property="og:image:alt" content={ogImageAlt || pageTitle} />
         <meta property="og:locale" content="ko_KR" />
         {/* Article-specific OG tags (blog posts, cases) */}
         {resolvedOgType === 'article' && datePublished && <meta property="article:published_time" content={datePublished} />}

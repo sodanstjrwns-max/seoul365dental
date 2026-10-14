@@ -130,7 +130,7 @@ export const AREA_HUBS: Record<string, AreaHub> = {
     ],
     areaServed: ['인천광역시 남동구 구월동', '인천광역시 남동구'],
     breadcrumbName: '구월동 치과',
-    updated: '2026-10-08',
+    updated: '2026-10-14',
   },
 
   'namdong-gu': {
@@ -236,7 +236,7 @@ export const GU_HUB_SLUGS = ['namdong-gu']
 /** /area/{동} 공통 템플릿 마지막 실제 변경: area.tsx a4d6c56(2026-09-29, 지역 페이지 중복 Dentist 노드 제거·lastReviewed 고정) */
 export const AREA_PAGES_LASTMOD = '2026-09-29'
 /** /area/{동}/{진료} 마지막 실제 변경: area.tsx a4d6c56·area-treatment.ts f7286f1 (2026-09-29) */
-export const AREA_TREATMENT_LASTMOD = '2026-09-29'
+export const AREA_TREATMENT_LASTMOD = '2026-10-14' // 진료별 대표 사진(og·본문 첫 사진·스키마) 추가
 /** /area 목록: 남동구 허브·구월동 치과 링크 추가 (2026-10-08) */
 export const AREA_INDEX_LASTMOD = '2026-10-08'
 
