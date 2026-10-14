@@ -1371,7 +1371,7 @@ blogRoutes.get('/feed.json', async (c) => {
     feed_url: `${FEED_SITE}/feed.json`,
     description: '인천 구월동 서울365치과 — 서울대 출신 5인 전문의가 전하는 치아 건강 전문 정보',
     icon: `${FEED_SITE}/static/logo-512.png`,
-    favicon: `${FEED_SITE}/static/favicon-32x32.png`,
+    favicon: `${FEED_SITE}/favicon-48.png`,
     language: 'ko-KR',
     authors: [{ name: '서울365치과의원', url: FEED_SITE }],
     items: posts.map((p) => ({

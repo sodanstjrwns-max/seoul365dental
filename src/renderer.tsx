@@ -463,9 +463,11 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <meta name="theme-color" content="#040B18" />
         <meta name="msapplication-TileColor" content="#040B18" />
         <meta name="apple-mobile-web-app-title" content="서울365치과" />
-        <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
+        <link rel="icon" href="/favicon.ico?v=fav20261014" sizes="any" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png?v=fav20261014" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png?v=fav20261014" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png?v=fav20261014" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=fav20261014" />
 
         {/* === OPEN GRAPH === */}
         <meta property="og:type" content={resolvedOgType} />
