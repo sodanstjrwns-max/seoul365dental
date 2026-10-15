@@ -279,7 +279,6 @@ export interface MatrixContent {
   processGuide: { step: number; title: string; desc: string }[];  // 진행 절차
   aftercareTips: string[];            // 사후 관리
   comparisonNote: string;             // 비교/주의 안내
-  reviewQuotes: { name: string; area: string; treatment: string; text: string; date: string }[]; // 후기
   ctaText: string;                    // 콜투액션 문구
   longTailKeywords: string[];         // 롱테일 키워드 풀
 }
@@ -299,7 +298,7 @@ export function buildMatrixContent(area: AreaInfo, t: Treatment): MatrixContent 
   const whyChoosePoints = [
     { title: `${aName}에서 ${dist} 최단 거리`, desc: `${area.travelDesc}. ${aName} 주민에게 가장 가까운 ${tName} 전문 치과입니다. 인근 ${(area.landmarks || []).slice(0, 3).join('·')}에서도 접근이 편리합니다.` },
     { title: `서울대 출신 5인 ${tName} 전문의`, desc: `대표원장 박준규를 비롯한 5인의 서울대학교 치과대학 출신 전문의가 ${tName} 진료를 직접 담당합니다. 복잡한 케이스는 협진을 통해 가장 안전한 치료 계획을 수립합니다.` },
-    { title: `365일·야간 21시 진료`, desc: `${aName}에 거주하시는 직장인·학생을 위해 평일 야간 21시, 주말·공휴일까지 진료합니다. 바쁜 일정 때문에 ${tName} 치료를 미루셨던 분들께 추천드립니다.` },
+    { title: `365일·야간 21시 진료`, desc: `${aName}에 거주하시는 직장인·학생을 위해 평일 야간 21시, 주말·공휴일까지 진료합니다. 평일 낮 시간 내원이 어려운 분들도 일정에 맞춰 상담받으실 수 있습니다.` },
     { title: `자체 기공실 보유`, desc: `보철물(크라운·임플란트 보철 등) 제작을 자체 기공실에서 진행하여 ${tName} 치료 기간 단축과 정확한 색상·교합 맞춤이 가능합니다.` },
     { title: `수면진료·무통마취 가능`, desc: `치과 공포증이 있거나 통증에 민감하신 ${aName} 환자분들을 위해 의식하 진정 수면마취·BIS 모니터링·무통마취를 제공합니다.` },
     { title: `투명한 비용 안내`, desc: `${aName} 환자분께도 정확한 진단 후 치료 계획서와 함께 ${tName} 비용을 미리 안내드려, 추가 비용에 대한 부담 없이 진료받으실 수 있습니다.` },
@@ -323,37 +322,11 @@ export function buildMatrixContent(area: AreaInfo, t: Treatment): MatrixContent 
 
   const comparisonNote = `${aName} 지역에서 ${tName} 치과를 비교하실 때 ① 의료진의 전문성(서울대 출신 전문의 협진), ② 진료 시간(365일·야간 21시), ③ 자체 기공실 보유 여부, ④ 수면진료 가능 여부, ⑤ 정확한 비용 안내 5가지를 꼭 확인하세요. 서울365치과는 위 5가지 모두 충족하며, ${aName}에서 ${dist} 거리입니다.`;
 
-  // 사실적인 후기 (생성형이지만 일관성 있게)
-  const reviewQuotes = [
-    {
-      name: `${aName} 거주 김O영`,
-      area: aName,
-      treatment: tName,
-      text: `${aName}에서 ${tName} 치과 찾다가 서울365치과로 결정했어요. ${dist} 거리라 편하고, 원장님 설명이 정말 자세해서 안심하고 받았습니다.`,
-      date: '2025-11-15',
-    },
-    {
-      name: `${gu} 거주 이O수`,
-      area: gu,
-      treatment: tName,
-      text: `${tName} 받으려고 알아보다가 서울대 출신 원장 5분이 협진하신다고 해서 신뢰가 갔어요. 야간 진료도 되니 직장 다니면서도 부담 없었습니다.`,
-      date: '2025-10-20',
-    },
-    {
-      name: `${aName} 거주 박O진`,
-      area: aName,
-      treatment: tName,
-      text: `${aName} ${tName} 추천 검색하다가 알게 됐는데, 자체기공실에서 보철물 빨리 만들어주셔서 치료 기간이 짧았어요. ${aName} 분들께 추천드립니다.`,
-      date: '2025-09-08',
-    },
-  ];
-
   const ctaText = `${aName} ${tName} 무료 상담 신청 — 서울365치과`;
 
   // 롱테일 키워드 풀 (본문 자연 노출용)
   const longTailKeywords = [
     `${aName} ${tName} 잘하는 치과`,
-    `${aName} ${tName} 추천 후기`,
     `${aName} ${tName} 비용 가격`,
     `${aName} ${tName} 전문의`,
     `${aName} ${tName} 야간 진료`,
@@ -375,7 +348,6 @@ export function buildMatrixContent(area: AreaInfo, t: Treatment): MatrixContent 
     processGuide,
     aftercareTips,
     comparisonNote,
-    reviewQuotes,
     ctaText,
     longTailKeywords,
   };
@@ -389,7 +361,6 @@ export function buildMatrixContent(area: AreaInfo, t: Treatment): MatrixContent 
 export const MATRIX_VARIANTS = [
   { slug: 'cost', name: '비용', heading: '비용·가격 안내', intent: '비용/가격 검색 의도' },
   { slug: 'recommend', name: '추천', heading: '추천 이유', intent: '추천 검색 의도' },
-  { slug: 'review', name: '후기', heading: '실제 후기', intent: '후기/리뷰 검색 의도' },
   { slug: 'event', name: '이벤트', heading: '진행 중 이벤트', intent: '이벤트/할인 검색 의도' },
   { slug: 'best', name: '잘하는곳', heading: '잘하는 치과', intent: '잘하는곳 검색 의도' },
   { slug: 'night', name: '야간', heading: '야간 진료 안내', intent: '야간/일요일 검색 의도' },
@@ -410,7 +381,6 @@ export function buildVariantMeta(area: AreaInfo, t: Treatment, variantSlug: Matr
   const titlePatterns: Record<MatrixVariantSlug, string> = {
     cost: `${aName} ${tName} 비용·가격 | 서울365치과 - ${dist} 정확한 견적`,
     recommend: `${aName} ${tName} 추천 | 서울365치과 - 서울대 전문의 5인 협진`,
-    review: `${aName} ${tName} 후기 | 서울365치과 - 실제 환자 리뷰 ${dist}`,
     event: `${aName} ${tName} 이벤트 | 서울365치과 - ${dist} 진행중 할인`,
     best: `${aName} ${tName} 잘하는곳 | 서울365치과 - 서울대 출신 ${gu}`,
     night: `${aName} ${tName} 야간진료 | 서울365치과 - 평일 21시·일요일 ${dist}`,
@@ -419,7 +389,6 @@ export function buildVariantMeta(area: AreaInfo, t: Treatment, variantSlug: Matr
   const descPatterns: Record<MatrixVariantSlug, string> = {
     cost: `${aName} ${tName} 비용·가격이 궁금하세요? 서울365치과 ${aName}에서 ${dist}. ${tName} 정확한 견적, 보험 적용 여부, 추가비용 모두 투명 공개. 무료 상담 ☎ 032-432-0365`,
     recommend: `${aName} ${tName} 추천 1순위 서울365치과. ${aName}에서 ${dist}, 서울대 출신 5인 ${tName} 전문의 협진, 365일 야간진료. ${aName} ${gu} 주민 추천 ☎ 032-432-0365`,
-    review: `${aName} ${tName} 실제 환자 후기 모음. 서울365치과 ${tName} 시술 받은 ${aName} 주민들의 솔직한 리뷰. ${dist} 거리에서 만족도 높은 ${tName} 진료. ☎ 032-432-0365`,
     event: `${aName} ${tName} 이벤트·할인 진행 중. 서울365치과 ${aName}에서 ${dist}. 오스템·스트라우만·인비절라인 ${tName} 특별 가격. ☎ 032-432-0365`,
     best: `${aName} ${tName} 잘하는 치과? 서울365치과는 ${aName}에서 ${dist}, 서울대 출신 ${gu} ${tName} 전문의 5인이 직접 진료합니다. 자체기공실·수면진료 ☎ 032-432-0365`,
     night: `${aName} ${tName} 야간진료 가능? 서울365치과는 평일 야간 21시까지, 일요일·공휴일도 진료. ${aName}에서 ${dist}. 직장인·학생 ${tName} 환영 ☎ 032-432-0365`,

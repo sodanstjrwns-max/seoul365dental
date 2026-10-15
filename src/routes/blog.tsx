@@ -166,7 +166,6 @@ blogRoutes.get('/admin/blog', async (c) => {
                     <option value="잇몸/외과" class="bg-gray-900">잇몸/외과</option>
                     <option value="수면진료" class="bg-gray-900">수면진료</option>
                     <option value="병원소식" class="bg-gray-900">병원소식</option>
-                    <option value="환자후기" class="bg-gray-900">환자후기</option>
                   </select>
                 </div>
               </div>

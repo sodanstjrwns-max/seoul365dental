@@ -81,7 +81,6 @@ intlRoutes.get('/en', (c) => {
             'Located in Guwol-dong (3 min walk from Arts Center Station Exit 5)',
             'Easy access from Songdo International City (25 min by subway)',
             'CT diagnostic equipment & 3D oral scanner',
-            'Patient reviews: 4.9/5 (2,150+ reviews)',
           ].map(line => (
             <div class="flex items-start gap-3">
               <i class="fa-solid fa-check-circle text-[#0066FF] mt-1"></i>
@@ -198,7 +197,6 @@ intlRoutes.get('/zh', (c) => {
             '位于九月洞(艺术会馆站5号出口步行3分钟)',
             '从松岛国际城市方便到达(地铁25分钟)',
             'CT精密诊断设备 + 3D口腔扫描仪',
-            '患者评价: 4.9/5(2,150+评价)',
           ].map(line => (
             <div class="flex items-start gap-3">
               <i class="fa-solid fa-check-circle text-[#0066FF] mt-1"></i>

@@ -576,7 +576,7 @@ app.get('/emergency', (c) => {
               { icon: 'user-injured', title: '치아 외상', desc: '넘어짐·운동 중 부딪힘으로 치아가 깨지거나 빠진 경우 — 빠른 재식립 가능' },
               { icon: 'wrench', title: '보철물 탈락', desc: '크라운·인레이·라미네이트가 떨어진 경우 즉시 재부착 또는 임시 보철' },
               { icon: 'screw', title: '임플란트 흔들림', desc: '임플란트 보철 흔들림·골절·잇몸 부음 — 응급 진단 및 처치' },
-              { icon: 'wind', title: '발치 후 출혈·통증', desc: '타 병원에서 발치 후 지혈 안 되거나 통증 심한 경우 응급 처치' },
+              { icon: 'wind', title: '발치 후 출혈·통증', desc: '발치 후 지혈이 잘 되지 않거나 통증이 심한 경우 응급 처치' },
               { icon: 'face-frown', title: '잇몸 부음·고름', desc: '치근단 농양·치주 농양 — 절개 배농 및 항생제 처방' },
             ].map(item => (
               <div class="p-6 rounded-2xl bg-red-50 border border-red-100">

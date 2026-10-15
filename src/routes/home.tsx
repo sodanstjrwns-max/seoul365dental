@@ -92,15 +92,6 @@ home.get('/', async (c) => {
                 </p>
               </div>
 
-              {/* Patient Testimonial */}
-              <div class="reveal mb-8" style="transition-delay:0.85s">
-                <p class="text-white/20 text-sm italic max-w-lg">
-                  <i class="fa-solid fa-quote-left text-[#0066FF]/25 text-xs mr-2"></i>
-                  {MESSAGING.heroTestimonial.replace(/"/g, '')}
-                  <i class="fa-solid fa-quote-right text-[#0066FF]/25 text-xs ml-2"></i>
-                </p>
-              </div>
-
               {/* Metric Tags */}
               <div class="flex flex-wrap items-center gap-2 mb-8 stagger-cascade" style="transition-delay:0.95s">
                 {[
@@ -134,21 +125,6 @@ home.get('/', async (c) => {
                 </a>
               </div>
 
-              {/* Trust Scores */}
-              <div class="flex flex-wrap gap-5 reveal" style="transition-delay:1.15s">
-                {[
-                  { label: '네이버', score: '4.85', icon: 'fa-star', color: 'text-amber-400' },
-                  { label: '구글', score: '4.9', icon: 'fa-star', color: 'text-amber-400' },
-                  { label: '만족도', score: '98%', icon: 'fa-heart', color: 'text-rose-400' },
-                  { label: '재방문율', score: '87%', icon: 'fa-rotate', color: 'text-[#00E5FF]' },
-                ].map(m => (
-                  <div class="flex items-center gap-1.5 text-white/30 text-[0.75rem]">
-                    <i class={`fa-solid ${m.icon} ${m.color} text-[0.6rem]`}></i>
-                    <span class="font-bold text-white/80">{m.score}</span>
-                    <span>{m.label}</span>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* RIGHT COLUMN — Doctor Portrait */}
@@ -234,8 +210,6 @@ home.get('/', async (c) => {
                   { text: '자체 기공실 완비', icon: 'fa-gear' },
                   { text: '수면임플란트', icon: 'fa-bed' },
                   { text: '점심시간 없이 연속진료', icon: 'fa-clock' },
-                  { text: '네이버 4.85점', icon: 'fa-star' },
-                  { text: '구글 4.9점', icon: 'fa-star' },
                 ].map(item => (
                   <div class="flex items-center gap-2.5 text-white/30 text-sm whitespace-nowrap">
                     <i class={`fa-solid ${item.icon} text-[#0066FF]/60 text-xs`}></i>
@@ -308,10 +282,10 @@ home.get('/', async (c) => {
 
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10 stagger-children">
             {[
-              { number: '5', suffix: '인', label: '서울대 출신 전문의', icon: 'fa-user-doctor', desc: '각 분야 최고 전문의' },
+              { number: '5', suffix: '인', label: '서울대 출신 전문의', icon: 'fa-user-doctor', desc: '분야별 원장 협진' },
               { number: '365', suffix: '일', label: '연중무휴 진료', icon: 'fa-calendar-check', desc: '일요일·공휴일 모두 진료' },
               { number: '21', suffix: '시', label: '야간까지 진료', icon: 'fa-moon', desc: '월~목 야간 진료' },
-              { number: '4.9', suffix: '', label: '구글 평점', icon: 'fa-star', desc: '네이버 4.85 / 만족도 98%' },
+              { number: '6', suffix: '개', label: '독립 수술실', icon: 'fa-hospital', desc: '원내 자체 기공실 운영' },
             ].map(s => (
               <div class="text-center group">
                 <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#0066FF]/10 to-[#00E5FF]/[0.04] flex items-center justify-center mx-auto mb-5 group-hover:from-[#0066FF]/20 group-hover:to-[#00E5FF]/10 transition-all duration-500 group-hover:shadow-lg group-hover:shadow-[#0066FF]/10">
@@ -337,7 +311,7 @@ home.get('/', async (c) => {
           <div class="text-center mb-16 reveal-blur">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">WHY SEOUL 365</span>
             <h2 class="section-headline text-gray-900">
-              치과를 미뤄왔던 이유,<br class="md:hidden" /> <span class="highlight-word">저희가 해결합니다.</span>
+              치과가 두려운 분들을 위한<br class="md:hidden" /> <span class="highlight-word">진료 원칙</span>
             </h2>
             <p class="section-body text-gray-400 mt-5 max-w-xl mx-auto text-words">{MISSION}</p>
           </div>
@@ -595,65 +569,6 @@ home.get('/', async (c) => {
           }
         });
       `}} />
-
-      {/* ===== S8: REVIEWS — ELECTRIC INFINITE SCROLL ===== */}
-      <section class="section-lg bg-mesh relative overflow-hidden" aria-label="환자 후기">
-        <div class="absolute top-20 left-10 w-[400px] h-[400px] bg-[#0066FF]/[0.03] rounded-full blur-[120px] pointer-events-none morph-blob" style="animation-delay:-6s"></div>
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
-          <div class="text-center mb-16 reveal-blur">
-            <span class="section-eyebrow text-[#0066FF] mb-4 block">REVIEWS</span>
-            <h2 class="section-headline text-gray-900">환자분들의 <span class="highlight-word">솔직한 후기</span></h2>
-          </div>
-
-          {/* Review Scores */}
-          <div class="flex flex-wrap justify-center gap-5 mb-14 stagger-cascade">
-            {[
-              { platform: '네이버', score: '4.85', icon: 'fa-solid fa-n', color: 'from-green-500 to-green-600' },
-              { platform: '구글', score: '4.9', icon: 'fa-brands fa-google', color: 'from-blue-500 to-blue-600' },
-              { platform: '만족도', score: '98%', icon: 'fa-solid fa-heart', color: 'from-rose-500 to-rose-600' },
-              { platform: '재방문율', score: '87%', icon: 'fa-solid fa-rotate', color: 'from-emerald-500 to-emerald-600' },
-            ].map(r => (
-              <div class="glass-card px-8 py-6 text-center min-w-[140px] tilt-card reveal-elastic">
-                <div class={`w-11 h-11 bg-gradient-to-br ${r.color} text-white rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg`}>
-                  <i class={r.icon + ' text-sm'}></i>
-                </div>
-                <p class="text-2xl font-black text-gray-900 tracking-tight">{r.score}</p>
-                <p class="text-xs text-gray-400 mt-1 font-medium">{r.platform}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Infinite scrolling reviews */}
-          <div class="marquee-wrapper" style="--marquee-bg: #fafbfd;">
-            <div class="reviews-track">
-              {[...Array(2)].map(() => (
-                <>
-                  {[
-                    { name: '김O영', text: '스케일링부터 임플란트까지, 자세한 설명과 친절한 진료에 늘 감사드립니다. 365일 진료라 바쁜 직장인에게 최고입니다.', tags: ['스케일링', '친절한 설명'], stars: 5 },
-                    { name: '이O수', text: '전체임플란트 수술 받았습니다. 수면진료라 전혀 무섭지 않았고, 자체 기공실이 있어서 보철물 맞춤이 정말 빠르고 정확했습니다.', tags: ['전체임플란트', '수면진료'], stars: 5 },
-                    { name: '박O현', text: '인비절라인 교정 중인데, 하누리 원장님이 꼼꼼하게 체크해주시고 예상 결과를 3D로 보여주셔서 믿음이 갑니다.', tags: ['인비절라인', '교정 전문의'], stars: 5 },
-                    { name: '최O진', text: '야간에 갑자기 이가 아파서 방문했는데, 21시까지 진료해주셔서 정말 다행이었습니다. 응급 대응도 빠르고 친절하셨어요.', tags: ['야간진료', '응급처치'], stars: 5 },
-                    { name: '정O미', text: '아이 충치 치료로 방문했는데, 소아 전문 의료진이 계셔서 아이가 전혀 무서워하지 않았어요. 정말 감사합니다.', tags: ['소아치과', '무통마취'], stars: 5 },
-                  ].map(review => (
-                    <div class="review-card-premium flex-shrink-0">
-                      <div class="flex gap-0.5 mb-3">
-                        {Array(review.stars).fill(0).map(() => <i class="fa-solid fa-star text-amber-400 text-xs"></i>)}
-                      </div>
-                      <p class="text-gray-600 text-[0.9rem] leading-relaxed mb-5">"{review.text}"</p>
-                      <div class="flex items-center justify-between">
-                        <span class="text-gray-300 text-xs font-medium">{review.name}</span>
-                        <div class="flex gap-1.5">
-                          {review.tags.map(tag => <span class="text-[0.65rem] bg-[#0066FF]/6 text-[#0066FF] px-2.5 py-0.5 rounded-full font-medium">{tag}</span>)}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* ===== S9: PRICING PREVIEW — ELECTRIC ===== */}
       <section class="section-lg bg-white relative overflow-hidden">
@@ -954,7 +869,7 @@ home.get('/', async (c) => {
           "@id": "https://seoul365dc.kr/#webpage",
           "url": "https://seoul365dc.kr",
           "name": "구월동 치과 서울365치과 | 인천 남동구 예술회관역 365일 야간진료",
-          "description": "치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원.",
+          "description": MISSION,
           "isPartOf": { "@id": "https://seoul365dc.kr/#website" },
           "about": { "@id": "https://seoul365dc.kr/#dentist" },
           "inLanguage": "ko-KR",

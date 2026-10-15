@@ -1,7 +1,7 @@
 import { jsxRenderer } from 'hono/jsx-renderer'
 import { raw } from 'hono/html'
 import { CLINIC, HOURS } from './data/clinic'
-import { MESSAGING } from './data/brand'
+import { MESSAGING, MISSION } from './data/brand'
 import { AREAS } from './data/areas'
 import { doctors as DOCTORS } from './data/doctors'
 
@@ -350,7 +350,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "alternateName": ["Seoul 365 Dental", "서울삼육오치과"],
     "logo": "https://seoul365dc.kr/static/logo-v2.png",
     "slogan": MESSAGING.brandSlogan,
-    "description": "치과가 무서워서 미뤄온 분들이 다시는 미루지 않아도 되는 병원.",
+    "description": MISSION,
     "url": "https://seoul365dc.kr",
   };
 
@@ -757,7 +757,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
                   <li><a href="/prices" class="text-white/35 hover:text-[#00E5FF] transition-colors">가격표</a></li>
                   <li><a href="/answers" class="text-white/35 hover:text-[#00E5FF] transition-colors">자주 묻는 질문 직답</a></li>
                   <li><a href="/encyclopedia" class="text-white/35 hover:text-[#00E5FF] transition-colors">치과 백과사전</a></li>
-                  <li><a href="/reviews" class="text-white/35 hover:text-[#00E5FF] transition-colors">환자 후기</a></li>
                   <li><a href="/why-us" class="text-white/35 hover:text-[#00E5FF] transition-colors">서울365를 선택하는 이유</a></li>
                 </ul>
               </nav>

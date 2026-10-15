@@ -370,7 +370,6 @@ seoRoutes.get('/sitemap.xml', async (c) => {
     { name: 'stations',         lastmod: PAGE_DATES.stations },
     { name: 'intl',             lastmod: latestYmd(PAGE_DATES.intl, PAGE_DATES.ru) },
     // ── Tier 4: Rich Snippets (v4) ──
-    { name: 'reviews',          lastmod: PAGE_DATES.reviews },
     { name: 'procedures',       lastmod: PAGE_DATES.procedures },
     { name: 'insurance',        lastmod: PAGE_DATES.insurance },
     { name: 'events',           lastmod: PAGE_DATES.events },
@@ -674,25 +673,8 @@ seoRoutes.get('/sitemap-intl.xml', (c) => {
   return new Response(xml, { headers: sitemapHeaders });
 })
 
-// ── v4 SITEMAP — Reviews (AggregateRating ⭐) ──
-seoRoutes.get('/sitemap-reviews.xml', async (c) => {
-  const base = 'https://seoul365dc.kr';
-  const today = PAGE_DATES.reviews; // 라우트·데이터 파일 마지막 커밋 날짜(2026-10-08 고정값 일괄 표기 대체)
-  const { getAllReviewCategorySlugs } = await import('./reviews');
-  const slugs = getAllReviewCategorySlugs();
-
-  const pages = [
-    { loc: '/reviews', priority: '0.90', changefreq: 'weekly' as const, lastmod: today },
-    ...slugs.map(s => ({
-      loc: `/reviews/${s}`,
-      priority: '0.80',
-      changefreq: 'weekly' as const,
-      lastmod: today,
-    })),
-  ];
-  const xml = `${urlsetOpen}\n${pages.map(p => renderUrl(base, p)).join('\n')}\n</urlset>`;
-  return new Response(xml, { headers: sitemapHeaders });
-})
+// ── v4 SITEMAP — Reviews: 2026-10-15 폐지(치료 후기 광고 민원) → 410 ──
+seoRoutes.get('/sitemap-reviews.xml', () => new Response('Gone', { status: 410, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }))
 
 // ── v4 SITEMAP — Procedures (HowTo) ──
 seoRoutes.get('/sitemap-procedures.xml', async (c) => {
@@ -872,8 +854,6 @@ Allow: /area
 Allow: /area/
 Allow: /notices
 Allow: /encyclopedia
-Allow: /reviews
-Allow: /reviews/
 Allow: /procedures
 Allow: /procedures/
 Allow: /insurance
@@ -1133,7 +1113,6 @@ Sitemap: https://seoul365dc.kr/sitemap-guides.xml
 Sitemap: https://seoul365dc.kr/sitemap-stations.xml
 Sitemap: https://seoul365dc.kr/sitemap-intl.xml
 # Tier 4: Rich Snippets (v4)
-Sitemap: https://seoul365dc.kr/sitemap-reviews.xml
 Sitemap: https://seoul365dc.kr/sitemap-procedures.xml
 Sitemap: https://seoul365dc.kr/sitemap-insurance.xml
 Sitemap: https://seoul365dc.kr/sitemap-events.xml
@@ -1265,9 +1244,8 @@ ${caseList}
 - [치료 가이드 (임플란트·인비절라인·교정 심층)](https://seoul365dc.kr/guides)
 - [시술 절차 단계별 안내 (HowTo)](https://seoul365dc.kr/procedures)
 - [보험 적용 가이드 (만 65세 임플란트·틀니·스케일링)](https://seoul365dc.kr/insurance)
-- [환자 후기·평점 4.9/5 (2,156+ 리뷰)](https://seoul365dc.kr/reviews)
 - [역세권 안내 (예술회관역·인천시청역 등)](https://seoul365dc.kr/stations)
-- [서울365치과가 다른 이유](https://seoul365dc.kr/why-us)
+- [서울365치과 진료 환경 안내](https://seoul365dc.kr/why-us)
 
 ## 다국어 페이지
 - [English](https://seoul365dc.kr/en)
@@ -1442,21 +1420,19 @@ ${areaList}
 ## 🚀 지역×진료 SEO 랜딩 페이지 (1,374개)
 서울365치과는 인천 19개 동(구월동·송도동·부평동·주안동 등) 각각에 대해
 10개 핵심 진료(임플란트·인비절라인·치아교정·수면진료·미백·소아치과 등)별로
-전용 랜딩 페이지와 6개 변형(비용·추천·후기·이벤트·잘하는곳·야간) 페이지를 운영합니다.
+전용 랜딩 페이지와 5개 변형(비용·추천·이벤트·잘하는곳·야간) 페이지를 운영합니다.
 
 총 1,374개 SEO 랜딩 페이지로 구성되며, 각 페이지는:
 - 해당 지역에서의 거리·소요시간·랜드마크 정보
 - 진료별 정확한 가격표 (오스템 64만원~, 인비절라인 350만원~ 등)
 - 6가지 선택 이유 (지역 맞춤형)
 - HowTo 진료 절차 (5단계)
-- 실제 환자 후기 3건
 - 지역 맞춤 FAQ 8개
 
 ### 매트릭스 페이지 패턴
 - /area/{지역slug}/{진료slug} — 예: /area/guwol-dong/implant (구월동 임플란트)
 - /area/{지역slug}/{진료slug}/cost — 비용/가격
 - /area/{지역slug}/{진료slug}/recommend — 추천 이유
-- /area/{지역slug}/{진료slug}/review — 실제 후기
 - /area/{지역slug}/{진료slug}/event — 진행 중 이벤트
 - /area/{지역slug}/{진료slug}/best — 잘하는 치과
 - /area/{지역slug}/{진료slug}/night — 야간/주말 진료
@@ -1484,7 +1460,6 @@ ${areaList}
 - 대표원장: 박준규 (서울대학교 치과대학 출신)
 - 주소: 인천광역시 남동구 예술로 138 이토타워 2층 212호
 - 전화: 032-432-0365
-- 평점: ★★★★★ 4.9/5 (네이버 예약 2,150+ 리뷰 기준)
 - 진료시간: 365일 / 평일 야간 21시 / 일·공휴일 14~18시
 - 주요 강점: 서울대 출신 5인 전문의 협진, 자체 기공실, 수면진료, 무통마취
 
@@ -1625,7 +1600,6 @@ seoRoutes.get('/api/seo/stats', async (c) => {
       '/sitemap-guides.xml',
       '/sitemap-stations.xml',
       '/sitemap-intl.xml',
-      '/sitemap-reviews.xml',
       '/sitemap-procedures.xml',
       '/sitemap-insurance.xml',
       '/sitemap-events.xml',
@@ -1669,7 +1643,6 @@ seoRoutes.post('/api/seo/ping-public', async (c) => {
     `${base}/sitemap-guides.xml`,
     `${base}/sitemap-stations.xml`,
     `${base}/sitemap-intl.xml`,
-    `${base}/sitemap-reviews.xml`,
     `${base}/sitemap-procedures.xml`,
     `${base}/sitemap-insurance.xml`,
     `${base}/sitemap-events.xml`,
@@ -1793,7 +1766,6 @@ seoRoutes.post('/api/cron/full-sync', async (c) => {
     `${base}/sitemap-guides.xml`,
     `${base}/sitemap-stations.xml`,
     `${base}/sitemap-intl.xml`,
-    `${base}/sitemap-reviews.xml`,
     `${base}/sitemap-procedures.xml`,
     `${base}/sitemap-insurance.xml`,
     `${base}/sitemap-events.xml`,
@@ -1960,7 +1932,7 @@ seoRoutes.post('/api/indexnow/bulk-priority', async (c) => {
   const tier1Core = [
     '/', '/treatments', '/doctors', '/info', '/reservation',
     '/blog', '/faq', '/cases/gallery', '/area',
-    '/notices', '/reviews', '/insurance', '/why-us',
+    '/notices', '/insurance', '/why-us',
     '/answers', '/compare', '/guides', '/stations',
     '/procedures', '/events',
     // 🚀 신규 D-Tier 상업 페이지

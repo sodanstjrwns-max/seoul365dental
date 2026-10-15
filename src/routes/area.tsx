@@ -587,39 +587,6 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
         </div>
       </div>
 
-      {/* 🚀 v2: 실제 후기 (Review JSON-LD 강화) */}
-      <div class="section-lg bg-mesh">
-        <div class="max-w-5xl mx-auto px-5 md:px-8">
-          <div class="text-center mb-12 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">REVIEWS</p>
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
-              {area.name} 거주 환자 후기
-            </h2>
-            <p class="text-gray-400 text-sm mt-3">★★★★★ 4.9/5 ({CLINIC.reviewCount || '2,150'}개 리뷰 기준)</p>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
-            {matrixContent.reviewQuotes.map((review, idx) => (
-              <div class="premium-card p-6">
-                <div class="flex items-center gap-1 mb-3">
-                  {[1, 2, 3, 4, 5].map(() => (
-                    <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
-                  ))}
-                </div>
-                <p class="text-sm text-gray-700 leading-relaxed mb-4" itemprop="reviewBody">
-                  "{review.text}"
-                </p>
-                <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-                  <span class="text-xs font-bold text-gray-800" itemprop="author" itemscope itemtype="https://schema.org/Person">
-                    <span itemprop="name">{review.name}</span>
-                  </span>
-                  <time class="text-xs text-gray-400" itemprop="datePublished" datetime={review.date}>{review.date}</time>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* FAQ — 지역×진료 맞춤 */}
       <div class="section-lg bg-mesh">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
@@ -936,6 +903,10 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
   const areaSlug = c.req.param('areaSlug');
   const treatmentSlug = c.req.param('treatmentSlug');
   const variantSlug = c.req.param('variantSlug') as MatrixVariantSlug;
+  // 2026-10-15: '후기' 변형 페이지 폐지(의료법상 치료 후기 광고 — 남동구보건소 민원) → 기본 지역×진료 페이지로 영구 이동
+  if ((variantSlug as string) === 'review') {
+    return c.redirect(`/area/${c.req.param('areaSlug')}/${c.req.param('treatmentSlug')}`, 301);
+  }
 
   const area = getAreaBySlug(areaSlug);
   const treatment = getTreatmentBySlug(treatmentSlug);
@@ -1005,34 +976,6 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
             </div>
           )}
         </>
-      );
-    }
-    if (v.slug === 'review') {
-      return (
-        <div class="bg-white py-12 md:py-16">
-          <div class="max-w-4xl mx-auto px-5 md:px-8">
-            <div class="text-center mb-10">
-              <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
-                {area.name} {treatment.name} 실제 환자 후기
-              </h2>
-              <p class="text-gray-500 text-sm">★★★★★ 4.9/5 · 누적 2,150+ 후기</p>
-            </div>
-            <div class="grid md:grid-cols-2 gap-5">
-              {matrixContent.reviewQuotes.map(r => (
-                <div class="premium-card p-6">
-                  <div class="flex items-center gap-1 mb-3">
-                    {[1, 2, 3, 4, 5].map(() => <i class="fa-solid fa-star text-yellow-400 text-sm"></i>)}
-                  </div>
-                  <p class="text-gray-700 leading-relaxed mb-4 text-[15px]">"{r.text}"</p>
-                  <div class="flex justify-between items-center pt-3 border-t border-gray-100 text-xs">
-                    <span class="font-bold text-gray-800">{r.name}</span>
-                    <time class="text-gray-400">{r.date}</time>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       );
     }
     if (v.slug === 'event') {
