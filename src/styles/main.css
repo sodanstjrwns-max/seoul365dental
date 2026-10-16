@@ -188,6 +188,10 @@ body {
   background-clip: text;
   animation: premiumShine 6s ease-in-out infinite;
 }
+/* 2026-10-16: background-clip:text 미지원 브라우저(일부 인앱 웹뷰 등)에서는 투명 글자 대신 단색으로 표시 */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .gradient-text-electric { background: none; color: #4d9fff; -webkit-text-fill-color: #4d9fff; }
+}
 
 @keyframes premiumShine {
   0% { background-position: 100% 50%; }
@@ -1143,6 +1147,13 @@ input:focus, textarea:focus, select:focus {
 .text-split.visible .char {
   opacity: 1;
   transform: translateY(0) rotateX(0);
+}
+/* 2026-10-16: 그라디언트 글자(background-clip:text)는 글자 단위 inline-block 분할 시 투명해져 안 보임 → 분할돼도 inline 으로 표시 */
+.text-split[class*="gradient-text"] .char,
+.js-anim-ready .text-split[class*="gradient-text"]:not(.visible) .char {
+  display: inline;
+  opacity: 1;
+  transform: none;
 }
 
 /* === WORD-BY-WORD REVEAL (동일 패턴 적용) === */

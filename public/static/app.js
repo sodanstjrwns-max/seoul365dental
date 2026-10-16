@@ -182,6 +182,7 @@ lastScroll=scrolled;ticking=false});ticking=true}},{passive:true});
 // 1. Text Split Animation — split text-split elements into individual chars
 document.querySelectorAll('.text-split').forEach(function(el){
   if(el.dataset.split) return; el.dataset.split='true';
+  if(/gradient-text/.test(el.className)) return; // background-clip:text 와 글자 분할은 함께 쓰면 글자가 투명해짐
   var text=el.textContent||'';var html='';
   for(var i=0;i<text.length;i++){
     if(text[i]===' ') html+=' ';

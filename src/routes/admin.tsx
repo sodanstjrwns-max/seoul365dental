@@ -2180,7 +2180,7 @@ adminRoutes.get('/admin/pricing', async (c) => {
     { key: 'EVENT_IMPLANT_PRICE', label: '이벤트가 (만원)', placeholder: '64', default: '64' },
     { key: 'EVENT_IMPLANT_ORIGINAL_PRICE', label: '정가 (만원)', placeholder: '89', default: '89' },
     { key: 'EVENT_IMPLANT_ORIGIN', label: '원산지', placeholder: '한국', default: '한국' },
-    { key: 'EVENT_IMPLANT_SUBTITLE', label: '서브타이틀 (특징)', placeholder: 'SA 표면처리 · 국내 1위 · 40년 검증', default: 'SA 표면처리 · 국내 1위 · 40년 검증' },
+    { key: 'EVENT_IMPLANT_SUBTITLE', label: '서브타이틀 (특징)', placeholder: 'SA 표면처리 · 국산 임플란트', default: 'SA 표면처리 · 국산 임플란트' },
     { key: 'EVENT_IMPLANT_PERIOD', label: '이벤트 기간 문구', placeholder: '2026.05.01 ~ 소진 시 종료 · 월 한정 수량', default: '2026.05.01 ~ 소진 시 종료 · 월 한정 수량' },
     { key: 'EVENT_IMPLANT_START_DATE', label: '시작일 (JSON-LD)', placeholder: '2026-05-01', default: '2026-05-01' },
     { key: 'EVENT_IMPLANT_END_DATE', label: '종료일 (JSON-LD)', placeholder: '2026-06-30', default: '2026-06-30' },
@@ -2297,7 +2297,7 @@ adminRoutes.get('/admin/pricing', async (c) => {
               <div class="space-y-4">
                 <div>
                   <label class="block text-white/50 text-xs font-semibold mb-1.5 uppercase tracking-wider">서브타이틀 (특징)</label>
-                  <input type="text" name="EVENT_IMPLANT_SUBTITLE" value={currentValues['EVENT_IMPLANT_SUBTITLE']} placeholder="SA 표면처리 · 국내 1위 · 40년 검증"
+                  <input type="text" name="EVENT_IMPLANT_SUBTITLE" value={currentValues['EVENT_IMPLANT_SUBTITLE']} placeholder="SA 표면처리 · 국산 임플란트"
                     class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/20 focus:border-blue-400/50 focus:outline-none transition" />
                 </div>
                 <div>

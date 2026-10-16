@@ -601,28 +601,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
         </>
       )}
 
-      {/* Static Patient Cases fallback (when no DB cases) */}
-      {dbCases.length === 0 && t.patientCases && t.patientCases.length > 0 && (
-        <section class="section-lg bg-white">
-          <div class="max-w-4xl mx-auto px-5 md:px-8">
-            <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#0066FF] mb-3 block">CASES</span>
-              <h2 class="section-sub-headline text-gray-900">{t.name} 치료 사례</h2>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 stagger-children">
-              {t.patientCases.map(pc => (
-                <div class="glass-card p-7 group hover:border-[#0066FF]/20 transition-all">
-                  <div class="flex items-center gap-3 mb-3">
-                    <span class="px-3 py-1 bg-[#0066FF]/8 text-[#0066FF] text-xs font-semibold rounded-full">{pc.tag}</span>
-                  </div>
-                  <h3 class="font-bold text-gray-900 mb-2 group-hover:text-[#0066FF] transition-colors">{pc.title}</h3>
-                  <p class="text-gray-500 text-[0.9rem] leading-relaxed">{pc.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* 2026-10-16: 정적 환자 사례 문구(치료경험담처럼 읽힘) 제거 — 원장 등록 DB 사례만 표시 */}
 
       {/* Materials / Fixture Guide */}
       {t.materials && t.materials.length > 0 && (

@@ -285,7 +285,7 @@ ruRoutes.get('/ru', async (c) => {
       </h1>
 
       <p class="text-lg md:text-xl text-white/40 max-w-2xl mx-auto mb-4">
-        ${brandEn} ${model} · Бренд №1 в Корее · 40 лет опыта<br class="hidden md:block"/>
+        ${brandEn} ${model} · корейский имплант<br class="hidden md:block"/>
         Врачи Сеульского университета · Навигационная хирургия
       </p>
 
@@ -870,7 +870,7 @@ ruRoutes.get('/ru', async (c) => {
             <i class="fa-solid fa-chevron-down text-gray-300 text-xs transition-transform group-open:rotate-180"></i>
           </summary>
           <div class="px-5 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
-            <strong>Osstem</strong> — бренд №1 в Корее, 40 лет истории, отличная цена. <strong>Straumann</strong> — бренд №1 в мире (Швейцария), премиальные материалы Roxolid® и SLActive®. Врач подберёт оптимальный вариант на консультации, исходя из вашей ситуации.
+            <strong>Osstem</strong> — корейский бренд, доступная цена. <strong>Straumann</strong> — швейцарский бренд, премиальные материалы Roxolid® и SLActive®. Врач подберёт оптимальный вариант на консультации, исходя из вашей ситуации.
           </div>
         </details>
 

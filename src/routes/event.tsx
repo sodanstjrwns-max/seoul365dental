@@ -18,7 +18,7 @@ eventRoutes.get('/event/implant', async (c) => {
   const price = await getSetting(c.env.DB, 'EVENT_IMPLANT_PRICE', '64')
   const originalPrice = await getSetting(c.env.DB, 'EVENT_IMPLANT_ORIGINAL_PRICE', '89')
   const origin = await getSetting(c.env.DB, 'EVENT_IMPLANT_ORIGIN', '한국')
-  const subtitle = await getSetting(c.env.DB, 'EVENT_IMPLANT_SUBTITLE', 'SA 표면처리 · 국내 1위 · 40년 검증')
+  const subtitle = await getSetting(c.env.DB, 'EVENT_IMPLANT_SUBTITLE', 'SA 표면처리 · 국산 임플란트')
   const periodText = await getSetting(c.env.DB, 'EVENT_IMPLANT_PERIOD', '2026.05.01 ~ 소진 시 종료 · 월 한정 수량')
   const eventStart = await getSetting(c.env.DB, 'EVENT_IMPLANT_START_DATE', '2026-05-01')
   const eventEnd = await getSetting(c.env.DB, 'EVENT_IMPLANT_END_DATE', '2026-06-30')
@@ -30,7 +30,7 @@ eventRoutes.get('/event/implant', async (c) => {
 
   const priceNum = parseInt(price) * 10000
   const pageTitle = `${brand} 임플란트 ${price}만원 이벤트 | 서울365치과 인천 구월동`
-  const pageDesc = `국내 1위 ${brand} ${model} 임플란트 ${price}만원 특별 이벤트. ${subtitle}. 서울대 전문의 네비게이션 가이드 수술. 자체기공실. 수면진료 가능. 인천 남동구 구월동 032-432-0365`
+  const pageDesc = `${brand} ${model} 임플란트 ${price}만원 특별 이벤트. ${subtitle}. 서울대 전문의 네비게이션 가이드 수술. 자체기공실. 수면진료 가능. 인천 남동구 구월동 032-432-0365`
 
   return c.render(
     <>
@@ -48,7 +48,7 @@ eventRoutes.get('/event/implant', async (c) => {
           </div>
 
           <h1 class="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.1] mb-6 reveal" style="transition-delay:0.4s">
-            국내 1위 {brand}<br/>
+            {brand}<br/>
             <span class="gradient-text-white">임플란트 {price}만원</span>
           </h1>
 
@@ -99,7 +99,7 @@ eventRoutes.get('/event/implant', async (c) => {
             <h2 class="section-headline reveal" style="transition-delay:0.2s">
               국내 치과의사가<br/>가장 많이 선택한 임플란트
             </h2>
-            <p class="text-gray-400 mt-3 reveal" style="transition-delay:0.3s">40년 역사 · 70개국 수출 · 국내 점유율 1위 · 글로벌 Top 5</p>
+            <p class="text-gray-400 mt-3 reveal" style="transition-delay:0.3s">국산 임플란트 · 국내 임상 자료 다수</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
@@ -137,7 +137,7 @@ eventRoutes.get('/event/implant', async (c) => {
               <h3 class="font-bold text-gray-900 text-lg mb-3">국내 최다 임상</h3>
               <p class="text-gray-500 text-sm leading-relaxed">
                 40년 국내 임상 데이터<br/>
-                <strong class="text-gray-700">국내 치과의사 신뢰도 1위</strong><br/>
+                
                 A/S 및 부품 수급 최상
               </p>
             </div>
@@ -186,7 +186,7 @@ eventRoutes.get('/event/implant', async (c) => {
                       <span class="text-2xl font-black text-emerald-600">{price}만원</span>
                     </td>
                     <td class="text-center px-4 py-5 text-gray-600 text-xs leading-relaxed">
-                      SA 표면 · 국내 1위<br/>40년 검증 · 빠른 골유착
+                      SA 표면처리<br/>국산 임플란트
                     </td>
                   </tr>
                   <tr class="border-b border-gray-50">
@@ -213,7 +213,7 @@ eventRoutes.get('/event/implant', async (c) => {
                     </td>
                     <td class="text-center px-4 py-4"><span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">🇨🇭 스위스</span></td>
                     <td class="text-center px-4 py-4 font-bold text-gray-700">139만원</td>
-                    <td class="text-center px-4 py-4 text-gray-500 text-xs">Roxolid® · SLActive® · 세계 1위</td>
+                    <td class="text-center px-4 py-4 text-gray-500 text-xs">Roxolid® · SLActive®</td>
                   </tr>
                   <tr>
                     <td class="px-6 py-4">
@@ -328,7 +328,7 @@ eventRoutes.get('/event/implant', async (c) => {
           <div class="glass-card p-8 md:p-10 reveal">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
               {[
-                '검증된 국내 1위 임플란트를 합리적 가격에 원하시는 분',
+                '국산 임플란트를 합리적 가격에 원하시는 분',
                 '65세 이상 건강보험 적용 임플란트를 고려하시는 분',
                 '빠른 골유착으로 치료 기간을 단축하고 싶은 분',
                 '부품 수급과 A/S가 확실한 브랜드를 원하시는 분',
@@ -394,7 +394,7 @@ eventRoutes.get('/event/implant', async (c) => {
           <div class="space-y-3 stagger-children">
             {[
               { q: `${brand} 임플란트가 왜 ${price}만원인가요?`, a: `서울365치과는 ${brand} 공식 파트너로 대량 직접 구매하여 유통 마진을 줄였습니다. 정품 인증서가 발급되며, 동일한 제품을 합리적인 가격에 제공합니다.` },
-              { q: '오스템과 스트라우만의 차이는 뭔가요?', a: '오스템은 국내 1위 브랜드로 40년 임상 데이터와 합리적 가격이 강점입니다. 스트라우만은 세계 1위로 특수 합금과 표면처리가 차별점입니다. 뼈 상태, 위치, 예산에 따라 추천이 달라지므로 상담 시 맞춤 안내 드립니다.' },
+              { q: '오스템과 스트라우만의 차이는 뭔가요?', a: '오스템은 국산 브랜드로 국내 임상 자료가 많고 비용 부담이 상대적으로 적습니다. 스트라우만은 스위스 브랜드로 특수 합금과 표면처리가 특징입니다. 뼈 상태, 위치, 예산에 따라 추천이 달라지므로 상담 시 맞춤 안내 드립니다.' },
               { q: `${price}만원에 포함되는 것은?`, a: `${brand} ${model} 픽스처(정품) + 어버트먼트 + 지르코니아 크라운이 포함됩니다. 네비게이션 가이드 10만원, 수면마취 20만원, CT 촬영 5만원, 뼈이식은 별도입니다.` },
               { q: '수술이 무섭습니다. 수면진료가 가능한가요?', a: '네, 가능합니다. 수면진료(20만원 별도) 시 잠을 자는 동안 수술이 진행되어 통증과 무서움을 느끼지 않습니다.' },
               { q: '건강보험 적용이 되나요?', a: '만 65세 이상이시면 오스템 임플란트 기준 본인부담 약 30% 수준으로 건강보험 적용(2개까지)이 가능합니다. 상담 시 보험 적용 여부를 확인해 드립니다.' },
@@ -424,7 +424,7 @@ eventRoutes.get('/event/implant', async (c) => {
         <div class="orb orb-2"></div>
         <div class="relative z-10 max-w-[800px] mx-auto px-5 md:px-8 text-center">
           <h2 class="text-3xl md:text-5xl font-black text-white mb-4 reveal">
-            국내 1위 {brand} {model}<br/>
+            {brand} {model}<br/>
             <span class="gradient-text-white">지금, {price}만원</span>
           </h2>
           <p class="text-white/35 mb-10 reveal" style="transition-delay:0.2s">
@@ -485,7 +485,7 @@ eventRoutes.get('/event/implant', async (c) => {
           "@context": "https://schema.org",
           "@type": "Event",
           "name": `${brand} ${model} 임플란트 ${price}만원 이벤트`,
-          "description": `국내 1위 ${brand} ${model} 임플란트를 ${price}만원 특별 이벤트가로 제공합니다. ${subtitle}. 서울대 전문의 네비게이션 가이드 수술.`,
+          "description": `${brand} ${model} 임플란트를 ${price}만원 특별 이벤트가로 제공합니다. ${subtitle}. 서울대 전문의 네비게이션 가이드 수술.`,
           "startDate": eventStart,
           "endDate": eventEnd,
           "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
@@ -548,7 +548,7 @@ eventRoutes.get('/event/implant', async (c) => {
           "@type": "FAQPage",
           "mainEntity": [
             { "@type": "Question", "name": `${brand} 임플란트가 왜 ${price}만원인가요?`, "acceptedAnswer": { "@type": "Answer", "text": `서울365치과는 ${brand} 공식 파트너로 대량 직접 구매하여 유통 마진을 줄였습니다. 정품 인증서가 발급되며, 동일한 제품을 합리적인 가격에 제공합니다.` } },
-            { "@type": "Question", "name": "오스템과 스트라우만의 차이는 뭔가요?", "acceptedAnswer": { "@type": "Answer", "text": "오스템은 국내 1위 브랜드로 40년 임상 데이터와 합리적 가격이 강점입니다. 스트라우만은 세계 1위로 특수 합금과 표면처리가 차별점입니다." } },
+            { "@type": "Question", "name": "오스템과 스트라우만의 차이는 뭔가요?", "acceptedAnswer": { "@type": "Answer", "text": "오스템은 국산 브랜드로 국내 임상 자료가 많고 비용 부담이 상대적으로 적습니다. 스트라우만은 스위스 브랜드로 특수 합금과 표면처리가 특징입니다." } },
             { "@type": "Question", "name": `${price}만원에 포함되는 것은?`, "acceptedAnswer": { "@type": "Answer", "text": `${brand} ${model} 픽스처(정품) + 어버트먼트 + 지르코니아 크라운이 포함됩니다. 네비게이션 가이드 10만원, 수면마취 20만원, CT 촬영 5만원, 뼈이식은 별도입니다.` } },
             { "@type": "Question", "name": "수면진료가 가능한가요?", "acceptedAnswer": { "@type": "Answer", "text": "네, 가능합니다. 수면진료(20만원 별도) 시 잠을 자는 동안 수술이 진행되어 통증과 무서움을 느끼지 않습니다." } },
             { "@type": "Question", "name": "건강보험 적용이 되나요?", "acceptedAnswer": { "@type": "Answer", "text": "만 65세 이상이시면 오스템 임플란트 기준 본인부담 약 30% 수준으로 건강보험 적용(2개까지)이 가능합니다." } },

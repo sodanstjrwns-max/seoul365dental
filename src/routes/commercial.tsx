@@ -59,7 +59,7 @@ export const PRICE_PAGES: Record<string, PricePage> = {
         range: '90~120만원 / 1개',
         priceMin: 900000,
         priceMax: 1200000,
-        features: ['국내 점유율 1위 임플란트', '평균 10년+ 임상 데이터', '재료비 부담 최소', '식립 + 보철 포함'],
+        features: ['국산 임플란트', '평균 10년+ 임상 데이터', '재료비 부담 최소', '식립 + 보철 포함'],
       },
       {
         name: '메가젠 (국산 프리미엄)',
@@ -76,7 +76,7 @@ export const PRICE_PAGES: Record<string, PricePage> = {
         range: '180~250만원 / 1개',
         priceMin: 1800000,
         priceMax: 2500000,
-        features: ['세계 1위 프리미엄 임플란트', '뼈이식 동시 식립 가능', '40년+ 임상 데이터', '평생 무상 A/S'],
+        features: ['스위스 프리미엄 임플란트', '뼈이식 동시 식립 가능', '40년+ 임상 데이터', '평생 무상 A/S'],
       },
     ],
     factors: [

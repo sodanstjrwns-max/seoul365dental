@@ -548,7 +548,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <noscript><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" /></noscript>
 
         {/* === MAIN STYLESHEET (Tailwind + custom, built at compile time) === */}
-        <link href="/static/style.css" rel="stylesheet" />
+        <link href="/static/style.css?v=20261016a" rel="stylesheet" />
 
         {/* === STRUCTURED DATA (JSON-LD) === */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(websiteSchema)}} />
@@ -886,7 +886,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         </div>
 
         {/* === SCRIPTS === */}
-        <script src="/static/app.js?v=20260928b" defer></script>
+        <script src="/static/app.js?v=20261016a" defer></script>
       </body>
     </html>
   )

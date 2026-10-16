@@ -66,13 +66,13 @@ home.get('/', async (c) => {
 
               {/* H1 — 3-Line Emotional Headline */}
               <h1 class="reveal" style="transition-delay:0.5s">
-                <span class="block text-white/40 mb-1 text-words" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
+                <span class="block text-white/70 mb-1 text-words" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
                   {MESSAGING.heroLine1}
                 </span>
-                <span class="block text-white/60 mb-2 text-words" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
+                <span class="block text-white/85 mb-2 text-words" style="font-size:clamp(1.5rem,4vw,3rem);line-height:1.1;letter-spacing:-0.04em;font-weight:800;white-space:nowrap">
                   {MESSAGING.heroLine2}
                 </span>
-                <span class="block gradient-text-electric text-split" style="font-size:clamp(1.7rem,4.5vw,3.5rem);line-height:1.05;letter-spacing:-0.05em;font-weight:900;white-space:nowrap">
+                <span class="block gradient-text-electric" style="font-size:clamp(1.7rem,4.5vw,3.5rem);line-height:1.05;letter-spacing:-0.05em;font-weight:900;white-space:nowrap">
                   {MESSAGING.heroAccent}
                 </span>
               </h1>
@@ -277,7 +277,7 @@ home.get('/', async (c) => {
         <div class="relative max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">BY THE NUMBERS</span>
-            <h2 class="section-headline text-gray-900">숫자가 <span class="gradient-text-blue text-split">증명</span>합니다</h2>
+            <h2 class="section-headline text-gray-900">숫자가 <span class="gradient-text-blue">증명</span>합니다</h2>
           </div>
 
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10 stagger-children">
@@ -325,7 +325,6 @@ home.get('/', async (c) => {
                 <h3 class="font-bold text-[#0066FF] text-[0.82rem] tracking-wide mb-1">{card.title}</h3>
                 <p class="font-bold text-gray-900 text-lg mb-2 leading-snug">{card.headline}</p>
                 <p class="text-gray-500 text-[0.9rem] leading-relaxed mb-4">{card.desc}</p>
-                <p class="text-[0.82rem] text-gray-400 italic border-l-2 border-[#0066FF]/20 pl-3">{card.voice}</p>
               </div>
             ))}
           </div>
@@ -386,7 +385,7 @@ home.get('/', async (c) => {
           <div class="text-center mb-16 reveal">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">OUR DOCTORS</span>
             <h2 class="section-headline text-white">
-              서울대 출신<br class="md:hidden" /> <span class="gradient-text-electric text-split">5인 전문의</span>
+              서울대 출신<br class="md:hidden" /> <span class="gradient-text-electric">5인 전문의</span>
             </h2>
             <p class="section-body text-white/30 mt-5 max-w-xl mx-auto">각 분야별 전문의가 협력하여 최적의 치료를 제공합니다.</p>
           </div>
@@ -438,7 +437,7 @@ home.get('/', async (c) => {
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal-pop">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">BEFORE &amp; AFTER</span>
-            <h2 class="section-headline text-gray-900">치료 <span class="gradient-text-blue text-split">사례</span></h2>
+            <h2 class="section-headline text-gray-900">치료 <span class="gradient-text-blue">사례</span></h2>
             <p class="section-body text-gray-400 mt-5 max-w-xl mx-auto">실제 치료 사례로 결과를 확인하세요.</p>
           </div>
 
@@ -576,7 +575,7 @@ home.get('/', async (c) => {
           <div class="max-w-3xl mx-auto">
             <div class="text-center mb-16 reveal-pop">
               <span class="section-eyebrow text-[#0066FF] mb-4 block">PRICING</span>
-              <h2 class="section-headline text-gray-900">투명한 <span class="gradient-text-blue text-split">비용 안내</span></h2>
+              <h2 class="section-headline text-gray-900">투명한 <span class="gradient-text-blue">비용 안내</span></h2>
               <p class="section-body text-gray-400 mt-4">부담 없이 확인하세요.</p>
             </div>
 
@@ -646,7 +645,7 @@ home.get('/', async (c) => {
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-16 reveal-pop">
             <span class="section-eyebrow text-[#0066FF] mb-4 block">COLUMNS</span>
-            <h2 class="section-headline text-gray-900">전문 <span class="gradient-text-blue text-split">칼럼</span></h2>
+            <h2 class="section-headline text-gray-900">전문 <span class="gradient-text-blue">칼럼</span></h2>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-cascade">
@@ -940,7 +939,7 @@ home.get('/', async (c) => {
           "itemListElement": [
             { "@type": "Offer", "name": "전체임플란트", "itemOffered": { "@type": "MedicalProcedure", "name": "전체임플란트" }, "priceCurrency": "KRW", "description": "자체 기공실 MUA 즉시로딩", "url": "https://seoul365dc.kr/treatments/full-implant" },
             { "@type": "Offer", "name": "디지털풀아치 임플란트", "itemOffered": { "@type": "MedicalProcedure", "name": "디지털풀아치 임플란트" }, "priceCurrency": "KRW", "description": "4~6개 임플란트로 전악 회복", "url": "https://seoul365dc.kr/treatments/digital-full-arch" },
-            { "@type": "Offer", "name": "수면진료", "itemOffered": { "@type": "MedicalProcedure", "name": "수면진료" }, "priceCurrency": "KRW", "description": "잠깐 잠들었다 깨면 치료 완료", "url": "https://seoul365dc.kr/treatments/sedation" },
+            { "@type": "Offer", "name": "수면진료", "itemOffered": { "@type": "MedicalProcedure", "name": "수면진료" }, "priceCurrency": "KRW", "description": "사전 평가 후 의식하 진정 상태에서 치료(적용 여부·반응 개인차 있음)", "url": "https://seoul365dc.kr/treatments/sedation" },
             { "@type": "Offer", "name": "치아교정", "itemOffered": { "@type": "MedicalProcedure", "name": "치아교정" }, "priceCurrency": "KRW", "description": "교정과 전문의 직접 진료", "url": "https://seoul365dc.kr/treatments/orthodontics" },
             { "@type": "Offer", "name": "인비절라인 투명교정", "itemOffered": { "@type": "MedicalProcedure", "name": "인비절라인" }, "priceCurrency": "KRW", "price": "7000000", "description": "인비절라인 인증의 직접 진료, 3D ClinCheck 시뮬레이션", "url": "https://seoul365dc.kr/treatments/invisalign" },
           ]

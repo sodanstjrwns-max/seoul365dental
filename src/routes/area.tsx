@@ -1618,7 +1618,6 @@ areaRoutes.get('/area/:slug', (c) => {
                 </div>
                 <h3 class="font-bold text-gray-900 mb-2">{card.title}</h3>
                 <p class="text-sm text-gray-500 leading-relaxed mb-3">{card.desc}</p>
-                <p class="text-xs text-[#0066FF]/60 italic">{card.voice}</p>
               </div>
             ))}
           </div>
