@@ -119,8 +119,8 @@ export const pricingData: PricingItem[] = [
   { treatment: '치아 미백 (1회)', price: '9만원', insurance: '비급여 (과세)', category: '미용' },
   { treatment: '잇몸성형술 (치조골삭제)', price: '10만원', insurance: '비급여 (과세)', category: '미용' },
   { treatment: '실활치 미백', price: '10만원', insurance: '비급여 (과세)', category: '미용' },
-  { treatment: '해피타임 치아 미백 (3회)', price: '15만원', insurance: '비급여 (과세)', category: '미용' },
   { treatment: '치아 미백 (3회)', price: '19만원', insurance: '비급여 (과세)', category: '미용' },
+  { treatment: '해피타임 치아 미백 (2회)', price: '20만원', insurance: '비급여 (과세)', category: '미용', note: '부가세 별도 · 총 22만원' },
   { treatment: '무삭제 라미네이트 (이벤트)', price: '40만원', insurance: '비급여 (과세)', category: '미용', note: '이벤트' },
   { treatment: '라미네이트', price: '60만원', insurance: '비급여 (과세)', category: '미용' },
 
