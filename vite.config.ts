@@ -4,6 +4,10 @@ import adapter from '@hono/vite-dev-server/cloudflare'
 import { defineConfig } from 'vite'
 import { execSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+
+// 메인 몰입 연출 파일은 내용 해시로 ?v= 를 붙인다(고정 번호 금지 — 바뀌면 바로 새 파일)
+const assetHash = (f: string) => createHash('sha256').update(readFileSync(f)).digest('hex').slice(0, 10)
 
 // 콘텐츠 최종 수정일 = 해당 콘텐츠 파일의 마지막 커밋 날짜(빌드 시 상수).
 // new Date()로 매일 '오늘'이 찍히던 lastReviewed/dateModified 대체 (2026-09-29).
@@ -71,6 +75,8 @@ const CONTENT_DATES = {
 export default defineConfig({
   define: {
     __CONTENT_DATES__: JSON.stringify(CONTENT_DATES),
+    __IMMERSIVE_JS_V__: JSON.stringify(assetHash('public/static/immersive.js')),
+    __IMMERSIVE_CSS_V__: JSON.stringify(assetHash('public/static/immersive.css')),
   },
   plugins: [
     build(),

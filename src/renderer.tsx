@@ -1,5 +1,9 @@
-import { jsxRenderer } from 'hono/jsx-renderer'
+import { jsxRenderer, useRequestContext } from 'hono/jsx-renderer'
 import { raw } from 'hono/html'
+
+// vite.config.ts define — 메인 몰입 연출 파일 내용 해시(캐시 버스팅)
+declare const __IMMERSIVE_JS_V__: string
+declare const __IMMERSIVE_CSS_V__: string
 import { CLINIC, HOURS } from './data/clinic'
 import { MESSAGING, MISSION } from './data/brand'
 import { AREAS } from './data/areas'
@@ -19,6 +23,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const pageTitle = title || `서울365치과 | 인천 구월동 임플란트·인비절라인·교정·수면진료 365일 야간진료`;
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·인비절라인 투명교정·수면진료 전문. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
+  // 메인 홈에서만 스크롤 몰입 연출을 싣는다
+  const isHome = useRequestContext().req.path === '/';
   // noindex 페이지(404·관리자 등)가 canonical 을 따로 넘기지 않으면 canonical·hreflang 을 내보내지 않는다
   // (기존: 홈으로 canonical → soft 404 신호). 2026-10-08
   const emitCanonical = !!canonical || !noindex;
@@ -549,6 +555,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === MAIN STYLESHEET (Tailwind + custom, built at compile time) === */}
         <link href="/static/style.css?v=20261016a" rel="stylesheet" />
+        {isHome && <link href={`/static/immersive.css?v=${__IMMERSIVE_CSS_V__}`} rel="stylesheet" />}
 
         {/* === STRUCTURED DATA (JSON-LD) === */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(websiteSchema)}} />
@@ -887,6 +894,12 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === SCRIPTS === */}
         <script src="/static/app.js?v=20261016a" defer></script>
+        {isHome && <>
+          {/* 메인 스크롤 몰입 연출 */}
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
+          <script src={`/static/immersive.js?v=${__IMMERSIVE_JS_V__}`} defer></script>
+        </>}
       </body>
     </html>
   )
