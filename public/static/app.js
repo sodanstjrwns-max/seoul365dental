@@ -392,8 +392,22 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
       var compact = mq.matches, idx = 0, prevOverflow = '', locked = false, closed = false;
 
       function cards(){ return Array.prototype.slice.call(stack.querySelectorAll('.p365-card:not(.out)')); }
-      function lock(){ if(!locked){ prevOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden'; locked = true; } }
-      function unlock(){ if(locked){ document.body.style.overflow = prevOverflow; locked = false; } }
+      // 스크롤 잠금 (2026-10-31 CLS 수정)
+      //  - 스크롤바가 자리를 차지하는 환경(PC 크롬: 사이트 6px 스크롤바, 윈도 기본 스크롤바)에서 body overflow:hidden 을 걸면
+      //    스크롤바가 사라져 페이지 폭이 바뀌고 화면 전체가 옆으로 밀린다(scrollbar-gutter 는 커스텀 스크롤바에서 자리를 지키지 못함).
+      //    → 이때는 overflow 를 건드리지 않고, 화면 전체를 덮는 오버레이(overscroll-behavior:contain)가 휠·키 스크롤을 붙잡는다.
+      //  - 스크롤바가 자리를 차지하지 않는 환경(모바일·맥 오버레이 스크롤바)은 기존대로 body overflow:hidden.
+      var softLock = false;
+      function lock(){
+        if(locked) return; locked = true;
+        softLock = (window.innerWidth - document.documentElement.clientWidth) > 0;
+        if(softLock) return;
+        prevOverflow = document.body.style.overflow; document.body.style.overflow = 'hidden';
+      }
+      function unlock(){ if(locked){ if(!softLock) document.body.style.overflow = prevOverflow; locked = false; softLock = false; } }
+      ov.addEventListener('wheel', function(e){
+        if(locked && softLock && ov.scrollHeight <= ov.clientHeight + 1) e.preventDefault();
+      }, {passive:false});
       function setCountClass(){
         var n = cards().length;
         ov.classList.toggle('n2', n === 2);
@@ -499,7 +513,15 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
       });
       var onMq = function(){ if(!compact && !closed) applyMode(); };
       if(mq.addEventListener) mq.addEventListener('change', onMq); else if(mq.addListener) mq.addListener(onMq);
-      open();
+      // 팝업 이미지의 크기를 알게 된 뒤(naturalWidth — 파일 앞부분만 받아도 정해짐) 또는 실패·4초 초과 시 연다.
+      // 숨긴 채(display:none) 기다리므로 이미지가 들어오며 카드 크기가 바뀌어도 화면이 움직이지 않는다 (CLS 방지 2026-10-31)
+      var imgs = Array.prototype.slice.call(stack.querySelectorAll('img')), opened = false, waitStart = Date.now();
+      function openOnce(){ if(opened || closed) return; opened = true; if(cards().length) open(); else closeAll(); }
+      (function waitSized(){
+        if(opened || closed) return;
+        var ready = imgs.every(function(img){ return img.complete || img.naturalWidth > 0; });
+        if(ready || Date.now() - waitStart > 4000) openOnce(); else setTimeout(waitSized, 50);
+      })();
     })
     .catch(function(e){ /* 팝업 로드 실패 시 무시 */ });
 })();

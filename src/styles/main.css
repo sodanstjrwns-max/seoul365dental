@@ -246,6 +246,8 @@ body {
 /* === HERO PORTRAIT (대표원장 사진) === */
 .hero-portrait-wrap {
   position: relative;
+  /* 사진을 받기 전에도 칸 폭을 미리 차지 — 사진 로드 때 히어로 전체가 움직이던 CLS 수정(2026-10-31). 최종 폭은 원래와 같음 */
+  width: 100%;
   overflow: hidden;
   border-radius: 1.2rem;
   will-change: transform;

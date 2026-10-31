@@ -4,6 +4,8 @@ import { raw } from 'hono/html'
 // vite.config.ts define — 메인 몰입 연출 파일 내용 해시(캐시 버스팅)
 declare const __IMMERSIVE_JS_V__: string
 declare const __IMMERSIVE_CSS_V__: string
+declare const __APP_JS_V__: string
+declare const __STYLE_CSS_V__: string
 import { CLINIC, HOURS } from './data/clinic'
 import { MESSAGING, MISSION } from './data/brand'
 import { AREAS } from './data/areas'
@@ -521,9 +523,6 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           <script dangerouslySetInnerHTML={{__html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${ga4Id}',{page_title:document.title,page_location:window.location.href,cookie_flags:'SameSite=None;Secure',anonymize_ip:true,send_page_view:true});`}} />
         </>}
 
-        {/* Microsoft Clarity */}
-        <script dangerouslySetInnerHTML={{ __html: '(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","yc83itfgmi");' }} />
-
         {/* PF Web Engine 1st-party 비콘 */}
         <script defer src="https://pf-dashboard-2nt.pages.dev/beacon.js"></script>
 
@@ -554,8 +553,13 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <noscript><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" /></noscript>
 
         {/* === MAIN STYLESHEET (Tailwind + custom, built at compile time) === */}
-        <link href="/static/style.css?v=20261016a" rel="stylesheet" />
+        <link href={`/static/style.css?v=${__STYLE_CSS_V__}`} rel="stylesheet" />
         {isHome && <link href={`/static/immersive.css?v=${__IMMERSIVE_CSS_V__}`} rel="stylesheet" />}
+
+        {/* Microsoft Clarity — 반드시 스타일시트 뒤(2026-10-31). 앞에 두면 clarity.js 가 CSS 적용 전 화면을 읽어
+            CSS 없는 배치를 한 번 계산하게 되고, 그 뒤 CSS 가 적용되며 전체가 움직인 것으로 잡혀 PC CLS 가 1.0 까지 올랐다.
+            스타일시트 뒤의 인라인 스크립트는 CSS 로드가 끝날 때까지 실행되지 않는다. */}
+        <script dangerouslySetInnerHTML={{ __html: '(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","yc83itfgmi");' }} />
 
         {/* === STRUCTURED DATA (JSON-LD) === */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(websiteSchema)}} />
@@ -893,7 +897,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         </div>
 
         {/* === SCRIPTS === */}
-        <script src="/static/app.js?v=20261016a" defer></script>
+        <script src={`/static/app.js?v=${__APP_JS_V__}`} defer></script>
         {isHome && <>
           {/* 메인 스크롤 몰입 연출 */}
           <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>

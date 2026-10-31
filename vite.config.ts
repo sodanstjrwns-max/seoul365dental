@@ -77,6 +77,10 @@ export default defineConfig({
     __CONTENT_DATES__: JSON.stringify(CONTENT_DATES),
     __IMMERSIVE_JS_V__: JSON.stringify(assetHash('public/static/immersive.js')),
     __IMMERSIVE_CSS_V__: JSON.stringify(assetHash('public/static/immersive.css')),
+    // 공용 app.js·style.css 도 내용 해시로(2026-10-31 CLS 수정 — 고정 ?v= 는 브라우저 4시간 캐시에 옛 파일이 남음)
+    // style.css 는 npm run build 의 css:build 가 먼저 다시 만든 뒤 이 설정이 읽힌다
+    __APP_JS_V__: JSON.stringify(assetHash('public/static/app.js')),
+    __STYLE_CSS_V__: JSON.stringify(assetHash('public/static/style.css')),
   },
   plugins: [
     build(),
