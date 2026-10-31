@@ -91,8 +91,6 @@ app.use('*', async (c, next) => {
   c.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   c.header('X-XSS-Protection', '1; mode=block');
   c.header('Cross-Origin-Opener-Policy', 'same-origin');
-  // 해시·브랜치 미리보기(<x>.seoul365dental.pages.dev)는 검색 제외
-  if (new URL(c.req.url).hostname.endsWith('.seoul365dental.pages.dev')) c.header('X-Robots-Tag', 'noindex, nofollow');
 
   // v8: HTML 엣지 캐싱 — 크롤러 TTFB 단축 + Cloudflare 엣지 캐시 활용
   // (콘텐츠 페이지만; admin/api/인증 관련은 no-store)
