@@ -81,6 +81,8 @@ export default defineConfig({
     // style.css 는 npm run build 의 css:build 가 먼저 다시 만든 뒤 이 설정이 읽힌다
     __APP_JS_V__: JSON.stringify(assetHash('public/static/app.js')),
     __STYLE_CSS_V__: JSON.stringify(assetHash('public/static/style.css')),
+    // /ru 전용 Tailwind 빌드 CSS(2026-11-01 CDN 실행에서 전환) — css:build:ru 가 먼저 만든 뒤 해시
+    __TAILWIND_RU_CSS_V__: JSON.stringify(assetHash('public/static/tailwind-ru.css')),
   },
   plugins: [
     build(),

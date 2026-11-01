@@ -4,6 +4,8 @@ import type { Bindings } from '../lib/types'
 import { CLINIC } from '../data/clinic'
 import { getSetting, initSettingsTable } from '../lib/db'
 
+declare const __TAILWIND_RU_CSS_V__: string
+
 const ruRoutes = new Hono<{ Bindings: Bindings }>()
 
 // ══════════════════════════════════════════════════════════
@@ -84,26 +86,6 @@ ruRoutes.get('/ru', async (c) => {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
-
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            navy: '#040B18',
-            'navy-light': '#0A1628',
-            primary: '#0066FF',
-            accent: '#00E5FF',
-          },
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
 
   <!-- Schema.org -->
   <script type="application/ld+json">
@@ -217,6 +199,8 @@ ruRoutes.get('/ru', async (c) => {
       100% { box-shadow: 0 0 0 0 rgba(0,136,204,0); }
     }
   </style>
+  <!-- Tailwind 빌드 CSS(tailwind.ru.config.cjs, npm run css:build:ru): 옛 CDN이 head 끝에 넣던 것과 같은 우선순위를 위해 head 마지막. ?v= 는 내용 해시(vite.config) -->
+  <link rel="stylesheet" href="/static/tailwind-ru.css?v=${__TAILWIND_RU_CSS_V__}"/>
 </head>
 <body class="font-sans text-gray-900 bg-white antialiased">
 

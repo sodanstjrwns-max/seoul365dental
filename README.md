@@ -4,7 +4,16 @@
 - **Name**: Seoul 365 Dental Website
 - **Goal**: Patient Funnel 10단계 기반의 환자 유입·전환 최적화 웹사이트
 - **Client**: 서울365치과의원 (인천 남동구 구월동)
-- **Tech Stack**: Hono + TypeScript + Tailwind CSS (CDN) + Cloudflare Pages + D1
+- **Tech Stack**: Hono + TypeScript + Tailwind CSS (빌드 CSS) + Cloudflare Pages + D1
+
+## Tailwind 빌드 CSS 규칙 (2026-11-01)
+
+- 본 사이트: `tailwind.config.cjs` + `src/styles/main.css` → `public/static/style.css` (`--minify`).
+- `/ru`(러시아어 랜딩, 독립 HTML): 예전 CDN 실행(`cdn.tailwindcss.com` + 인라인 `tailwind.config`)을 빌드 CSS로 전환. 설정 `tailwind.ru.config.cjs`(navy 단색·Inter, content는 `src/routes/ru.tsx`만), 입력 `src/styles/tailwind-ru.css`, 출력 `public/static/tailwind-ru.css`.
+  - `--minify` 금지(cssnano가 색을 반올림해 바꿀 수 있음), `BROWSERSLIST='defaults, safari >= 12, ios_saf >= 12'`로 CDN과 같은 `-webkit-` 접두사.
+  - `?v=`는 내용 해시(`vite.config.ts`의 `__TAILWIND_RU_CSS_V__`) — 고정 `?v=` 금지. 스타일시트는 CDN과 같은 우선순위를 위해 head 마지막.
+- `npm run build`가 `css:build`(본 사이트 + `css:build:ru`)를 먼저 실행한다. 새 유틸리티 클래스를 쓰면 빌드 후 배포한다. 클래스 이름을 문자열 조합으로 만들지 않는다.
+- 새 페이지·템플릿에 `cdn.tailwindcss.com`을 넣지 않는다.
 
 ## URLs
 - **Production**: 배포 대기 중
@@ -160,7 +169,7 @@ src/
 - [ ] Google Places API 실시간 리뷰
 - [ ] GA4 + GTM 연동
 - [ ] 블로그 콘텐츠 20개+ 확충
-- [ ] Tailwind CSS 빌드 모드 전환 (CDN → PostCSS)
+- [x] Tailwind CSS 빌드 모드 전환 (CDN → 빌드 CSS, /ru 포함 2026-11-01)
 - [ ] Cloudflare Pages 프로덕션 배포
 
 ## 🚀🚀🚀 SEO 슈퍼 업그레이드 v3 (2026-05-26) — AI 검색 시대 7대 무기

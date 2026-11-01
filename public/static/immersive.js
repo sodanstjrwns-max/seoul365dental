@@ -89,7 +89,15 @@
   if (summary) {
     summary.classList.remove('reveal-elastic');
     var words = [];
+    // 그라데이션 글씨(background-clip:text)가 문단 자신·조상·자손에 있으면 낱말로 쪼개지 않고 문단 통째로 —
+    // clip:text 안에 opacity 레이어 낱말을 만들면 글자가 투명해지고(대구 2026-11-01), textContent 로 비우면 그라데이션 자체가 사라진다
+    var clipText = function (e) { var cs = getComputedStyle(e); return cs.webkitBackgroundClip === 'text' || cs.backgroundClip === 'text'; };
+    var hasClipText = function (p) {
+      for (var e = p; e && e !== document.body; e = e.parentElement) if (clipText(e)) return true;
+      return [].some.call(p.querySelectorAll('*'), clipText);
+    };
     $$(':scope > p', summary).forEach(function (p) {
+      if (hasClipText(p)) { words.push(p); return; }
       var parts = p.textContent.split(/(\s+)/);
       p.textContent = '';
       parts.forEach(function (w) {
