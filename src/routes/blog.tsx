@@ -27,8 +27,8 @@ blogRoutes.get('/admin/blog', async (c) => {
       <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center">
-              <i class="fa-solid fa-pen-nib text-[#0066FF] text-sm"></i>
+            <div class="w-8 h-8 rounded-lg bg-[#1E4BD8]/20 flex items-center justify-center">
+              <i class="fa-solid fa-pen-nib text-[#1E4BD8] text-sm"></i>
             </div>
             <span class="text-white font-bold text-sm">블로그 관리</span>
             <span class="text-white/20 text-xs">|</span>
@@ -56,7 +56,7 @@ blogRoutes.get('/admin/blog', async (c) => {
             </div>
             <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
               <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2">총 조회</div>
-              <div class="text-3xl font-black text-[#0066FF]">{posts.reduce((s: number, p: any) => s + (p.view_count || 0), 0)}</div>
+              <div class="text-3xl font-black text-[#1E4BD8]">{posts.reduce((s: number, p: any) => s + (p.view_count || 0), 0)}</div>
             </div>
           </div>
 
@@ -66,7 +66,7 @@ blogRoutes.get('/admin/blog', async (c) => {
               <button onclick="migrateAllSlugs()" id="migrateSlugsBtn" class="px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-xs font-bold transition border border-amber-500/20" title="기존 포스트의 URL을 SEO 최적화된 영문 슬러그로 일괄 변환합니다">
                 <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i>SEO 슬러그 마이그레이션
               </button>
-              <button onclick="openEditor()" class="px-5 py-2.5 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white text-sm font-bold transition">
+              <button onclick="openEditor()" class="px-5 py-2.5 rounded-xl bg-[#1E4BD8] hover:bg-[#0052cc] text-white text-sm font-bold transition">
                 <i class="fa-solid fa-plus mr-1.5"></i>새 글 작성
               </button>
             </div>
@@ -99,7 +99,7 @@ blogRoutes.get('/admin/blog', async (c) => {
                     </div>
                     <div class="flex items-center gap-2 ml-4">
                       <a href={`/blog/${p.slug}`} target="_blank" class="text-white/20 hover:text-white/50 transition p-1.5" title="미리보기"><i class="fa-solid fa-eye text-xs"></i></a>
-                      <button onclick={`loadPost(${p.id})`} class="text-white/20 hover:text-[#0066FF] transition p-1.5" title="수정"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
+                      <button onclick={`loadPost(${p.id})`} class="text-white/20 hover:text-[#1E4BD8] transition p-1.5" title="수정"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
                       <button onclick={`deletePost(${p.id})`} class="text-white/20 hover:text-red-400 transition p-1.5" title="삭제"><i class="fa-solid fa-trash text-xs"></i></button>
                     </div>
                   </div>
@@ -124,7 +124,7 @@ blogRoutes.get('/admin/blog', async (c) => {
             <div class="flex items-center gap-2">
               <button onclick="toggleSeoPanel()" class="px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/40 text-xs font-bold transition" title="SEO 분석"><i class="fa-solid fa-chart-line mr-1"></i>SEO</button>
               <button onclick="savePost(0)" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50 text-xs font-bold transition">초안 저장</button>
-              <button onclick="savePost(1)" class="px-4 py-2 rounded-lg bg-[#0066FF] hover:bg-[#0052cc] text-white text-xs font-bold transition">
+              <button onclick="savePost(1)" class="px-4 py-2 rounded-lg bg-[#1E4BD8] hover:bg-[#0052cc] text-white text-xs font-bold transition">
                 <i class="fa-solid fa-paper-plane mr-1"></i>공개 발행
               </button>
             </div>
@@ -139,7 +139,7 @@ blogRoutes.get('/admin/blog', async (c) => {
               {/* Title */}
               <div>
                 <label class="block text-white/40 text-xs font-semibold mb-1.5 uppercase">제목 (H1) *</label>
-                <input id="postTitle" type="text" placeholder="핵심 키워드를 포함한 제목을 입력하세요 (30~60자 권장)" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-lg font-bold outline-none focus:border-[#0066FF]/50 placeholder-white/15" oninput="updatePreview(); updateSeoScore()" />
+                <input id="postTitle" type="text" placeholder="핵심 키워드를 포함한 제목을 입력하세요 (30~60자 권장)" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-lg font-bold outline-none focus:border-[#1E4BD8]/50 placeholder-white/15" oninput="updatePreview(); updateSeoScore()" />
                 <div class="flex justify-between mt-1">
                   <span class="text-white/15 text-[0.6rem]">이 제목이 H1 태그로 출력됩니다</span>
                   <span id="titleCharCount" class="text-white/20 text-[0.6rem]">0자</span>
@@ -202,7 +202,7 @@ blogRoutes.get('/admin/blog', async (c) => {
               <div>
                 <label class="block text-white/40 text-xs font-semibold mb-1.5 uppercase">커버 이미지 (OG이미지)</label>
                 <input type="hidden" id="postCoverImage" value="" />
-                <div id="coverDropZone" class="relative border-2 border-dashed border-white/10 rounded-xl hover:border-[#0066FF]/30 transition cursor-pointer overflow-hidden"
+                <div id="coverDropZone" class="relative border-2 border-dashed border-white/10 rounded-xl hover:border-[#1E4BD8]/30 transition cursor-pointer overflow-hidden"
                      onclick="document.getElementById('coverFileInput').click()">
                   <input type="file" id="coverFileInput" accept="image/*" class="hidden" onchange="uploadCoverImage(this)" />
                   <div id="coverPreviewArea" class="hidden">
@@ -214,8 +214,8 @@ blogRoutes.get('/admin/blog', async (c) => {
                     <span class="text-sm">커버 이미지 업로드 (1200x630 권장)</span>
                   </div>
                   <div id="coverUploading" class="hidden flex items-center justify-center gap-2 py-6">
-                    <i class="fa-solid fa-spinner fa-spin text-[#0066FF]"></i>
-                    <span class="text-[#0066FF] text-sm">업로드 중...</span>
+                    <i class="fa-solid fa-spinner fa-spin text-[#1E4BD8]"></i>
+                    <span class="text-[#1E4BD8] text-sm">업로드 중...</span>
                   </div>
                 </div>
               </div>
@@ -229,9 +229,9 @@ blogRoutes.get('/admin/blog', async (c) => {
                 <div class="flex flex-wrap items-center gap-0.5 mb-2 px-2 py-1.5 rounded-xl bg-white/[0.03] border border-white/5">
                   {/* Headings */}
                   <div class="flex items-center gap-0.5 pr-2 border-r border-white/5 mr-1">
-                    <button type="button" onclick="insertHeading(2)" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-[#0066FF]/20 text-white/40 hover:text-[#0066FF] transition text-xs font-bold" title="H2 제목 (섹션 구분)">H2</button>
-                    <button type="button" onclick="insertHeading(3)" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-[#0066FF]/20 text-white/40 hover:text-[#0066FF] transition text-xs font-bold" title="H3 소제목 (세부 항목)">H3</button>
-                    <button type="button" onclick="insertHeading(4)" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-[#0066FF]/20 text-white/40 hover:text-[#0066FF] transition text-xs font-bold" title="H4 소소제목">H4</button>
+                    <button type="button" onclick="insertHeading(2)" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-[#1E4BD8]/20 text-white/40 hover:text-[#1E4BD8] transition text-xs font-bold" title="H2 제목 (섹션 구분)">H2</button>
+                    <button type="button" onclick="insertHeading(3)" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-[#1E4BD8]/20 text-white/40 hover:text-[#1E4BD8] transition text-xs font-bold" title="H3 소제목 (세부 항목)">H3</button>
+                    <button type="button" onclick="insertHeading(4)" class="px-2 py-1 rounded-lg bg-white/5 hover:bg-[#1E4BD8]/20 text-white/40 hover:text-[#1E4BD8] transition text-xs font-bold" title="H4 소소제목">H4</button>
                   </div>
                   {/* Text format */}
                   <div class="flex items-center gap-0.5 pr-2 border-r border-white/5 mr-1">
@@ -259,29 +259,29 @@ blogRoutes.get('/admin/blog', async (c) => {
                 <div class="relative">
                   <textarea id="postContent" rows={20} placeholder={"## 서론\n\n환자분들이 가장 많이 궁금해하시는 내용을 정리했습니다.\n\n![진료실 사진 설명](이미지URL)\n\n## 본론: 핵심 내용\n\n### 1. 첫 번째 포인트\n\n구체적인 내용을 작성하세요.\n\n![관련 이미지 설명](이미지URL)\n\n- 목록 항목 1\n- 목록 항목 2\n\n> 전문가 팁: 꼭 알아야 할 포인트를 강조하세요.\n\n### 2. 두 번째 포인트\n\n내용 사이사이에 이미지를 삽입하세요.\n\n## 자주 묻는 질문\n\n**Q. 비용은 얼마인가요?**\n\nA. 구체적인 답변을 작성하세요.\n\n## 결론\n\n핵심 내용을 요약하세요."} class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none text-sm font-mono resize-none placeholder-white/10 leading-relaxed" oninput="updatePreview(); updateSeoScore()"></textarea>
                   {/* Drag overlay */}
-                  <div id="dragOverlay" class="hidden absolute inset-0 bg-[#0066FF]/10 border-2 border-dashed border-[#0066FF] rounded-xl flex items-center justify-center z-10 pointer-events-none">
+                  <div id="dragOverlay" class="hidden absolute inset-0 bg-[#1E4BD8]/10 border-2 border-dashed border-[#1E4BD8] rounded-xl flex items-center justify-center z-10 pointer-events-none">
                     <div class="text-center">
-                      <i class="fa-solid fa-cloud-arrow-up text-3xl text-[#0066FF] mb-2"></i>
-                      <p class="text-[#0066FF] font-bold text-sm">이미지를 여기에 드롭하세요</p>
-                      <p class="text-[#0066FF]/60 text-xs mt-1">커서 위치에 삽입됩니다</p>
+                      <i class="fa-solid fa-cloud-arrow-up text-3xl text-[#1E4BD8] mb-2"></i>
+                      <p class="text-[#1E4BD8] font-bold text-sm">이미지를 여기에 드롭하세요</p>
+                      <p class="text-[#1E4BD8]/60 text-xs mt-1">커서 위치에 삽입됩니다</p>
                     </div>
                   </div>
                 </div>
                 {/* Upload status bar */}
-                <div id="uploadStatus" class="hidden mt-2 px-3 py-2 rounded-lg bg-[#0066FF]/10 border border-[#0066FF]/20">
+                <div id="uploadStatus" class="hidden mt-2 px-3 py-2 rounded-lg bg-[#1E4BD8]/10 border border-[#1E4BD8]/20">
                   <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-spinner fa-spin text-[#0066FF] text-xs"></i>
-                    <span id="uploadStatusText" class="text-[#0066FF] text-xs">이미지 업로드 중...</span>
+                    <i class="fa-solid fa-spinner fa-spin text-[#1E4BD8] text-xs"></i>
+                    <span id="uploadStatusText" class="text-[#1E4BD8] text-xs">이미지 업로드 중...</span>
                   </div>
                   <div class="mt-1 h-1 bg-white/5 rounded-full overflow-hidden">
-                    <div id="uploadProgressBar" class="h-full bg-[#0066FF] rounded-full transition-all duration-300" style="width:0%"></div>
+                    <div id="uploadProgressBar" class="h-full bg-[#1E4BD8] rounded-full transition-all duration-300" style="width:0%"></div>
                   </div>
                 </div>
 
                 {/* Content Structure Outline */}
                 <div id="structureOutline" class="mt-3 px-3 py-2 rounded-xl bg-white/[0.02] border border-white/5">
                   <div class="flex items-center gap-2 mb-2">
-                    <i class="fa-solid fa-sitemap text-[#0066FF]/40 text-xs"></i>
+                    <i class="fa-solid fa-sitemap text-[#1E4BD8]/40 text-xs"></i>
                     <span class="text-white/30 text-[0.6rem] font-bold uppercase">글 구조 (H태그 아웃라인)</span>
                   </div>
                   <div id="outlineTree" class="text-[0.7rem] space-y-0.5">
@@ -296,7 +296,7 @@ blogRoutes.get('/admin/blog', async (c) => {
               {/* SEO Score Panel (togglable overlay) */}
               <div id="seoPanel" class="hidden absolute inset-0 z-10 bg-gray-900/98 backdrop-blur overflow-y-auto p-6">
                 <div class="flex items-center justify-between mb-6">
-                  <h3 class="text-white font-bold text-sm"><i class="fa-solid fa-chart-line mr-2 text-[#0066FF]"></i>SEO/AEO 분석</h3>
+                  <h3 class="text-white font-bold text-sm"><i class="fa-solid fa-chart-line mr-2 text-[#1E4BD8]"></i>SEO/AEO 분석</h3>
                   <button onclick="toggleSeoPanel()" class="text-white/30 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
                 </div>
                 {/* Score Circle */}
@@ -326,7 +326,7 @@ blogRoutes.get('/admin/blog', async (c) => {
                   <div id="prevCoverWrap" class="hidden -mx-8 -mt-2 mb-6">
                     <img id="prevCoverImg" src="" alt="" class="w-full h-48 object-cover" />
                   </div>
-                  <div class="text-xs text-[#0066FF] font-semibold uppercase tracking-wider mb-3" id="prevCategory">치과상식</div>
+                  <div class="text-xs text-[#1E4BD8] font-semibold uppercase tracking-wider mb-3" id="prevCategory">치과상식</div>
                   <h1 class="text-2xl font-bold text-gray-900 mb-4" id="prevTitle">제목을 입력하세요</h1>
                   <div class="flex items-center gap-3 text-xs text-gray-400 mb-8 pb-6 border-b border-gray-100">
                     <span>서울365치과</span>
@@ -635,7 +635,7 @@ blogRoutes.get('/admin/blog', async (c) => {
           if (!items.length) { tree.innerHTML = '<span class="text-white/15">H2, H3 태그를 추가하면 구조가 표시됩니다</span>'; return; }
           tree.innerHTML = items.map(function(it) {
             var indent = (it.level - 2) * 12;
-            var color = it.level === 2 ? 'text-[#0066FF]' : it.level === 3 ? 'text-cyan-400/60' : 'text-white/25';
+            var color = it.level === 2 ? 'text-[#1E4BD8]' : it.level === 3 ? 'text-cyan-400/60' : 'text-white/25';
             var tag = '<span class="text-white/15 text-[0.55rem] mr-1">H' + it.level + '</span>';
             return '<div style="padding-left:' + indent + 'px" class="' + color + ' truncate">' + tag + it.text + '</div>';
           }).join('');
@@ -865,7 +865,7 @@ blogRoutes.get('/admin/blog', async (c) => {
               var cap = alt && alt !== '이미지' ? '<figcaption class="text-center text-xs text-gray-400 mt-2">'+alt+'</figcaption>' : '';
               return '<figure class="my-6"><img src="'+url+'" alt="'+alt+'" class="w-full rounded-xl shadow-sm" />'+cap+'</figure>';
             })
-            .replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" class="text-[#0066FF] underline">$1</a>')
+            .replace(/\\[([^\\]]+)\\]\\(([^)]+)\\)/g, '<a href="$2" class="text-[#1E4BD8] underline">$1</a>')
             .replace(/^#### (.+)$/gm, '<h4 class="text-base font-bold text-gray-800 mt-6 mb-2">$1</h4>')
             .replace(/^### (.+)$/gm, '<h3 class="text-lg font-bold text-gray-900 mt-8 mb-3">$1</h3>')
             .replace(/^## (.+)$/gm, '<h2 class="text-xl font-bold text-gray-900 mt-10 mb-4 pb-2 border-b border-gray-100">$1</h2>')
@@ -873,7 +873,7 @@ blogRoutes.get('/admin/blog', async (c) => {
             .replace(/\\*(.+?)\\*/g, '<em>$1</em>')
             .replace(/^\\d+\\. (.+)$/gm, '<li class="ml-4 text-gray-600 list-decimal">$1</li>')
             .replace(/^- (.+)$/gm, '<li class="ml-4 text-gray-600">$1</li>')
-            .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-[#0066FF]/20 pl-4 py-2 my-4 text-gray-500 italic bg-[#0066FF]/[0.03] rounded-r-lg">$1</blockquote>')
+            .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-[#1E4BD8]/20 pl-4 py-2 my-4 text-gray-500 italic bg-[#1E4BD8]/[0.03] rounded-r-lg">$1</blockquote>')
             .replace(/^---$/gm, '<hr class="my-8 border-gray-100"/>')
             .replace(/^(?!<[hulfba]|<hr|<li|<strong|<em|<img|<figure)(.+)$/gm, '<p class="text-gray-600 leading-relaxed mb-4">$1</p>')
             .replace(/<p class="text-gray-600 leading-relaxed mb-4"><\\/p>/g, '');
@@ -1133,7 +1133,7 @@ blogRoutes.get('/blog', async (c) => {
           <div class="flex flex-wrap gap-2 mb-10 reveal">
             {categories.map(cat => (
               <a href={cat === '전체' ? '/blog' : `/blog?category=${encodeURIComponent(cat)}`}
-                 class={`px-4 py-2 rounded-full text-xs font-semibold transition ${(cat === '전체' && !category) || category === cat ? 'bg-[#0066FF] text-white' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'}`}>
+                 class={`px-4 py-2 rounded-full text-xs font-semibold transition ${(cat === '전체' && !category) || category === cat ? 'bg-[#1E4BD8] text-white' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'}`}>
                 {cat}
               </a>
             ))}
@@ -1141,8 +1141,8 @@ blogRoutes.get('/blog', async (c) => {
 
           {posts.length === 0 ? (
             <div class="text-center py-20">
-              <div class="w-20 h-20 rounded-full bg-[#0066FF]/5 mx-auto mb-6 flex items-center justify-center">
-                <i class="fa-solid fa-pen-nib text-3xl text-[#0066FF]/20"></i>
+              <div class="w-20 h-20 rounded-full bg-[#1E4BD8]/5 mx-auto mb-6 flex items-center justify-center">
+                <i class="fa-solid fa-pen-nib text-3xl text-[#1E4BD8]/20"></i>
               </div>
               <h2 class="text-lg font-bold text-gray-900 mb-2">아직 작성된 글이 없습니다</h2>
               <p class="text-gray-400 text-sm">곧 유익한 치과 정보를 올려드리겠습니다!</p>
@@ -1151,20 +1151,20 @@ blogRoutes.get('/blog', async (c) => {
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
               {posts.map((post: any) => (
                 <a href={`/blog/${post.slug}`} class="premium-card overflow-hidden group hover:shadow-xl transition-all duration-300 tilt-card">
-                  <div class="aspect-[16/9] bg-gradient-to-br from-[#0066FF]/5 to-[#00E5FF]/[0.03] flex items-center justify-center">
+                  <div class="aspect-[16/9] bg-gradient-to-br from-[#1E4BD8]/5 to-[#8FB4FF]/[0.03] flex items-center justify-center">
                     {post.cover_image ? (
                       <img src={post.cover_image} alt={post.title} class="w-full h-full object-cover" loading="lazy" decoding="async" />
                     ) : (
-                      <i class="fa-solid fa-tooth text-4xl text-[#0066FF]/10"></i>
+                      <i class="fa-solid fa-tooth text-4xl text-[#1E4BD8]/10"></i>
                     )}
                   </div>
                   <div class="p-5">
                     <div class="flex items-center gap-2 mb-2">
-                      <span class="text-[0.65rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{post.category}</span>
+                      <span class="text-[0.65rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2.5 py-0.5 rounded-full font-semibold">{post.category}</span>
                       <span class="text-gray-200" aria-hidden="true">·</span>
                       <span class="text-[0.6rem] text-gray-300">{kstYmd(post.created_at)}</span>
                     </div>
-                    <h3 class="font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors line-clamp-2">{post.title}</h3>
+                    <h3 class="font-bold text-gray-900 group-hover:text-[#1E4BD8] transition-colors line-clamp-2">{post.title}</h3>
                     {post.excerpt && <p class="text-gray-500 text-[0.82rem] mt-2 line-clamp-2">{post.excerpt}</p>}
                     {post.tags && (
                       <div class="flex flex-wrap gap-1 mt-3">
@@ -1180,11 +1180,11 @@ blogRoutes.get('/blog', async (c) => {
           )}
           {totalPages > 1 && (
             <div class="flex flex-wrap justify-center gap-2 mt-12" role="navigation" aria-label="페이지">
-              {page > 1 && <a href={pageHref(page - 1)} rel="prev" class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#0066FF] hover:text-[#0066FF]">이전</a>}
+              {page > 1 && <a href={pageHref(page - 1)} rel="prev" class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#1E4BD8] hover:text-[#1E4BD8]">이전</a>}
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => n === page
-                ? <span aria-current="page" class="px-3 py-2 rounded-lg bg-[#0066FF] text-white text-sm font-semibold">{n}</span>
-                : <a href={pageHref(n)} class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#0066FF] hover:text-[#0066FF]">{n}</a>)}
-              {page < totalPages && <a href={pageHref(page + 1)} rel="next" class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#0066FF] hover:text-[#0066FF]">다음</a>}
+                ? <span aria-current="page" class="px-3 py-2 rounded-lg bg-[#1E4BD8] text-white text-sm font-semibold">{n}</span>
+                : <a href={pageHref(n)} class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#1E4BD8] hover:text-[#1E4BD8]">{n}</a>)}
+              {page < totalPages && <a href={pageHref(page + 1)} rel="next" class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#1E4BD8] hover:text-[#1E4BD8]">다음</a>}
             </div>
           )}
         </div>
@@ -1534,14 +1534,14 @@ blogRoutes.get('/blog/:slug', async (c) => {
 
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           <nav class="flex flex-wrap items-center gap-2 text-xs text-gray-400 mb-6" aria-label="Breadcrumb">
-            <a href="/" class="hover:text-[#0066FF] transition">홈</a>
+            <a href="/" class="hover:text-[#1E4BD8] transition">홈</a>
             <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
-            <a href="/blog" class="hover:text-[#0066FF] transition">블로그</a>
-            {catCrumb && <><i class="fa-solid fa-chevron-right text-[0.5rem]"></i><a href={`/blog?category=${encodeURIComponent(post.category)}`} class="hover:text-[#0066FF] transition">{post.category}</a></>}
+            <a href="/blog" class="hover:text-[#1E4BD8] transition">블로그</a>
+            {catCrumb && <><i class="fa-solid fa-chevron-right text-[0.5rem]"></i><a href={`/blog?category=${encodeURIComponent(post.category)}`} class="hover:text-[#1E4BD8] transition">{post.category}</a></>}
           </nav>
 
           <header class="mb-8">
-            <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-3 py-1 rounded-full font-semibold">{post.category}</span>
+            <span class="text-[0.7rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-3 py-1 rounded-full font-semibold">{post.category}</span>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mt-4 mb-4 leading-tight">{post.title}</h1>
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-400">
               <span class="font-medium text-gray-600">{authorDoc ? `${authorDoc.name} ${authorDoc.title}` : '서울365치과 발행'}</span>
@@ -1554,8 +1554,8 @@ blogRoutes.get('/blog/:slug', async (c) => {
           </header>
 
           {summary && (
-            <div class="answer-summary mb-10 rounded-2xl border border-[#0066FF]/15 border-l-4 border-l-[#0066FF] bg-[#0066FF]/[0.03] px-5 py-4">
-              <p class="text-[0.7rem] font-bold text-[#0066FF] tracking-wider mb-1.5">핵심 답변</p>
+            <div class="answer-summary mb-10 rounded-2xl border border-[#1E4BD8]/15 border-l-4 border-l-[#1E4BD8] bg-[#1E4BD8]/[0.03] px-5 py-4">
+              <p class="text-[0.7rem] font-bold text-[#1E4BD8] tracking-wider mb-1.5">핵심 답변</p>
               <p class="text-gray-800 text-[0.95rem] leading-relaxed">{summary}</p>
             </div>
           )}
@@ -1583,7 +1583,7 @@ blogRoutes.get('/blog/:slug', async (c) => {
                 </a>
                 <div class="min-w-0 text-sm">
                   <p class="text-gray-400 text-xs mb-0.5">작성</p>
-                  <a href={`/doctors/${authorDoc.slug}`} class="font-bold text-gray-900 hover:text-[#0066FF] transition">{authorDoc.name} {authorDoc.title}</a>
+                  <a href={`/doctors/${authorDoc.slug}`} class="font-bold text-gray-900 hover:text-[#1E4BD8] transition">{authorDoc.name} {authorDoc.title}</a>
                   {authorDoc.credentials?.[0] && <p class="text-gray-500 text-xs mt-1">{authorDoc.credentials[0]}</p>}
                   <p class="text-gray-400 text-xs mt-1">최종 업데이트 <time datetime={modifiedIso}>{updateDate}</time></p>
                 </div>
@@ -1601,18 +1601,18 @@ blogRoutes.get('/blog/:slug', async (c) => {
               )}
 
               {linkedTreatment && (
-                <div class="mt-8 p-5 rounded-2xl bg-[#0066FF]/[0.03] border border-[#0066FF]/10">
+                <div class="mt-8 p-5 rounded-2xl bg-[#1E4BD8]/[0.03] border border-[#1E4BD8]/10">
                   <div class="flex items-center gap-2 mb-2">
-                    <i class="fa-solid fa-link text-[#0066FF] text-xs"></i>
-                    <span class="text-xs font-semibold text-[#0066FF]">관련 진료</span>
+                    <i class="fa-solid fa-link text-[#1E4BD8] text-xs"></i>
+                    <span class="text-xs font-semibold text-[#1E4BD8]">관련 진료</span>
                   </div>
-                  <a href={`/treatments/${linkedTreatment.slug}`} class="text-gray-900 font-bold hover:text-[#0066FF] transition">
+                  <a href={`/treatments/${linkedTreatment.slug}`} class="text-gray-900 font-bold hover:text-[#1E4BD8] transition">
                     {linkedTreatment.name} — 자세히 보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
                   </a>
                   {relatedCases.length > 0 && (
                     <ul class="mt-3 space-y-1">
                       {relatedCases.map((rc: any) => (
-                        <li><a href={`/cases/${rc.id}`} class="text-sm text-gray-600 hover:text-[#0066FF] transition">치료 사례: {rc.title}{rc.duration ? ` (${rc.duration})` : ''}</a></li>
+                        <li><a href={`/cases/${rc.id}`} class="text-sm text-gray-600 hover:text-[#1E4BD8] transition">치료 사례: {rc.title}{rc.duration ? ` (${rc.duration})` : ''}</a></li>
                       ))}
                     </ul>
                   )}
@@ -1634,7 +1634,7 @@ blogRoutes.get('/blog/:slug', async (c) => {
                   <p class="text-[0.68rem] font-bold text-gray-400 uppercase tracking-wider mb-3">목차</p>
                   <nav class="space-y-1.5" aria-label="목차">
                     {headings.map((h: any) => (
-                      <a href={`#${h.id}`} class={`block text-xs transition truncate ${h.level === 2 ? 'text-gray-500 hover:text-[#0066FF] font-medium' : 'text-gray-400 hover:text-[#0066FF] pl-3 text-[0.7rem]'}`}>{h.text}</a>
+                      <a href={`#${h.id}`} class={`block text-xs transition truncate ${h.level === 2 ? 'text-gray-500 hover:text-[#1E4BD8] font-medium' : 'text-gray-400 hover:text-[#1E4BD8] pl-3 text-[0.7rem]'}`}>{h.text}</a>
                     ))}
                   </nav>
                 </div>
@@ -1647,14 +1647,14 @@ blogRoutes.get('/blog/:slug', async (c) => {
               <h2 class="text-lg font-bold text-gray-900 mb-6">관련 칼럼</h2>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {related.map((r: any) => (
-                  <a href={`/blog/${r.slug}`} class="glass-card p-5 hover:border-[#0066FF]/20 transition group">
-                    <span class="text-[0.6rem] text-[#0066FF] font-semibold">{r.category}</span>
-                    <h3 class="font-bold text-gray-900 text-sm mt-1 group-hover:text-[#0066FF] transition line-clamp-2">{r.title}</h3>
+                  <a href={`/blog/${r.slug}`} class="glass-card p-5 hover:border-[#1E4BD8]/20 transition group">
+                    <span class="text-[0.6rem] text-[#1E4BD8] font-semibold">{r.category}</span>
+                    <h3 class="font-bold text-gray-900 text-sm mt-1 group-hover:text-[#1E4BD8] transition line-clamp-2">{r.title}</h3>
                     <p class="text-xs text-gray-400 mt-2">{kstYmd(r.created_at)}</p>
                   </a>
                 ))}
               </div>
-              {catCrumb && <p class="mt-4 text-sm"><a href={`/blog?category=${encodeURIComponent(post.category)}`} class="text-[#0066FF] font-semibold">{post.category} 칼럼 더 보기 →</a></p>}
+              {catCrumb && <p class="mt-4 text-sm"><a href={`/blog?category=${encodeURIComponent(post.category)}`} class="text-[#1E4BD8] font-semibold">{post.category} 칼럼 더 보기 →</a></p>}
             </div>
           )}
         </div>

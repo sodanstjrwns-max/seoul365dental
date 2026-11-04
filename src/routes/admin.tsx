@@ -21,8 +21,8 @@ adminRoutes.get('/admin', async (c) => {
     <section class="min-h-screen bg-gradient-to-br from-gray-900 via-[#0a0e1a] to-gray-900 flex items-center justify-center p-5">
       <div class="w-full max-w-md">
         <div class="text-center mb-8">
-          <div class="w-16 h-16 rounded-2xl bg-[#0066FF]/10 border border-[#0066FF]/20 flex items-center justify-center mx-auto mb-4">
-            <i class="fa-solid fa-shield-halved text-2xl text-[#0066FF]"></i>
+          <div class="w-16 h-16 rounded-2xl bg-[#1E4BD8]/10 border border-[#1E4BD8]/20 flex items-center justify-center mx-auto mb-4">
+            <i class="fa-solid fa-shield-halved text-2xl text-[#1E4BD8]"></i>
           </div>
           <h1 class="text-2xl font-bold text-white">관리자 로그인</h1>
           <p class="text-white/30 text-sm mt-2">서울365치과 관리 시스템</p>
@@ -31,13 +31,13 @@ adminRoutes.get('/admin', async (c) => {
         <form method="POST" action="/api/admin/login" class="space-y-4">
           <div>
             <label class="block text-white/50 text-xs font-semibold mb-2 tracking-wider uppercase">아이디</label>
-            <input name="username" type="text" required class="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white focus:border-[#0066FF]/50 focus:ring-2 focus:ring-[#0066FF]/20 outline-none transition placeholder-white/20" placeholder="admin" autocomplete="username" />
+            <input name="username" type="text" required class="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white focus:border-[#1E4BD8]/50 focus:ring-2 focus:ring-[#1E4BD8]/20 outline-none transition placeholder-white/20" placeholder="admin" autocomplete="username" />
           </div>
           <div>
             <label class="block text-white/50 text-xs font-semibold mb-2 tracking-wider uppercase">비밀번호</label>
-            <input name="password" type="password" required class="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white focus:border-[#0066FF]/50 focus:ring-2 focus:ring-[#0066FF]/20 outline-none transition placeholder-white/20" placeholder="••••••••" autocomplete="current-password" />
+            <input name="password" type="password" required class="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white focus:border-[#1E4BD8]/50 focus:ring-2 focus:ring-[#1E4BD8]/20 outline-none transition placeholder-white/20" placeholder="••••••••" autocomplete="current-password" />
           </div>
-          <button type="submit" class="w-full py-3.5 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white font-bold transition">
+          <button type="submit" class="w-full py-3.5 rounded-xl bg-[#1E4BD8] hover:bg-[#0052cc] text-white font-bold transition">
             <i class="fa-solid fa-right-to-bracket mr-2"></i>로그인
           </button>
         </form>
@@ -170,8 +170,8 @@ adminRoutes.get('/admin/dashboard', async (c) => {
       <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center">
-              <i class="fa-solid fa-shield-halved text-[#0066FF] text-sm"></i>
+            <div class="w-8 h-8 rounded-lg bg-[#1E4BD8]/20 flex items-center justify-center">
+              <i class="fa-solid fa-shield-halved text-[#1E4BD8] text-sm"></i>
             </div>
             <span class="text-white font-bold text-sm">서울365 관리자</span>
             <span class="text-white/20 text-xs">|</span>
@@ -203,15 +203,15 @@ adminRoutes.get('/admin/dashboard', async (c) => {
             </div>
             <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
               <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2">진료 카테고리</div>
-              <div class="text-3xl font-black text-[#0066FF]">{new Set(cases.map((cs: any) => cs.treatment_slug)).size}</div>
+              <div class="text-3xl font-black text-[#1E4BD8]">{new Set(cases.map((cs: any) => cs.treatment_slug)).size}</div>
             </div>
           </div>
 
           {/* View Count Stats */}
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-gradient-to-br from-[#0066FF]/10 to-[#0066FF]/5 border border-[#0066FF]/10 rounded-2xl p-5">
-              <div class="text-[#0066FF]/60 text-xs font-semibold uppercase tracking-wider mb-2"><i class="fa-solid fa-eye mr-1"></i>총 조회수</div>
-              <div class="text-3xl font-black text-[#0066FF]">{(caseTotalViews + noticesStats.totalViews + blogStats.totalViews).toLocaleString()}</div>
+            <div class="bg-gradient-to-br from-[#1E4BD8]/10 to-[#1E4BD8]/5 border border-[#1E4BD8]/10 rounded-2xl p-5">
+              <div class="text-[#1E4BD8]/60 text-xs font-semibold uppercase tracking-wider mb-2"><i class="fa-solid fa-eye mr-1"></i>총 조회수</div>
+              <div class="text-3xl font-black text-[#1E4BD8]">{(caseTotalViews + noticesStats.totalViews + blogStats.totalViews).toLocaleString()}</div>
             </div>
             <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
               <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2"><i class="fa-solid fa-images mr-1 text-emerald-400/50"></i>사례 조회</div>
@@ -350,13 +350,13 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                 </div>
               </div>
             </a>
-            <a href="/admin/blog" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-[#0066FF]/20 transition-all group">
+            <a href="/admin/blog" class="bg-white/5 border border-white/5 rounded-2xl p-5 hover:bg-white/[0.08] hover:border-[#1E4BD8]/20 transition-all group">
               <div class="flex flex-col items-center gap-2 text-center">
-                <div class="w-10 h-10 rounded-xl bg-[#0066FF]/10 flex items-center justify-center">
-                  <i class="fa-solid fa-pen-nib text-[#0066FF]"></i>
+                <div class="w-10 h-10 rounded-xl bg-[#1E4BD8]/10 flex items-center justify-center">
+                  <i class="fa-solid fa-pen-nib text-[#1E4BD8]"></i>
                 </div>
                 <div>
-                  <div class="text-white font-bold text-sm group-hover:text-[#0066FF] transition">블로그</div>
+                  <div class="text-white font-bold text-sm group-hover:text-[#1E4BD8] transition">블로그</div>
                   <div class="text-white/25 text-xs">글 작성·수정</div>
                 </div>
               </div>
@@ -432,7 +432,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
           {/* New Case Button */}
           <div class="flex items-center justify-between mb-6">
             <h1 class="text-xl font-bold text-white">Before &amp; After 케이스 관리</h1>
-            <button onclick="document.getElementById('caseModal').classList.remove('hidden'); document.getElementById('caseForm').reset(); document.getElementById('caseId').value=''; document.getElementById('modalTitle').textContent='새 케이스 등록'; document.getElementById('beforePreview').src=''; document.getElementById('afterPreview').src=''; document.getElementById('beforePreview').classList.add('hidden'); document.getElementById('afterPreview').classList.add('hidden'); document.getElementById('beforePlaceholder').classList.remove('hidden'); document.getElementById('afterPlaceholder').classList.remove('hidden'); document.getElementById('beforeRemoveBtn').classList.add('hidden'); document.getElementById('afterRemoveBtn').classList.add('hidden'); document.getElementById('beforeData').value=''; document.getElementById('afterData').value='';" class="px-5 py-2.5 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white text-sm font-bold transition">
+            <button onclick="document.getElementById('caseModal').classList.remove('hidden'); document.getElementById('caseForm').reset(); document.getElementById('caseId').value=''; document.getElementById('modalTitle').textContent='새 케이스 등록'; document.getElementById('beforePreview').src=''; document.getElementById('afterPreview').src=''; document.getElementById('beforePreview').classList.add('hidden'); document.getElementById('afterPreview').classList.add('hidden'); document.getElementById('beforePlaceholder').classList.remove('hidden'); document.getElementById('afterPlaceholder').classList.remove('hidden'); document.getElementById('beforeRemoveBtn').classList.add('hidden'); document.getElementById('afterRemoveBtn').classList.add('hidden'); document.getElementById('beforeData').value=''; document.getElementById('afterData').value='';" class="px-5 py-2.5 rounded-xl bg-[#1E4BD8] hover:bg-[#0052cc] text-white text-sm font-bold transition">
               <i class="fa-solid fa-plus mr-1.5"></i>새 케이스 등록
             </button>
           </div>
@@ -472,9 +472,9 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                               <div class="w-12 h-12 rounded-lg bg-white/5 flex items-center justify-center text-[0.6rem] text-white/20">B</div>
                             )}
                             {cs.after_image ? (
-                              <img src={cs.after_image} alt="after" class="w-12 h-12 rounded-lg object-cover border border-[#0066FF]/20" />
+                              <img src={cs.after_image} alt="after" class="w-12 h-12 rounded-lg object-cover border border-[#1E4BD8]/20" />
                             ) : (
-                              <div class="w-12 h-12 rounded-lg bg-[#0066FF]/5 flex items-center justify-center text-[0.6rem] text-[#0066FF]/30">A</div>
+                              <div class="w-12 h-12 rounded-lg bg-[#1E4BD8]/5 flex items-center justify-center text-[0.6rem] text-[#1E4BD8]/30">A</div>
                             )}
                           </div>
                         </td>
@@ -499,7 +499,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                           )}
                         </td>
                         <td class="px-5 py-3 text-right">
-                          <button onclick={`loadCase(${cs.id})`} class="text-white/30 hover:text-[#0066FF] transition p-1.5" title="수정">
+                          <button onclick={`loadCase(${cs.id})`} class="text-white/30 hover:text-[#1E4BD8] transition p-1.5" title="수정">
                             <i class="fa-solid fa-pen-to-square"></i>
                           </button>
                           <button onclick={`deleteCase(${cs.id})`} class="text-white/30 hover:text-red-400 transition p-1.5 ml-1" title="삭제">
@@ -533,7 +533,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">진료 카테고리 *</label>
-                <select id="treatmentSlug" name="treatment_slug" required class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#0066FF]/50">
+                <select id="treatmentSlug" name="treatment_slug" required class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#1E4BD8]/50">
                   {treatmentOptions.map(t => (
                     <option value={t.slug} class="bg-gray-900">{t.category} — {t.name}</option>
                   ))}
@@ -541,19 +541,19 @@ adminRoutes.get('/admin/dashboard', async (c) => {
               </div>
               <div>
                 <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">태그 *</label>
-                <input id="caseTag" name="tag" type="text" required placeholder="예: 전체임플란트, 교정" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#0066FF]/50 placeholder-white/20" />
+                <input id="caseTag" name="tag" type="text" required placeholder="예: 전체임플란트, 교정" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#1E4BD8]/50 placeholder-white/20" />
               </div>
             </div>
 
             <div>
               <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">제목 *</label>
-              <input id="caseTitle" name="title" type="text" required placeholder="예: 상악 전체 임플란트 — 60대 남성" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#0066FF]/50 placeholder-white/20" />
+              <input id="caseTitle" name="title" type="text" required placeholder="예: 상악 전체 임플란트 — 60대 남성" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#1E4BD8]/50 placeholder-white/20" />
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">담당의 *</label>
-                <select id="caseDoctorName" name="doctor_name" required class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#0066FF]/50">
+                <select id="caseDoctorName" name="doctor_name" required class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#1E4BD8]/50">
                   {doctorOptions.map(d => (
                     <option value={d.name} class="bg-gray-900">{d.name}</option>
                   ))}
@@ -561,11 +561,11 @@ adminRoutes.get('/admin/dashboard', async (c) => {
               </div>
               <div>
                 <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">환자 나이</label>
-                <input id="caseAge" name="patient_age" type="text" placeholder="예: 60대" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#0066FF]/50 placeholder-white/20" />
+                <input id="caseAge" name="patient_age" type="text" placeholder="예: 60대" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#1E4BD8]/50 placeholder-white/20" />
               </div>
               <div>
                 <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">성별</label>
-                <select id="caseGender" name="patient_gender" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#0066FF]/50">
+                <select id="caseGender" name="patient_gender" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#1E4BD8]/50">
                   <option value="" class="bg-gray-900">선택안함</option>
                   <option value="남성" class="bg-gray-900">남성</option>
                   <option value="여성" class="bg-gray-900">여성</option>
@@ -575,17 +575,17 @@ adminRoutes.get('/admin/dashboard', async (c) => {
 
             <div>
               <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">설명</label>
-              <textarea id="caseDesc" name="description" rows={3} placeholder="케이스에 대한 간단한 설명..." class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#0066FF]/50 placeholder-white/20 resize-none"></textarea>
+              <textarea id="caseDesc" name="description" rows={3} placeholder="케이스에 대한 간단한 설명..." class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#1E4BD8]/50 placeholder-white/20 resize-none"></textarea>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">치료 기간</label>
-                <input id="caseDuration" name="duration" type="text" placeholder="예: 3개월" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#0066FF]/50 placeholder-white/20" />
+                <input id="caseDuration" name="duration" type="text" placeholder="예: 3개월" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#1E4BD8]/50 placeholder-white/20" />
               </div>
               <div>
                 <label class="block text-white/50 text-xs font-semibold mb-2 uppercase tracking-wider">정렬 순서</label>
-                <input id="caseSortOrder" name="sort_order" type="number" value="0" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#0066FF]/50" />
+                <input id="caseSortOrder" name="sort_order" type="number" value="0" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#1E4BD8]/50" />
               </div>
             </div>
 
@@ -596,7 +596,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                 <div class="relative">
                   <input type="file" id="beforeFile" accept="image/*" onchange="uploadCaseImage(this, 'before')" class="hidden" />
                   <input type="hidden" id="beforeData" name="before_image" />
-                  <div id="beforeDropZone" class="w-full border-2 border-dashed border-white/10 rounded-xl hover:border-[#0066FF]/30 transition cursor-pointer overflow-hidden" onclick="document.getElementById('beforeFile').click()">
+                  <div id="beforeDropZone" class="w-full border-2 border-dashed border-white/10 rounded-xl hover:border-[#1E4BD8]/30 transition cursor-pointer overflow-hidden" onclick="document.getElementById('beforeFile').click()">
                     <img id="beforePreview" src="" class="hidden w-full h-40 object-cover" />
                     <div id="beforePlaceholder" class="flex flex-col items-center justify-center gap-2 py-8">
                       <i class="fa-solid fa-cloud-arrow-up text-xl text-white/15"></i>
@@ -604,8 +604,8 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                       <span class="text-white/10 text-xs">용량 제한 없음 · 원본 화질 유지</span>
                     </div>
                     <div id="beforeUploading" class="hidden flex items-center justify-center gap-2 py-8">
-                      <i class="fa-solid fa-spinner fa-spin text-[#0066FF]"></i>
-                      <span class="text-[#0066FF] text-sm">R2 업로드 중...</span>
+                      <i class="fa-solid fa-spinner fa-spin text-[#1E4BD8]"></i>
+                      <span class="text-[#1E4BD8] text-sm">R2 업로드 중...</span>
                     </div>
                   </div>
                   <button type="button" id="beforeRemoveBtn" onclick="event.stopPropagation(); removeCaseImage('before')" class="hidden absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center transition text-xs z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -616,7 +616,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                 <div class="relative">
                   <input type="file" id="afterFile" accept="image/*" onchange="uploadCaseImage(this, 'after')" class="hidden" />
                   <input type="hidden" id="afterData" name="after_image" />
-                  <div id="afterDropZone" class="w-full border-2 border-dashed border-white/10 rounded-xl hover:border-[#0066FF]/30 transition cursor-pointer overflow-hidden" onclick="document.getElementById('afterFile').click()">
+                  <div id="afterDropZone" class="w-full border-2 border-dashed border-white/10 rounded-xl hover:border-[#1E4BD8]/30 transition cursor-pointer overflow-hidden" onclick="document.getElementById('afterFile').click()">
                     <img id="afterPreview" src="" class="hidden w-full h-40 object-cover" />
                     <div id="afterPlaceholder" class="flex flex-col items-center justify-center gap-2 py-8">
                       <i class="fa-solid fa-cloud-arrow-up text-xl text-white/15"></i>
@@ -624,8 +624,8 @@ adminRoutes.get('/admin/dashboard', async (c) => {
                       <span class="text-white/10 text-xs">용량 제한 없음 · 원본 화질 유지</span>
                     </div>
                     <div id="afterUploading" class="hidden flex items-center justify-center gap-2 py-8">
-                      <i class="fa-solid fa-spinner fa-spin text-[#0066FF]"></i>
-                      <span class="text-[#0066FF] text-sm">R2 업로드 중...</span>
+                      <i class="fa-solid fa-spinner fa-spin text-[#1E4BD8]"></i>
+                      <span class="text-[#1E4BD8] text-sm">R2 업로드 중...</span>
                     </div>
                   </div>
                   <button type="button" id="afterRemoveBtn" onclick="event.stopPropagation(); removeCaseImage('after')" class="hidden absolute top-2 right-2 w-7 h-7 rounded-full bg-red-500/80 hover:bg-red-500 text-white flex items-center justify-center transition text-xs z-10"><i class="fa-solid fa-xmark"></i></button>
@@ -635,13 +635,13 @@ adminRoutes.get('/admin/dashboard', async (c) => {
 
             <div class="flex items-center gap-3">
               <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" id="casePublished" name="is_published" value="1" checked class="w-4 h-4 rounded bg-white/5 border-white/10 text-[#0066FF] focus:ring-[#0066FF]/20" />
+                <input type="checkbox" id="casePublished" name="is_published" value="1" checked class="w-4 h-4 rounded bg-white/5 border-white/10 text-[#1E4BD8] focus:ring-[#1E4BD8]/20" />
                 <span class="text-white/50 text-sm">공개로 게시</span>
               </label>
             </div>
 
             <div class="flex gap-3 pt-2">
-              <button type="submit" id="submitBtn" class="flex-1 py-3.5 rounded-xl bg-[#0066FF] hover:bg-[#0052cc] text-white font-bold transition">
+              <button type="submit" id="submitBtn" class="flex-1 py-3.5 rounded-xl bg-[#1E4BD8] hover:bg-[#0052cc] text-white font-bold transition">
                 <i class="fa-solid fa-check mr-1.5"></i>저장
               </button>
               <button type="button" onclick="document.getElementById('caseModal').classList.add('hidden')" class="px-6 py-3.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/50 font-bold transition">취소</button>
@@ -913,8 +913,8 @@ adminRoutes.get('/admin/consultations', async (c) => {
       <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center hover:bg-[#0066FF]/30 transition">
-              <i class="fa-solid fa-arrow-left text-[#0066FF] text-sm"></i>
+            <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#1E4BD8]/20 flex items-center justify-center hover:bg-[#1E4BD8]/30 transition">
+              <i class="fa-solid fa-arrow-left text-[#1E4BD8] text-sm"></i>
             </a>
             <span class="text-white font-bold text-sm">상담문의 관리</span>
             <span class="text-white/20 text-xs">|</span>
@@ -963,7 +963,7 @@ adminRoutes.get('/admin/consultations', async (c) => {
                             {item.reply ? <span class="ml-2 text-[10px] text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded" title="답변 등록됨"><i class="fa-solid fa-comment-dots"></i> 답변</span> : null}
                             <i class={`fa-solid fa-chevron-down text-white/20 text-[10px] ml-2 transition-transform`} id={`chevron-${item.id}`}></i>
                           </td>
-                          <td class="px-5 py-3"><a href={`tel:${item.phone}`} class="text-[#0066FF] hover:underline" onclick="event.stopPropagation()">{item.phone}</a></td>
+                          <td class="px-5 py-3"><a href={`tel:${item.phone}`} class="text-[#1E4BD8] hover:underline" onclick="event.stopPropagation()">{item.phone}</a></td>
                           <td class="px-5 py-3 text-white/40 hidden md:table-cell">{item.treatment || '-'}</td>
                           <td class="px-5 py-3 text-white/30 hidden lg:table-cell max-w-[200px] truncate">{item.message || '-'}</td>
                           <td class="px-5 py-3 text-white/25 text-xs hidden md:table-cell">{item.created_at?.slice(0, 16)}</td>
@@ -986,7 +986,7 @@ adminRoutes.get('/admin/consultations', async (c) => {
                                 </div>
                                 <div>
                                   <div class="text-white/30 text-xs mb-1 font-semibold uppercase tracking-wider">연락처</div>
-                                  <div><a href={`tel:${item.phone}`} class="text-[#0066FF] hover:underline">{item.phone}</a></div>
+                                  <div><a href={`tel:${item.phone}`} class="text-[#1E4BD8] hover:underline">{item.phone}</a></div>
                                 </div>
                                 <div>
                                   <div class="text-white/30 text-xs mb-1 font-semibold uppercase tracking-wider">관심치료</div>
@@ -1015,7 +1015,7 @@ adminRoutes.get('/admin/consultations', async (c) => {
                                   <div class="flex flex-wrap items-center gap-2">
                                     <span class="text-white font-bold tracking-widest bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-sm">{item.lookup_code}</span>
                                     <input type="text" readonly id={`checkurl-${item.id}`} value={`https://seoul365dc.kr/consultations/check?code=${item.lookup_code}`} class="flex-1 min-w-[260px] bg-white/5 border border-white/10 text-white/70 text-xs rounded-lg px-3 py-2 outline-none" onclick="this.select()" />
-                                    <button type="button" onclick={`copyCheckUrl(${item.id})`} class="text-xs px-3 py-2 rounded-lg bg-[#0066FF]/20 text-[#0066FF] hover:bg-[#0066FF]/30 transition font-semibold"><i class="fa-solid fa-copy mr-1"></i>링크 복사</button>
+                                    <button type="button" onclick={`copyCheckUrl(${item.id})`} class="text-xs px-3 py-2 rounded-lg bg-[#1E4BD8]/20 text-[#1E4BD8] hover:bg-[#1E4BD8]/30 transition font-semibold"><i class="fa-solid fa-copy mr-1"></i>링크 복사</button>
                                   </div>
                                 ) : (
                                   <div class="text-white/30 text-xs">접수번호 없음 (환자는 이름+전화번호로 조회 가능)</div>
@@ -1028,10 +1028,10 @@ adminRoutes.get('/admin/consultations', async (c) => {
                                   <div class="text-white/30 text-xs font-semibold uppercase tracking-wider">병원 답변 (환자가 사이트에서 확인)</div>
                                   {item.replied_at ? <span class="text-emerald-400/70 text-xs">답변 등록 {String(item.replied_at).slice(0, 16)}</span> : <span class="text-white/20 text-xs">미답변</span>}
                                 </div>
-                                <textarea id={`reply-${item.id}`} rows={5} class="w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-[#0066FF]/50 resize-y leading-relaxed" placeholder="환자에게 보여질 답변을 입력하세요. 저장하면 환자가 '문의 답변 확인' 페이지에서 바로 볼 수 있습니다.">{item.reply || ''}</textarea>
+                                <textarea id={`reply-${item.id}`} rows={5} class="w-full bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-3 outline-none focus:border-[#1E4BD8]/50 resize-y leading-relaxed" placeholder="환자에게 보여질 답변을 입력하세요. 저장하면 환자가 '문의 답변 확인' 페이지에서 바로 볼 수 있습니다.">{item.reply || ''}</textarea>
                                 <div class="flex items-center justify-end gap-2 mt-2">
                                   <span id={`reply-msg-${item.id}`} class="text-xs text-white/40"></span>
-                                  <button type="button" onclick={`saveReply(${item.id})`} class="text-xs px-4 py-2 rounded-lg bg-[#0066FF] hover:bg-[#0052cc] text-white font-bold transition"><i class="fa-solid fa-paper-plane mr-1"></i>답변 저장</button>
+                                  <button type="button" onclick={`saveReply(${item.id})`} class="text-xs px-4 py-2 rounded-lg bg-[#1E4BD8] hover:bg-[#0052cc] text-white font-bold transition"><i class="fa-solid fa-paper-plane mr-1"></i>답변 저장</button>
                                 </div>
                               </div>
                             </div>
@@ -1167,8 +1167,8 @@ adminRoutes.get('/admin/notices', async (c) => {
       <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center hover:bg-[#0066FF]/30 transition">
-              <i class="fa-solid fa-arrow-left text-[#0066FF] text-sm"></i>
+            <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#1E4BD8]/20 flex items-center justify-center hover:bg-[#1E4BD8]/30 transition">
+              <i class="fa-solid fa-arrow-left text-[#1E4BD8] text-sm"></i>
             </a>
             <span class="text-white font-bold text-sm">공지사항 관리</span>
             <span class="text-white/20 text-xs">|</span>
@@ -1655,8 +1655,8 @@ adminRoutes.get('/admin/members', async (c) => {
       <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center">
-              <i class="fa-solid fa-shield-halved text-[#0066FF] text-sm"></i>
+            <div class="w-8 h-8 rounded-lg bg-[#1E4BD8]/20 flex items-center justify-center">
+              <i class="fa-solid fa-shield-halved text-[#1E4BD8] text-sm"></i>
             </div>
             <a href="/admin/dashboard" class="text-white font-bold text-sm hover:text-white/80 transition">서울365 관리자</a>
             <span class="text-white/20 text-xs">|</span>
@@ -1698,7 +1698,7 @@ adminRoutes.get('/admin/members', async (c) => {
             <button onclick="filterMembers('marketing')" id="filter-marketing" class="px-4 py-2 rounded-xl text-xs font-bold bg-teal-500/10 text-teal-400 border border-teal-400/20 hover:bg-teal-500/20 transition">광고동의 ({marketingCount})</button>
             <button onclick="filterMembers('no-marketing')" id="filter-no-marketing" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-400/20 hover:bg-amber-500/20 transition">광고미동의 ({totalCount - marketingCount})</button>
             <div class="ml-auto">
-              <button onclick="exportCSV()" class="px-4 py-2 rounded-xl text-xs font-bold bg-[#0066FF]/10 text-[#0066FF] border border-[#0066FF]/20 hover:bg-[#0066FF]/20 transition">
+              <button onclick="exportCSV()" class="px-4 py-2 rounded-xl text-xs font-bold bg-[#1E4BD8]/10 text-[#1E4BD8] border border-[#1E4BD8]/20 hover:bg-[#1E4BD8]/20 transition">
                 <i class="fa-solid fa-file-csv mr-1"></i>CSV 내보내기
               </button>
             </div>
@@ -1886,7 +1886,7 @@ adminRoutes.get('/admin/seo', async (c) => {
         <div class="max-w-4xl mx-auto px-5">
 
           {/* Status Banner */}
-          <div class="bg-gradient-to-r from-green-500/10 to-[#0066FF]/10 border border-green-500/20 rounded-2xl p-6 mb-8">
+          <div class="bg-gradient-to-r from-green-500/10 to-[#1E4BD8]/10 border border-green-500/20 rounded-2xl p-6 mb-8">
             <h2 class="text-white font-bold text-lg mb-2"><i class="fa-solid fa-circle-check text-green-400 mr-2"></i>검색엔진 색인 설정</h2>
             <p class="text-white/40 text-sm">각 서비스에 가입 후 발급받은 인증 코드를 입력하면 자동으로 적용됩니다.</p>
           </div>
@@ -1985,7 +1985,7 @@ adminRoutes.get('/admin/seo', async (c) => {
 
             {/* Save Button */}
             <div class="flex flex-col sm:flex-row gap-3">
-              <button type="submit" id="save-btn" class="flex-1 bg-gradient-to-r from-[#0066FF] to-[#2979FF] text-white font-bold py-4 rounded-xl hover:shadow-lg hover:shadow-[#0066FF]/20 transition-all text-sm">
+              <button type="submit" id="save-btn" class="flex-1 bg-gradient-to-r from-[#1E4BD8] to-[#3B63E8] text-white font-bold py-4 rounded-xl hover:shadow-lg hover:shadow-[#1E4BD8]/20 transition-all text-sm">
                 <i class="fa-solid fa-floppy-disk mr-2"></i>설정 저장
               </button>
             </div>
@@ -2011,7 +2011,7 @@ adminRoutes.get('/admin/seo', async (c) => {
 
           {/* Quick Guide */}
           <div class="mt-10 bg-white/[0.02] border border-white/5 rounded-2xl p-6">
-            <h3 class="text-white font-bold mb-4"><i class="fa-solid fa-book-open text-[#0066FF] mr-2"></i>빠른 등록 가이드</h3>
+            <h3 class="text-white font-bold mb-4"><i class="fa-solid fa-book-open text-[#1E4BD8] mr-2"></i>빠른 등록 가이드</h3>
             <div class="space-y-4 text-sm text-white/40">
               <div class="flex gap-3">
                 <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-bold">1</span>
@@ -2060,10 +2060,10 @@ adminRoutes.get('/admin/seo', async (c) => {
             const result = await res.json();
             if (result.ok) {
               btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>저장 완료!';
-              btn.className = btn.className.replace('from-[#0066FF] to-[#2979FF]', 'from-emerald-500 to-emerald-600');
+              btn.className = btn.className.replace('from-[#1E4BD8] to-[#3B63E8]', 'from-emerald-500 to-emerald-600');
               setTimeout(() => {
                 btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i>설정 저장';
-                btn.className = btn.className.replace('from-emerald-500 to-emerald-600', 'from-[#0066FF] to-[#2979FF]');
+                btn.className = btn.className.replace('from-emerald-500 to-emerald-600', 'from-[#1E4BD8] to-[#3B63E8]');
                 btn.disabled = false;
               }, 2000);
             } else {
@@ -2225,8 +2225,8 @@ adminRoutes.get('/admin/pricing', async (c) => {
       <div class="fixed top-0 left-0 right-0 z-[10000] bg-gray-900/95 backdrop-blur border-b border-white/5">
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center hover:bg-[#0066FF]/30 transition">
-              <i class="fa-solid fa-arrow-left text-[#0066FF] text-sm"></i>
+            <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#1E4BD8]/20 flex items-center justify-center hover:bg-[#1E4BD8]/30 transition">
+              <i class="fa-solid fa-arrow-left text-[#1E4BD8] text-sm"></i>
             </a>
             <div class="w-8 h-8 rounded-lg bg-pink-500/20 flex items-center justify-center">
               <i class="fa-solid fa-won-sign text-pink-400 text-sm"></i>
@@ -2244,7 +2244,7 @@ adminRoutes.get('/admin/pricing', async (c) => {
         <div class="max-w-3xl mx-auto px-5 md:px-8">
 
           {/* Info Banner */}
-          <div class="bg-gradient-to-r from-pink-500/10 to-[#0066FF]/10 border border-pink-500/20 rounded-2xl p-6 mb-8">
+          <div class="bg-gradient-to-r from-pink-500/10 to-[#1E4BD8]/10 border border-pink-500/20 rounded-2xl p-6 mb-8">
             <h2 class="text-white font-bold text-lg mb-2"><i class="fa-solid fa-won-sign text-pink-400 mr-2"></i>임플란트 이벤트 수가 설정</h2>
             <p class="text-white/40 text-sm">아래 설정을 변경하면 이벤트 랜딩페이지(<code class="text-pink-300">/event/implant</code>)에 즉시 반영됩니다.<br/>코드 배포 없이 가격·브랜드·기간을 자유롭게 변경할 수 있습니다.</p>
           </div>
@@ -2361,7 +2361,7 @@ adminRoutes.get('/admin/pricing', async (c) => {
           {/* 진료비 수가표 관리 (8개 진료과목 · /prices/*) */}
           {/* ═══════════════════════════════════════════════ */}
           <div class="mt-14 pt-10 border-t border-white/10">
-            <div class="bg-gradient-to-r from-emerald-500/10 to-[#0066FF]/10 border border-emerald-500/20 rounded-2xl p-6 mb-8">
+            <div class="bg-gradient-to-r from-emerald-500/10 to-[#1E4BD8]/10 border border-emerald-500/20 rounded-2xl p-6 mb-8">
               <h2 class="text-white font-bold text-lg mb-2"><i class="fa-solid fa-list-ol text-emerald-400 mr-2"></i>진료비 수가표 관리</h2>
               <p class="text-white/40 text-sm">가격 안내 페이지(<code class="text-emerald-300">/prices/[진료명]</code>)의 진료비 수가를 직접 수정합니다.<br/>과목별 가격·범위·특징을 변경하면 <strong class="text-white/60">코드 배포 없이</strong> 즉시 반영됩니다.</p>
             </div>

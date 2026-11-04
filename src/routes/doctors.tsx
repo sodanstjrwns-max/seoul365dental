@@ -15,13 +15,13 @@ doctorRoutes.get('/doctors', (c) => {
         {/* Team Photo Background — full visible */}
         <div class="absolute inset-0 z-0">
           <img src="/static/team-photo.jpg" alt="서울365치과 의료진 단체사진" class="w-full h-full object-cover object-center" loading="eager" />
-          <div class="absolute inset-0" style="background:linear-gradient(to top, #040B18 0%, rgba(4,11,24,0.7) 30%, rgba(4,11,24,0.35) 60%, rgba(4,11,24,0.5) 100%)"></div>
+          <div class="absolute inset-0" style="background:linear-gradient(to top, #0B1530 0%, rgba(11,21,48,0.7) 30%, rgba(11,21,48,0.35) 60%, rgba(11,21,48,0.5) 100%)"></div>
         </div>
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 pt-28 md:pt-36 pb-12">
           <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s;text-shadow:0 2px 20px rgba(0,0,0,0.5)">서울365치과 의료진 소개</h1>
           <p class="hero-sub text-white/60 max-w-xl reveal" style="transition-delay:0.6s;text-shadow:0 1px 10px rgba(0,0,0,0.5)">서울대 출신 원장들이 하나의 케이스를 함께 봅니다.</p>
           <p class="text-white/30 text-sm mt-4 reveal" style="transition-delay:0.75s">
-            <i class="fa-solid fa-users text-[#0066FF]/50 mr-2"></i>서울대 출신 원장 · 전문 스태프 20여 명이 함께합니다.
+            <i class="fa-solid fa-users text-[#1E4BD8]/50 mr-2"></i>서울대 출신 원장 · 전문 스태프 20여 명이 함께합니다.
           </p>
         </div>
       </section>
@@ -33,7 +33,7 @@ doctorRoutes.get('/doctors', (c) => {
             {doctors.map((doc, i) => (
               <a href={`/doctors/${doc.slug}`} class="premium-card block group overflow-hidden relative" style="border-radius:1.5rem" data-cursor-hover>
                 {/* Lead badge */}
-                {i === 0 && <div class="absolute top-4 left-4 z-20 bg-[#0066FF] text-white text-[0.6rem] font-bold px-2.5 py-1 rounded-full shadow-lg">LEAD</div>}
+                {i === 0 && <div class="absolute top-4 left-4 z-20 bg-[#1E4BD8] text-white text-[0.6rem] font-bold px-2.5 py-1 rounded-full shadow-lg">LEAD</div>}
                 {/* Photo area */}
                 <div class="relative overflow-hidden" style="background:#c8ced8;padding-top:120%">
                   <img
@@ -48,16 +48,16 @@ doctorRoutes.get('/doctors', (c) => {
                 {/* Info */}
                 <div class="p-5 pt-3 text-center">
                   <h2 class="font-bold text-gray-900 text-xl">{doc.name}</h2>
-                  <p class="text-[#0066FF] text-sm font-semibold mt-1">{doc.title}</p>
+                  <p class="text-[#1E4BD8] text-sm font-semibold mt-1">{doc.title}</p>
                   <div class="flex flex-wrap justify-center gap-1.5 mt-3">
                     {doc.specialties.slice(0, 3).map(s => (
-                      <span class="text-[0.65rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-medium">{s}</span>
+                      <span class="text-[0.65rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2.5 py-0.5 rounded-full font-medium">{s}</span>
                     ))}
                   </div>
                   <p class="text-gray-400 text-xs mt-3 line-clamp-1">{doc.education[0]}</p>
-                  {doc.credentials[0] && <p class="text-[#0066FF]/60 text-xs mt-1 line-clamp-1">{doc.credentials[0]}</p>}
+                  {doc.credentials[0] && <p class="text-[#1E4BD8]/60 text-xs mt-1 line-clamp-1">{doc.credentials[0]}</p>}
                   <p class="text-gray-400 text-[0.75rem] mt-3 italic line-clamp-2 leading-relaxed">"{doc.philosophy.split('.')[0]}."</p>
-                  <div class="mt-4 text-sm text-[#0066FF] font-semibold group-hover:gap-2 transition-all flex items-center justify-center gap-1.5">
+                  <div class="mt-4 text-sm text-[#1E4BD8] font-semibold group-hover:gap-2 transition-all flex items-center justify-center gap-1.5">
                     프로필 보기 <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
                   </div>
                 </div>
@@ -185,7 +185,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
         <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
 
           <div class="md:flex items-center gap-8 reveal" style="transition-delay:0.4s">
-            <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#0066FF]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(0,102,255,0.15);background:#c8ced8">
+            <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#1E4BD8]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(30,75,216,0.15);background:#c8ced8">
               <img 
                 src={doc.photo} 
                 alt={`${doc.name} ${doc.titleShort} 프로필 사진`}
@@ -197,7 +197,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
             <div class="text-center md:text-left">
               <h1 class="text-3xl md:text-4xl font-bold text-white">{doc.h1}</h1>
               {story && (
-                <p class="text-[#00E5FF] text-sm font-semibold mt-2 italic">"{story.principle}"</p>
+                <p class="text-[#8FB4FF] text-sm font-semibold mt-2 italic">"{story.principle}"</p>
               )}
               <div class="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
                 {doc.specialties.map(s => <span class="text-[0.75rem] bg-white/[0.06] text-white/60 px-3 py-1.5 rounded-full border border-white/[0.06]">{s}</span>)}
@@ -215,7 +215,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
             <div class="mb-14 reveal">
               <div class="premium-card p-8 md:p-10">
                 <h3 class="font-bold text-gray-900 text-lg mb-6 flex items-center gap-2">
-                  <i class="fa-solid fa-book-open text-[#0066FF]"></i> 소개
+                  <i class="fa-solid fa-book-open text-[#1E4BD8]"></i> 소개
                 </h3>
                 <div class="text-gray-600 text-[0.95rem] leading-[1.9] space-y-4">
                   {story.storyIntro.split('\n\n').map(paragraph => (
@@ -227,7 +227,7 @@ doctorRoutes.get('/doctors/:slug', (c) => {
                   <div class="flex flex-wrap gap-3">
                     {story.profileSummary.map(line => (
                       <div class="flex items-start gap-2 text-sm text-gray-500">
-                        <i class="fa-solid fa-check text-[#0066FF] text-xs mt-1 flex-shrink-0"></i>
+                        <i class="fa-solid fa-check text-[#1E4BD8] text-xs mt-1 flex-shrink-0"></i>
                         <span>{line}</span>
                       </div>
                     ))}
@@ -236,40 +236,40 @@ doctorRoutes.get('/doctors/:slug', (c) => {
               </div>
             </div>
           ) : (
-            <blockquote class="text-xl text-gray-600 italic border-l-3 border-[#0066FF] pl-6 mb-14 leading-relaxed reveal" style="border-left-width:3px">
+            <blockquote class="text-xl text-gray-600 italic border-l-3 border-[#1E4BD8] pl-6 mb-14 leading-relaxed reveal" style="border-left-width:3px">
               "{doc.philosophy}"
             </blockquote>
           )}
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8 stagger-children">
             <div class="glass-card p-7">
-              <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-[#0066FF]"></i> 학력</h3>
-              <ul class="space-y-2.5">{doc.education.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+              <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-[#1E4BD8]"></i> 학력</h3>
+              <ul class="space-y-2.5">{doc.education.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#1E4BD8] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
             </div>
 
             {doc.credentials.length > 0 && (
               <div class="glass-card p-7">
-                <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-certificate text-[#0066FF]"></i> 자격/전문의</h3>
-                <ul class="space-y-2.5">{doc.credentials.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+                <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-certificate text-[#1E4BD8]"></i> 자격/전문의</h3>
+                <ul class="space-y-2.5">{doc.credentials.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#1E4BD8] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
               </div>
             )}
 
             <div class="glass-card p-7">
-              <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-briefcase text-[#0066FF]"></i> 경력</h3>
-              <ul class="space-y-2.5">{doc.career.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+              <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-briefcase text-[#1E4BD8]"></i> 경력</h3>
+              <ul class="space-y-2.5">{doc.career.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#1E4BD8] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
             </div>
 
             {doc.societies.length > 0 && (
               <div class="glass-card p-7">
-                <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-users text-[#0066FF]"></i> 학회</h3>
-                <ul class="space-y-2.5">{doc.societies.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#0066FF] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+                <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-users text-[#1E4BD8]"></i> 학회</h3>
+                <ul class="space-y-2.5">{doc.societies.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#1E4BD8] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
               </div>
             )}
           </div>
 
           {/* Treatment Links */}
           <div class="mt-12 reveal">
-            <h3 class="font-bold text-gray-900 text-lg mb-5 flex items-center gap-2"><i class="fa-solid fa-stethoscope text-[#0066FF]"></i> 담당 치료</h3>
+            <h3 class="font-bold text-gray-900 text-lg mb-5 flex items-center gap-2"><i class="fa-solid fa-stethoscope text-[#1E4BD8]"></i> 담당 치료</h3>
             <div class="flex flex-wrap gap-3">
               {doc.treatmentLinks.map(link => {
                 const treat = getTreatmentBySlug(link.split('/').pop()!);

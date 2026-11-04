@@ -48,7 +48,7 @@ treatmentRoutes.get('/treatments', (c) => {
                         <i class={`fa-solid ${t.icon} text-sm`}></i>
                       </div>
                       <div class="min-w-0">
-                        <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#0066FF] transition-colors truncate">{t.name}</h3>
+                        <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition-colors truncate">{t.name}</h3>
                         <p class="text-xs text-gray-400 truncate">{t.shortDesc}</p>
                       </div>
                     </div>
@@ -63,11 +63,11 @@ treatmentRoutes.get('/treatments', (c) => {
       {/* 백과사전 링크 */}
       <section class="section-md bg-white">
         <div class="max-w-2xl mx-auto px-5 md:px-8 text-center reveal">
-          <a href="/encyclopedia" class="glass-card p-8 block group hover:border-[#0066FF]/30 transition-all" data-cursor-hover>
-            <i class="fa-solid fa-book-medical text-[#0066FF] text-2xl mb-4"></i>
-            <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-[#0066FF] transition-colors">치과 백과사전</h3>
+          <a href="/encyclopedia" class="glass-card p-8 block group hover:border-[#1E4BD8]/30 transition-all" data-cursor-hover>
+            <i class="fa-solid fa-book-medical text-[#1E4BD8] text-2xl mb-4"></i>
+            <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-[#1E4BD8] transition-colors">치과 백과사전</h3>
             <p class="text-gray-400 text-sm">임플란트, 교정, 충치, 신경치료 등 치과 진료에 대한 핵심 지식을 한눈에 확인하세요.</p>
-            <span class="inline-flex items-center gap-1.5 text-[#0066FF] text-sm font-medium mt-4 group-hover:gap-2.5 transition-all">
+            <span class="inline-flex items-center gap-1.5 text-[#1E4BD8] text-sm font-medium mt-4 group-hover:gap-2.5 transition-all">
               자세히 보기 <i class="fa-solid fa-arrow-right text-xs"></i>
             </span>
           </a>
@@ -224,10 +224,10 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
       <section class="bg-white pt-10 md:pt-12 pb-2">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           <div class="glass-card p-6 md:p-7">
-            <p class="text-xs font-bold text-[#0066FF] tracking-wider mb-2">{t.name} 핵심 요약</p>
+            <p class="text-xs font-bold text-[#1E4BD8] tracking-wider mb-2">{t.name} 핵심 요약</p>
             <p id="tx-answer" class="text-gray-800 text-[0.95rem] leading-[1.85]">{answer}</p>
             <p class="tx-reviewer text-xs text-gray-400 mt-4">
-              감수: <a href="/doctors/park-junkyu" class="underline underline-offset-2 hover:text-[#0066FF]">{LEAD_REVIEWER.name} {LEAD_REVIEWER.jobTitle}</a> · 최종 검토 <time datetime={reviewed}>{reviewed}</time>
+              감수: <a href="/doctors/park-junkyu" class="underline underline-offset-2 hover:text-[#1E4BD8]">{LEAD_REVIEWER.name} {LEAD_REVIEWER.jobTitle}</a> · 최종 검토 <time datetime={reviewed}>{reviewed}</time>
             </p>
           </div>
         </div>
@@ -237,14 +237,14 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
       <section class="section-lg bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-[#0066FF] mb-3 block">FOR YOU</span>
+            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">FOR YOU</span>
             <h2 class="section-sub-headline text-gray-900">{t.name}, 이런 고민 있으신가요?</h2>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 stagger-children">
             {t.concerns.map(concern => (
               <div class="glass-card p-5 flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i class="fa-solid fa-circle-check text-[#0066FF] text-sm"></i>
+                <div class="w-8 h-8 rounded-lg bg-[#1E4BD8]/8 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-circle-check text-[#1E4BD8] text-sm"></i>
                 </div>
                 <p class="text-gray-700 text-[0.9rem] leading-relaxed">{concern}</p>
               </div>
@@ -257,7 +257,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
       <section class="section-lg bg-white">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-[#0066FF] mb-3 block">TYPES</span>
+            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">TYPES</span>
             <h2 class="section-sub-headline text-gray-900">서울365치과 {t.name} 종류</h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
@@ -276,7 +276,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
         <section class="section-lg bg-mesh">
           <div class="max-w-4xl mx-auto px-5 md:px-8">
             <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#0066FF] mb-3 block">DETAILS</span>
+              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">DETAILS</span>
               <h2 class="section-sub-headline text-gray-900">{t.name} 상세 정보</h2>
             </div>
             <div class="space-y-5 stagger-children">
@@ -304,7 +304,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
       <section class="section-lg bg-mesh">
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-[#0066FF] mb-3 block">WHY US</span>
+            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">WHY US</span>
             <h2 class="section-sub-headline text-gray-900">왜 서울365치과의 {t.name}인가요?</h2>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
@@ -313,7 +313,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
                 <div class="icon-circle mb-5">
                   <i class={`fa-solid ${w.icon}`}></i>
                 </div>
-                <h3 class="font-bold text-gray-900 mb-2 group-hover:text-[#0066FF] transition-colors">{w.title}</h3>
+                <h3 class="font-bold text-gray-900 mb-2 group-hover:text-[#1E4BD8] transition-colors">{w.title}</h3>
                 <p class="text-gray-500 text-[0.9rem] leading-relaxed">{w.desc}</p>
               </div>
             ))}
@@ -326,14 +326,14 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
         <section class="section-lg bg-white">
           <div class="max-w-4xl mx-auto px-5 md:px-8">
             <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#0066FF] mb-3 block">COMPARE</span>
+              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">COMPARE</span>
               <h2 class="section-sub-headline text-gray-900">{t.name} 비교</h2>
             </div>
             <div class="glass-card overflow-hidden reveal">
               <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                   <thead>
-                    <tr class="bg-gradient-to-r from-[#0066FF]/5 to-[#0066FF]/10">
+                    <tr class="bg-gradient-to-r from-[#1E4BD8]/5 to-[#1E4BD8]/10">
                       {t.comparisonHeaders.map((h: string) => (
                         <th class="px-4 py-4 text-left font-bold text-gray-800 whitespace-nowrap">{h}</th>
                       ))}
@@ -363,7 +363,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
         <meta itemprop="totalTime" content="PT1H" />
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-[#0066FF] mb-3 block">PROCESS</span>
+            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">PROCESS</span>
             <h2 class="section-sub-headline text-gray-900">{t.name} 치료 과정</h2>
           </div>
           <div class="space-y-0 stagger-children">
@@ -434,7 +434,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
         <section class="section-lg bg-white">
           <div class="max-w-5xl mx-auto px-5 md:px-8">
             <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#0066FF] mb-3 block">BEFORE &amp; AFTER</span>
+              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">BEFORE &amp; AFTER</span>
               <h2 class="section-sub-headline text-gray-900">{t.name} 실제 치료 사례</h2>
               <p class="text-gray-400 text-sm mt-3">실제 환자분의 치료 전후 사진입니다. 클릭하여 상세히 확인하세요.</p>
             </div>
@@ -456,24 +456,24 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
                     {/* Hover overlay */}
                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                       <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm rounded-full w-11 h-11 flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-expand text-[#0066FF]"></i>
+                        <i class="fa-solid fa-expand text-[#1E4BD8]"></i>
                       </div>
                     </div>
                   </div>
                   {/* Card Info */}
                   <div class="p-4">
                     <div class="flex items-center gap-2 mb-1.5">
-                      <span class="text-[0.65rem] bg-[#0066FF]/8 text-[#0066FF] px-2 py-0.5 rounded-full font-semibold">{cs.tag}</span>
+                      <span class="text-[0.65rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2 py-0.5 rounded-full font-semibold">{cs.tag}</span>
                       {cs.duration && <span class="text-[0.6rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
                     </div>
-                    <h3 class="font-bold text-gray-900 text-[0.85rem] group-hover:text-[#0066FF] transition-colors line-clamp-1"><a href={`/cases/${cs.id}`} onclick="event.stopPropagation()">{cs.title}</a></h3>
+                    <h3 class="font-bold text-gray-900 text-[0.85rem] group-hover:text-[#1E4BD8] transition-colors line-clamp-1"><a href={`/cases/${cs.id}`} onclick="event.stopPropagation()">{cs.title}</a></h3>
                     <p class="text-[0.75rem] text-gray-400 mt-1">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender && cs.patient_gender !== '선택안함' ? ` ${cs.patient_gender}` : ''}</p>
                   </div>
                 </div>
               ))}
             </div>
             <div class="text-center mt-8 reveal">
-              <a href="/cases/gallery" class="inline-flex items-center gap-2 text-[#0066FF] hover:text-[#0052cc] font-semibold text-sm transition" data-cursor-hover>
+              <a href="/cases/gallery" class="inline-flex items-center gap-2 text-[#1E4BD8] hover:text-[#0052cc] font-semibold text-sm transition" data-cursor-hover>
                 전체 치료 사례 보기 <i class="fa-solid fa-arrow-right text-xs"></i>
               </a>
             </div>
@@ -489,7 +489,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
             <h2 class="section-sub-headline text-gray-900 mb-6">{t.name} 관련 칼럼</h2>
             <ul class="divide-y divide-gray-100 border-y border-gray-100">
               {txPosts.map((bp: any) => (
-                <li><a href={`/blog/${bp.slug}`} class="flex justify-between gap-4 py-3 text-gray-700 hover:text-[#0066FF] transition text-[0.92rem]"><span>{bp.title}</span><time class="text-gray-300 text-xs whitespace-nowrap" datetime={kstYmd(bp.created_at)}>{kstYmd(bp.created_at)}</time></a></li>
+                <li><a href={`/blog/${bp.slug}`} class="flex justify-between gap-4 py-3 text-gray-700 hover:text-[#1E4BD8] transition text-[0.92rem]"><span>{bp.title}</span><time class="text-gray-300 text-xs whitespace-nowrap" datetime={kstYmd(bp.created_at)}>{kstYmd(bp.created_at)}</time></a></li>
               ))}
             </ul>
           </div>
@@ -506,7 +506,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
                 {/* Modal Header */}
                 <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 flex items-center justify-between px-6 py-4 border-b border-gray-100">
                   <div class="flex items-center gap-2">
-                    <span id="txModalTag" class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold"></span>
+                    <span id="txModalTag" class="text-[0.7rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2.5 py-0.5 rounded-full font-semibold"></span>
                     <span id="txModalDuration" class="text-[0.65rem] text-gray-400"></span>
                   </div>
                   <div class="flex items-center gap-2">
@@ -524,19 +524,19 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
                     </div>
                     <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
                       <img id="txModalAfter" src="" alt={`${t.name} 치료 후`} class="w-full h-full object-cover" />
-                      <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/80 backdrop-blur-sm px-3 py-1 rounded-lg">After</span>
+                      <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#1E4BD8]/80 backdrop-blur-sm px-3 py-1 rounded-lg">After</span>
                     </div>
                   </div>
                   <h2 id="txModalTitle" class="text-xl font-bold text-gray-900 mb-3"></h2>
                   <p id="txModalDesc" class="text-gray-600 text-sm leading-relaxed mb-4"></p>
                   <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500 bg-gray-50 rounded-xl px-5 py-4">
-                    <span id="txModalDoctor"><i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i></span>
-                    <span id="txModalPatient"><i class="fa-solid fa-user text-[#0066FF]/60 mr-1.5"></i></span>
-                    <span id="txModalDur"><i class="fa-regular fa-clock text-[#0066FF]/60 mr-1.5"></i></span>
+                    <span id="txModalDoctor"><i class="fa-solid fa-user-doctor text-[#1E4BD8]/60 mr-1.5"></i></span>
+                    <span id="txModalPatient"><i class="fa-solid fa-user text-[#1E4BD8]/60 mr-1.5"></i></span>
+                    <span id="txModalDur"><i class="fa-regular fa-clock text-[#1E4BD8]/60 mr-1.5"></i></span>
                   </div>
                   <div class="mt-6 text-center">
                     <p class="text-gray-400 text-xs mb-3">비슷한 고민을 가지고 계신가요?</p>
-                    <a href="/reservation" class="inline-flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052cc] text-white font-bold text-sm px-6 py-3 rounded-xl transition">
+                    <a href="/reservation" class="inline-flex items-center gap-2 bg-[#1E4BD8] hover:bg-[#0052cc] text-white font-bold text-sm px-6 py-3 rounded-xl transition">
                       <i class="fa-solid fa-calendar-check text-xs"></i> 무료 상담 예약
                     </a>
                   </div>
@@ -583,10 +583,10 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
               document.getElementById('txModalAfter').src = c.after_image || '';
               document.getElementById('txModalTitle').textContent = c.title;
               document.getElementById('txModalDesc').textContent = c.description || '상세 설명이 없습니다.';
-              document.getElementById('txModalDoctor').innerHTML = '<i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i>담당: ' + c.doctor_name;
+              document.getElementById('txModalDoctor').innerHTML = '<i class="fa-solid fa-user-doctor text-[#1E4BD8]/60 mr-1.5"></i>담당: ' + c.doctor_name;
               var patientText = (c.patient_age || '') + (c.patient_gender && c.patient_gender !== '선택안함' ? ' ' + c.patient_gender : '');
-              document.getElementById('txModalPatient').innerHTML = '<i class="fa-solid fa-user text-[#0066FF]/60 mr-1.5"></i>' + patientText;
-              document.getElementById('txModalDur').innerHTML = '<i class="fa-regular fa-clock text-[#0066FF]/60 mr-1.5"></i>' + (c.duration || '-');
+              document.getElementById('txModalPatient').innerHTML = '<i class="fa-solid fa-user text-[#1E4BD8]/60 mr-1.5"></i>' + patientText;
+              document.getElementById('txModalDur').innerHTML = '<i class="fa-regular fa-clock text-[#1E4BD8]/60 mr-1.5"></i>' + (c.duration || '-');
               document.getElementById('txModalDur').style.display = c.duration ? '' : 'none';
               document.getElementById('txModalPatient').style.display = patientText.trim() ? '' : 'none';
             }
@@ -609,7 +609,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
           <meta itemProp="name" content={`${t.name} 사용 재료 및 픽스처`} />
           <div class="max-w-5xl mx-auto px-5 md:px-8">
             <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#0066FF] mb-3 block">
+              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">
                 {['implant','full-implant','digital-full-arch','implant-revision'].includes(t.slug) ? 'FIXTURE GUIDE' : 'MATERIALS'}
               </span>
               <h2 class="section-sub-headline text-gray-900">
@@ -630,18 +630,18 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
                       {/* 헤더 */}
                       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-5 pb-0 sm:pb-5 gap-3 border-b border-gray-100">
                         <div class="flex items-start gap-3">
-                          <div class="w-10 h-10 rounded-xl bg-[#0066FF]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <i class={`fa-solid ${m.grade?.includes('수입') ? 'fa-globe' : m.grade?.includes('보철') || m.grade?.includes('연결') ? 'fa-crown' : 'fa-shield-halved'} text-[#0066FF] text-sm`} aria-hidden="true"></i>
+                          <div class="w-10 h-10 rounded-xl bg-[#1E4BD8]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class={`fa-solid ${m.grade?.includes('수입') ? 'fa-globe' : m.grade?.includes('보철') || m.grade?.includes('연결') ? 'fa-crown' : 'fa-shield-halved'} text-[#1E4BD8] text-sm`} aria-hidden="true"></i>
                           </div>
                           <div>
-                            {m.grade && <span class="text-[0.65rem] font-bold text-[#0066FF] uppercase tracking-wider block mb-0.5">{m.grade}</span>}
+                            {m.grade && <span class="text-[0.65rem] font-bold text-[#1E4BD8] uppercase tracking-wider block mb-0.5">{m.grade}</span>}
                             <h3 class="font-bold text-gray-900 text-[1.05rem]" itemProp="name">{m.name}</h3>
                             {m.origin && <span class="text-gray-400 text-[0.75rem]">{m.origin}</span>}
                           </div>
                         </div>
                         {m.price && (
                           <div class="sm:text-right flex-shrink-0">
-                            <span class="text-[1.15rem] font-extrabold text-[#0066FF]" itemProp="offers" itemScope itemType="https://schema.org/Offer">
+                            <span class="text-[1.15rem] font-extrabold text-[#1E4BD8]" itemProp="offers" itemScope itemType="https://schema.org/Offer">
                               <meta itemProp="priceCurrency" content="KRW" />
                               <span itemProp="price">{m.price}</span>
                             </span>
@@ -684,10 +684,10 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
                               </div>
                             )}
                             {m.bestFor && (
-                              <div class="flex items-start gap-2 bg-[#0066FF]/5 rounded-lg px-3.5 py-2.5">
-                                <i class="fa-solid fa-user-check text-[#0066FF]/60 text-[0.7rem] mt-1 flex-shrink-0" aria-hidden="true"></i>
+                              <div class="flex items-start gap-2 bg-[#1E4BD8]/5 rounded-lg px-3.5 py-2.5">
+                                <i class="fa-solid fa-user-check text-[#1E4BD8]/60 text-[0.7rem] mt-1 flex-shrink-0" aria-hidden="true"></i>
                                 <div>
-                                  <span class="text-[0.68rem] font-semibold text-[#0066FF]/60 uppercase block">추천 대상</span>
+                                  <span class="text-[0.68rem] font-semibold text-[#1E4BD8]/60 uppercase block">추천 대상</span>
                                   <span class="text-gray-700 text-[0.82rem] font-medium">{m.bestFor}</span>
                                 </div>
                               </div>
@@ -704,7 +704,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
                 {t.materials.map(m => (
                   <div class="glass-card p-5 flex flex-col">
-                    {m.grade && <span class="text-[0.7rem] font-semibold text-[#0066FF] uppercase tracking-wider mb-2">{m.grade}</span>}
+                    {m.grade && <span class="text-[0.7rem] font-semibold text-[#1E4BD8] uppercase tracking-wider mb-2">{m.grade}</span>}
                     <h3 class="font-bold text-gray-900 text-[0.95rem] mb-1.5">{m.name}</h3>
                     <p class="text-gray-500 text-[0.85rem] leading-relaxed">{m.desc}</p>
                   </div>
@@ -729,7 +729,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
       <section class="section-lg bg-white">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-[#0066FF] mb-3 block">FAQ</span>
+            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">FAQ</span>
             <h2 class="section-sub-headline text-gray-900">{t.name} 자주 묻는 질문</h2>
           </div>
           <div class="space-y-3 stagger-children">
@@ -759,7 +759,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
             <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 예약하기</a>
           </div>
           {/* 오시는 길·진료 안내 — "구월동 치과" 허브 링크 (2026-10-08) */}
-          <p class="text-white/45 text-sm mt-8">{t.name} 진료 위치·주차·진료시간은 <HubA cls="text-[#00E5FF] font-semibold hover:underline" /> 안내에서 확인하실 수 있습니다.</p>
+          <p class="text-white/45 text-sm mt-8">{t.name} 진료 위치·주차·진료시간은 <HubA cls="text-[#8FB4FF] font-semibold hover:underline" /> 안내에서 확인하실 수 있습니다.</p>
         </div>
       </section>
 
@@ -768,7 +768,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
         <section class="section-md bg-gradient-to-b from-gray-50 to-white">
           <div class="max-w-6xl mx-auto px-5 md:px-8">
             <div class="text-center mb-10 reveal">
-              <span class="section-eyebrow text-[#0066FF] mb-3 block">BY AREA</span>
+              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">BY AREA</span>
               <h2 class="text-xl md:text-2xl font-bold text-gray-900">
                 지역별 {t.name} 안내 — 우리 동네에서 가까운 곳
               </h2>
@@ -779,10 +779,10 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 stagger-children">
               {getAreasSorted().map(a => (
                 <a href={`/area/${a.slug}/${t.slug}`}
-                   class="premium-card p-3 text-center group hover:border-[#0066FF]/20 transition-all block"
+                   class="premium-card p-3 text-center group hover:border-[#1E4BD8]/20 transition-all block"
                    data-cursor-hover
                    title={`${a.name} ${t.name}`}>
-                  <p class="font-bold text-gray-900 text-xs group-hover:text-[#0066FF] transition-colors leading-snug">
+                  <p class="font-bold text-gray-900 text-xs group-hover:text-[#1E4BD8] transition-colors leading-snug">
                     {a.name} {t.name}
                   </p>
                   <p class="text-[10px] text-gray-400 mt-1">
@@ -803,17 +803,17 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
         <section class="section-md bg-mesh">
           <div class="max-w-4xl mx-auto px-5 md:px-8">
             <div class="text-center mb-10 reveal">
-              <span class="section-eyebrow text-[#0066FF] mb-3 block">RELATED</span>
+              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">RELATED</span>
               <h2 class="text-xl font-bold text-gray-900">관련 진료 안내</h2>
             </div>
             <div class="flex flex-wrap justify-center gap-3 stagger-children">
               {t.relatedSlugs.map(rs => {
                 const related = getTreatmentBySlug(rs);
                 return related ? (
-                  <a href={`/treatments/${related.slug}`} class="glass-card px-5 py-3 flex items-center gap-2.5 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
-                    <i class={`fa-solid ${related.icon} text-[#0066FF] text-sm`}></i>
-                    <span class="font-medium text-gray-700 group-hover:text-[#0066FF] transition-colors text-[0.9rem]">{related.name}</span>
-                    <i class="fa-solid fa-arrow-right text-xs text-gray-300 group-hover:text-[#0066FF] transition-colors"></i>
+                  <a href={`/treatments/${related.slug}`} class="glass-card px-5 py-3 flex items-center gap-2.5 hover:border-[#1E4BD8]/30 transition-all group" data-cursor-hover>
+                    <i class={`fa-solid ${related.icon} text-[#1E4BD8] text-sm`}></i>
+                    <span class="font-medium text-gray-700 group-hover:text-[#1E4BD8] transition-colors text-[0.9rem]">{related.name}</span>
+                    <i class="fa-solid fa-arrow-right text-xs text-gray-300 group-hover:text-[#1E4BD8] transition-colors"></i>
                   </a>
                 ) : null;
               })}

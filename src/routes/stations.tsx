@@ -29,7 +29,7 @@ stationsRoutes.get('/stations', (c) => {
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:16vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">STATIONS & LANDMARKS</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">STATIONS & LANDMARKS</p>
           <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
             지하철역·랜드마크별 길안내
           </h1>
@@ -42,9 +42,9 @@ stationsRoutes.get('/stations', (c) => {
       <div class="max-w-5xl mx-auto px-5 md:px-8 py-16">
         <div class="grid md:grid-cols-2 gap-4">
           {STATIONS.map(st => (
-            <a href={`/stations/${st.slug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#0066FF]/30 hover:shadow-lg transition-all bg-white">
+            <a href={`/stations/${st.slug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:shadow-lg transition-all bg-white">
               <div class="flex items-center gap-3 mb-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center">
                   <i class={`fa-solid ${st.line.includes('호선') ? 'fa-train-subway' : 'fa-location-dot'} text-white text-sm`}></i>
                 </div>
                 <div>
@@ -53,7 +53,7 @@ stationsRoutes.get('/stations', (c) => {
                 </div>
               </div>
               <div class="text-sm text-gray-600 leading-relaxed">
-                <i class="fa-solid fa-route text-[#0066FF] mr-1"></i>
+                <i class="fa-solid fa-route text-[#1E4BD8] mr-1"></i>
                 서울365치과까지 {st.travelDesc} ({st.travelMin}분)
               </div>
             </a>
@@ -129,29 +129,29 @@ stationsRoutes.get('/stations/:slug', (c) => {
         <div class="hero-grid"></div>
         <div class="orb orb-1"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:14vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{st.line}</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{st.line}</p>
           <h1 class="text-2xl md:text-4xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
             {st.name}에서 치과 가기
           </h1>
           <p class="text-white/60 text-sm md:text-base reveal reveal-fade" style="transition-delay:0.4s">
-            서울365치과까지 <span class="text-[#00E5FF] font-bold">{st.travelDesc}</span> ({st.travelMin}분)
+            서울365치과까지 <span class="text-[#8FB4FF] font-bold">{st.travelDesc}</span> ({st.travelMin}분)
           </p>
         </div>
       </div>
 
       <article class="max-w-3xl mx-auto px-5 md:px-8 py-16">
         <nav class="text-xs text-gray-400 mb-6">
-          <a href="/" class="hover:text-[#0066FF]">홈</a> <span class="mx-2">›</span>
-          <a href="/stations" class="hover:text-[#0066FF]">역·랜드마크</a> <span class="mx-2">›</span>
+          <a href="/" class="hover:text-[#1E4BD8]">홈</a> <span class="mx-2">›</span>
+          <a href="/stations" class="hover:text-[#1E4BD8]">역·랜드마크</a> <span class="mx-2">›</span>
           <span class="text-gray-700">{st.name}</span>
         </nav>
 
         {/* 핵심 정보 박스 */}
-        <div class="p-6 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#0066FF]/10 mb-10">
+        <div class="p-6 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#1E4BD8]/10 mb-10">
           <div class="grid md:grid-cols-3 gap-4">
             <div>
               <div class="text-xs text-gray-500 mb-1">소요 시간</div>
-              <div class="text-2xl font-black text-[#0066FF]">{st.travelMin}분</div>
+              <div class="text-2xl font-black text-[#1E4BD8]">{st.travelMin}분</div>
             </div>
             <div>
               <div class="text-xs text-gray-500 mb-1">이동 방법</div>
@@ -167,7 +167,7 @@ stationsRoutes.get('/stations/:slug', (c) => {
         {/* 본문 */}
         <div class="prose prose-lg max-w-none mb-10">
           <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-route text-[#0066FF]"></i>
+            <i class="fa-solid fa-route text-[#1E4BD8]"></i>
             {st.name}에서 서울365치과 가는 길
           </h2>
           <p class="text-gray-700 leading-loose mb-4">
@@ -179,17 +179,17 @@ stationsRoutes.get('/stations/:slug', (c) => {
             <strong>{st.name} 인근에서 치과를 찾으시는 분</strong>들에게 서울365치과는 다음과 같은 장점을 제공합니다:
           </p>
           <ul class="space-y-2 text-gray-700 mb-6">
-            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#0066FF] mt-1.5 text-xs"></i> 365일 진료 — 평일 야간 21시, 토요일 14시, 일·공휴일 14~18시</li>
-            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#0066FF] mt-1.5 text-xs"></i> 서울대학교 치과대학 출신 5인 원장 협진</li>
-            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#0066FF] mt-1.5 text-xs"></i> 자체 기공실 보유 — 빠른 보철 제작</li>
-            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#0066FF] mt-1.5 text-xs"></i> 임플란트·인비절라인·수면진료·전체임플란트 전문</li>
-            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#0066FF] mt-1.5 text-xs"></i> 무료 주차장 완비</li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i> 365일 진료 — 평일 야간 21시, 토요일 14시, 일·공휴일 14~18시</li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i> 서울대학교 치과대학 출신 5인 원장 협진</li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i> 자체 기공실 보유 — 빠른 보철 제작</li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i> 임플란트·인비절라인·수면진료·전체임플란트 전문</li>
+            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i> 무료 주차장 완비</li>
           </ul>
         </div>
 
         {/* 추천 진료 */}
         <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <i class="fa-solid fa-tooth text-[#0066FF]"></i>
+          <i class="fa-solid fa-tooth text-[#1E4BD8]"></i>
           {st.name} 인근 주민이 많이 찾는 진료
         </h2>
         <div class="grid md:grid-cols-2 gap-4 mb-12">
@@ -198,9 +198,9 @@ stationsRoutes.get('/stations/:slug', (c) => {
             const pricing = TREATMENT_PRICING[tslug];
             if (!info) return null;
             return (
-              <a href={`/treatments/${tslug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#0066FF]/30 hover:shadow-lg transition-all">
+              <a href={`/treatments/${tslug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:shadow-lg transition-all">
                 <div class="flex items-center gap-3 mb-3">
-                  <i class={`fa-solid ${info.icon} text-[#0066FF] text-2xl`}></i>
+                  <i class={`fa-solid ${info.icon} text-[#1E4BD8] text-2xl`}></i>
                   <div>
                     <h3 class="font-bold text-gray-900">{info.name}</h3>
                     <p class="text-xs text-gray-400">{info.tagline}</p>
@@ -208,7 +208,7 @@ stationsRoutes.get('/stations/:slug', (c) => {
                 </div>
                 {pricing && pricing.items?.[0] && (
                   <div class="text-sm text-gray-600">
-                    가격: <span class="font-bold text-[#0066FF]">{pricing.items[0].price.toLocaleString()}원~</span>
+                    가격: <span class="font-bold text-[#1E4BD8]">{pricing.items[0].price.toLocaleString()}원~</span>
                   </div>
                 )}
               </a>
@@ -228,7 +228,7 @@ stationsRoutes.get('/stations/:slug', (c) => {
           <h2 class="text-lg font-bold text-gray-900 mb-4">다른 역·랜드마크</h2>
           <div class="grid md:grid-cols-2 gap-3">
             {otherStations.map(s => (
-              <a href={`/stations/${s.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#0066FF]/30 hover:bg-gray-50 transition-all">
+              <a href={`/stations/${s.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:bg-gray-50 transition-all">
                 <div class="text-sm font-bold text-gray-900">{s.name}에서 치과 가기</div>
                 <div class="text-xs text-gray-500 mt-1">{s.travelDesc} ({s.travelMin}분)</div>
               </a>
@@ -237,11 +237,11 @@ stationsRoutes.get('/stations/:slug', (c) => {
         </div>
 
         {/* CTA */}
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white text-center">
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
           <h3 class="text-xl md:text-2xl font-black mb-2">{st.name} 인근 치과 찾으세요?</h3>
           <p class="text-white/80 text-sm mb-5">서울365치과 무료 상담 받아보세요.</p>
           <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#0066FF] font-bold text-sm hover:scale-105 transition-all">
+            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm hover:scale-105 transition-all">
               <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담 예약
             </a>
             <a href={CLINIC.phoneTel} class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm hover:bg-white/20 transition-all">

@@ -12,7 +12,7 @@ const app = new Hono<{ Bindings: Bindings }>();
 const goneHtml = `<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>페이지가 삭제되었습니다 | 서울365치과</title>
-<style>body{font-family:system-ui,-apple-system,sans-serif;background:#f8fafc;color:#0f172a;margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:16px}main{max-width:480px;text-align:center}a{color:#0066FF}</style>
+<style>body{font-family:system-ui,-apple-system,sans-serif;background:#f8fafc;color:#0f172a;margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:16px}main{max-width:480px;text-align:center}a{color:#1E4BD8}</style>
 </head><body><main><h1>페이지가 삭제되었습니다</h1><p>요청하신 페이지는 더 이상 제공되지 않습니다.</p><p><a href="/">서울365치과 홈으로 이동</a></p></main></body></html>`;
 
 const gone = () =>

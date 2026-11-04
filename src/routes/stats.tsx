@@ -117,10 +117,10 @@ function Timeline() {
     <div class="flex flex-wrap items-stretch justify-center">
       {TIMELINE.map((s, i) => (
         <>
-          {i > 0 && <div class="hidden md:block w-6 h-px bg-[#0066FF]/25 self-center -mt-6"></div>}
+          {i > 0 && <div class="hidden md:block w-6 h-px bg-[#1E4BD8]/25 self-center -mt-6"></div>}
           <div class="flex-1 min-w-[110px] text-center px-1 py-1">
-            <div class="w-8 h-8 rounded-full bg-[#0066FF]/10 border border-[#0066FF]/40 text-[#0066FF] font-bold text-xs flex items-center justify-center mx-auto mb-2">{i + 1}</div>
-            <div class="text-[#0066FF] text-[0.7rem] font-bold tracking-wide mb-0.5">{s.p}</div>
+            <div class="w-8 h-8 rounded-full bg-[#1E4BD8]/10 border border-[#1E4BD8]/40 text-[#1E4BD8] font-bold text-xs flex items-center justify-center mx-auto mb-2">{i + 1}</div>
+            <div class="text-[#1E4BD8] text-[0.7rem] font-bold tracking-wide mb-0.5">{s.p}</div>
             <div class="text-white/70 text-xs">{s.t}</div>
           </div>
         </>
@@ -132,9 +132,9 @@ function Timeline() {
 function ExpectationCard({ large }: { large: boolean }) {
   if (large) {
     return (
-      <section class="bg-gradient-to-br from-[#0066FF]/10 to-white/[0.02] border border-[#0066FF]/25 rounded-2xl p-8 md:p-10 text-center mb-7">
-        <div class="w-14 h-14 rounded-2xl bg-[#0066FF]/10 flex items-center justify-center mx-auto mb-5">
-          <i class="fa-solid fa-hourglass-half text-[#0066FF] text-xl"></i>
+      <section class="bg-gradient-to-br from-[#1E4BD8]/10 to-white/[0.02] border border-[#1E4BD8]/25 rounded-2xl p-8 md:p-10 text-center mb-7">
+        <div class="w-14 h-14 rounded-2xl bg-[#1E4BD8]/10 flex items-center justify-center mx-auto mb-5">
+          <i class="fa-solid fa-hourglass-half text-[#1E4BD8] text-xl"></i>
         </div>
         <h2 class="text-white text-2xl font-black mb-3">검색 순위는 시간이 필요합니다</h2>
         <p class="text-white/50 text-sm leading-7 mb-7 max-w-2xl mx-auto">
@@ -147,7 +147,7 @@ function ExpectationCard({ large }: { large: boolean }) {
   }
   return (
     <section class="bg-white/5 border border-white/5 rounded-2xl p-5 mb-7">
-      <div class="text-[#0066FF] text-sm font-bold mb-3"><i class="fa-solid fa-hourglass-half mr-2"></i>검색 순위는 시간이 필요합니다</div>
+      <div class="text-[#1E4BD8] text-sm font-bold mb-3"><i class="fa-solid fa-hourglass-half mr-2"></i>검색 순위는 시간이 필요합니다</div>
       <Timeline />
     </section>
   )
@@ -156,8 +156,8 @@ function ExpectationCard({ large }: { large: boolean }) {
 function MetricCard({ label, value, icon, delta, invert, sub }: { label: string; value: string; icon: string; delta?: number | null; invert?: boolean; sub?: string }) {
   return (
     <div class="bg-white/5 border border-white/5 rounded-2xl p-5">
-      <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2"><i class={`fa-solid ${icon} mr-1 text-[#0066FF]/60`}></i>{label}</div>
-      <div class="text-2xl md:text-3xl font-black text-white">{value}{sub && <span class="text-sm font-bold text-[#0066FF] ml-1">{sub}</span>}</div>
+      <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-2"><i class={`fa-solid ${icon} mr-1 text-[#1E4BD8]/60`}></i>{label}</div>
+      <div class="text-2xl md:text-3xl font-black text-white">{value}{sub && <span class="text-sm font-bold text-[#1E4BD8] ml-1">{sub}</span>}</div>
       <div class="mt-2 min-h-[18px]"><DeltaBadge v={delta} invert={invert} /></div>
     </div>
   )
@@ -227,7 +227,7 @@ function ClaritySection({ cl }: { cl: any }) {
           href={CLARITY_URL}
           target="_blank"
           rel="noopener"
-          class="text-[#0066FF] text-[0.68rem] font-bold border border-[#0066FF]/30 rounded-full px-2.5 py-0.5 hover:bg-[#0066FF]/10 transition"
+          class="text-[#1E4BD8] text-[0.68rem] font-bold border border-[#1E4BD8]/30 rounded-full px-2.5 py-0.5 hover:bg-[#1E4BD8]/10 transition"
         >
           Clarity 대시보드 <i class="fa-solid fa-arrow-up-right-from-square text-[0.58rem] ml-0.5"></i>
         </a>
@@ -247,11 +247,11 @@ function ClaritySection({ cl }: { cl: any }) {
             <MetricCard label="스크립트 오류" value={cl.scriptErrors != null ? `${fmt(cl.scriptErrors)}건` : '—'} icon="fa-bug" sub={pct1(cl.scriptErrorPct)} />
           </div>
           {ins.length > 0 && (
-            <section class="bg-gradient-to-br from-[#0066FF]/10 to-white/[0.02] border border-[#0066FF]/20 rounded-2xl p-6 mb-2">
-              <h3 class="text-[#0066FF] text-sm font-bold mb-3"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i>행동 신호</h3>
+            <section class="bg-gradient-to-br from-[#1E4BD8]/10 to-white/[0.02] border border-[#1E4BD8]/20 rounded-2xl p-6 mb-2">
+              <h3 class="text-[#1E4BD8] text-sm font-bold mb-3"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i>행동 신호</h3>
               <ul class="space-y-2">
                 {ins.map((l) => (
-                  <li class="text-white/60 text-sm leading-6 pl-4 relative"><span class="absolute left-0 text-[#0066FF] font-black">·</span>{l}</li>
+                  <li class="text-white/60 text-sm leading-6 pl-4 relative"><span class="absolute left-0 text-[#1E4BD8] font-black">·</span>{l}</li>
                 ))}
               </ul>
             </section>
@@ -305,12 +305,12 @@ statsRoutes.get('/admin/stats', async (c) => {
         <div class="max-w-[1400px] mx-auto px-5 py-3 flex items-center justify-between">
           <div class="flex items-center gap-3">
             {admin ? (
-              <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center hover:bg-[#0066FF]/30 transition">
-                <i class="fa-solid fa-arrow-left text-[#0066FF] text-sm"></i>
+              <a href="/admin/dashboard" class="w-8 h-8 rounded-lg bg-[#1E4BD8]/20 flex items-center justify-center hover:bg-[#1E4BD8]/30 transition">
+                <i class="fa-solid fa-arrow-left text-[#1E4BD8] text-sm"></i>
               </a>
             ) : (
-              <div class="w-8 h-8 rounded-lg bg-[#0066FF]/20 flex items-center justify-center">
-                <i class="fa-solid fa-chart-line text-[#0066FF] text-sm"></i>
+              <div class="w-8 h-8 rounded-lg bg-[#1E4BD8]/20 flex items-center justify-center">
+                <i class="fa-solid fa-chart-line text-[#1E4BD8] text-sm"></i>
               </div>
             )}
             <span class="text-white font-bold text-sm">통계</span>
@@ -336,11 +336,11 @@ statsRoutes.get('/admin/stats', async (c) => {
                 <h3 class="text-white font-bold mb-2">데이터 연동 대기 중</h3>
                 <p class="text-white/40 text-sm leading-6">검색콘솔·애널리틱스 데이터 연동이 준비되는 대로 이 페이지에 지표가 자동 표시됩니다.</p>
               </section>
-              <section class="bg-gradient-to-br from-[#0066FF]/10 to-white/[0.02] border border-[#0066FF]/20 rounded-2xl p-6">
-                <h3 class="text-[#0066FF] text-sm font-bold mb-3"><i class="fa-solid fa-lightbulb mr-2"></i>자동 인사이트</h3>
+              <section class="bg-gradient-to-br from-[#1E4BD8]/10 to-white/[0.02] border border-[#1E4BD8]/20 rounded-2xl p-6">
+                <h3 class="text-[#1E4BD8] text-sm font-bold mb-3"><i class="fa-solid fa-lightbulb mr-2"></i>자동 인사이트</h3>
                 <ul class="space-y-2">
                   {insights.map((l) => (
-                    <li class="text-white/60 text-sm leading-6 pl-4 relative"><span class="absolute left-0 text-[#0066FF] font-black">·</span>{l}</li>
+                    <li class="text-white/60 text-sm leading-6 pl-4 relative"><span class="absolute left-0 text-[#1E4BD8] font-black">·</span>{l}</li>
                   ))}
                 </ul>
               </section>
@@ -358,7 +358,7 @@ statsRoutes.get('/admin/stats', async (c) => {
                   </div>
                   <div class="bg-white/5 border border-white/5 rounded-2xl p-5 mb-2">
                     <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-3">일별 검색 클릭</div>
-                    {(g.dailyClicks ?? []).length >= 2 ? raw(sparklineSvg((g.dailyClicks ?? []).map((x: any) => Number(x.clicks) || 0), '#0066FF')) : <div class="text-white/25 text-xs text-center py-5">데이터 수집 중</div>}
+                    {(g.dailyClicks ?? []).length >= 2 ? raw(sparklineSvg((g.dailyClicks ?? []).map((x: any) => Number(x.clicks) || 0), '#1E4BD8')) : <div class="text-white/25 text-xs text-center py-5">데이터 수집 중</div>}
                   </div>
                 </>
               ) : (
@@ -376,7 +376,7 @@ statsRoutes.get('/admin/stats', async (c) => {
                   </div>
                   <div class="bg-white/5 border border-white/5 rounded-2xl p-5 mb-2">
                     <div class="text-white/30 text-xs font-semibold uppercase tracking-wider mb-3">일별 사용자</div>
-                    {(a.dailyUsers ?? []).length >= 2 ? raw(sparklineSvg((a.dailyUsers ?? []).map((x: any) => Number(x.users) || 0), '#00E5FF')) : <div class="text-white/25 text-xs text-center py-5">데이터 수집 중</div>}
+                    {(a.dailyUsers ?? []).length >= 2 ? raw(sparklineSvg((a.dailyUsers ?? []).map((x: any) => Number(x.users) || 0), '#8FB4FF')) : <div class="text-white/25 text-xs text-center py-5">데이터 수집 중</div>}
                   </div>
                 </>
               ) : (
@@ -385,11 +385,11 @@ statsRoutes.get('/admin/stats', async (c) => {
 
               <ClaritySection cl={d?.clarity} />
 
-              <section class="bg-gradient-to-br from-[#0066FF]/10 to-white/[0.02] border border-[#0066FF]/20 rounded-2xl p-6 my-8">
-                <h3 class="text-[#0066FF] text-sm font-bold mb-3"><i class="fa-solid fa-lightbulb mr-2"></i>자동 인사이트</h3>
+              <section class="bg-gradient-to-br from-[#1E4BD8]/10 to-white/[0.02] border border-[#1E4BD8]/20 rounded-2xl p-6 my-8">
+                <h3 class="text-[#1E4BD8] text-sm font-bold mb-3"><i class="fa-solid fa-lightbulb mr-2"></i>자동 인사이트</h3>
                 <ul class="space-y-2">
                   {insights.map((l) => (
-                    <li class="text-white/60 text-sm leading-6 pl-4 relative"><span class="absolute left-0 text-[#0066FF] font-black">·</span>{l}</li>
+                    <li class="text-white/60 text-sm leading-6 pl-4 relative"><span class="absolute left-0 text-[#1E4BD8] font-black">·</span>{l}</li>
                   ))}
                 </ul>
               </section>

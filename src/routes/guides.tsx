@@ -181,7 +181,7 @@ guidesRoutes.get('/guides', (c) => {
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:16vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">COMPLETE GUIDES 2026</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">COMPLETE GUIDES 2026</p>
           <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
             치과 진료 완벽 가이드 2026
           </h1>
@@ -197,11 +197,11 @@ guidesRoutes.get('/guides', (c) => {
           <div class="mb-16 reveal reveal-fade">
             <a href={`/guides/${cluster.slug}`} class="block group">
               <div class="flex items-center gap-3 mb-6">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center">
                   <i class="fa-solid fa-book-open text-white text-lg"></i>
                 </div>
                 <div>
-                  <h2 class="text-2xl font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors">{cluster.pillarName}</h2>
+                  <h2 class="text-2xl font-bold text-gray-900 group-hover:text-[#1E4BD8] transition-colors">{cluster.pillarName}</h2>
                   <p class="text-xs text-gray-400">{cluster.spokes.length}개 세부 가이드</p>
                 </div>
               </div>
@@ -209,7 +209,7 @@ guidesRoutes.get('/guides', (c) => {
             </a>
             <div class="grid md:grid-cols-2 gap-3">
               {cluster.spokes.map(spoke => (
-                <a href={`/guides/${cluster.slug}/${spoke.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#0066FF]/30 hover:bg-gray-50 transition-all">
+                <a href={`/guides/${cluster.slug}/${spoke.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:bg-gray-50 transition-all">
                   <div class="text-sm font-bold text-gray-900 mb-1">{spoke.title}</div>
                   <div class="text-xs text-gray-500">{spoke.description}</div>
                 </a>
@@ -277,7 +277,7 @@ guidesRoutes.get('/guides/:cluster', (c) => {
         <div class="hero-grid"></div>
         <div class="orb orb-1"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:14vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{cluster.category} GUIDE</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{cluster.category} GUIDE</p>
           <h1 class="text-2xl md:text-4xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
             {cluster.pillarName}
           </h1>
@@ -289,23 +289,23 @@ guidesRoutes.get('/guides/:cluster', (c) => {
 
       <article class="max-w-4xl mx-auto px-5 md:px-8 py-16">
         <nav class="text-xs text-gray-400 mb-6">
-          <a href="/" class="hover:text-[#0066FF]">홈</a>
+          <a href="/" class="hover:text-[#1E4BD8]">홈</a>
           <span class="mx-2">›</span>
-          <a href="/guides" class="hover:text-[#0066FF]">완벽 가이드</a>
+          <a href="/guides" class="hover:text-[#1E4BD8]">완벽 가이드</a>
           <span class="mx-2">›</span>
           <span class="text-gray-700">{cluster.pillarName}</span>
         </nav>
 
-        <div class="p-6 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#0066FF]/10 mb-10">
-          <div class="flex items-center gap-2 text-[#0066FF] font-bold text-sm mb-3">
+        <div class="p-6 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#1E4BD8]/10 mb-10">
+          <div class="flex items-center gap-2 text-[#1E4BD8] font-bold text-sm mb-3">
             <i class="fa-solid fa-list-check"></i>
             <span>이 가이드에서 다루는 내용</span>
           </div>
           <ul class="space-y-2 text-gray-700">
             {cluster.spokes.map(s => (
               <li class="flex items-start gap-2">
-                <i class="fa-solid fa-check text-[#0066FF] mt-1.5 text-xs"></i>
-                <a href={`${canonicalUrl}/${s.slug}`} class="hover:text-[#0066FF] transition-colors">{s.title}</a>
+                <i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i>
+                <a href={`${canonicalUrl}/${s.slug}`} class="hover:text-[#1E4BD8] transition-colors">{s.title}</a>
               </li>
             ))}
           </ul>
@@ -314,7 +314,7 @@ guidesRoutes.get('/guides/:cluster', (c) => {
         <h2 class="text-2xl font-bold text-gray-900 mb-6">세부 가이드 ({cluster.spokes.length}개)</h2>
         <div class="grid md:grid-cols-2 gap-4 mb-12">
           {cluster.spokes.map((spoke, idx) => (
-            <a href={`${canonicalUrl}/${spoke.slug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#0066FF]/30 hover:shadow-lg transition-all">
+            <a href={`${canonicalUrl}/${spoke.slug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:shadow-lg transition-all">
               <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
                 <span class="font-bold">{String(idx + 1).padStart(2, '0')}</span>
                 <span>·</span>
@@ -322,7 +322,7 @@ guidesRoutes.get('/guides/:cluster', (c) => {
               </div>
               <h3 class="text-base font-bold text-gray-900 mb-2">{spoke.title}</h3>
               <p class="text-sm text-gray-600 leading-relaxed">{spoke.description}</p>
-              <div class="mt-3 text-xs text-[#0066FF] font-bold">자세히 보기 →</div>
+              <div class="mt-3 text-xs text-[#1E4BD8] font-bold">자세히 보기 →</div>
             </a>
           ))}
         </div>
@@ -330,7 +330,7 @@ guidesRoutes.get('/guides/:cluster', (c) => {
         {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
         <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-12">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center shrink-0">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center shrink-0">
               <i class="fa-solid fa-hospital text-white"></i>
             </div>
             <div>
@@ -342,11 +342,11 @@ guidesRoutes.get('/guides/:cluster', (c) => {
           </div>
         </div>
 
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white text-center">
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
           <h3 class="text-xl md:text-2xl font-black mb-2">개인 맞춤 상담이 필요하신가요?</h3>
           <p class="text-white/80 text-sm mb-5">서울365치과의 무료 상담을 받아보세요.</p>
           <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#0066FF] font-bold text-sm hover:scale-105 transition-all">
+            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm hover:scale-105 transition-all">
               <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담 예약
             </a>
             <a href={CLINIC.phoneTel} class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm hover:bg-white/20 transition-all">
@@ -428,7 +428,7 @@ guidesRoutes.get('/guides/:cluster/:spoke', (c) => {
         <div class="hero-grid"></div>
         <div class="orb orb-1"></div>
         <div class="relative z-10 max-w-3xl mx-auto px-5" style="padding-top:14vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{cluster.category}</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{cluster.category}</p>
           <h1 class="text-2xl md:text-4xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
             {spoke.title}
           </h1>
@@ -440,11 +440,11 @@ guidesRoutes.get('/guides/:cluster/:spoke', (c) => {
 
       <article class="max-w-3xl mx-auto px-5 md:px-8 py-16">
         <nav class="text-xs text-gray-400 mb-6">
-          <a href="/" class="hover:text-[#0066FF]">홈</a>
+          <a href="/" class="hover:text-[#1E4BD8]">홈</a>
           <span class="mx-2">›</span>
-          <a href="/guides" class="hover:text-[#0066FF]">가이드</a>
+          <a href="/guides" class="hover:text-[#1E4BD8]">가이드</a>
           <span class="mx-2">›</span>
-          <a href={`/guides/${clusterSlug}`} class="hover:text-[#0066FF]">{cluster.pillarName}</a>
+          <a href={`/guides/${clusterSlug}`} class="hover:text-[#1E4BD8]">{cluster.pillarName}</a>
           <span class="mx-2">›</span>
           <span class="text-gray-700">{spoke.title}</span>
         </nav>
@@ -459,7 +459,7 @@ guidesRoutes.get('/guides/:cluster/:spoke', (c) => {
         {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
         <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-10">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center shrink-0">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center shrink-0">
               <i class="fa-solid fa-hospital text-white"></i>
             </div>
             <div>
@@ -474,12 +474,12 @@ guidesRoutes.get('/guides/:cluster/:spoke', (c) => {
         {/* 같은 클러스터 다른 가이드 */}
         <div class="mb-12">
           <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-layer-group text-[#0066FF]"></i>
+            <i class="fa-solid fa-layer-group text-[#1E4BD8]"></i>
             {cluster.pillarName} 다른 가이드
           </h2>
           <div class="grid md:grid-cols-2 gap-3">
             {others.map(s => (
-              <a href={`/guides/${clusterSlug}/${s.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#0066FF]/30 hover:bg-gray-50 transition-all">
+              <a href={`/guides/${clusterSlug}/${s.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:bg-gray-50 transition-all">
                 <div class="text-sm font-bold text-gray-900">{s.title}</div>
                 <div class="text-xs text-gray-500 mt-1">{s.description}</div>
               </a>
@@ -488,11 +488,11 @@ guidesRoutes.get('/guides/:cluster/:spoke', (c) => {
         </div>
 
         {/* CTA */}
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white text-center">
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
           <h3 class="text-xl md:text-2xl font-black mb-2">상담이 필요하신가요?</h3>
           <p class="text-white/80 text-sm mb-5">서울365치과의 1:1 무료 상담을 받아보세요.</p>
           <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#0066FF] font-bold text-sm hover:scale-105 transition-all">
+            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm hover:scale-105 transition-all">
               <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담 예약
             </a>
             <a href={CLINIC.phoneTel} class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm hover:bg-white/20 transition-all">

@@ -33,15 +33,15 @@ pageRoutes.get('/reservation', (c) => {
               <div class="icon-circle mx-auto mb-4">
                 <i class="fa-solid fa-phone"></i>
               </div>
-              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#0066FF] transition-colors">전화 상담</h2>
-              <p class="text-[#0066FF] font-extrabold text-xl">{CLINIC.phone}</p>
+              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1E4BD8] transition-colors">전화 상담</h2>
+              <p class="text-[#1E4BD8] font-extrabold text-xl">{CLINIC.phone}</p>
               <p class="text-sm text-gray-400 mt-2">가장 빠른 상담 방법</p>
             </a>
             <a href={CLINIC.kakao} target="_blank" rel="noopener" class="glass-card p-8 text-center group block" data-cursor-hover>
               <div class="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-100 transition-colors">
                 <i class="fa-solid fa-comment text-yellow-500 text-xl"></i>
               </div>
-              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#0066FF] transition-colors">카카오톡 상담</h2>
+              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1E4BD8] transition-colors">카카오톡 상담</h2>
               <p class="text-yellow-600 font-bold">채팅으로 편하게</p>
               <p class="text-sm text-gray-400 mt-2">사진/영상 전송 가능</p>
             </a>
@@ -49,7 +49,7 @@ pageRoutes.get('/reservation', (c) => {
               <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-100 transition-colors">
                 <i class="fa-solid fa-calendar-check text-green-500 text-xl"></i>
               </div>
-              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#0066FF] transition-colors">네이버 예약</h2>
+              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1E4BD8] transition-colors">네이버 예약</h2>
               <p class="text-green-600 font-bold">온라인 간편 예약</p>
               <p class="text-sm text-gray-400 mt-2">원하는 시간 선택</p>
             </a>
@@ -62,16 +62,16 @@ pageRoutes.get('/reservation', (c) => {
               <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label class="block text-sm font-semibold text-gray-700 mb-2">이름 *</label>
-                  <input type="text" name="name" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="이름을 입력해주세요" />
+                  <input type="text" name="name" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="이름을 입력해주세요" />
                 </div>
                 <div>
                   <label class="block text-sm font-semibold text-gray-700 mb-2">연락처 *</label>
-                  <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-0000-0000" />
+                  <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="010-0000-0000" />
                 </div>
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">관심 치료</label>
-                <select name="treatment" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm text-gray-600">
+                <select name="treatment" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm text-gray-600">
                   <option value="">선택해주세요</option>
                   <option>전체임플란트</option><option>디지털풀아치 임플란트</option><option>일반 임플란트</option>
                   <option>치아교정</option><option>인비절라인</option><option>수면진료</option>
@@ -80,19 +80,19 @@ pageRoutes.get('/reservation', (c) => {
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">상담 내용</label>
-                <textarea name="message" rows={4} class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm resize-none" placeholder="궁금하신 내용을 자유롭게 적어주세요"></textarea>
+                <textarea name="message" rows={4} class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm resize-none" placeholder="궁금하신 내용을 자유롭게 적어주세요"></textarea>
               </div>
               <div class="flex items-start gap-2.5">
-                <input type="checkbox" required class="mt-1 accent-[#0066FF]" id="privacy-agree" />
+                <input type="checkbox" required class="mt-1 accent-[#1E4BD8]" id="privacy-agree" />
                 <label for="privacy-agree" class="text-sm text-gray-500">
-                  <a href="/privacy" class="text-[#0066FF] font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
+                  <a href="/privacy" class="text-[#1E4BD8] font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
                 </label>
               </div>
               <button type="submit" id="consultSubmitBtn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>상담 신청하기</button>
               <div id="consultResult" class="hidden text-center text-sm py-3 rounded-xl"></div>
             </form>
             <p class="mt-6 text-center text-sm text-gray-400">
-              이미 문의하셨나요? <a href="/consultations/check" class="text-[#0066FF] font-semibold underline underline-offset-2">문의 답변 확인</a> — 접수번호 또는 이름+전화번호로 병원 답변을 확인하실 수 있습니다.
+              이미 문의하셨나요? <a href="/consultations/check" class="text-[#1E4BD8] font-semibold underline underline-offset-2">문의 답변 확인</a> — 접수번호 또는 이름+전화번호로 병원 답변을 확인하실 수 있습니다.
             </p>
           </div>
           <script dangerouslySetInnerHTML={{__html: `
@@ -278,7 +278,7 @@ pageRoutes.get('/info', (c) => {
       <section class="sticky top-[72px] z-30 bg-white/90 backdrop-blur border-b border-gray-100">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="flex gap-0" id="infoTabs">
-            <button onclick="switchInfoTab('directions')" id="tab-directions" class="info-tab active flex-1 py-4 text-center text-sm font-bold text-[#0066FF] border-b-2 border-[#0066FF] transition-all">
+            <button onclick="switchInfoTab('directions')" id="tab-directions" class="info-tab active flex-1 py-4 text-center text-sm font-bold text-[#1E4BD8] border-b-2 border-[#1E4BD8] transition-all">
               <i class="fa-solid fa-location-dot mr-1.5"></i>오시는 길
             </button>
             <button onclick="switchInfoTab('pricing')" id="tab-pricing" class="info-tab flex-1 py-4 text-center text-sm font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-all">
@@ -295,7 +295,7 @@ pageRoutes.get('/info', (c) => {
           {/* Category Quick Nav */}
           <div class="flex flex-wrap gap-2 justify-center mb-12 reveal">
             {pricingCategories.map(cat => (
-              <a href={`#pricing-${cat.key}`} class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-gray-200 bg-white text-gray-600 text-[0.78rem] font-medium hover:border-[#0066FF]/40 hover:text-[#0066FF] transition-all">
+              <a href={`#pricing-${cat.key}`} class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-gray-200 bg-white text-gray-600 text-[0.78rem] font-medium hover:border-[#1E4BD8]/40 hover:text-[#1E4BD8] transition-all">
                 <i class={`fa-solid ${cat.icon} text-[0.65rem]`}></i>
                 {cat.label}
               </a>
@@ -309,8 +309,8 @@ pageRoutes.get('/info', (c) => {
             return (
               <div id={`pricing-${cat.key}`} class="mb-12 reveal-3d">
                 <div class="flex items-center gap-2 mb-4">
-                  <div class="w-8 h-8 rounded-lg bg-[#0066FF]/10 flex items-center justify-center">
-                    <i class={`fa-solid ${cat.icon} text-[#0066FF] text-sm`}></i>
+                  <div class="w-8 h-8 rounded-lg bg-[#1E4BD8]/10 flex items-center justify-center">
+                    <i class={`fa-solid ${cat.icon} text-[#1E4BD8] text-sm`}></i>
                   </div>
                   <h3 class="text-lg font-bold text-gray-800">{cat.label}</h3>
                   <span class="text-xs text-gray-400 ml-1">{items.length}항목</span>
@@ -327,12 +327,12 @@ pageRoutes.get('/info', (c) => {
                       </thead>
                       <tbody class="divide-y divide-gray-50">
                         {items.map((p, i) => (
-                          <tr class={`hover:bg-[#0066FF]/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
+                          <tr class={`hover:bg-[#1E4BD8]/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
                             <td class="px-5 py-3 text-gray-800 font-medium">
                               {p.treatment}
                               {p.note && <span class="text-[0.65rem] text-gray-400 ml-1.5">({p.note})</span>}
                             </td>
-                            <td class="px-5 py-3 text-right text-[#0066FF] font-bold whitespace-nowrap">{p.price}</td>
+                            <td class="px-5 py-3 text-right text-[#1E4BD8] font-bold whitespace-nowrap">{p.price}</td>
                             <td class="px-5 py-3 text-right text-gray-400 hidden sm:table-cell text-xs">{p.insurance}</td>
                           </tr>
                         ))}
@@ -423,11 +423,11 @@ pageRoutes.get('/info', (c) => {
       <script dangerouslySetInnerHTML={{__html: `
         function switchInfoTab(tab) {
           document.querySelectorAll('.info-tab').forEach(b => {
-            b.classList.remove('active','text-[#0066FF]','border-[#0066FF]');
+            b.classList.remove('active','text-[#1E4BD8]','border-[#1E4BD8]');
             b.classList.add('text-gray-400','border-transparent');
           });
           const active = document.getElementById('tab-' + tab);
-          if (active) { active.classList.add('active','text-[#0066FF]','border-[#0066FF]'); active.classList.remove('text-gray-400','border-transparent'); }
+          if (active) { active.classList.add('active','text-[#1E4BD8]','border-[#1E4BD8]'); active.classList.remove('text-gray-400','border-transparent'); }
           document.getElementById('panel-directions').style.display = tab === 'directions' ? '' : 'none';
           document.getElementById('panel-pricing').style.display = tab === 'pricing' ? '' : 'none';
           history.replaceState(null, '', tab === 'pricing' ? '/info#pricing' : '/info');
@@ -557,7 +557,7 @@ pageRoutes.get('/faq', (c) => {
               type="text"
               id="faq-search"
               placeholder="궁금한 내용을 검색하세요 (예: 임플란트 비용, 미백 통증, 사랑니...)"
-              class="w-full pl-11 pr-10 py-3.5 border border-gray-200 rounded-xl text-[0.9rem] focus:outline-none focus:border-[#0066FF] focus:ring-2 focus:ring-[#0066FF]/10 transition-all"
+              class="w-full pl-11 pr-10 py-3.5 border border-gray-200 rounded-xl text-[0.9rem] focus:outline-none focus:border-[#1E4BD8] focus:ring-2 focus:ring-[#1E4BD8]/10 transition-all"
             />
             <button id="faq-search-clear" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 hidden" data-cursor-hover>
               <i class="fa-solid fa-xmark"></i>
@@ -573,7 +573,7 @@ pageRoutes.get('/faq', (c) => {
           <div class="flex gap-1 overflow-x-auto scrollbar-hide py-3" id="faq-tabs">
             {categories.map((cat, i) => (
               <button
-                class={`faq-tab flex-shrink-0 px-4 py-2.5 rounded-lg text-[0.82rem] font-medium transition-all whitespace-nowrap ${i === 0 ? 'bg-[#0066FF] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'}`}
+                class={`faq-tab flex-shrink-0 px-4 py-2.5 rounded-lg text-[0.82rem] font-medium transition-all whitespace-nowrap ${i === 0 ? 'bg-[#1E4BD8] text-white shadow-sm' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'}`}
                 data-tab={cat.key}
                 data-cursor-hover
               >
@@ -592,8 +592,8 @@ pageRoutes.get('/faq', (c) => {
           {/* 일반 안내 섹션 */}
           <div class="faq-category-section" data-category="general">
             <div class="flex items-center gap-3 mb-5">
-              <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0066FF]/10 to-[#00E5FF]/10 flex items-center justify-center">
-                <i class="fa-solid fa-circle-info text-[#0066FF] text-sm"></i>
+              <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#1E4BD8]/10 to-[#8FB4FF]/10 flex items-center justify-center">
+                <i class="fa-solid fa-circle-info text-[#1E4BD8] text-sm"></i>
               </div>
               <div>
                 <h2 class="text-lg font-bold text-gray-900">일반 안내</h2>
@@ -625,8 +625,8 @@ pageRoutes.get('/faq', (c) => {
             return (
               <div class="faq-category-section" data-category={catKey}>
                 <div class="flex items-center gap-3 mb-6">
-                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#0066FF]/10 to-[#00E5FF]/10 flex items-center justify-center">
-                    <i class={`fa-solid ${catInfo.icon} text-[#0066FF] text-sm`}></i>
+                  <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#1E4BD8]/10 to-[#8FB4FF]/10 flex items-center justify-center">
+                    <i class={`fa-solid ${catInfo.icon} text-[#1E4BD8] text-sm`}></i>
                   </div>
                   <div>
                     <h2 class="text-lg font-bold text-gray-900">{catInfo.label}</h2>
@@ -639,10 +639,10 @@ pageRoutes.get('/faq', (c) => {
                   <div class="mb-8 faq-treatment-group" data-treatment={t.slug} data-category={catKey}>
                     {/* 치료 제목 */}
                     <div class="flex items-center gap-2.5 mb-3 px-1">
-                      <i class={`fa-solid ${t.icon} text-[#0066FF]/60 text-sm`}></i>
+                      <i class={`fa-solid ${t.icon} text-[#1E4BD8]/60 text-sm`}></i>
                       <h3 class="text-[0.95rem] font-bold text-gray-800">{t.name}</h3>
                       <span class="text-xs text-gray-300 font-medium">({t.faq.length})</span>
-                      <a href={`/treatments/${t.slug}`} class="ml-auto text-xs text-[#0066FF]/50 hover:text-[#0066FF] transition-colors" data-cursor-hover>
+                      <a href={`/treatments/${t.slug}`} class="ml-auto text-xs text-[#1E4BD8]/50 hover:text-[#1E4BD8] transition-colors" data-cursor-hover>
                         상세보기 <i class="fa-solid fa-arrow-right text-[0.6rem]"></i>
                       </a>
                     </div>
@@ -705,8 +705,8 @@ pageRoutes.get('/faq', (c) => {
           tabs.forEach(tab => {
             tab.addEventListener('click', function(){
               activeTab = this.dataset.tab;
-              tabs.forEach(t => { t.classList.remove('bg-[#0066FF]','text-white','shadow-sm'); t.classList.add('text-gray-500'); });
-              this.classList.add('bg-[#0066FF]','text-white','shadow-sm');
+              tabs.forEach(t => { t.classList.remove('bg-[#1E4BD8]','text-white','shadow-sm'); t.classList.add('text-gray-500'); });
+              this.classList.add('bg-[#1E4BD8]','text-white','shadow-sm');
               this.classList.remove('text-gray-500');
               applyFilter();
             });
@@ -839,13 +839,13 @@ pageRoutes.get('/cases/gallery', async (c) => {
         <div class="max-w-[1400px] mx-auto px-5 md:px-8">
           {isLoggedIn ? (
             <div class="flex items-center justify-between mb-8 reveal">
-              <p class="text-sm text-gray-400"><i class="fa-solid fa-user-check text-[#0066FF] mr-1.5"></i> <span class="font-medium text-gray-600">{user!.name}</span>님, 환영합니다.</p>
+              <p class="text-sm text-gray-400"><i class="fa-solid fa-user-check text-[#1E4BD8] mr-1.5"></i> <span class="font-medium text-gray-600">{user!.name}</span>님, 환영합니다.</p>
             </div>
           ) : (
             <div class="flex items-center justify-between mb-8 reveal">
-              <p class="text-sm text-gray-400"><i class="fa-solid fa-lock text-[#0066FF]/50 mr-1.5"></i> After 사진 열람은 <a href="/login" class="text-[#0066FF] font-semibold underline">로그인</a> 후 가능합니다.</p>
+              <p class="text-sm text-gray-400"><i class="fa-solid fa-lock text-[#1E4BD8]/50 mr-1.5"></i> After 사진 열람은 <a href="/login" class="text-[#1E4BD8] font-semibold underline">로그인</a> 후 가능합니다.</p>
               <div class="flex gap-2">
-                <a href="/login" class="text-xs px-3 py-1.5 rounded-lg bg-[#0066FF] text-white font-bold hover:bg-[#0052cc] transition">로그인</a>
+                <a href="/login" class="text-xs px-3 py-1.5 rounded-lg bg-[#1E4BD8] text-white font-bold hover:bg-[#0052cc] transition">로그인</a>
                 <a href="/register" class="text-xs px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition">회원가입</a>
               </div>
             </div>
@@ -853,8 +853,8 @@ pageRoutes.get('/cases/gallery', async (c) => {
 
           {dbCases.length === 0 ? (
             <div class="text-center py-20">
-              <div class="w-20 h-20 rounded-full bg-[#0066FF]/5 mx-auto mb-6 flex items-center justify-center">
-                <i class="fa-solid fa-images text-3xl text-[#0066FF]/20"></i>
+              <div class="w-20 h-20 rounded-full bg-[#1E4BD8]/5 mx-auto mb-6 flex items-center justify-center">
+                <i class="fa-solid fa-images text-3xl text-[#1E4BD8]/20"></i>
               </div>
               <h2 class="text-lg font-bold text-gray-900 mb-2">아직 등록된 사례가 없습니다</h2>
               <p class="text-gray-400 text-sm">곧 실제 치료 사례를 업로드할 예정입니다.</p>
@@ -863,7 +863,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
             <>
               {/* Filter Tabs */}
               <div class="flex flex-wrap gap-2 mb-8 reveal" id="caseFilters">
-                <button onclick="filterCases('all')" class="case-filter-btn active px-4 py-2 rounded-full text-xs font-semibold bg-[#0066FF] text-white transition" data-filter="all">전체 ({dbCases.length})</button>
+                <button onclick="filterCases('all')" class="case-filter-btn active px-4 py-2 rounded-full text-xs font-semibold bg-[#1E4BD8] text-white transition" data-filter="all">전체 ({dbCases.length})</button>
                 {Array.from(new Set(dbCases.map((cs: any) => cs.tag))).map((tag: any) => (
                   <button onclick={`filterCases('${tag}')`} data-filter={tag} class="case-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-gray-100 text-gray-500 hover:bg-gray-200 transition">{tag} ({dbCases.filter((cs: any) => cs.tag === tag).length})</button>
                 ))}
@@ -891,20 +891,20 @@ pageRoutes.get('/cases/gallery', async (c) => {
                       {/* Hover overlay */}
                       <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                         <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
-                          <i class={`fa-solid ${isLoggedIn ? 'fa-expand' : 'fa-lock'} text-[#0066FF] text-lg`}></i>
+                          <i class={`fa-solid ${isLoggedIn ? 'fa-expand' : 'fa-lock'} text-[#1E4BD8] text-lg`}></i>
                         </div>
                       </div>
                     </div>
                     <div class="p-5">
                       <div class="flex items-center gap-2 mb-2">
-                        <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
+                        <span class="text-[0.7rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
                         {cs.duration && <span class="text-[0.65rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
                       </div>
-                      <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#0066FF] transition-colors">{cs.title}</h3>
+                      <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition-colors">{cs.title}</h3>
                       {cs.description && <p class="text-gray-500 text-xs mt-1.5 line-clamp-2">{cs.description}</p>}
                       <p class="text-xs text-gray-400 mt-2">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</p>
                       {/* SEO: Crawlable link to individual case page (hidden visually, discoverable by bots) */}
-                      <a href={`/cases/${cs.id}`} class="text-[0.6rem] text-[#0066FF]/50 hover:text-[#0066FF] mt-2 inline-block" onclick="event.stopPropagation()">상세보기 →</a>
+                      <a href={`/cases/${cs.id}`} class="text-[0.6rem] text-[#1E4BD8]/50 hover:text-[#1E4BD8] mt-2 inline-block" onclick="event.stopPropagation()">상세보기 →</a>
                     </div>
                   </div>
                 ))}
@@ -924,7 +924,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
             {/* Modal Header */}
             <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <div class="flex items-center gap-2">
-                <span id="modalTag" class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-2.5 py-0.5 rounded-full font-semibold"></span>
+                <span id="modalTag" class="text-[0.7rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2.5 py-0.5 rounded-full font-semibold"></span>
                 <span id="modalDuration" class="text-[0.65rem] text-gray-400"></span>
               </div>
               <div class="flex items-center gap-2">
@@ -948,21 +948,21 @@ pageRoutes.get('/cases/gallery', async (c) => {
                 </div>
                 <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
                   <img id="modalAfter" src="" alt="After" class="w-full h-full object-cover" />
-                  <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/80 backdrop-blur-sm px-3 py-1 rounded-lg">After</span>
+                  <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#1E4BD8]/80 backdrop-blur-sm px-3 py-1 rounded-lg">After</span>
                 </div>
               </div>
               {/* Info */}
               <h2 id="modalTitle" class="text-xl font-bold text-gray-900 mb-3"></h2>
               <p id="modalDesc" class="text-gray-600 text-sm leading-relaxed mb-4"></p>
               <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500 bg-gray-50 rounded-xl px-5 py-4">
-                <span id="modalDoctor"><i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i></span>
-                <span id="modalPatient"><i class="fa-solid fa-user text-[#0066FF]/60 mr-1.5"></i></span>
-                <span id="modalDur"><i class="fa-regular fa-clock text-[#0066FF]/60 mr-1.5"></i></span>
+                <span id="modalDoctor"><i class="fa-solid fa-user-doctor text-[#1E4BD8]/60 mr-1.5"></i></span>
+                <span id="modalPatient"><i class="fa-solid fa-user text-[#1E4BD8]/60 mr-1.5"></i></span>
+                <span id="modalDur"><i class="fa-regular fa-clock text-[#1E4BD8]/60 mr-1.5"></i></span>
               </div>
               {/* CTA */}
               <div class="mt-6 text-center">
                 <p class="text-gray-400 text-xs mb-3">비슷한 고민을 가지고 계신가요?</p>
-                <a href="/reservation" class="inline-flex items-center gap-2 bg-[#0066FF] hover:bg-[#0052cc] text-white font-bold text-sm px-6 py-3 rounded-xl transition">
+                <a href="/reservation" class="inline-flex items-center gap-2 bg-[#1E4BD8] hover:bg-[#0052cc] text-white font-bold text-sm px-6 py-3 rounded-xl transition">
                   <i class="fa-solid fa-calendar-check text-xs"></i> 무료 상담 예약
                 </a>
               </div>
@@ -1020,9 +1020,9 @@ pageRoutes.get('/cases/gallery', async (c) => {
           document.getElementById('modalAfter').src = c.after_image || '';
           document.getElementById('modalTitle').textContent = c.title;
           document.getElementById('modalDesc').textContent = c.description || '상세 설명이 없습니다.';
-          document.getElementById('modalDoctor').innerHTML = '<i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i>담당: ' + c.doctor_name;
-          document.getElementById('modalPatient').innerHTML = '<i class="fa-solid fa-user text-[#0066FF]/60 mr-1.5"></i>' + (c.patient_age || '') + ' ' + (c.patient_gender || '');
-          document.getElementById('modalDur').innerHTML = '<i class="fa-regular fa-clock text-[#0066FF]/60 mr-1.5"></i>' + (c.duration || '-');
+          document.getElementById('modalDoctor').innerHTML = '<i class="fa-solid fa-user-doctor text-[#1E4BD8]/60 mr-1.5"></i>담당: ' + c.doctor_name;
+          document.getElementById('modalPatient').innerHTML = '<i class="fa-solid fa-user text-[#1E4BD8]/60 mr-1.5"></i>' + (c.patient_age || '') + ' ' + (c.patient_gender || '');
+          document.getElementById('modalDur').innerHTML = '<i class="fa-regular fa-clock text-[#1E4BD8]/60 mr-1.5"></i>' + (c.duration || '-');
           document.getElementById('modalDur').style.display = c.duration ? '' : 'none';
           document.getElementById('modalPatient').style.display = (c.patient_age || c.patient_gender) ? '' : 'none';
         }
@@ -1037,11 +1037,11 @@ pageRoutes.get('/cases/gallery', async (c) => {
 
         function filterCases(tag) {
           document.querySelectorAll('.case-filter-btn').forEach(b => {
-            b.classList.remove('bg-[#0066FF]', 'text-white', 'active');
+            b.classList.remove('bg-[#1E4BD8]', 'text-white', 'active');
             b.classList.add('bg-gray-100', 'text-gray-500');
           });
           const activeBtn = document.querySelector('[data-filter="'+tag+'"]');
-          if (activeBtn) { activeBtn.classList.add('bg-[#0066FF]', 'text-white', 'active'); activeBtn.classList.remove('bg-gray-100', 'text-gray-500'); }
+          if (activeBtn) { activeBtn.classList.add('bg-[#1E4BD8]', 'text-white', 'active'); activeBtn.classList.remove('bg-gray-100', 'text-gray-500'); }
           document.querySelectorAll('.case-card').forEach(card => {
             if (tag === 'all' || card.dataset.tag === tag) { card.style.display = ''; } else { card.style.display = 'none'; }
           });
@@ -1060,8 +1060,8 @@ pageRoutes.get('/cases/gallery', async (c) => {
             <button onclick="document.getElementById('loginRequiredModal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition">
               <i class="fa-solid fa-xmark text-gray-400"></i>
             </button>
-            <div class="w-16 h-16 rounded-full bg-[#0066FF]/10 mx-auto mb-5 flex items-center justify-center">
-              <i class="fa-solid fa-lock text-2xl text-[#0066FF]/50"></i>
+            <div class="w-16 h-16 rounded-full bg-[#1E4BD8]/10 mx-auto mb-5 flex items-center justify-center">
+              <i class="fa-solid fa-lock text-2xl text-[#1E4BD8]/50"></i>
             </div>
             <h3 class="text-xl font-bold text-gray-900 mb-2">After 사진 열람</h3>
             <p class="text-gray-500 text-sm mb-6 leading-relaxed">
@@ -1187,10 +1187,10 @@ pageRoutes.get('/cases/:id', async (c) => {
           <div class="max-w-4xl mx-auto px-5 md:px-8">
             {/* Breadcrumb navigation */}
             <nav class="flex items-center gap-2 text-xs text-gray-400 mb-8" aria-label="Breadcrumb">
-              <a href="/" class="hover:text-[#0066FF] transition">홈</a>
+              <a href="/" class="hover:text-[#1E4BD8] transition">홈</a>
               <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
-              <a href="/cases/gallery" class="hover:text-[#0066FF] transition">치료사례</a>
-              {linkedTreatment && <><i class="fa-solid fa-chevron-right text-[0.5rem]"></i><a href={`/treatments/${linkedTreatment.slug}`} class="hover:text-[#0066FF] transition">{linkedTreatment.name}</a></>}
+              <a href="/cases/gallery" class="hover:text-[#1E4BD8] transition">치료사례</a>
+              {linkedTreatment && <><i class="fa-solid fa-chevron-right text-[0.5rem]"></i><a href={`/treatments/${linkedTreatment.slug}`} class="hover:text-[#1E4BD8] transition">{linkedTreatment.name}</a></>}
               <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
               <span class="text-gray-600 font-medium">{cs.title}</span>
             </nav>
@@ -1198,14 +1198,14 @@ pageRoutes.get('/cases/:id', async (c) => {
             {/* Header */}
             <header class="mb-8">
               <div class="flex items-center gap-2 mb-3">
-                <span class="text-[0.7rem] bg-[#0066FF]/8 text-[#0066FF] px-3 py-1 rounded-full font-semibold">{cs.tag}</span>
+                <span class="text-[0.7rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-3 py-1 rounded-full font-semibold">{cs.tag}</span>
                 {cs.duration && <span class="text-[0.65rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
               </div>
               <h1 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">{cs.title}</h1>
               {cs.description && <p class="case-description text-gray-500 text-base leading-relaxed mt-3">{cs.description}</p>}
               <p class="case-summary text-gray-600 text-sm leading-relaxed mt-3">{caseSummary}</p>
               <div class="flex items-center gap-4 mt-5 text-sm text-gray-400">
-                <span><i class="fa-solid fa-user-doctor text-[#0066FF]/60 mr-1.5"></i>담당: <span class="text-gray-600 font-medium">{cs.doctor_name}</span></span>
+                <span><i class="fa-solid fa-user-doctor text-[#1E4BD8]/60 mr-1.5"></i>담당: <span class="text-gray-600 font-medium">{cs.doctor_name}</span></span>
                 {cs.patient_age && <span>·</span>}
                 {cs.patient_age && <span>{cs.patient_age}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</span>}
                 <span>·</span>
@@ -1233,13 +1233,13 @@ pageRoutes.get('/cases/:id', async (c) => {
                 ) : (
                   <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 relative">
                     <div class="text-center">
-                      <i class="fa-solid fa-lock text-3xl text-[#0066FF]/30 mb-3"></i>
+                      <i class="fa-solid fa-lock text-3xl text-[#1E4BD8]/30 mb-3"></i>
                       <p class="text-gray-400 text-sm font-medium">After 사진은 로그인 후 열람</p>
-                      <a href="/login" class="inline-block mt-3 px-5 py-2 rounded-xl bg-[#0066FF] text-white text-xs font-bold hover:bg-[#0052cc] transition">로그인하기</a>
+                      <a href="/login" class="inline-block mt-3 px-5 py-2 rounded-xl bg-[#1E4BD8] text-white text-xs font-bold hover:bg-[#0052cc] transition">로그인하기</a>
                     </div>
                   </div>
                 )}
-                <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#0066FF]/80 backdrop-blur-sm px-3 py-1.5 rounded-lg">After</span>
+                <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#1E4BD8]/80 backdrop-blur-sm px-3 py-1.5 rounded-lg">After</span>
               </div>
             </div>
 
@@ -1272,12 +1272,12 @@ pageRoutes.get('/cases/:id', async (c) => {
 
             {/* Related Treatment Link */}
             {linkedTreatment && (
-              <div class="p-5 rounded-2xl bg-[#0066FF]/[0.03] border border-[#0066FF]/10 mb-10">
+              <div class="p-5 rounded-2xl bg-[#1E4BD8]/[0.03] border border-[#1E4BD8]/10 mb-10">
                 <div class="flex items-center gap-2 mb-2">
-                  <i class="fa-solid fa-stethoscope text-[#0066FF] text-xs"></i>
-                  <span class="text-xs font-semibold text-[#0066FF]">관련 진료 안내</span>
+                  <i class="fa-solid fa-stethoscope text-[#1E4BD8] text-xs"></i>
+                  <span class="text-xs font-semibold text-[#1E4BD8]">관련 진료 안내</span>
                 </div>
-                <a href={`/treatments/${linkedTreatment.slug}`} class="text-gray-900 font-bold hover:text-[#0066FF] transition">
+                <a href={`/treatments/${linkedTreatment.slug}`} class="text-gray-900 font-bold hover:text-[#1E4BD8] transition">
                   {linkedTreatment.name} — 진료 상세보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
                 </a>
               </div>
@@ -1306,7 +1306,7 @@ pageRoutes.get('/cases/:id', async (c) => {
                         <span class="absolute top-2 left-2 text-[0.55rem] font-bold text-white bg-black/50 px-2 py-0.5 rounded-lg">{rc.tag}</span>
                       </div>
                       <div class="p-4">
-                        <h4 class="font-bold text-gray-900 text-sm group-hover:text-[#0066FF] transition line-clamp-2">{rc.title}</h4>
+                        <h4 class="font-bold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition line-clamp-2">{rc.title}</h4>
                         <p class="text-xs text-gray-400 mt-1">담당: {rc.doctor_name}</p>
                       </div>
                     </a>
@@ -1320,7 +1320,7 @@ pageRoutes.get('/cases/:id', async (c) => {
                 <h2 class="text-lg font-bold text-gray-900 mb-4">{txName} 관련 칼럼</h2>
                 <ul class="space-y-2">
                   {relatedPosts.map((bp: any) => (
-                    <li><a href={`/blog/${bp.slug}`} class="text-sm text-gray-600 hover:text-[#0066FF] transition">{bp.title}</a></li>
+                    <li><a href={`/blog/${bp.slug}`} class="text-sm text-gray-600 hover:text-[#1E4BD8] transition">{bp.title}</a></li>
                   ))}
                 </ul>
               </div>
@@ -1396,35 +1396,35 @@ pageRoutes.get('/register', (c) => {
             <form id="register-form" class="space-y-5">
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">이름 *</label>
-                <input type="text" name="name" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="홍길동" />
+                <input type="text" name="name" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="홍길동" />
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">휴대폰 번호 *</label>
-                <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-1234-5678" />
+                <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="010-1234-5678" />
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 *</label>
-                <input type="password" name="password" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="4자리 이상" />
+                <input type="password" name="password" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="4자리 이상" />
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 확인 *</label>
-                <input type="password" name="password2" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="비밀번호 재입력" />
+                <input type="password" name="password2" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="비밀번호 재입력" />
               </div>
               <div class="space-y-3 pt-1">
                 <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">약관 동의</p>
                 
                 {/* 전체 동의 */}
                 <div class="flex items-center gap-2.5 p-3.5 bg-gray-50 rounded-2xl border border-gray-100">
-                  <input type="checkbox" class="accent-[#0066FF] w-4 h-4" id="agree-all" />
+                  <input type="checkbox" class="accent-[#1E4BD8] w-4 h-4" id="agree-all" />
                   <label for="agree-all" class="text-sm font-bold text-gray-800 cursor-pointer select-none">전체 동의</label>
                 </div>
 
                 {/* 개인정보 수집·이용 동의 (필수) */}
                 <div class="flex items-start gap-2.5 pl-1">
-                  <input type="checkbox" required class="mt-0.5 accent-[#0066FF] w-4 h-4" id="agree-privacy" name="privacy_agreed" />
+                  <input type="checkbox" required class="mt-0.5 accent-[#1E4BD8] w-4 h-4" id="agree-privacy" name="privacy_agreed" />
                   <label for="agree-privacy" class="text-sm text-gray-600 cursor-pointer select-none">
-                    <span class="text-[#0066FF] font-semibold">[필수]</span>{' '}
-                    <a href="/privacy" target="_blank" class="text-[#0066FF] font-semibold underline underline-offset-2 hover:text-[#0044CC]">개인정보 수집·이용</a>에 동의합니다
+                    <span class="text-[#1E4BD8] font-semibold">[필수]</span>{' '}
+                    <a href="/privacy" target="_blank" class="text-[#1E4BD8] font-semibold underline underline-offset-2 hover:text-[#0044CC]">개인정보 수집·이용</a>에 동의합니다
                   </label>
                 </div>
                 <div class="ml-7 -mt-2 p-3 bg-gray-50/80 rounded-xl text-xs text-gray-400 leading-relaxed border border-gray-100/60">
@@ -1433,7 +1433,7 @@ pageRoutes.get('/register', (c) => {
 
                 {/* 광고·마케팅 활용 동의 (선택) */}
                 <div class="flex items-start gap-2.5 pl-1">
-                  <input type="checkbox" class="mt-0.5 accent-[#0066FF] w-4 h-4" id="agree-marketing" name="marketing_agreed" />
+                  <input type="checkbox" class="mt-0.5 accent-[#1E4BD8] w-4 h-4" id="agree-marketing" name="marketing_agreed" />
                   <label for="agree-marketing" class="text-sm text-gray-600 cursor-pointer select-none">
                     <span class="text-gray-400 font-semibold">[선택]</span>{' '}
                     광고·마케팅 정보 수신에 동의합니다
@@ -1448,7 +1448,7 @@ pageRoutes.get('/register', (c) => {
               </button>
             </form>
             <p class="text-center text-sm text-gray-400 mt-6">
-              이미 계정이 있으신가요? <a href="/login" class="text-[#0066FF] font-semibold link-underline">로그인</a>
+              이미 계정이 있으신가요? <a href="/login" class="text-[#1E4BD8] font-semibold link-underline">로그인</a>
             </p>
           </div>
         </div>
@@ -1551,18 +1551,18 @@ pageRoutes.get('/login', (c) => {
             <form id="login-form" class="space-y-5">
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">휴대폰 번호</label>
-                <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="010-1234-5678" />
+                <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="010-1234-5678" />
               </div>
               <div>
                 <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호</label>
-                <input type="password" name="password" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm" placeholder="비밀번호 입력" />
+                <input type="password" name="password" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="비밀번호 입력" />
               </div>
               <button type="submit" id="login-btn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>
                 로그인
               </button>
             </form>
             <p class="text-center text-sm text-gray-400 mt-6">
-              계정이 없으신가요? <a href="/register" class="text-[#0066FF] font-semibold link-underline">회원가입</a>
+              계정이 없으신가요? <a href="/register" class="text-[#1E4BD8] font-semibold link-underline">회원가입</a>
             </p>
           </div>
         </div>
@@ -1624,7 +1624,7 @@ pageRoutes.get('/notices', async (c) => {
   } catch {}
 
   const categoryColors: Record<string, string> = {
-    '공지': 'bg-[#0066FF]/8 text-[#0066FF]',
+    '공지': 'bg-[#1E4BD8]/8 text-[#1E4BD8]',
     '이벤트': 'bg-pink-50 text-pink-600',
     '안내': 'bg-emerald-50 text-emerald-600',
     '휴무': 'bg-amber-50 text-amber-700',
@@ -1651,7 +1651,7 @@ pageRoutes.get('/notices', async (c) => {
           ) : (
             <div class="space-y-3 stagger-children">
               {notices.map((n: any) => (
-                <a href={`/notices/${n.id}`} class="glass-card p-5 md:p-6 block group hover:border-[#0066FF]/20 transition-all" data-cursor-hover>
+                <a href={`/notices/${n.id}`} class="glass-card p-5 md:p-6 block group hover:border-[#1E4BD8]/20 transition-all" data-cursor-hover>
                   <div class="flex items-start gap-4">
                     {n.is_pinned ? (
                       <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center mt-0.5">
@@ -1667,13 +1667,13 @@ pageRoutes.get('/notices', async (c) => {
                         <span class={`text-[0.65rem] font-bold px-2 py-0.5 rounded-full ${categoryColors[n.category] || categoryColors['공지']}`}>{n.category}</span>
                         {n.is_pinned ? <span class="text-[0.6rem] text-amber-500 font-bold">고정</span> : null}
                       </div>
-                      <h3 class="text-base font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors truncate">{n.title}</h3>
+                      <h3 class="text-base font-bold text-gray-900 group-hover:text-[#1E4BD8] transition-colors truncate">{n.title}</h3>
                       <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
                         <span><i class="fa-regular fa-calendar mr-1"></i>{n.created_at?.slice(0, 10)}</span>
                         <span><i class="fa-regular fa-eye mr-1"></i>{n.view_count}</span>
                       </div>
                     </div>
-                    <i class="fa-solid fa-chevron-right text-gray-200 group-hover:text-[#0066FF]/50 transition-colors mt-3 text-sm"></i>
+                    <i class="fa-solid fa-chevron-right text-gray-200 group-hover:text-[#1E4BD8]/50 transition-colors mt-3 text-sm"></i>
                   </div>
                 </a>
               ))}
@@ -1775,13 +1775,13 @@ pageRoutes.get('/encyclopedia', (c) => {
       <section class="section-md bg-mesh">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           <div class="text-center mb-10 reveal">
-            <span class="section-eyebrow text-[#0066FF] mb-3 block">CATEGORIES</span>
+            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">CATEGORIES</span>
             <h2 class="section-sub-headline text-gray-900">총 {totalTerms}개 용어 · {terms.length}개 분야</h2>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 stagger-children">
             {terms.map((cat, i) => (
-              <a href={`#cat-${i}`} class="glass-card px-4 py-3 flex items-center justify-between hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
-                <span class="font-medium text-gray-700 group-hover:text-[#0066FF] transition-colors text-[0.85rem]">{cat.cat}</span>
+              <a href={`#cat-${i}`} class="glass-card px-4 py-3 flex items-center justify-between hover:border-[#1E4BD8]/30 transition-all group" data-cursor-hover>
+                <span class="font-medium text-gray-700 group-hover:text-[#1E4BD8] transition-colors text-[0.85rem]">{cat.cat}</span>
                 <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{cat.items.length}</span>
               </a>
             ))}
@@ -1794,8 +1794,8 @@ pageRoutes.get('/encyclopedia', (c) => {
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           {terms.map((cat, ci) => (
             <article id={`cat-${ci}`} class="scroll-mt-24 mb-16 reveal">
-              <h3 class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#0066FF]/10">
-                <span class="text-xs font-bold text-[#0066FF] bg-[#0066FF]/5 px-3 py-1 rounded-full">{cat.cat}</span>
+              <h3 class="flex items-center gap-3 mb-6 pb-4 border-b-2 border-[#1E4BD8]/10">
+                <span class="text-xs font-bold text-[#1E4BD8] bg-[#1E4BD8]/5 px-3 py-1 rounded-full">{cat.cat}</span>
                 <span class="text-xs text-gray-400 font-normal">{cat.items.length}개 용어</span>
               </h3>
               <dl class="space-y-5">
@@ -1805,19 +1805,19 @@ pageRoutes.get('/encyclopedia', (c) => {
                   <div class="group">
                     <dt class="flex items-baseline gap-2 mb-1.5">
                       <h4 class="font-bold text-gray-900 text-[0.95rem] m-0">
-                        {flat ? <a href={`/encyclopedia/${flat.slug}`} class="hover:text-[#0066FF] transition-colors" data-cursor-hover>{item.term}</a> : item.term}
+                        {flat ? <a href={`/encyclopedia/${flat.slug}`} class="hover:text-[#1E4BD8] transition-colors" data-cursor-hover>{item.term}</a> : item.term}
                       </h4>
-                      <span class="text-xs text-[#0066FF]/60 font-medium">{item.en}</span>
+                      <span class="text-xs text-[#1E4BD8]/60 font-medium">{item.en}</span>
                     </dt>
                     <dd class="text-gray-600 text-[0.85rem] leading-[1.9] pl-0">
                       {item.def}
                       {item.link && (
-                        <a href={item.link} class="inline-flex items-center gap-1 ml-2 text-xs text-[#0066FF] hover:underline">
+                        <a href={item.link} class="inline-flex items-center gap-1 ml-2 text-xs text-[#1E4BD8] hover:underline">
                           자세히 보기 <i class="fa-solid fa-arrow-right text-[0.6rem]"></i>
                         </a>
                       )}
                       {flat && (
-                        <a href={`/encyclopedia/${flat.slug}`} class="inline-flex items-center gap-1 ml-2 text-xs text-gray-400 hover:text-[#0066FF] hover:underline">
+                        <a href={`/encyclopedia/${flat.slug}`} class="inline-flex items-center gap-1 ml-2 text-xs text-gray-400 hover:text-[#1E4BD8] hover:underline">
                           용어 페이지 <i class="fa-solid fa-up-right-from-square text-[0.55rem]"></i>
                         </a>
                       )}
@@ -1999,8 +1999,8 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
               <h2 id="related-terms-heading" class="text-lg font-bold text-gray-900 mb-5">함께 보면 좋은 용어</h2>
               <div class="grid sm:grid-cols-2 gap-3">
                 {related.map((r) => (
-                  <a href={`/encyclopedia/${r.slug}`} class="glass-card px-4 py-3.5 hover:border-[#0066FF]/30 transition-all group" data-cursor-hover>
-                    <span class="block font-semibold text-gray-800 group-hover:text-[#0066FF] text-sm transition-colors">{r.term}</span>
+                  <a href={`/encyclopedia/${r.slug}`} class="glass-card px-4 py-3.5 hover:border-[#1E4BD8]/30 transition-all group" data-cursor-hover>
+                    <span class="block font-semibold text-gray-800 group-hover:text-[#1E4BD8] text-sm transition-colors">{r.term}</span>
                     <span class="block text-xs text-gray-400 mt-0.5">{r.en} · {r.cat}</span>
                   </a>
                 ))}
@@ -2008,7 +2008,7 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
             </section>
           )}
 
-          <p class="text-gray-500 text-sm mb-4"><i class="fa-solid fa-location-dot text-[#0066FF]/60 mr-1.5" aria-hidden="true"></i>서울365치과 위치·진료시간 안내: <HubA /></p>
+          <p class="text-gray-500 text-sm mb-4"><i class="fa-solid fa-location-dot text-[#1E4BD8]/60 mr-1.5" aria-hidden="true"></i>서울365치과 위치·진료시간 안내: <HubA /></p>
           <p class="text-gray-400 text-xs mb-8">※ 본 내용은 일반적인 치과 정보 제공 목적이며, 개인에 따라 상태와 결과가 다를 수 있습니다. 정확한 진단과 치료 계획은 반드시 치과의사와 상담해 결정하시기 바랍니다.</p>
           <div class="flex flex-wrap gap-3">
             <a href="/encyclopedia" class="btn-premium btn-premium-outline text-sm" data-cursor-hover><i class="fa-solid fa-book"></i> 전체 용어 사전</a>
@@ -2124,7 +2124,7 @@ async function renderConsultCheck(c: any, input: { code?: string; name?: string;
     }
   }
 
-  const inputCls = 'w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#0066FF]/20 focus:border-[#0066FF]/30 transition-all text-sm';
+  const inputCls = 'w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm';
 
   return c.render(
     <>
@@ -2181,7 +2181,7 @@ async function renderConsultCheck(c: any, input: { code?: string; name?: string;
                     <div class="text-gray-800 whitespace-pre-wrap leading-relaxed" style="word-break:keep-all">{m.message || '내용 없음'}</div>
                   </div>
                   <div class="pt-4 border-t border-gray-100">
-                    <div class="text-xs font-semibold text-[#0066FF] mb-2"><i class="fa-solid fa-comment-medical mr-1"></i>서울365치과 답변{m.replied_at ? <span class="text-gray-400 font-normal ml-2">{fmtDate(m.replied_at)}</span> : null}</div>
+                    <div class="text-xs font-semibold text-[#1E4BD8] mb-2"><i class="fa-solid fa-comment-medical mr-1"></i>서울365치과 답변{m.replied_at ? <span class="text-gray-400 font-normal ml-2">{fmtDate(m.replied_at)}</span> : null}</div>
                     {m.reply ? (
                       <div class="bg-blue-50/60 border border-blue-100 rounded-xl px-5 py-4 text-gray-800 whitespace-pre-wrap leading-relaxed" style="word-break:keep-all">{m.reply}</div>
                     ) : (
@@ -2194,7 +2194,7 @@ async function renderConsultCheck(c: any, input: { code?: string; name?: string;
 
             <div class="mt-8 text-center text-xs text-gray-400 space-y-1">
               <p>접수번호를 모르시면 문의 시 입력한 이름과 전화번호로 확인할 수 있습니다.</p>
-              <p>추가 문의: <a href={CLINIC.phoneTel} class="text-[#0066FF] font-semibold">{CLINIC.phone}</a> · <a href="/reservation" class="text-[#0066FF] font-semibold">온라인 상담 신청</a></p>
+              <p>추가 문의: <a href={CLINIC.phoneTel} class="text-[#1E4BD8] font-semibold">{CLINIC.phone}</a> · <a href="/reservation" class="text-[#1E4BD8] font-semibold">온라인 상담 신청</a></p>
             </div>
           </div>
         </div>

@@ -10,6 +10,19 @@ import { CLINIC, HOURS } from './data/clinic'
 import { MESSAGING, MISSION } from './data/brand'
 import { AREAS } from './data/areas'
 import { doctors as DOCTORS } from './data/doctors'
+import { Icon, NaverMark, KakaoMark } from './lib/icons'
+import { todayStatus } from './lib/hours'
+
+// 메인 네비게이션(헤더·드로어 공용)
+const NAV = [
+  { href: '/treatments', label: '진료안내', en: 'TREATMENTS' },
+  { href: '/doctors', label: '의료진', en: 'DOCTORS' },
+  { href: '/cases/gallery', label: '치료사례', en: 'CASES' },
+  { href: '/blog', label: '블로그', en: 'BLOG' },
+  { href: '/faq', label: 'FAQ', en: 'FAQ' },
+  { href: '/notices', label: '공지사항', en: 'NOTICE' },
+  { href: '/info', label: '내원안내', en: 'VISIT' },
+] as const
 
 // SEO/AEO Optimized Renderer — v3.0
 // - Rich Schema.org (Dentist + MedicalOrganization + WebSite + Speakable)
@@ -26,7 +39,9 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
   const pageDesc = description || `인천 구월동 서울365치과. 서울대 출신 5인 원장 협진, 365일·야간21시 진료. 임플란트·인비절라인 투명교정·수면진료 전문. 032-432-0365`;
   const canonicalUrl = canonical || 'https://seoul365dc.kr';
   // 메인 홈에서만 스크롤 몰입 연출을 싣는다
-  const isHome = useRequestContext().req.path === '/';
+  const reqPath = useRequestContext().req.path;
+  const isHome = reqPath === '/';
+  const todayHours = todayStatus();
   // noindex 페이지(404·관리자 등)가 canonical 을 따로 넘기지 않으면 canonical·hreflang 을 내보내지 않는다
   // (기존: 홈으로 canonical → soft 404 신호). 2026-10-08
   const emitCanonical = !!canonical || !noindex;
@@ -448,6 +463,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <title>{pageTitle}</title>
         <meta name="description" content={pageDesc} />
         <meta name="keywords" content={metaKeywords} />
+        {/* 등장 연출 게이트: 동작 줄이기가 아니고 IntersectionObserver 가 있으면 html.mx — CSS 는 이때만 숨김 시작(크롤러·JS 꺼짐은 전부 보임) */}
+        <script dangerouslySetInnerHTML={{ __html: "(function(){try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver' in window)document.documentElement.classList.add('mx')}catch(e){}})();" }} />
         {emitCanonical && <link rel="canonical" href={canonicalUrl} />}
         {/* v8: noindex prop — admin/login/register 등 비공개 페이지는 색인 차단 (크롤 버짓 절약) */}
         {/* noindexFollow — 얇은 상세(백과 용어·치료사례 등): 색인 제외하되 링크는 따라가게 (2026-09-29) */}
@@ -471,8 +488,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <meta name="ICBM" content="37.4482, 126.7042" />
 
         {/* === THEME & ICONS === */}
-        <meta name="theme-color" content="#040B18" />
-        <meta name="msapplication-TileColor" content="#040B18" />
+        <meta name="theme-color" content="#0B1530" />
+        <meta name="msapplication-TileColor" content="#0B1530" />
         <meta name="apple-mobile-web-app-title" content="서울365치과" />
         <link rel="icon" href="/favicon.ico?v=fav20261014" sizes="any" />
         <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png?v=fav20261014" />
@@ -528,6 +545,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
 
         {/* === PRECONNECT (Core Web Vitals LCP 최적화) === */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
         <link rel="dns-prefetch" href="https://www.google.com" />
@@ -541,14 +559,13 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         <link rel="alternate" type="application/atom+xml" title="서울365치과 블로그 Atom" href="/blog/atom.xml" />
         <link rel="alternate" type="application/feed+json" title="서울365치과 블로그 JSON Feed" href="/feed.json" />
 
-        {/* === CRITICAL: Preload cursor logo for instant display === */}
-        <link rel="preload" href="/static/cursor-logo.png" as="image" type="image/png" fetchpriority="high" />
-
-        {/* === FONTS (non-blocking) === */}
+        {/* === FONTS (2026-11-04: 제목 Paperlogy · 숫자 Geist Mono 는 style.css 의 @font-face, 여기서는 첫 화면용 두 파일만 preload) === */}
+        <link rel="preload" href="https://cdn.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-7Bold.woff2" as="font" type="font/woff2" crossorigin />
+        <link rel="preload" href="https://cdn.jsdelivr.net/npm/geist@1.3.1/dist/fonts/geist-mono/GeistMono-Variable.woff2" as="font" type="font/woff2" crossorigin />
         <link rel="preload" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" as="style" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'" />
 
-        {/* === CSS LIBS (FontAwesome non-blocking) === */}
+        {/* === CSS LIBS (FontAwesome — 하위페이지 아이콘용, non-blocking) === */}
         <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" media="print" onload="this.media='all'" />
         <noscript><link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet" /></noscript>
 
@@ -569,341 +586,193 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
           : <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd).replace(/</g, '\\u003c')}} />
         )}
       </head>
-      <body class="font-sans text-gray-900 bg-white antialiased">
+      <body class="antialiased">
 
         {/* === GTM NOSCRIPT FALLBACK === */}
         {gtmId && <noscript><iframe src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`} height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>}
 
         {/* === SKIP NAVIGATION (접근성) === */}
-        <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[9999] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-primary focus:font-semibold">
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-primary focus:font-semibold">
           메인 콘텐츠로 바로가기
         </a>
 
         {/* === SCROLL PROGRESS === */}
-        <div id="scroll-progress" class="scroll-progress" role="progressbar" aria-label="페이지 스크롤 진행률"></div>
+        <div id="scroll-progress" class="scroll-progress" aria-hidden="true"></div>
 
-        {/* === CUSTOM CURSOR (Desktop only — inline style, no Tailwind dependency) === */}
-        <div id="cursor-dot" class="cursor-dot" style="display:none" aria-hidden="true"></div>
-        <div id="cursor-ring" class="cursor-ring" style="display:none" aria-hidden="true"></div>
-
-        {/* === PREMIUM HEADER === */}
-        <header id="main-header" class="header-premium" role="banner">
-          <nav class="max-w-[1400px] mx-auto px-5 md:px-8 h-[72px] flex items-center justify-between" role="navigation" aria-label="메인 네비게이션">
-            {/* Logo */}
-            <a href="/" class="flex items-center gap-2.5 group relative z-10" aria-label="서울365치과 홈으로 이동">
-              <img src="/static/logo-v2.png" alt="서울365치과" class="header-logo w-10 h-10 object-contain transition-all duration-500 group-hover:scale-110" />
-              <div class="flex flex-col leading-none">
-                <span class="logo-text text-[1.05rem] font-extrabold tracking-tight text-gray-900">서울365치과</span>
-                <span class="logo-text text-[0.6rem] font-medium text-gray-400 tracking-[0.15em] mt-0.5">SEOUL 365 DENTAL</span>
-              </div>
+        {/* === HEADER === */}
+        <header id="main-header" class="site-head" role="banner">
+          <div class="site-head-in">
+            <a href="/" class="brand" aria-label="서울365치과 홈으로 이동">
+              <span class="brand-mark"><img src="/static/logo-v2.png" alt="" width="174" height="180" decoding="async" /></span>
+              <span class="brand-text"><span class="brand-ko">서울365치과</span><span class="brand-en">SEOUL 365 DENTAL</span></span>
             </a>
 
-            {/* Desktop Nav */}
-            <div class="hidden lg:flex items-center gap-7">
-              {[
-                { href: '/treatments', label: '진료안내' },
-                { href: '/doctors', label: '의료진' },
-                { href: '/cases/gallery', label: '치료사례' },
-                { href: '/blog', label: '블로그' },
-                { href: '/faq', label: 'FAQ' },
-                { href: '/notices', label: '공지사항' },
-                { href: '/info', label: '내원안내' },
-              ].map(item => (
-                <a href={item.href} class="nav-link link-underline text-[0.88rem] font-medium text-gray-600 hover:text-primary transition-colors" data-cursor-hover>{item.label}</a>
+            <nav class="nav" aria-label="메인 네비게이션">
+              <ul>
+                {NAV.map(n => (
+                  <li><a href={n.href} aria-current={reqPath === n.href || reqPath.startsWith(n.href + '/') ? 'page' : undefined}>{n.label}</a></li>
+                ))}
+              </ul>
+            </nav>
+
+            <div class="head-actions">
+              <span class={`status-chip head-only${todayHours.open ? ' is-open' : ''}`} id="clinic-status-badge" data-status><span class="dot" aria-hidden="true"></span><span class="txt">{todayHours.text}</span></span>
+              <a href={CLINIC.phoneTel} class="head-tel" aria-label="전화 상담 032-432-0365"><Icon name="phone" />{CLINIC.phone}</a>
+              {/* Auth — app.js 가 로그인 상태에 따라 토글 */}
+              <div id="auth-nav" class="head-auth">
+                <a href="/login" id="auth-login-btn">로그인</a>
+                <a href="/register" id="auth-register-btn">회원가입</a>
+              </div>
+              <div id="auth-user" class="head-auth hidden">
+                <span id="auth-user-name"></span>
+                <button id="auth-logout-btn" type="button" aria-label="로그아웃"><Icon name="logout" size={16} /></button>
+              </div>
+              <a href="/reservation" class="btn btn-primary btn-sm head-cta"><Icon name="calendar" />예약하기</a>
+              <button id="mobile-menu-btn" class="burger" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="mobile-menu"><span></span><span></span><span></span></button>
+            </div>
+          </div>
+
+          {/* 모바일 드로어 */}
+          <div id="mobile-menu" class="drawer" hidden role="navigation" aria-label="모바일 네비게이션">
+            <div class="drawer-top">
+              <span class={`status-chip${todayHours.open ? ' is-open' : ''}`} id="mobile-clinic-status" data-status><span class="dot" aria-hidden="true"></span><span class="txt">{todayHours.text}</span></span>
+              <a href={CLINIC.phoneTel}>{CLINIC.phone}</a>
+            </div>
+            <ul class="drawer-list">
+              <li><a href="/"><span>홈</span><span class="mono">HOME</span></a></li>
+              {NAV.map(n => (
+                <li><a href={n.href}><span>{n.label}</span><span class="mono">{n.en}</span></a></li>
               ))}
+            </ul>
+            <div class="drawer-hours">
+              {HOURS.map(h => (<><span>{h.day}</span><span class="mono">{h.time}</span></>))}
             </div>
-
-            {/* Desktop CTA */}
-            <div class="hidden lg:flex items-center gap-3">
-              <div class="flex items-center gap-1.5 text-[0.75rem] font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full" id="clinic-status-badge">
-                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span>진료중</span>
-              </div>
-              <a href={CLINIC.phoneTel} class="nav-link flex items-center gap-1.5 text-[0.82rem] font-medium text-gray-500 hover:text-primary transition-colors" data-cursor-hover aria-label="전화 상담 032-432-0365">
-                <i class="fa-solid fa-phone text-[0.7rem]" aria-hidden="true"></i> {CLINIC.phone}
-              </a>
-              {/* Auth buttons — dynamically updated by JS */}
-              <div id="auth-nav" class="flex items-center gap-2">
-                <a href="/login" id="auth-login-btn" class="nav-link flex items-center gap-1.5 text-[0.82rem] font-medium text-gray-500 hover:text-primary transition-colors" data-cursor-hover>
-                  <i class="fa-solid fa-right-to-bracket text-[0.7rem]" aria-hidden="true"></i> 로그인
-                </a>
-                <a href="/register" id="auth-register-btn" class="btn-premium btn-premium-outline text-[0.82rem] px-4 py-2" data-cursor-hover>
-                  <i class="fa-solid fa-user-plus text-[0.7rem]" aria-hidden="true"></i> 회원가입
-                </a>
-              </div>
-              <div id="auth-user" class="hidden flex items-center gap-2">
-                <span id="auth-user-name" class="text-[0.82rem] font-medium text-gray-600"></span>
-                <button id="auth-logout-btn" class="nav-link text-[0.82rem] font-medium text-gray-400 hover:text-red-500 transition-colors" data-cursor-hover aria-label="로그아웃">
-                  <i class="fa-solid fa-right-from-bracket text-[0.7rem]" aria-hidden="true"></i>
-                </button>
-              </div>
-              <a href="/reservation" class="btn-premium btn-premium-fill text-[0.82rem] px-5 py-2.5" data-cursor-hover>
-                <i class="fa-solid fa-calendar-check text-[0.75rem]" aria-hidden="true"></i> 예약하기
-              </a>
+            <div class="drawer-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />예약하기</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light"><Icon name="phone" />전화 상담</a>
             </div>
-
-            {/* Mobile Menu Btn */}
-            <button id="mobile-menu-btn" class="lg:hidden mobile-menu-icon p-2 text-gray-700 relative z-10" aria-label="모바일 메뉴 열기" aria-expanded="false" aria-controls="mobile-menu">
-              <i class="fa-solid fa-bars text-xl" aria-hidden="true"></i>
-            </button>
-          </nav>
-
-          {/* Mobile Menu */}
-          <div id="mobile-menu" class="hidden lg:hidden absolute top-full left-0 right-0 bg-navy/95 backdrop-blur-xl border-t border-white/10" role="navigation" aria-label="모바일 네비게이션">
-            <div class="max-w-[1400px] mx-auto px-5 py-4 space-y-0.5">
-              {/* Mobile Status Badge */}
-              <div class="flex items-center gap-2 px-4 py-2 mb-2">
-                <div class="flex items-center gap-1.5 text-[0.75rem] font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full" id="mobile-clinic-status">
-                  <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                  <span>진료중</span>
-                </div>
-                <a href={CLINIC.phoneTel} class="text-[0.8rem] font-medium text-white/50">
-                  <i class="fa-solid fa-phone text-[0.65rem] mr-1" aria-hidden="true"></i>{CLINIC.phone}
-                </a>
-              </div>
-              {[
-                { href: '/', label: '홈', icon: 'fa-house' },
-                { href: '/treatments', label: '진료안내', icon: 'fa-teeth' },
-                { href: '/doctors', label: '의료진', icon: 'fa-user-doctor' },
-                { href: '/cases/gallery', label: '치료사례', icon: 'fa-images' },
-                { href: '/blog', label: '블로그', icon: 'fa-pen-nib' },
-                { href: '/faq', label: 'FAQ', icon: 'fa-circle-question' },
-                { href: '/notices', label: '공지사항', icon: 'fa-bullhorn' },
-                { href: '/info', label: '내원안내', icon: 'fa-hospital' },
-              ].map(item => (
-                <a href={item.href} class="flex items-center gap-3 py-3.5 px-4 text-white/80 font-medium text-[0.95rem] rounded-2xl hover:bg-white/5 transition-colors">
-                  <i class={`fa-solid ${item.icon} text-[#00E5FF]/60 w-5 text-center text-sm`} aria-hidden="true"></i>
-                  {item.label}
-                </a>
-              ))}
-              <div class="pt-3 pb-1 space-y-2">
-                <div id="mobile-auth-nav" class="grid grid-cols-2 gap-2">
-                  <a href="/login" class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center text-white/70 border-white/20">
-                    <i class="fa-solid fa-right-to-bracket text-[0.7rem]" aria-hidden="true"></i> 로그인
-                  </a>
-                  <a href="/register" class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center text-white/70 border-white/20">
-                    <i class="fa-solid fa-user-plus text-[0.7rem]" aria-hidden="true"></i> 회원가입
-                  </a>
-                </div>
-                <div id="mobile-auth-user" class="hidden text-center py-2">
-                  <span id="mobile-user-name" class="text-sm font-medium text-white/70"></span>
-                  <button id="mobile-logout-btn" class="ml-2 text-sm text-white/40 hover:text-red-400">로그아웃</button>
-                </div>
-                <div class="grid grid-cols-2 gap-2">
-                  <a href={CLINIC.phoneTel} class="btn-premium btn-premium-outline text-[0.82rem] py-3 justify-center text-white/70 border-white/20">
-                    <i class="fa-solid fa-phone text-[0.7rem]" aria-hidden="true"></i> 전화상담
-                  </a>
-                  <a href="/reservation" class="btn-premium btn-premium-fill text-[0.82rem] py-3 justify-center">
-                    <i class="fa-solid fa-calendar-check text-[0.7rem]" aria-hidden="true"></i> 예약하기
-                  </a>
-                </div>
-              </div>
-            </div>
+            <div id="mobile-auth-nav" class="drawer-auth"><a href="/login">로그인</a><a href="/register">회원가입</a></div>
+            <div id="mobile-auth-user" class="drawer-auth hidden"><span id="mobile-user-name"></span><button id="mobile-logout-btn" type="button">로그아웃</button></div>
           </div>
         </header>
 
         {/* === MAIN CONTENT === */}
         <main id="main-content" role="main">{children}</main>
 
-        {/* === PREMIUM FOOTER === */}
-        <footer class="bg-navy pb-28 md:pb-0 relative overflow-hidden" role="contentinfo">
-          {/* Aurora footer accent */}
-          <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#0066FF]/30 to-transparent" aria-hidden="true"></div>
-          <div class="absolute top-0 left-1/4 w-1/2 h-64 bg-[#0066FF]/[0.03] blur-[100px] pointer-events-none" aria-hidden="true"></div>
-
-          <div class="max-w-[1400px] mx-auto px-5 md:px-8 relative">
-            {/* Top */}
-            <div class="py-16 md:py-20 grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8">
-              {/* Brand */}
-              <div class="md:col-span-4">
-                <a href="/" class="flex items-center gap-2.5 mb-6" aria-label="서울365치과 홈">
-                  <img src="/static/logo-v2.png" alt="서울365치과" class="w-10 h-10 object-contain" />
-                  <div class="flex flex-col leading-none">
-                    <span class="text-[1.05rem] font-extrabold text-white tracking-tight">서울365치과</span>
-                    <span class="text-[0.6rem] font-medium text-white/25 tracking-[0.15em] mt-0.5">SEOUL 365 DENTAL</span>
-                  </div>
+        {/* === FOOTER === */}
+        <footer class="foot" role="contentinfo">
+          <div class="foot-in">
+            <div class="foot-top">
+              <div>
+                <a href="/" class="brand" aria-label="서울365치과 홈">
+                  <span class="brand-mark"><img src="/static/logo-v2.png" alt="" width="174" height="180" loading="lazy" decoding="async" /></span>
+                  <span class="brand-text"><span class="brand-ko">서울365치과</span><span class="brand-en">SEOUL 365 DENTAL</span></span>
                 </a>
-                <p class="text-sm leading-relaxed text-white/35 max-w-xs">
-                  {MESSAGING.brandSlogan}<br/>
-                  서울대 출신 5인 원장 · 365일 진료 · 자체 기공실.
-                </p>
-                <div class="flex gap-2.5 mt-6">
-                  {[
-                    { href: CLINIC.instagram, icon: 'fa-brands fa-instagram', label: 'Instagram에서 서울365치과 보기' },
-                    { href: CLINIC.naverBlog, icon: 'fa-solid fa-n', label: '네이버 블로그에서 서울365치과 보기' },
-                    { href: CLINIC.kakao, icon: 'fa-solid fa-comment', label: '카카오톡으로 서울365치과 상담하기' },
-                  ].map(s => (
-                    <a href={s.href} target="_blank" rel="noopener noreferrer nofollow" class="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-white/30 hover:text-[#00E5FF] hover:bg-[#0066FF]/10 hover:border-[#0066FF]/20 transition-all text-sm" aria-label={s.label} data-cursor-hover>
-                      <i class={s.icon} aria-hidden="true"></i>
-                    </a>
-                  ))}
+                <p class="foot-slogan">{MESSAGING.brandSlogan}</p>
+                <p>서울대 출신 5인 원장 · 365일 진료 · 자체 기공실</p>
+                <p>{CLINIC.address}<br />{CLINIC.nearStation}</p>
+                <div class="foot-social">
+                  <a href={CLINIC.instagram} target="_blank" rel="noopener noreferrer nofollow" aria-label="Instagram에서 서울365치과 보기"><Icon name="instagram" /></a>
+                  <a href={CLINIC.naverBlog} target="_blank" rel="noopener noreferrer nofollow" aria-label="네이버 블로그에서 서울365치과 보기"><NaverMark size={15} /></a>
+                  <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" aria-label="카카오톡으로 서울365치과 상담하기"><KakaoMark size={17} /></a>
+                  <a href={CLINIC.naverBooking} target="_blank" rel="noopener noreferrer nofollow" aria-label="네이버 예약"><Icon name="calendar" /></a>
                 </div>
               </div>
 
-              {/* Navigation */}
-              <nav class="md:col-span-2" aria-label="진료 메뉴">
-                <span class="block text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5" role="heading" aria-level="3">진료</span>
-                <ul class="space-y-3 text-[0.85rem]">
+              <nav aria-label="진료 메뉴">
+                <span class="foot-h" role="heading" aria-level="3">진료</span>
+                <ul>
                   {[
                     { name: '전체임플란트', slug: 'full-implant' },
-                    { name: '교정', slug: 'orthodontics' },
+                    { name: '임플란트', slug: 'implant' },
+                    { name: '치아교정', slug: 'orthodontics' },
+                    { name: '인비절라인', slug: 'invisalign' },
                     { name: '수면진료', slug: 'sedation' },
                     { name: '심미치료', slug: 'cosmetic' },
-                  ].map(t => (
-                    <li><a href={`/treatments/${t.slug}`} class="text-white/35 hover:text-[#00E5FF] transition-colors">{t.name}</a></li>
-                  ))}
+                  ].map(t => (<li><a href={`/treatments/${t.slug}`}>{t.name}</a></li>))}
                   {/* 2026-09-29: 링크가 거의 없던 응급·야간 진료 안내 페이지 연결 */}
-                  <li><a href="/emergency" class="text-white/35 hover:text-[#00E5FF] transition-colors">응급 진료</a></li>
-                  <li><a href="/night-clinic" class="text-white/35 hover:text-[#00E5FF] transition-colors">야간 진료</a></li>
+                  <li><a href="/emergency">응급 진료</a></li>
+                  <li><a href="/night-clinic">야간 진료</a></li>
                 </ul>
               </nav>
 
-              <nav class="md:col-span-2" aria-label="안내 메뉴">
-                <span class="block text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5" role="heading" aria-level="3">안내</span>
-                <ul class="space-y-3 text-[0.85rem]">
-                  <li><a href="/doctors" class="text-white/35 hover:text-[#00E5FF] transition-colors">의료진</a></li>
-                  <li><a href="/info" class="text-white/35 hover:text-[#00E5FF] transition-colors">내원안내</a></li>
-                  <li><a href="/blog" class="text-white/35 hover:text-[#00E5FF] transition-colors">블로그</a></li>
-                  <li><a href="/faq" class="text-white/35 hover:text-[#00E5FF] transition-colors">FAQ</a></li>
-                  <li><a href="/prices" class="text-white/35 hover:text-[#00E5FF] transition-colors">가격표</a></li>
-                  <li><a href="/answers" class="text-white/35 hover:text-[#00E5FF] transition-colors">자주 묻는 질문 직답</a></li>
-                  <li><a href="/encyclopedia" class="text-white/35 hover:text-[#00E5FF] transition-colors">치과 백과사전</a></li>
-                  <li><a href="/why-us" class="text-white/35 hover:text-[#00E5FF] transition-colors">서울365를 선택하는 이유</a></li>
+              <nav aria-label="안내 메뉴">
+                <span class="foot-h" role="heading" aria-level="3">안내</span>
+                <ul>
+                  <li><a href="/doctors">의료진</a></li>
+                  <li><a href="/info">내원안내</a></li>
+                  <li><a href="/blog">블로그</a></li>
+                  <li><a href="/faq">FAQ</a></li>
+                  <li><a href="/prices">가격표</a></li>
+                  <li><a href="/answers">자주 묻는 질문 직답</a></li>
+                  <li><a href="/encyclopedia">치과 백과사전</a></li>
+                  <li><a href="/why-us">서울365를 선택하는 이유</a></li>
                 </ul>
               </nav>
 
-              {/* Hours */}
-              <div class="md:col-span-4">
-                <span class="block text-[0.68rem] font-bold text-[#0066FF]/40 tracking-[0.2em] uppercase mb-5" role="heading" aria-level="3">진료시간</span>
-                <div class="space-y-0 text-[0.85rem]">
+              <div>
+                <span class="foot-h" role="heading" aria-level="3">진료시간</span>
+                <div class="foot-hours">
                   {HOURS.map(h => (
-                    <div class="flex justify-between items-center py-2.5 border-b border-white/[0.04]">
-                      <span class="text-white/40">{h.day}</span>
-                      <span class="text-white/70 font-semibold tabular-nums">{h.time}</span>
-                    </div>
+                    <div><span>{h.day}</span><span class="mono">{h.time}</span></div>
                   ))}
-                  <div class="pt-3 flex items-center gap-2">
-                    <span class="w-1.5 h-1.5 bg-[#0066FF] rounded-full animate-pulse" aria-hidden="true"></span>
-                    <span class="text-[#00E5FF] text-[0.78rem] font-semibold">점심시간 없이 연속 진료</span>
-                  </div>
+                  <span class="cont"><Icon name="clock" size={14} />점심시간 없이 연속 진료</span>
                 </div>
               </div>
             </div>
 
-            {/* Business Info */}
-            <div class="border-t border-white/[0.04] pt-6 pb-3">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-2 text-[0.72rem] text-white/20 leading-relaxed">
-                <div class="space-y-1.5">
-                  <div class="flex flex-wrap gap-x-1">
-                    <span class="text-white/30 font-semibold">서울365치과의원</span>
-                    <span class="text-white/10">|</span>
-                    <span>대표자: 박준규</span>
-                  </div>
-                  <div class="flex flex-wrap gap-x-1">
-                    <span>사업자등록번호: 395-37-00559</span>
-                    <span class="text-white/10">|</span>
-                    <span>개업일: 2019.05.01</span>
-                  </div>
-                  <div>
-                    <span>업태: 보건업 및 사회복지서비스업</span>
-                    <span class="text-white/10 mx-1">|</span>
-                    <span>종목: 치과의원</span>
-                  </div>
-                </div>
-                <div class="space-y-1.5">
-                  <div>
-                    <span>소재지: {CLINIC.address}</span>
-                  </div>
-                  <div class="flex flex-wrap gap-x-1">
-                    <span>전화: {CLINIC.phone}</span>
-                    <span class="text-white/10">|</span>
-                    <span>이메일: seoul365dental@gmail.com</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Copyright & Links */}
-            <div class="border-t border-white/[0.04] py-5 flex flex-col md:flex-row justify-between gap-3 text-[0.72rem] text-white/15">
-              <span>&copy; 2019-{currentYear} 서울365치과의원. All rights reserved.</span>
-              <div class="flex gap-4">
-                <a href="/privacy" class="hover:text-white/50 transition-colors">개인정보처리방침</a>
-                <a href="/terms" class="hover:text-white/50 transition-colors">이용약관</a>
-                <a href="/consultations/check" class="hover:text-white/50 transition-colors">문의 답변 확인</a>
-                <a href="/sitemap.xml" class="hover:text-white/50 transition-colors">사이트맵</a>
-              </div>
+            {/* 사업자 정보 */}
+            <div class="foot-legal">
+              <p><span>서울365치과의원</span><span>대표자 박준규</span><span>사업자등록번호 395-37-00559</span><span>개업일 2019.05.01</span><span>업태 보건업 및 사회복지서비스업</span><span>종목 치과의원</span></p>
+              <p><span>소재지 {CLINIC.address}</span><span>전화 {CLINIC.phone}</span><span>이메일 seoul365dental@gmail.com</span></p>
             </div>
 
             {/* 지역 SEO 내부링크 */}
-            <nav class="border-t border-white/[0.04] pt-5 pb-3" aria-label="인천 지역별 치과 안내">
-              <p class="text-[0.65rem] font-bold text-white/15 tracking-[0.15em] uppercase mb-3">서울365치과 인근 지역 안내</p>
-              <div class="flex flex-wrap gap-x-2 gap-y-1.5">
+            <nav class="foot-areas" aria-label="인천 지역별 치과 안내">
+              <p>서울365치과 인근 지역 안내</p>
+              <div>
                 {/* 구월동 = "구월동 치과" 허브(정확 앵커), 허브 자신에서는 자기 링크 생략 (2026-10-08) */}
                 {AREAS.filter(a => !(a.slug === 'guwol-dong' && canonicalUrl === 'https://seoul365dc.kr/area/guwol-dong')).map(a => (
-                  <a href={`/area/${a.slug}`} class="text-[0.68rem] text-white/15 hover:text-[#00E5FF]/60 transition-colors whitespace-nowrap">
-                    {a.slug === 'guwol-dong' ? '구월동 치과' : `${a.name}치과`}
-                  </a>
+                  <a href={`/area/${a.slug}`}>{a.slug === 'guwol-dong' ? '구월동 치과' : `${a.name}치과`}</a>
                 ))}
-                <a href="/area" class="text-[0.68rem] text-[#0066FF]/30 hover:text-[#00E5FF]/60 transition-colors whitespace-nowrap font-medium">
-                  전체 지역 보기 →
-                </a>
+                <a href="/area">전체 지역 보기 →</a>
               </div>
             </nav>
+
+            <div class="foot-bottom">
+              <span>&copy; 2019-{currentYear} 서울365치과의원. All rights reserved.</span>
+              <span>
+                <a href="/privacy">개인정보처리방침</a>
+                <a href="/terms">이용약관</a>
+                <a href="/consultations/check">문의 답변 확인</a>
+                <a href="/sitemap.xml">사이트맵</a>
+              </span>
+            </div>
           </div>
         </footer>
 
-        {/* === MOBILE BOTTOM CTA === */}
-        <div class="md:hidden fixed bottom-0 left-0 right-0 z-50 mobile-cta-bar safe-bottom" role="complementary" aria-label="빠른 연락">
-          <div class="grid grid-cols-5">
-            <a href={CLINIC.phoneTel} class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="전화 상담">
-              <i class="fa-solid fa-phone text-[1.1rem]" aria-hidden="true"></i>
-              <span class="text-[10px] mt-1 font-medium">전화</span>
-            </a>
-            <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="카카오톡 상담">
-              <i class="fa-solid fa-comment text-[1.1rem]" aria-hidden="true"></i>
-              <span class="text-[10px] mt-1 font-medium">카카오톡</span>
-            </a>
-            <a href="/reservation" class="flex flex-col items-center justify-center py-3 bg-gradient-to-r from-[#0066FF] to-[#2979FF] text-white relative overflow-hidden" aria-label="상담 예약하기">
-              <div class="absolute inset-0 bg-gradient-to-r from-[#00E5FF]/0 via-white/10 to-[#00E5FF]/0 animate-shimmer-slow" aria-hidden="true"></div>
-              <i class="fa-solid fa-calendar-check text-[1.1rem] relative z-10" aria-hidden="true"></i>
-              <span class="text-[10px] mt-1 font-bold relative z-10">예약</span>
-            </a>
-            <a href="https://blog.naver.com/seoul365dental" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center py-3 text-[#03C75A] active:bg-green-50 transition-colors" aria-label="네이버 블로그">
-              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" class="text-[#03C75A]" aria-hidden="true"><path d="M13.54 10.68L6.17 2H2v16h4.46V9.32L13.83 18H18V2h-4.46v8.68z" fill="currentColor"/></svg>
-              <span class="text-[10px] mt-1 font-medium">블로그</span>
-            </a>
-            <a href="/info#directions" class="flex flex-col items-center justify-center py-3 text-gray-400 active:bg-gray-50 transition-colors" aria-label="오시는 길 안내">
-              <i class="fa-solid fa-location-dot text-[1.1rem]" aria-hidden="true"></i>
-              <span class="text-[10px] mt-1 font-medium">길찾기</span>
-            </a>
-          </div>
-        </div>
+        {/* === MOBILE BOTTOM BAR === */}
+        <nav class="mbar mobile-cta-bar" aria-label="빠른 연락">
+          <a href={CLINIC.phoneTel} aria-label="전화 상담"><Icon name="phone" /><span>전화</span></a>
+          <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" aria-label="카카오톡 상담"><KakaoMark size={21} /><span>카카오톡</span></a>
+          <a href="/reservation" class="mbar-primary" aria-label="상담 예약하기"><Icon name="calendar" /><span>예약</span></a>
+          <a href={CLINIC.naverBlog} class="mbar-naver" target="_blank" rel="noopener noreferrer" aria-label="네이버 블로그"><NaverMark size={19} /><span>블로그</span></a>
+          <a href="/info#directions" aria-label="오시는 길 안내"><Icon name="pin" /><span>길찾기</span></a>
+        </nav>
 
-        {/* === DESKTOP FLOATING CTA === */}
-        <div class="hidden md:flex fixed bottom-8 right-8 z-40 flex-col gap-3" aria-label="빠른 연락 버튼">
-          <a href="https://blog.naver.com/seoul365dental" target="_blank" rel="noopener noreferrer" class="floating-btn bg-[#03C75A] text-white rounded-2xl flex items-center justify-center shadow-lg hover:shadow-[#03C75A]/30 hover:scale-105 transition-all" aria-label="네이버 블로그 바로가기" style="width:52px;height:52px;" data-cursor-hover>
-            <svg width="22" height="22" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M13.54 10.68L6.17 2H2v16h4.46V9.32L13.83 18H18V2h-4.46v8.68z" fill="white"/></svg>
-          </a>
-          <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" class="floating-btn bg-[#FEE500] text-[#3C1E1E] rounded-2xl flex items-center justify-center" aria-label="카카오톡 상담" style="width:52px;height:52px;" data-cursor-hover>
-            <i class="fa-solid fa-comment text-lg" aria-hidden="true"></i>
-          </a>
-          <a href={CLINIC.phoneTel} class="floating-btn bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white rounded-2xl flex items-center justify-center relative overflow-hidden" aria-label="전화 상담 032-432-0365" style="width:52px;height:52px;" data-cursor-hover>
-            <i class="fa-solid fa-phone text-lg relative z-10" aria-hidden="true"></i>
-            <div class="absolute inset-0 rounded-2xl electric-border-glow" aria-hidden="true"></div>
-          </a>
-          <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="floating-btn bg-gray-900/90 text-white rounded-2xl flex items-center justify-center backdrop-blur-sm" aria-label="페이지 맨 위로 이동" style="width:52px;height:52px;" data-cursor-hover>
-            <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
-          </button>
+        {/* === DESKTOP FLOATING === */}
+        <div class="fab-col" aria-label="빠른 연락 버튼">
+          <a href={CLINIC.naverBlog} class="fab fab-naver" target="_blank" rel="noopener noreferrer" aria-label="네이버 블로그 바로가기"><NaverMark size={18} /></a>
+          <a href={CLINIC.kakao} class="fab fab-kakao" target="_blank" rel="noopener noreferrer nofollow" aria-label="카카오톡 상담"><KakaoMark size={20} /></a>
+          <a href={CLINIC.phoneTel} class="fab fab-phone" aria-label="전화 상담 032-432-0365"><Icon name="phone" /></a>
+          <button type="button" class="fab fab-top" id="fab-top" aria-label="페이지 맨 위로 이동"><Icon name="arrowUp" /></button>
         </div>
 
         {/* === SCRIPTS === */}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
         <script src={`/static/app.js?v=${__APP_JS_V__}`} defer></script>
-        {isHome && <>
-          {/* 메인 스크롤 몰입 연출 */}
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
-          <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-          <script src={`/static/immersive.js?v=${__IMMERSIVE_JS_V__}`} defer></script>
-        </>}
+        {isHome && <script src={`/static/immersive.js?v=${__IMMERSIVE_JS_V__}`} defer></script>}
       </body>
     </html>
   )

@@ -1,10 +1,7 @@
-/* 서울365치과 메인 스크롤 몰입 연출 — static/immersive.js 가 html.mx 를 붙였을 때만 작동 */
-/* #앵커로 들어올 때 브라우저 부드러운 스크롤이 ScrollTrigger 계산과 겹쳐 중간에 멈추지 않도록 */
-html.mx { scroll-behavior: auto !important; }
-/* 카드 속 사진 시차(개별 translate/scale 속성 — 기존 hover 확대와 겹쳐도 깨지지 않음) */
-html.mx .mx-par { overflow: hidden; }
-html.mx .mx-par > img { translate: 0 var(--mx-y, 0); scale: var(--mx-s, 1); will-change: translate, scale; }
-/* 세 줄 요약: 낱말에 불이 들어온다 */
-html.mx .mx-lit { opacity: .14; }
-/* 소개 영상 전원 ON */
-html.mx #video-section { will-change: clip-path; }
+/* 서울365치과 메인 스크롤 연출 — immersive.js 가 GSAP 로드를 확인하고 html.gs 를 붙였을 때만 작동 (2026-11-04)
+   .gs 가 없으면(GSAP 차단·실패) 히어로는 처음부터 전부 보인다. */
+html.gs .hero [data-hero] { opacity: 0; }
+html.gs .hero .hl-in { transform: translate3d(0, 112%, 0); }
+html.gs .hero-frame img, html.gs .pr-media img, html.gs .gw-card-img img { will-change: transform; }
+html.gs .tb-pin, html.gs .dr-track { will-change: transform; }
+html.gs .video-wrap { will-change: clip-path; }

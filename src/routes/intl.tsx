@@ -39,14 +39,14 @@ intlRoutes.get('/en', (c) => {
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:18vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4">FOR INTERNATIONAL PATIENTS</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4">FOR INTERNATIONAL PATIENTS</p>
           <h1 class="text-3xl md:text-5xl font-black text-white mb-4">Seoul 365 Dental Clinic</h1>
           <p class="text-white/60 text-base md:text-lg max-w-2xl mx-auto mb-6">
             Premium dental care in Incheon — English-speaking dentists from Seoul National University.
             Open 365 days a year. Implants · Invisalign · Sedation dentistry.
           </p>
           <div class="flex flex-wrap justify-center gap-3">
-            <a href="tel:+82324320365" class="px-6 py-3 rounded-xl bg-white text-[#0066FF] font-bold">
+            <a href="tel:+82324320365" class="px-6 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold">
               <i class="fa-solid fa-phone mr-2"></i> Call +82-32-432-0365
             </a>
             <a href="/reservation" class="px-6 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold">
@@ -64,7 +64,7 @@ intlRoutes.get('/en', (c) => {
             { icon: 'fa-bed', title: 'Sedation Dentistry', desc: 'Conscious sedation for dental anxiety. Safe for implants & extractions. +₩200K.' },
           ].map(item => (
             <div class="p-6 rounded-2xl border border-gray-100">
-              <i class={`fa-solid ${item.icon} text-[#0066FF] text-3xl mb-4`}></i>
+              <i class={`fa-solid ${item.icon} text-[#1E4BD8] text-3xl mb-4`}></i>
               <h3 class="font-bold text-gray-900 mb-2">{item.title}</h3>
               <p class="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
             </div>
@@ -83,7 +83,7 @@ intlRoutes.get('/en', (c) => {
             'CT diagnostic equipment & 3D oral scanner',
           ].map(line => (
             <div class="flex items-start gap-3">
-              <i class="fa-solid fa-check-circle text-[#0066FF] mt-1"></i>
+              <i class="fa-solid fa-check-circle text-[#1E4BD8] mt-1"></i>
               <span class="text-gray-700">{line}</span>
             </div>
           ))}
@@ -102,11 +102,11 @@ intlRoutes.get('/en', (c) => {
           </table>
         </div>
 
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white text-center">
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
           <h3 class="text-2xl font-black mb-2">Schedule Your Visit</h3>
           <p class="text-white/80 text-sm mb-5">English-speaking staff available. Free consultation.</p>
           <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#0066FF] font-bold text-sm">
+            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm">
               <i class="fa-solid fa-calendar-check mr-1.5"></i> Book Online
             </a>
             <a href="tel:+82324320365" class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm">
@@ -156,14 +156,14 @@ intlRoutes.get('/zh', (c) => {
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:18vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4">国际患者服务</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4">国际患者服务</p>
           <h1 class="text-3xl md:text-5xl font-black text-white mb-4">首尔365牙科诊所</h1>
           <p class="text-white/60 text-base md:text-lg max-w-2xl mx-auto mb-6">
             仁川优质牙科 · 首尔大学毕业的5位医师协诊 · 全年365天营业<br/>
             种植牙 · 隐适美 · 睡眠麻醉牙科
           </p>
           <div class="flex flex-wrap justify-center gap-3">
-            <a href="tel:+82324320365" class="px-6 py-3 rounded-xl bg-white text-[#0066FF] font-bold">
+            <a href="tel:+82324320365" class="px-6 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold">
               <i class="fa-solid fa-phone mr-2"></i> 电话 +82-32-432-0365
             </a>
             <a href="/reservation" class="px-6 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold">
@@ -181,7 +181,7 @@ intlRoutes.get('/zh', (c) => {
             { icon: 'fa-bed', title: '睡眠麻醉', desc: '意识镇静麻醉。安全用于种植牙和拔牙。+20万韩元。' },
           ].map(item => (
             <div class="p-6 rounded-2xl border border-gray-100">
-              <i class={`fa-solid ${item.icon} text-[#0066FF] text-3xl mb-4`}></i>
+              <i class={`fa-solid ${item.icon} text-[#1E4BD8] text-3xl mb-4`}></i>
               <h3 class="font-bold text-gray-900 mb-2">{item.title}</h3>
               <p class="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
             </div>
@@ -199,7 +199,7 @@ intlRoutes.get('/zh', (c) => {
             'CT精密诊断设备 + 3D口腔扫描仪',
           ].map(line => (
             <div class="flex items-start gap-3">
-              <i class="fa-solid fa-check-circle text-[#0066FF] mt-1"></i>
+              <i class="fa-solid fa-check-circle text-[#1E4BD8] mt-1"></i>
               <span class="text-gray-700">{line}</span>
             </div>
           ))}
@@ -217,11 +217,11 @@ intlRoutes.get('/zh', (c) => {
           </table>
         </div>
 
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white text-center">
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
           <h3 class="text-2xl font-black mb-2">预约就诊</h3>
           <p class="text-white/80 text-sm mb-5">免费咨询 · 中文翻译可提供</p>
           <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#0066FF] font-bold text-sm">
+            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm">
               <i class="fa-solid fa-calendar-check mr-1.5"></i> 在线预约
             </a>
             <a href="tel:+82324320365" class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm">

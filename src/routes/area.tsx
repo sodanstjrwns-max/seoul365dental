@@ -39,7 +39,7 @@ areaRoutes.get('/area', (c) => {
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:16vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">AREA GUIDE</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">AREA GUIDE</p>
           <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
             우리 동네에서 서울365치과까지
           </h1>
@@ -55,7 +55,7 @@ areaRoutes.get('/area', (c) => {
         {guOrder.filter(gu => grouped[gu]).map(gu => (
           <div class="mb-16 reveal reveal-fade">
             <div class="flex items-center gap-3 mb-8">
-              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center">
                 <i class="fa-solid fa-location-dot text-white text-sm"></i>
               </div>
               <div>
@@ -63,9 +63,9 @@ areaRoutes.get('/area', (c) => {
                 <p class="text-xs text-gray-400">{grouped[gu].length}개 지역</p>
                 {gu === '남동구' && (
                   <p class="text-xs mt-1">
-                    <a href="/area/namdong-gu" class="text-[#0066FF] font-medium hover:underline">인천 남동구 치과</a>
+                    <a href="/area/namdong-gu" class="text-[#1E4BD8] font-medium hover:underline">인천 남동구 치과</a>
                     <span class="text-gray-300 mx-1.5">·</span>
-                    <a href="/area/guwol-dong" class="text-[#0066FF] font-medium hover:underline">구월동 치과</a>
+                    <a href="/area/guwol-dong" class="text-[#1E4BD8] font-medium hover:underline">구월동 치과</a>
                   </p>
                 )}
               </div>
@@ -74,15 +74,15 @@ areaRoutes.get('/area', (c) => {
               {/* 구월동은 위 "구월동 치과" 허브 링크로 대신 (페이지당 허브 링크 최대 2개, 2026-10-08) */}
               {grouped[gu].filter(area => area.slug !== 'guwol-dong').sort((a, b) => a.distKm - b.distKm).map(area => (
                 <a href={`/area/${area.slug}`}
-                   class="group premium-card p-5 hover:border-[#0066FF]/20 transition-all duration-300 block"
+                   class="group premium-card p-5 hover:border-[#1E4BD8]/20 transition-all duration-300 block"
                    data-cursor-hover>
                   <div class="flex items-start justify-between mb-3">
                     <div>
-                      <h3 class="font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors">{area.name}</h3>
+                      <h3 class="font-bold text-gray-900 group-hover:text-[#1E4BD8] transition-colors">{area.name}</h3>
                       <p class="text-xs text-gray-400 mt-0.5">{area.gu}</p>
                     </div>
                     <div class="text-right">
-                      <span class="text-sm font-bold text-[#0066FF]">{area.distKm === 0 ? '원내' : `${area.distKm}km`}</span>
+                      <span class="text-sm font-bold text-[#1E4BD8]">{area.distKm === 0 ? '원내' : `${area.distKm}km`}</span>
                       <p class="text-[10px] text-gray-400">{area.distKm === 0 ? '도보 3분' : `약 ${area.travelMin}분`}</p>
                     </div>
                   </div>
@@ -103,7 +103,7 @@ areaRoutes.get('/area', (c) => {
       <div class="bg-gradient-to-b from-gray-50 to-white py-16 md:py-20 border-t border-gray-100">
         <div class="max-w-6xl mx-auto px-5 md:px-8">
           <div class="text-center mb-10 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">BY TREATMENT</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">BY TREATMENT</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
               진료별로 가까운 지역 찾기
             </h2>
@@ -118,21 +118,21 @@ areaRoutes.get('/area', (c) => {
               return (
                 <div class="premium-card p-5 md:p-6">
                   <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center">
                       <i class={`fa-solid ${info.icon} text-white text-sm`}></i>
                     </div>
                     <div class="flex-1">
                       <h3 class="font-bold text-gray-900">{info.name}</h3>
                       <p class="text-[11px] text-gray-400">{info.tagline}</p>
                     </div>
-                    <a href={`/treatments/${tSlug}`} class="text-xs text-[#0066FF] font-medium hover:underline" data-cursor-hover>
+                    <a href={`/treatments/${tSlug}`} class="text-xs text-[#1E4BD8] font-medium hover:underline" data-cursor-hover>
                       진료 상세 <i class="fa-solid fa-arrow-right ml-0.5 text-[9px]"></i>
                     </a>
                   </div>
                   <div class="flex flex-wrap gap-2">
                     {nearAreas.map(a => (
                       <a href={`/area/${a.slug}/${tSlug}`}
-                         class="inline-flex items-center gap-1.5 text-xs bg-gray-50 hover:bg-[#0066FF]/8 text-gray-600 hover:text-[#0066FF] px-3 py-1.5 rounded-full transition-colors"
+                         class="inline-flex items-center gap-1.5 text-xs bg-gray-50 hover:bg-[#1E4BD8]/8 text-gray-600 hover:text-[#1E4BD8] px-3 py-1.5 rounded-full transition-colors"
                          data-cursor-hover
                          title={`${a.name} ${info.name}`}>
                         <i class="fa-solid fa-location-dot text-[9px] opacity-50"></i>
@@ -148,7 +148,7 @@ areaRoutes.get('/area', (c) => {
       </div>
 
       {/* CTA */}
-      <div class="bg-gradient-to-r from-[#040B18] to-[#0A1628] py-16 text-center">
+      <div class="bg-gradient-to-r from-[#0B1530] to-[#102048] py-16 text-center">
         <div class="max-w-2xl mx-auto px-5 reveal reveal-fade">
           <h2 class="text-2xl font-bold text-white mb-3">어디서든 가까운 서울365치과</h2>
           <p class="text-white/40 text-sm mb-8">예술회관역 5번 출구 도보 3분 · 365일 야간21시 진료</p>
@@ -286,11 +286,11 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
             <i class="fa-solid fa-chevron-right text-white/20 text-[8px]"></i>
             <a href={`/area/${area.slug}`} class="text-white/50 text-xs font-medium hover:text-white/90 transition-colors">{area.slug === 'guwol-dong' ? '구월동 치과' : `${area.gu} ${area.name}`}</a>
             <i class="fa-solid fa-chevron-right text-white/20 text-[8px]"></i>
-            <span class="text-[#00E5FF] text-xs font-bold">{treatment.name}</span>
+            <span class="text-[#8FB4FF] text-xs font-bold">{treatment.name}</span>
           </div>
           <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.15s" itemprop="name">
             {area.name} {treatment.name}<br class="md:hidden" />
-            <span class="text-[#00E5FF]"> 서울365치과</span>
+            <span class="text-[#8FB4FF]"> 서울365치과</span>
           </h1>
           <p class="text-white/40 text-sm md:text-base max-w-lg mx-auto mb-3 reveal reveal-fade" style="transition-delay:0.35s" itemprop="description">
             {meta.subtitle}
@@ -300,7 +300,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           </p>
           {/* 허브 링크 (2026-10-08) — 구월동은 위 breadcrumb 가 허브 링크 */}
           {area.slug !== 'guwol-dong' && (
-            <p class="text-white/45 text-xs md:text-sm max-w-md mx-auto -mt-4 mb-8">병원 위치·주차·진료시간은 <HubA cls="text-[#00E5FF] font-semibold hover:underline" /> 안내에서 확인하실 수 있습니다.</p>
+            <p class="text-white/45 text-xs md:text-sm max-w-md mx-auto -mt-4 mb-8">병원 위치·주차·진료시간은 <HubA cls="text-[#8FB4FF] font-semibold hover:underline" /> 안내에서 확인하실 수 있습니다.</p>
           )}
           <div class="flex flex-wrap justify-center gap-3 reveal reveal-fade" style="transition-delay:0.5s">
             <a href="/reservation" class="btn-premium btn-premium-fill ripple-effect" data-cursor-hover>
@@ -327,19 +327,19 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 stagger-children">
             <div class="premium-card p-6 text-center">
-              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0066FF]/10 to-[#2979FF]/10 flex items-center justify-center mx-auto mb-3">
-                <i class="fa-solid fa-route text-[#0066FF]"></i>
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1E4BD8]/10 to-[#3B63E8]/10 flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-route text-[#1E4BD8]"></i>
               </div>
-              <div class="text-2xl font-black text-[#0066FF] mb-1">
+              <div class="text-2xl font-black text-[#1E4BD8] mb-1">
                 {area.distKm === 0 ? '0' : area.distKm}<span class="text-base">km</span>
               </div>
               <p class="text-xs text-gray-500">{area.name}에서 직선거리</p>
             </div>
             <div class="premium-card p-6 text-center">
-              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#00E5FF]/10 to-[#0066FF]/10 flex items-center justify-center mx-auto mb-3">
-                <i class="fa-solid fa-clock text-[#00E5FF]"></i>
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#8FB4FF]/10 to-[#1E4BD8]/10 flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-clock text-[#8FB4FF]"></i>
               </div>
-              <div class="text-2xl font-black text-[#00E5FF] mb-1">
+              <div class="text-2xl font-black text-[#8FB4FF] mb-1">
                 {area.distKm === 0 ? '3' : area.travelMin}<span class="text-base">분</span>
               </div>
               <p class="text-xs text-gray-500">{area.distKm === 0 ? '도보 소요' : '대중교통'}</p>
@@ -359,7 +359,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       <div class="section-lg bg-mesh">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="text-center mb-12 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">WHY HERE</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">WHY HERE</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
               {area.name} 주민이 {treatment.name}을(를) 위해<br class="hidden md:block" /> 서울365치과를 선택하는 이유
             </h2>
@@ -368,9 +368,9 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
             {treatment.whyUs.slice(0, 6).map(w => (
-              <div class="premium-card p-6 group hover:border-[#0066FF]/15 transition-all">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0066FF]/8 to-[#2979FF]/8 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <i class={`fa-solid ${w.icon} text-[#0066FF] text-lg`}></i>
+              <div class="premium-card p-6 group hover:border-[#1E4BD8]/15 transition-all">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#1E4BD8]/8 to-[#3B63E8]/8 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <i class={`fa-solid ${w.icon} text-[#1E4BD8] text-lg`}></i>
                 </div>
                 <h3 class="font-bold text-gray-900 mb-2">{w.title}</h3>
                 <p class="text-sm text-gray-500 leading-relaxed">{w.desc}</p>
@@ -384,7 +384,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       <div class="bg-white py-16 md:py-20">
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           <div class="text-center mb-12 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">PROCESS</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">PROCESS</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
               {area.name} {treatment.name} 진료 과정
             </h2>
@@ -392,8 +392,8 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           <div class="space-y-3 stagger-children">
             {treatment.process.map((p, idx) => (
               <div class="premium-card p-5 flex gap-4 items-start">
-                <div class="w-10 h-10 rounded-xl bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0">
-                  <span class="text-[#0066FF] font-black text-sm">{idx + 1}</span>
+                <div class="w-10 h-10 rounded-xl bg-[#1E4BD8]/8 flex items-center justify-center flex-shrink-0">
+                  <span class="text-[#1E4BD8] font-black text-sm">{idx + 1}</span>
                 </div>
                 <div class="flex-1">
                   <h3 class="font-bold text-gray-900 text-sm mb-1">{p.step}</h3>
@@ -411,11 +411,11 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       </div>
 
       {/* 진료시간 — {지역} 강조 */}
-      <div class="bg-gradient-to-br from-[#040B18] to-[#0A1628] py-16 md:py-20 relative overflow-hidden">
-        <div class="absolute top-0 left-1/4 w-1/2 h-64 bg-[#0066FF]/[0.03] blur-[100px] pointer-events-none"></div>
+      <div class="bg-gradient-to-br from-[#0B1530] to-[#102048] py-16 md:py-20 relative overflow-hidden">
+        <div class="absolute top-0 left-1/4 w-1/2 h-64 bg-[#1E4BD8]/[0.03] blur-[100px] pointer-events-none"></div>
         <div class="max-w-4xl mx-auto px-5 md:px-8 relative z-10">
           <div class="text-center mb-10 reveal reveal-fade">
-            <p class="text-[#00E5FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">HOURS</p>
+            <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">HOURS</p>
             <h2 class="text-2xl md:text-3xl font-bold text-white text-words">
               {area.name}에서 퇴근 후에도 {treatment.name} 가능
             </h2>
@@ -427,7 +427,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
                 <span class="text-white/40 text-sm">{h.day}</span>
                 <div class="flex items-center gap-2">
                   <span class="text-white font-semibold tabular-nums">{h.time}</span>
-                  {h.note && <span class="text-[10px] bg-[#0066FF]/15 text-[#00E5FF] px-2 py-0.5 rounded-full">{h.note}</span>}
+                  {h.note && <span class="text-[10px] bg-[#1E4BD8]/15 text-[#8FB4FF] px-2 py-0.5 rounded-full">{h.note}</span>}
                 </div>
               </div>
             ))}
@@ -450,7 +450,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
 
         <div class="max-w-4xl mx-auto px-5 md:px-8">
           <div class="text-center mb-10 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">GUIDE</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">GUIDE</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words" itemprop="name">
               {area.name} {treatment.name} — 알아두면 좋은 정보
             </h2>
@@ -470,7 +470,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
         <div class="bg-gradient-to-br from-gray-50 to-white py-16 md:py-20">
           <div class="max-w-4xl mx-auto px-5 md:px-8">
             <div class="text-center mb-10 reveal reveal-fade">
-              <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">PRICING</p>
+              <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">PRICING</p>
               <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
                 {area.name} {treatment.name} 비용·가격 안내
               </h2>
@@ -479,10 +479,10 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
 
             <div class="premium-card overflow-hidden">
               <table class="w-full" itemscope itemtype="https://schema.org/PriceSpecification">
-                <thead class="bg-[#0066FF]/5">
+                <thead class="bg-[#1E4BD8]/5">
                   <tr>
                     <th class="text-left px-5 py-3.5 text-xs font-bold text-gray-700 tracking-wider">진료 항목</th>
-                    <th class="text-right px-5 py-3.5 text-xs font-bold text-[#0066FF] tracking-wider">가격</th>
+                    <th class="text-right px-5 py-3.5 text-xs font-bold text-[#1E4BD8] tracking-wider">가격</th>
                     <th class="text-left px-5 py-3.5 text-xs font-bold text-gray-500 tracking-wider hidden sm:table-cell">비고</th>
                   </tr>
                 </thead>
@@ -490,7 +490,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
                   {pricingData.rows.map((row, idx) => (
                     <tr class="hover:bg-gray-50 transition-colors">
                       <td class="px-5 py-3.5 text-sm font-semibold text-gray-900" itemprop="name">{row.item}</td>
-                      <td class="px-5 py-3.5 text-sm font-black text-[#0066FF] text-right tabular-nums" itemprop="price">{row.price}</td>
+                      <td class="px-5 py-3.5 text-sm font-black text-[#1E4BD8] text-right tabular-nums" itemprop="price">{row.price}</td>
                       <td class="px-5 py-3.5 text-xs text-gray-500 hidden sm:table-cell">{row.note || '-'}</td>
                     </tr>
                   ))}
@@ -524,16 +524,16 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       <div class="section-lg bg-white">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="text-center mb-12 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">WHY CHOOSE US</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">WHY CHOOSE US</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
               {area.name} 분들이 {treatment.name}을(를) 위해 서울365치과를 선택하는 6가지 이유
             </h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5 stagger-children">
             {matrixContent.whyChoosePoints.map((point, idx) => (
-              <div class="premium-card p-6 group hover:border-[#0066FF]/15 transition-all">
+              <div class="premium-card p-6 group hover:border-[#1E4BD8]/15 transition-all">
                 <div class="flex items-start gap-4">
-                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center flex-shrink-0 text-white font-black text-sm">
+                  <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center flex-shrink-0 text-white font-black text-sm">
                     {idx + 1}
                   </div>
                   <div class="flex-1">
@@ -571,15 +571,15 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
             {/* 비교 가이드 */}
             <div class="premium-card p-7 reveal reveal-fade">
               <div class="flex items-center gap-3 mb-5">
-                <div class="w-11 h-11 rounded-xl bg-[#0066FF]/10 flex items-center justify-center">
-                  <i class="fa-solid fa-scale-balanced text-[#0066FF] text-lg"></i>
+                <div class="w-11 h-11 rounded-xl bg-[#1E4BD8]/10 flex items-center justify-center">
+                  <i class="fa-solid fa-scale-balanced text-[#1E4BD8] text-lg"></i>
                 </div>
                 <h3 class="font-bold text-gray-900 text-lg">{area.name} {treatment.name} 치과 비교 가이드</h3>
               </div>
               <p class="text-sm text-gray-600 leading-relaxed mb-5">
                 {matrixContent.comparisonNote}
               </p>
-              <a href={`/treatments/${treatment.slug}`} class="text-[#0066FF] text-sm font-bold hover:underline">
+              <a href={`/treatments/${treatment.slug}`} class="text-[#1E4BD8] text-sm font-bold hover:underline">
                 {treatment.name} 자세히 보기 →
               </a>
             </div>
@@ -591,7 +591,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       <div class="section-lg bg-mesh">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-12 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">FAQ</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">FAQ</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
               {area.name} {treatment.name} 자주 묻는 질문
             </h2>
@@ -600,8 +600,8 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
             {matrixFaq.map(faq => (
               <div class="premium-card overflow-hidden" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
                 <button class="faq-toggle w-full text-left p-5 flex items-start gap-3 group" aria-expanded="false">
-                  <span class="w-6 h-6 rounded-lg bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <i class="fa-solid fa-plus text-[#0066FF] text-xs faq-icon transition-transform duration-300"></i>
+                  <span class="w-6 h-6 rounded-lg bg-[#1E4BD8]/8 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i class="fa-solid fa-plus text-[#1E4BD8] text-xs faq-icon transition-transform duration-300"></i>
                   </span>
                   <span class="font-semibold text-gray-900 text-sm flex-1" itemprop="name">{faq.q}</span>
                 </button>
@@ -618,7 +618,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       <div class="bg-white py-16 md:py-20">
         <div class="max-w-6xl mx-auto px-5 md:px-8">
           <div class="text-center mb-10 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">{area.name.toUpperCase()}</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">{area.name.toUpperCase()}</p>
             <h2 class="text-xl md:text-2xl font-bold text-gray-900">
               {area.name}에서 받을 수 있는 다른 진료
             </h2>
@@ -632,15 +632,15 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 stagger-children">
             {otherTreatmentsInArea.map(o => (
               <a href={o.url}
-                 class="premium-card p-4 group hover:border-[#0066FF]/15 transition-all block"
+                 class="premium-card p-4 group hover:border-[#1E4BD8]/15 transition-all block"
                  data-cursor-hover
                  title={`${area.name} ${o.info.name}`}>
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <i class={`fa-solid ${o.info.icon} text-[#0066FF]`}></i>
+                  <div class="w-10 h-10 rounded-xl bg-[#1E4BD8]/8 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <i class={`fa-solid ${o.info.icon} text-[#1E4BD8]`}></i>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="font-bold text-gray-900 text-sm group-hover:text-[#0066FF] transition-colors truncate">
+                    <p class="font-bold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition-colors truncate">
                       {area.name} {o.info.name}
                     </p>
                     <p class="text-[10px] text-gray-400 truncate">{o.info.tagline}</p>
@@ -656,7 +656,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       <div class="bg-gray-50 py-16 md:py-20">
         <div class="max-w-6xl mx-auto px-5 md:px-8">
           <div class="text-center mb-10 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">NEARBY</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">NEARBY</p>
             <h2 class="text-xl md:text-2xl font-bold text-gray-900">
               다른 지역의 {treatment.name} 안내
             </h2>
@@ -665,10 +665,10 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 stagger-children">
             {otherAreasForTreatment.map(a => (
               <a href={`/area/${a.slug}/${treatment.slug}`}
-                 class="premium-card p-3 text-center group hover:border-[#0066FF]/15 transition-all block"
+                 class="premium-card p-3 text-center group hover:border-[#1E4BD8]/15 transition-all block"
                  data-cursor-hover
                  title={`${a.name} ${treatment.name}`}>
-                <p class="font-semibold text-gray-900 text-sm group-hover:text-[#0066FF] transition-colors">
+                <p class="font-semibold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition-colors">
                   {a.name} {treatment.name}
                 </p>
                 <p class="text-[10px] text-gray-400 mt-0.5">{a.distKm}km · {a.travelMin}분</p>
@@ -682,7 +682,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       <div class="bg-white py-16">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="text-center mb-10 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">DEEP DIVE</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">DEEP DIVE</p>
             <h2 class="text-xl md:text-2xl font-bold text-gray-900">
               {area.name} {treatment.name} 더 자세히 알아보기
             </h2>
@@ -691,13 +691,13 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
           <div class="grid grid-cols-2 md:grid-cols-3 gap-3 stagger-children">
             {MATRIX_VARIANTS.map(v => (
               <a href={`/area/${area.slug}/${treatment.slug}/${v.slug}`}
-                 class="premium-card p-5 group hover:border-[#0066FF]/20 transition-all block text-center"
+                 class="premium-card p-5 group hover:border-[#1E4BD8]/20 transition-all block text-center"
                  data-cursor-hover
                  title={`${area.name} ${treatment.name} ${v.name}`}>
-                <div class="w-10 h-10 rounded-xl bg-[#0066FF]/8 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
-                  <i class="fa-solid fa-arrow-right text-[#0066FF] text-sm"></i>
+                <div class="w-10 h-10 rounded-xl bg-[#1E4BD8]/8 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                  <i class="fa-solid fa-arrow-right text-[#1E4BD8] text-sm"></i>
                 </div>
-                <p class="font-bold text-gray-900 text-sm group-hover:text-[#0066FF] transition-colors">
+                <p class="font-bold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition-colors">
                   {area.name} {treatment.name} {v.name}
                 </p>
                 <p class="text-[10px] text-gray-400 mt-1">{v.heading}</p>
@@ -708,7 +708,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
       </div>
 
       {/* Final CTA */}
-      <div class="bg-gradient-to-r from-[#040B18] to-[#0A1628] py-16 text-center">
+      <div class="bg-gradient-to-r from-[#0B1530] to-[#102048] py-16 text-center">
         <div class="max-w-2xl mx-auto px-5 reveal reveal-fade">
           <h2 class="text-2xl font-bold text-white mb-3">
             {area.name}에서 가장 가까운 {treatment.name} 전문 치과
@@ -723,7 +723,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
             <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white" data-cursor-hover>
               <i class="fa-solid fa-phone mr-1.5"></i> {CLINIC.phone}
             </a>
-            <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer" class="btn-premium btn-premium-outline text-[#00E5FF] border-[#00E5FF]/20 hover:bg-[#00E5FF]/5" data-cursor-hover>
+            <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer" class="btn-premium btn-premium-outline text-[#8FB4FF] border-[#8FB4FF]/20 hover:bg-[#8FB4FF]/5" data-cursor-hover>
               <i class="fa-solid fa-comment mr-1.5"></i> 카카오 상담
             </a>
           </div>
@@ -941,10 +941,10 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
                 </div>
                 <div class="premium-card overflow-hidden">
                   <table class="w-full">
-                    <thead class="bg-[#0066FF]/5">
+                    <thead class="bg-[#1E4BD8]/5">
                       <tr>
                         <th class="text-left px-5 py-4 text-sm font-bold text-gray-800">진료 항목</th>
-                        <th class="text-right px-5 py-4 text-sm font-bold text-[#0066FF]">{area.name} 가격</th>
+                        <th class="text-right px-5 py-4 text-sm font-bold text-[#1E4BD8]">{area.name} 가격</th>
                         <th class="text-left px-5 py-4 text-sm font-bold text-gray-500 hidden sm:table-cell">비고</th>
                       </tr>
                     </thead>
@@ -952,7 +952,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
                       {pricingData.rows.map(row => (
                         <tr class="hover:bg-gray-50">
                           <td class="px-5 py-4 text-sm font-semibold text-gray-900">{row.item}</td>
-                          <td class="px-5 py-4 text-base font-black text-[#0066FF] text-right tabular-nums">{row.price}</td>
+                          <td class="px-5 py-4 text-base font-black text-[#1E4BD8] text-right tabular-nums">{row.price}</td>
                           <td class="px-5 py-4 text-xs text-gray-500 hidden sm:table-cell">{row.note || '-'}</td>
                         </tr>
                       ))}
@@ -1025,8 +1025,8 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
             </div>
             <div class="premium-card p-7">
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div><div class="text-3xl font-black text-[#0066FF]">21<span class="text-base">시</span></div><p class="text-xs text-gray-500 mt-1">월~목 야간</p></div>
-                <div><div class="text-3xl font-black text-[#0066FF]">19<span class="text-base">시</span></div><p class="text-xs text-gray-500 mt-1">금요일</p></div>
+                <div><div class="text-3xl font-black text-[#1E4BD8]">21<span class="text-base">시</span></div><p class="text-xs text-gray-500 mt-1">월~목 야간</p></div>
+                <div><div class="text-3xl font-black text-[#1E4BD8]">19<span class="text-base">시</span></div><p class="text-xs text-gray-500 mt-1">금요일</p></div>
                 <div><div class="text-3xl font-black text-emerald-500">14<span class="text-base">시</span></div><p class="text-xs text-gray-500 mt-1">토요일</p></div>
                 <div><div class="text-3xl font-black text-rose-500">18<span class="text-base">시</span></div><p class="text-xs text-gray-500 mt-1">일·공휴일</p></div>
               </div>
@@ -1077,7 +1077,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
             <i class="fa-solid fa-chevron-right text-white/20 text-[8px]"></i>
             <a href={`/area/${area.slug}/${treatment.slug}`} class="text-white/60 text-xs">{treatment.name}</a>
             <i class="fa-solid fa-chevron-right text-white/20 text-[8px]"></i>
-            <span class="text-[#00E5FF] text-xs font-bold">{v.name}</span>
+            <span class="text-[#8FB4FF] text-xs font-bold">{v.name}</span>
           </div>
           <h1 class="text-3xl md:text-4xl font-black text-white mb-4">
             {area.name} {treatment.name} {v.heading}
@@ -1086,7 +1086,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
             서울365치과 · {area.distKm === 0 ? '도보 3분' : `${area.travelMin}분`} · 서울대 전문의 5인 협진
           </p>
           {area.slug !== 'guwol-dong' && (
-            <p class="text-white/45 text-xs md:text-sm max-w-xl mx-auto -mt-4 mb-8">병원 위치·주차·진료시간: <HubA cls="text-[#00E5FF] font-semibold hover:underline" /></p>
+            <p class="text-white/45 text-xs md:text-sm max-w-xl mx-auto -mt-4 mb-8">병원 위치·주차·진료시간: <HubA cls="text-[#8FB4FF] font-semibold hover:underline" /></p>
           )}
           <div class="flex flex-wrap justify-center gap-3">
             <a href="/reservation" class="btn-premium btn-premium-fill">
@@ -1109,13 +1109,13 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
             <h3 class="text-lg font-bold text-gray-900">{area.name} {treatment.name} 다른 정보 보기</h3>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <a href={`/area/${area.slug}/${treatment.slug}`} class="premium-card p-4 text-center hover:border-[#0066FF]/15">
-              <i class="fa-solid fa-circle-info text-[#0066FF] mb-2"></i>
+            <a href={`/area/${area.slug}/${treatment.slug}`} class="premium-card p-4 text-center hover:border-[#1E4BD8]/15">
+              <i class="fa-solid fa-circle-info text-[#1E4BD8] mb-2"></i>
               <p class="text-sm font-bold text-gray-900">전체 안내</p>
             </a>
             {MATRIX_VARIANTS.filter(o => o.slug !== v.slug).slice(0, 5).map(o => (
-              <a href={`/area/${area.slug}/${treatment.slug}/${o.slug}`} class="premium-card p-4 text-center hover:border-[#0066FF]/15">
-                <i class="fa-solid fa-arrow-right text-[#0066FF] mb-2"></i>
+              <a href={`/area/${area.slug}/${treatment.slug}/${o.slug}`} class="premium-card p-4 text-center hover:border-[#1E4BD8]/15">
+                <i class="fa-solid fa-arrow-right text-[#1E4BD8] mb-2"></i>
                 <p class="text-sm font-bold text-gray-900">{o.name}</p>
               </a>
             ))}
@@ -1124,7 +1124,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug/:variantSlug', (c) => {
       </div>
 
       {/* Final CTA */}
-      <div class="bg-gradient-to-r from-[#040B18] to-[#0A1628] py-12 text-center">
+      <div class="bg-gradient-to-r from-[#0B1530] to-[#102048] py-12 text-center">
         <div class="max-w-2xl mx-auto px-5">
           <h2 class="text-xl font-bold text-white mb-3">{area.name} {treatment.name} 상담 받기</h2>
           <div class="flex flex-wrap justify-center gap-3">
@@ -1183,7 +1183,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
           {HOURS.map(h => (
             <tr class="border-b border-gray-100 last:border-0">
               <th scope="row" class="text-left font-semibold text-gray-700 bg-gray-50 px-4 py-2.5 w-28">{h.day}</th>
-              <td class="px-4 py-2.5 text-gray-800 tabular-nums">{h.time}{h.note ? <span class="ml-2 text-[11px] text-[#0066FF]">{h.note}</span> : null}</td>
+              <td class="px-4 py-2.5 text-gray-800 tabular-nums">{h.time}{h.note ? <span class="ml-2 text-[11px] text-[#1E4BD8]">{h.note}</span> : null}</td>
             </tr>
           ))}
         </tbody>
@@ -1193,7 +1193,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
       <ul class="grid sm:grid-cols-2 gap-3 mt-3">
         {doctors.map(d => (
           <li>
-            <a href={`/doctors/${d.slug}`} class="block premium-card px-4 py-3 hover:border-[#0066FF]/30 transition-all" data-cursor-hover>
+            <a href={`/doctors/${d.slug}`} class="block premium-card px-4 py-3 hover:border-[#1E4BD8]/30 transition-all" data-cursor-hover>
               <span class="font-bold text-gray-900">{d.name} {d.titleShort}</span>
               <span class="block text-xs text-gray-500 mt-0.5">{d.metaDesc.replace(/^서울365치과\s*\S+\s*\S*원장\.\s*/, '')}</span>
             </a>
@@ -1211,7 +1211,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
           <tbody>
             {guAreas.map(a => (
               <tr class="border-t border-gray-100">
-                <td class="px-3 py-2.5">{a.slug === 'guwol-dong' ? <span class="font-semibold text-gray-800">{a.name}</span> : <a href={`/area/${a.slug}`} class="font-semibold text-[#0066FF] hover:underline">{a.name}</a>}</td>
+                <td class="px-3 py-2.5">{a.slug === 'guwol-dong' ? <span class="font-semibold text-gray-800">{a.name}</span> : <a href={`/area/${a.slug}`} class="font-semibold text-[#1E4BD8] hover:underline">{a.name}</a>}</td>
                 <td class="px-3 py-2.5 text-right tabular-nums">{a.distKm === 0 ? '—' : `${a.distKm}km`}</td>
                 <td class="px-3 py-2.5 text-right tabular-nums">{a.distKm === 0 ? '도보 3분' : `약 ${a.travelMin}분`}</td>
                 <td class="px-3 py-2.5 text-gray-600">{a.travelDesc}</td>
@@ -1257,7 +1257,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
             <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white" data-cursor-hover>
               <i class="fa-solid fa-phone mr-1.5"></i> {CLINIC.phone}
             </a>
-            <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="btn-premium btn-premium-outline text-[#00E5FF] border-[#00E5FF]/20" data-cursor-hover>
+            <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="btn-premium btn-premium-outline text-[#8FB4FF] border-[#8FB4FF]/20" data-cursor-hover>
               <i class="fa-solid fa-n mr-1.5"></i> 네이버 예약
             </a>
           </div>
@@ -1272,7 +1272,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
             <div><dt class="text-gray-400 text-xs">가까운 역</dt><dd class="text-gray-900 font-medium">인천 1호선 예술회관역 5번 출구 약 250m</dd></div>
             <div><dt class="text-gray-400 text-xs">평일 야간</dt><dd class="text-gray-900 font-medium">월~목 10:00~21:00</dd></div>
             <div><dt class="text-gray-400 text-xs">주말·공휴일</dt><dd class="text-gray-900 font-medium">토 10:00~14:00 · 일·공휴일 14:00~18:00</dd></div>
-            <div><dt class="text-gray-400 text-xs">전화</dt><dd class="text-gray-900 font-medium"><a href={CLINIC.phoneTel} class="hover:text-[#0066FF]">{CLINIC.phone}</a></dd></div>
+            <div><dt class="text-gray-400 text-xs">전화</dt><dd class="text-gray-900 font-medium"><a href={CLINIC.phoneTel} class="hover:text-[#1E4BD8]">{CLINIC.phone}</a></dd></div>
             <div><dt class="text-gray-400 text-xs">주차</dt><dd class="text-gray-900 font-medium">이토타워 건물 내 주차장</dd></div>
           </dl>
         </div>
@@ -1306,7 +1306,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
               {s.links && (
                 <div class="flex flex-wrap gap-2 mt-4">
                   {s.links.map(l => (
-                    <a href={l.href} class="text-sm bg-gray-50 hover:bg-[#0066FF]/8 text-gray-700 hover:text-[#0066FF] px-3 py-1.5 rounded-full border border-gray-200 transition-all" data-cursor-hover>{l.label}</a>
+                    <a href={l.href} class="text-sm bg-gray-50 hover:bg-[#1E4BD8]/8 text-gray-700 hover:text-[#1E4BD8] px-3 py-1.5 rounded-full border border-gray-200 transition-all" data-cursor-hover>{l.label}</a>
                   ))}
                 </div>
               )}
@@ -1339,7 +1339,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
               {MATRIX_TREATMENT_SLUGS.map(tSlug => {
                 const info = MATRIX_TREATMENT_INFO[tSlug];
                 return (
-                  <a href={`/area/${hubArea.slug}/${tSlug}`} class="premium-card p-4 text-center hover:border-[#0066FF]/20 transition-all block" data-cursor-hover>
+                  <a href={`/area/${hubArea.slug}/${tSlug}`} class="premium-card p-4 text-center hover:border-[#1E4BD8]/20 transition-all block" data-cursor-hover>
                     <p class="font-bold text-gray-900 text-xs">{hubArea.name} {info.name}</p>
                   </a>
                 );
@@ -1355,12 +1355,12 @@ function renderAreaHub(c: any, hub: AreaHub) {
           <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-6">{hub.level === 'gu' ? '다른 인천 지역에서 오시는 길' : '구월동 주변 지역에서 오시는 길'}</h2>
           <div class="flex flex-wrap justify-center gap-2">
             {(hub.level === 'gu' ? getAreasSorted().filter(a => a.gu !== '남동구') : nearby).map(n => (
-              <a href={`/area/${n.slug}`} class="text-xs bg-white hover:bg-[#0066FF]/8 text-gray-700 hover:text-[#0066FF] px-3 py-2 rounded-full border border-gray-200 transition-all" data-cursor-hover>
+              <a href={`/area/${n.slug}`} class="text-xs bg-white hover:bg-[#1E4BD8]/8 text-gray-700 hover:text-[#1E4BD8] px-3 py-2 rounded-full border border-gray-200 transition-all" data-cursor-hover>
                 {n.gu} {n.name} · {n.distKm}km
               </a>
             ))}
             {hub.slug !== 'namdong-gu' && (
-              <a href="/area/namdong-gu" class="text-xs bg-[#0066FF]/5 text-[#0066FF] px-3 py-2 rounded-full border border-[#0066FF]/20" data-cursor-hover>인천 남동구 치과</a>
+              <a href="/area/namdong-gu" class="text-xs bg-[#1E4BD8]/5 text-[#1E4BD8] px-3 py-2 rounded-full border border-[#1E4BD8]/20" data-cursor-hover>인천 남동구 치과</a>
             )}
           </div>
         </div>
@@ -1502,9 +1502,9 @@ areaRoutes.get('/area/:slug', (c) => {
         <div class="orb orb-2"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:14vh">
           <div class="inline-flex items-center gap-2 bg-white/[0.06] backdrop-blur-sm border border-white/[0.08] rounded-full px-4 py-1.5 mb-6 reveal reveal-fade">
-            <i class="fa-solid fa-location-dot text-[#00E5FF] text-xs"></i>
+            <i class="fa-solid fa-location-dot text-[#8FB4FF] text-xs"></i>
             <span class="text-white/50 text-xs font-medium">{area.gu} {area.name}</span>
-            {area.distKm > 0 && <span class="text-[#00E5FF] text-xs font-bold">· {area.distKm}km</span>}
+            {area.distKm > 0 && <span class="text-[#8FB4FF] text-xs font-bold">· {area.distKm}km</span>}
           </div>
           <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.15s" itemprop="name">
             {area.name}치과 추천<br class="md:hidden" /> 서울365치과
@@ -1517,8 +1517,8 @@ areaRoutes.get('/area/:slug', (c) => {
           {/* 허브 링크 (2026-10-08): 남동구 동 → "인천 남동구 치과", 그 외 → "구월동 치과" */}
           <p class="text-white/45 text-xs md:text-sm max-w-lg mx-auto -mt-4 mb-8">
             {area.gu === '남동구'
-              ? <>남동구 동별 거리·교통편과 진료시간은 <HubA hub={HUB_NAMDONG} cls="text-[#00E5FF] font-semibold hover:underline" /> 안내에 정리돼 있습니다.</>
-              : <>서울365치과 위치·진료시간·의료진 전체 안내: <HubA cls="text-[#00E5FF] font-semibold hover:underline" /></>}
+              ? <>남동구 동별 거리·교통편과 진료시간은 <HubA hub={HUB_NAMDONG} cls="text-[#8FB4FF] font-semibold hover:underline" /> 안내에 정리돼 있습니다.</>
+              : <>서울365치과 위치·진료시간·의료진 전체 안내: <HubA cls="text-[#8FB4FF] font-semibold hover:underline" /></>}
           </p>
           <div class="flex flex-wrap justify-center gap-3 reveal reveal-fade" style="transition-delay:0.5s">
             <a href="/reservation" class="btn-premium btn-premium-fill ripple-effect" data-cursor-hover>
@@ -1535,7 +1535,7 @@ areaRoutes.get('/area/:slug', (c) => {
       <div class="bg-white py-16 md:py-20">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="text-center mb-12 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">ACCESS</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">ACCESS</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
               {area.name}에서 서울365치과까지
             </h2>
@@ -1544,19 +1544,19 @@ areaRoutes.get('/area/:slug', (c) => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
             {/* 거리 카드 */}
             <div class="premium-card p-6 text-center">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0066FF]/10 to-[#2979FF]/10 flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-route text-[#0066FF] text-xl"></i>
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#1E4BD8]/10 to-[#3B63E8]/10 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-route text-[#1E4BD8] text-xl"></i>
               </div>
-              <div class="text-3xl font-black text-[#0066FF] mb-1">{area.distKm === 0 ? '0' : area.distKm}<span class="text-lg">km</span></div>
+              <div class="text-3xl font-black text-[#1E4BD8] mb-1">{area.distKm === 0 ? '0' : area.distKm}<span class="text-lg">km</span></div>
               <p class="text-sm text-gray-500">직선 거리</p>
             </div>
 
             {/* 소요시간 카드 */}
             <div class="premium-card p-6 text-center">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#00E5FF]/10 to-[#0066FF]/10 flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-clock text-[#00E5FF] text-xl"></i>
+              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8FB4FF]/10 to-[#1E4BD8]/10 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-clock text-[#8FB4FF] text-xl"></i>
               </div>
-              <div class="text-3xl font-black text-[#00E5FF] mb-1">{area.distKm === 0 ? '3' : area.travelMin}<span class="text-lg">분</span></div>
+              <div class="text-3xl font-black text-[#8FB4FF] mb-1">{area.distKm === 0 ? '3' : area.travelMin}<span class="text-lg">분</span></div>
               <p class="text-sm text-gray-500">{area.distKm === 0 ? '도보 소요시간' : '대중교통 기준'}</p>
             </div>
 
@@ -1573,7 +1573,7 @@ areaRoutes.get('/area/:slug', (c) => {
           {/* 상세 교통 */}
           <div class="mt-10 premium-card p-6 md:p-8 reveal reveal-fade">
             <h3 class="font-bold text-gray-900 mb-4">
-              <i class="fa-solid fa-map-location-dot text-[#0066FF] mr-2"></i>
+              <i class="fa-solid fa-map-location-dot text-[#1E4BD8] mr-2"></i>
               {area.name}에서 오시는 길
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm text-gray-600">
@@ -1594,7 +1594,7 @@ areaRoutes.get('/area/:slug', (c) => {
           <div class="mt-6 flex flex-wrap gap-2 justify-center reveal reveal-fade">
             {area.landmarks.map(l => (
               <span class="text-xs bg-gray-50 text-gray-500 px-3 py-1.5 rounded-full border border-gray-100">
-                <i class="fa-solid fa-location-dot text-[#0066FF]/40 mr-1"></i>{l}
+                <i class="fa-solid fa-location-dot text-[#1E4BD8]/40 mr-1"></i>{l}
               </span>
             ))}
           </div>
@@ -1605,16 +1605,16 @@ areaRoutes.get('/area/:slug', (c) => {
       <div class="section-lg bg-mesh relative overflow-hidden">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="text-center mb-12 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">WHY SEOUL 365</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">WHY SEOUL 365</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
               {area.name} 주민이 서울365치과를 선택하는 이유
             </h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
             {DIFF_CARDS.slice(0, 6).map(card => (
-              <div class="premium-card p-6 group hover:border-[#0066FF]/15 transition-all">
-                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#0066FF]/8 to-[#2979FF]/8 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <i class={`fa-solid ${card.icon} text-[#0066FF] text-lg`}></i>
+              <div class="premium-card p-6 group hover:border-[#1E4BD8]/15 transition-all">
+                <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-[#1E4BD8]/8 to-[#3B63E8]/8 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <i class={`fa-solid ${card.icon} text-[#1E4BD8] text-lg`}></i>
                 </div>
                 <h3 class="font-bold text-gray-900 mb-2">{card.title}</h3>
                 <p class="text-sm text-gray-500 leading-relaxed mb-3">{card.desc}</p>
@@ -1628,7 +1628,7 @@ areaRoutes.get('/area/:slug', (c) => {
       <div class="bg-white py-16 md:py-20">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="text-center mb-12 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">RECOMMENDED</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">RECOMMENDED</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
               {area.name} 주민 추천 진료
             </h2>
@@ -1637,18 +1637,18 @@ areaRoutes.get('/area/:slug', (c) => {
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 stagger-children">
             {recTreatments.map((t: any) => (
               <a href={`/area/${area.slug}/${t.slug}`}
-                 class="premium-card p-6 group hover:border-[#0066FF]/15 transition-all flex items-start gap-4 block"
+                 class="premium-card p-6 group hover:border-[#1E4BD8]/15 transition-all flex items-start gap-4 block"
                  data-cursor-hover
                  title={`${area.name} ${t.name}`}>
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0066FF]/8 to-[#2979FF]/8 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <i class={`fa-solid ${t.icon} text-[#0066FF] text-lg`}></i>
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1E4BD8]/8 to-[#3B63E8]/8 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <i class={`fa-solid ${t.icon} text-[#1E4BD8] text-lg`}></i>
                 </div>
                 <div>
-                  <h3 class="font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors">
+                  <h3 class="font-bold text-gray-900 group-hover:text-[#1E4BD8] transition-colors">
                     {area.name} {t.name}
                   </h3>
                   <p class="text-sm text-gray-500 mt-1">{t.shortDesc}</p>
-                  <span class="inline-flex items-center text-xs text-[#0066FF] font-medium mt-2">
+                  <span class="inline-flex items-center text-xs text-[#1E4BD8] font-medium mt-2">
                     {area.name} {t.name} 안내 <i class="fa-solid fa-arrow-right ml-1 text-[10px] group-hover:translate-x-1 transition-transform"></i>
                   </span>
                 </div>
@@ -1662,7 +1662,7 @@ areaRoutes.get('/area/:slug', (c) => {
       <div class="bg-gradient-to-b from-gray-50 to-white py-16 md:py-20">
         <div class="max-w-6xl mx-auto px-5 md:px-8">
           <div class="text-center mb-10 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">{area.name.toUpperCase()} ALL TREATMENTS</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">{area.name.toUpperCase()} ALL TREATMENTS</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
               {area.name}에서 가능한 진료 한눈에
             </h2>
@@ -1675,13 +1675,13 @@ areaRoutes.get('/area/:slug', (c) => {
               const info = MATRIX_TREATMENT_INFO[tSlug];
               return (
                 <a href={`/area/${area.slug}/${tSlug}`}
-                   class="premium-card p-4 text-center group hover:border-[#0066FF]/20 transition-all block"
+                   class="premium-card p-4 text-center group hover:border-[#1E4BD8]/20 transition-all block"
                    data-cursor-hover
                    title={`${area.name} ${info.name}`}>
-                  <div class="w-10 h-10 rounded-xl bg-[#0066FF]/8 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
-                    <i class={`fa-solid ${info.icon} text-[#0066FF] text-sm`}></i>
+                  <div class="w-10 h-10 rounded-xl bg-[#1E4BD8]/8 flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-transform">
+                    <i class={`fa-solid ${info.icon} text-[#1E4BD8] text-sm`}></i>
                   </div>
-                  <p class="font-bold text-gray-900 text-xs group-hover:text-[#0066FF] transition-colors">
+                  <p class="font-bold text-gray-900 text-xs group-hover:text-[#1E4BD8] transition-colors">
                     {area.name} {info.name}
                   </p>
                   <p class="text-[10px] text-gray-400 mt-0.5 truncate">{info.tagline}</p>
@@ -1693,11 +1693,11 @@ areaRoutes.get('/area/:slug', (c) => {
       </div>
 
       {/* 진료시간 */}
-      <div class="bg-gradient-to-br from-[#040B18] to-[#0A1628] py-16 md:py-20 relative overflow-hidden">
-        <div class="absolute top-0 left-1/4 w-1/2 h-64 bg-[#0066FF]/[0.03] blur-[100px] pointer-events-none"></div>
+      <div class="bg-gradient-to-br from-[#0B1530] to-[#102048] py-16 md:py-20 relative overflow-hidden">
+        <div class="absolute top-0 left-1/4 w-1/2 h-64 bg-[#1E4BD8]/[0.03] blur-[100px] pointer-events-none"></div>
         <div class="max-w-4xl mx-auto px-5 md:px-8 relative z-10">
           <div class="text-center mb-10 reveal reveal-fade">
-            <p class="text-[#00E5FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">HOURS</p>
+            <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">HOURS</p>
             <h2 class="text-2xl md:text-3xl font-bold text-white text-words">365일 · 야간 21시</h2>
             <p class="text-white/30 text-sm mt-3">{area.name}에서 퇴근 후에도 충분히 방문 가능합니다</p>
           </div>
@@ -1707,7 +1707,7 @@ areaRoutes.get('/area/:slug', (c) => {
                 <span class="text-white/40 text-sm">{h.day}</span>
                 <div class="flex items-center gap-2">
                   <span class="text-white font-semibold tabular-nums">{h.time}</span>
-                  {h.note && <span class="text-[10px] bg-[#0066FF]/15 text-[#00E5FF] px-2 py-0.5 rounded-full">{h.note}</span>}
+                  {h.note && <span class="text-[10px] bg-[#1E4BD8]/15 text-[#8FB4FF] px-2 py-0.5 rounded-full">{h.note}</span>}
                 </div>
               </div>
             ))}
@@ -1723,7 +1723,7 @@ areaRoutes.get('/area/:slug', (c) => {
       <div class="bg-white py-16 md:py-20">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="text-center mb-12 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">DOCTORS</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">DOCTORS</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">서울대 출신 5인 전문의</h2>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-5 gap-4 stagger-children">
@@ -1734,7 +1734,7 @@ areaRoutes.get('/area/:slug', (c) => {
                        class="w-full h-full object-cover" loading="lazy"
                        onerror={`this.src='${doc.photoFallback}'`} />
                 </div>
-                <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#0066FF] transition-colors">{doc.name}</h3>
+                <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition-colors">{doc.name}</h3>
                 <p class="text-xs text-gray-400">{doc.titleShort}</p>
               </a>
             ))}
@@ -1746,7 +1746,7 @@ areaRoutes.get('/area/:slug', (c) => {
       <div class="section-lg bg-mesh">
         <div class="max-w-3xl mx-auto px-5 md:px-8">
           <div class="text-center mb-12 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">FAQ</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">FAQ</p>
             <h2 class="text-2xl md:text-3xl font-bold text-gray-900 text-words">
               {area.name} 주민 자주 묻는 질문
             </h2>
@@ -1755,8 +1755,8 @@ areaRoutes.get('/area/:slug', (c) => {
             {areaFaq.map(faq => (
               <div class="premium-card overflow-hidden" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
                 <button class="faq-toggle w-full text-left p-5 flex items-start gap-3 group" aria-expanded="false">
-                  <span class="w-6 h-6 rounded-lg bg-[#0066FF]/8 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <i class="fa-solid fa-plus text-[#0066FF] text-xs faq-icon transition-transform duration-300"></i>
+                  <span class="w-6 h-6 rounded-lg bg-[#1E4BD8]/8 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i class="fa-solid fa-plus text-[#1E4BD8] text-xs faq-icon transition-transform duration-300"></i>
                   </span>
                   <span class="font-semibold text-gray-900 text-sm flex-1" itemprop="name">{faq.q}</span>
                 </button>
@@ -1773,21 +1773,21 @@ areaRoutes.get('/area/:slug', (c) => {
       <div class="bg-white py-16 md:py-20">
         <div class="max-w-5xl mx-auto px-5 md:px-8">
           <div class="text-center mb-10 reveal reveal-fade">
-            <p class="text-[#0066FF] text-xs font-bold tracking-[0.25em] uppercase mb-2">NEARBY</p>
+            <p class="text-[#1E4BD8] text-xs font-bold tracking-[0.25em] uppercase mb-2">NEARBY</p>
             <h2 class="text-xl md:text-2xl font-bold text-gray-900">인근 지역 안내</h2>
           </div>
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 stagger-children">
             {nearby.map(n => (
               <a href={`/area/${n.slug}`}
-                 class="premium-card p-3 text-center group hover:border-[#0066FF]/15 transition-all block"
+                 class="premium-card p-3 text-center group hover:border-[#1E4BD8]/15 transition-all block"
                  data-cursor-hover>
-                <p class="font-semibold text-gray-900 text-sm group-hover:text-[#0066FF] transition-colors">{n.name}</p>
+                <p class="font-semibold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition-colors">{n.name}</p>
                 <p class="text-[10px] text-gray-400 mt-0.5">{n.distKm}km · {n.travelMin}분</p>
               </a>
             ))}
           </div>
           <div class="text-center mt-6">
-            <a href="/area" class="text-sm text-[#0066FF] font-medium hover:underline" data-cursor-hover>
+            <a href="/area" class="text-sm text-[#1E4BD8] font-medium hover:underline" data-cursor-hover>
               전체 지역 보기 <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
             </a>
           </div>
@@ -1795,7 +1795,7 @@ areaRoutes.get('/area/:slug', (c) => {
       </div>
 
       {/* Final CTA */}
-      <div class="bg-gradient-to-r from-[#040B18] to-[#0A1628] py-16 text-center">
+      <div class="bg-gradient-to-r from-[#0B1530] to-[#102048] py-16 text-center">
         <div class="max-w-2xl mx-auto px-5 reveal reveal-fade">
           <h2 class="text-2xl font-bold text-white mb-3">
             {area.name}에서 가까운 서울365치과
@@ -1811,7 +1811,7 @@ areaRoutes.get('/area/:slug', (c) => {
             <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white" data-cursor-hover>
               <i class="fa-solid fa-phone mr-1.5"></i> {CLINIC.phone}
             </a>
-            <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer" class="btn-premium btn-premium-outline text-[#00E5FF] border-[#00E5FF]/20 hover:bg-[#00E5FF]/5" data-cursor-hover>
+            <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer" class="btn-premium btn-premium-outline text-[#8FB4FF] border-[#8FB4FF]/20 hover:bg-[#8FB4FF]/5" data-cursor-hover>
               <i class="fa-solid fa-comment mr-1.5"></i> 카카오 상담
             </a>
           </div>

@@ -7,7 +7,7 @@
 export const HUB_GUWOL = { href: '/area/guwol-dong', anchor: '구월동 치과' } as const
 export const HUB_NAMDONG = { href: '/area/namdong-gu', anchor: '인천 남동구 치과' } as const
 
-const LINK_CLS = 'text-[#0066FF] font-semibold hover:underline'
+const LINK_CLS = 'text-[#1E4BD8] font-semibold hover:underline'
 
 export function HubA({ hub = HUB_GUWOL, cls = LINK_CLS }: { hub?: { href: string; anchor: string }; cls?: string }) {
   return <a href={hub.href} class={cls}>{hub.anchor}</a>
@@ -35,7 +35,7 @@ export function BlogHubNote({ slug, topic }: { slug: string; topic?: string }) {
   }
   return (
     <p class="mt-10 text-[0.9rem] text-gray-600 leading-relaxed rounded-2xl border border-gray-100 bg-gray-50/70 px-5 py-4">
-      <i class="fa-solid fa-location-dot text-[#0066FF]/60 mr-2" aria-hidden="true"></i>{body}
+      <i class="fa-solid fa-location-dot text-[#1E4BD8]/60 mr-2" aria-hidden="true"></i>{body}
     </p>
   )
 }

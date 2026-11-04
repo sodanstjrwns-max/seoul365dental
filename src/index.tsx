@@ -6,6 +6,7 @@ import { Hono } from 'hono'
 import { renderer, setCurrentSeoSettings } from './renderer'
 import type { Bindings } from './lib/types'
 import { getAllSeoSettings, getSetting, initSettingsTable } from './lib/db'
+import { phraseBreaks } from './lib/phrase'
 
 // Route modules
 import home from './routes/home'
@@ -91,6 +92,8 @@ app.use('*', async (c, next) => {
   c.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   c.header('X-XSS-Protection', '1; mode=block');
   c.header('Cross-Origin-Opener-Policy', 'same-origin');
+  // 미리보기 호스트(*.pages.dev)는 색인 제외 — 운영 도메인(seoul365dc.kr)에는 영향 없음 (2026-11-04)
+  if (new URL(c.req.url).hostname.endsWith('.pages.dev')) c.header('X-Robots-Tag', 'noindex');
 
   // v8: HTML 엣지 캐싱 — 크롤러 TTFB 단축 + Cloudflare 엣지 캐시 활용
   // (콘텐츠 페이지만; admin/api/인증 관련은 no-store)
@@ -119,6 +122,21 @@ app.use('*', async (c, next) => {
     setCurrentSeoSettings({});
   }
   await next();
+})
+
+// ── 의미 단위 줄바꿈 (2026-11-04 리디자인) ──
+// HTML 응답의 h1~h3 를 문장·절 단위 inline-block 덩어리로 감싸 제목이 의미 중간에서 끊기지 않게 한다.
+// 관리자·API·정적·비HTML·리디렉션은 건드리지 않는다. 글자 자체는 바뀌지 않는다(크롤러·AEO 영향 없음).
+app.use('*', async (c, next) => {
+  await next();
+  const p = c.req.path;
+  if (p.startsWith('/admin') || p.startsWith('/api/') || p.startsWith('/static/')) return;
+  const ct = c.res.headers.get('Content-Type') || '';
+  if (!ct.includes('text/html') || (c.res.status >= 300 && c.res.status < 400)) return;
+  try {
+    const html = await c.res.text();
+    c.res = new Response(phraseBreaks(html), { status: c.res.status, headers: c.res.headers });
+  } catch {}
 })
 
 app.use(renderer)
@@ -168,17 +186,14 @@ app.notFound((c) => {
   c.status(404); // soft-404 방지: 반드시 HTTP 404 상태코드 반환 (SEO 필수)
   c.header('X-Robots-Tag', 'noindex');
   return c.render(
-    <section class="hero-premium" style="min-height:80vh">
-      <div class="hero-grid"></div>
-      <div class="orb orb-1"></div>
-      <div class="orb orb-2"></div>
-      <div class="relative z-10 max-w-lg mx-auto px-5 text-center" style="padding-top:15vh">
-        <div class="text-[8rem] font-black gradient-text-white leading-none mb-4" style="opacity:0.06">404</div>
-        <h1 class="text-2xl font-bold text-white mb-3">페이지를 찾을 수 없습니다</h1>
-        <p class="text-white/35 mb-8">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
+    <section class="hero-premium" style="min-height:70vh">
+      <div class="wrap" style="text-align:center;padding:4rem 0 5rem">
+        <p class="eyebrow no-bar" style="justify-content:center;color:var(--sky)">404 NOT FOUND</p>
+        <h1 class="section-headline text-white mb-4">페이지를 찾을 수 없습니다</h1>
+        <p class="text-white/60 mb-8">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
         <div class="flex flex-wrap justify-center gap-3">
-          <a href="/" class="btn-premium btn-premium-fill" data-cursor-hover>홈으로 가기</a>
-          <a href="/treatments" class="btn-premium btn-premium-white" data-cursor-hover>진료 안내</a>
+          <a href="/" class="btn btn-primary">홈으로 가기</a>
+          <a href="/treatments" class="btn btn-light">진료 안내</a>
         </div>
       </div>
     </section>,

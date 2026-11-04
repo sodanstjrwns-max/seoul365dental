@@ -74,7 +74,7 @@ ruRoutes.get('/ru', async (c) => {
   <meta name="twitter:description" content="${pageDesc}"/>
 
   <!-- Theme -->
-  <meta name="theme-color" content="#040B18"/>
+  <meta name="theme-color" content="#0B1530"/>
   <link rel="icon" href="/favicon.ico?v=fav20261014" sizes="any"/>
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png?v=fav20261014"/>
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png?v=fav20261014"/>
@@ -119,7 +119,7 @@ ruRoutes.get('/ru', async (c) => {
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     .hero-ru {
-      background: linear-gradient(135deg, #040B18 0%, #0A1628 40%, #0D1B33 100%);
+      background: linear-gradient(135deg, #0B1530 0%, #102048 40%, #0D1B33 100%);
       position: relative;
       overflow: hidden;
     }
@@ -130,8 +130,8 @@ ruRoutes.get('/ru', async (c) => {
       left: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(ellipse at 30% 20%, rgba(0,102,255,0.08) 0%, transparent 50%),
-                  radial-gradient(ellipse at 70% 80%, rgba(0,229,255,0.05) 0%, transparent 50%);
+      background: radial-gradient(ellipse at 30% 20%, rgba(30,75,216,0.08) 0%, transparent 50%),
+                  radial-gradient(ellipse at 70% 80%, rgba(143,180,255,0.05) 0%, transparent 50%);
       animation: float 20s ease-in-out infinite;
     }
     @keyframes float {
@@ -152,8 +152,8 @@ ruRoutes.get('/ru', async (c) => {
       transition: all 0.3s;
     }
     .glass-card-light:hover {
-      border-color: rgba(0,102,255,0.15);
-      box-shadow: 0 4px 20px rgba(0,102,255,0.06);
+      border-color: rgba(30,75,216,0.15);
+      box-shadow: 0 4px 20px rgba(30,75,216,0.06);
       transform: translateY(-2px);
     }
     .badge-ru {

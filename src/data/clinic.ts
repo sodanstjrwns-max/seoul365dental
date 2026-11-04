@@ -38,13 +38,13 @@ export const HOURS_DETAIL = {
 } as const;
 
 export const COLORS = {
-  primary: '#0066FF',
-  primaryBright: '#2979FF',
-  primaryDark: '#0050CC',
-  primaryLight: '#E3F0FF',
-  accent: '#00E5FF',
-  navy: '#040B18',
-  navyLight: '#0A1628',
+  primary: '#1E4BD8',
+  primaryBright: '#3B63E8',
+  primaryDark: '#1538A8',
+  primaryLight: '#E6ECFA',
+  accent: '#8FB4FF',
+  navy: '#0B1530',
+  navyLight: '#102048',
   text: '#0f172a',
   textSub: '#64748b',
   success: '#10B981',

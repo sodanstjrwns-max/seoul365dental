@@ -51,7 +51,7 @@ compareRoutes.get('/compare', (c) => {
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:16vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">COMPARE GUIDES</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">COMPARE GUIDES</p>
           <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
             진료·재료·브랜드 비교 가이드
           </h1>
@@ -68,14 +68,14 @@ compareRoutes.get('/compare', (c) => {
             <h2 class="text-2xl font-bold text-gray-900 mb-6">{cat} 비교</h2>
             <div class="grid md:grid-cols-2 gap-4">
               {items.map(cmp => (
-                <a href={`/compare/${cmp.slug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#0066FF]/30 hover:shadow-lg transition-all bg-white">
+                <a href={`/compare/${cmp.slug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:shadow-lg transition-all bg-white">
                   <div class="flex items-center gap-3 mb-3">
                     <span class="text-sm font-bold text-gray-900">{cmp.itemA}</span>
                     <span class="text-xs text-gray-400 px-2">VS</span>
                     <span class="text-sm font-bold text-gray-900">{cmp.itemB}</span>
                   </div>
                   <p class="text-sm text-gray-600 leading-relaxed">{cmp.description}</p>
-                  <div class="mt-3 text-xs text-[#0066FF] font-bold">자세히 비교 →</div>
+                  <div class="mt-3 text-xs text-[#1E4BD8] font-bold">자세히 비교 →</div>
                 </a>
               ))}
             </div>
@@ -178,9 +178,9 @@ compareRoutes.get('/compare/:slug', (c) => {
         <div class="hero-grid"></div>
         <div class="orb orb-1"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:14vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{cmp.category} 비교</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{cmp.category} 비교</p>
           <h1 class="text-2xl md:text-4xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
-            {cmp.itemA} <span class="text-[#00E5FF] mx-2">VS</span> {cmp.itemB}
+            {cmp.itemA} <span class="text-[#8FB4FF] mx-2">VS</span> {cmp.itemB}
           </h1>
           <p class="text-white/50 text-sm md:text-base reveal reveal-fade max-w-2xl mx-auto" style="transition-delay:0.4s">
             {cmp.description}
@@ -191,16 +191,16 @@ compareRoutes.get('/compare/:slug', (c) => {
       <article class="max-w-4xl mx-auto px-5 md:px-8 py-16">
         {/* Breadcrumb */}
         <nav class="text-xs text-gray-400 mb-6">
-          <a href="/" class="hover:text-[#0066FF]">홈</a>
+          <a href="/" class="hover:text-[#1E4BD8]">홈</a>
           <span class="mx-2">›</span>
-          <a href="/compare" class="hover:text-[#0066FF]">비교 가이드</a>
+          <a href="/compare" class="hover:text-[#1E4BD8]">비교 가이드</a>
           <span class="mx-2">›</span>
           <span class="text-gray-700">{cmp.itemA} vs {cmp.itemB}</span>
         </nav>
 
         {/* Summary (Featured Snippet 타겟) */}
-        <div class="p-6 md:p-8 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#0066FF]/10 mb-10">
-          <div class="flex items-center gap-2 text-[#0066FF] font-bold text-sm mb-3">
+        <div class="p-6 md:p-8 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#1E4BD8]/10 mb-10">
+          <div class="flex items-center gap-2 text-[#1E4BD8] font-bold text-sm mb-3">
             <i class="fa-solid fa-bolt"></i>
             <span>한 줄 요약</span>
           </div>
@@ -211,7 +211,7 @@ compareRoutes.get('/compare/:slug', (c) => {
 
         {/* 비교 표 */}
         <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <i class="fa-solid fa-table-list text-[#0066FF]"></i>
+          <i class="fa-solid fa-table-list text-[#1E4BD8]"></i>
           상세 비교표
         </h2>
         <div class="overflow-x-auto rounded-2xl border border-gray-100 mb-12">
@@ -219,8 +219,8 @@ compareRoutes.get('/compare/:slug', (c) => {
             <thead>
               <tr class="bg-gray-50 border-b border-gray-100">
                 <th class="px-4 py-3 text-left font-bold text-gray-500 text-xs uppercase tracking-wide">항목</th>
-                <th class="px-4 py-3 text-left font-bold text-[#0066FF]">{cmp.itemA}</th>
-                <th class="px-4 py-3 text-left font-bold text-[#2979FF]">{cmp.itemB}</th>
+                <th class="px-4 py-3 text-left font-bold text-[#1E4BD8]">{cmp.itemA}</th>
+                <th class="px-4 py-3 text-left font-bold text-[#3B63E8]">{cmp.itemB}</th>
               </tr>
             </thead>
             <tbody>
@@ -237,16 +237,16 @@ compareRoutes.get('/compare/:slug', (c) => {
 
         {/* 추천 케이스 */}
         <div class="grid md:grid-cols-2 gap-5 mb-12">
-          <div class="p-6 rounded-2xl border-2 border-[#0066FF]/20 bg-[#0066FF]/[0.02]">
+          <div class="p-6 rounded-2xl border-2 border-[#1E4BD8]/20 bg-[#1E4BD8]/[0.02]">
             <div class="flex items-center gap-2 mb-3">
-              <i class="fa-solid fa-circle-check text-[#0066FF]"></i>
+              <i class="fa-solid fa-circle-check text-[#1E4BD8]"></i>
               <h3 class="font-bold text-gray-900">{cmp.itemA} 추천</h3>
             </div>
             <p class="text-sm text-gray-700 leading-relaxed">{cmp.recommendA}</p>
           </div>
-          <div class="p-6 rounded-2xl border-2 border-[#2979FF]/20 bg-[#2979FF]/[0.02]">
+          <div class="p-6 rounded-2xl border-2 border-[#3B63E8]/20 bg-[#3B63E8]/[0.02]">
             <div class="flex items-center gap-2 mb-3">
-              <i class="fa-solid fa-circle-check text-[#2979FF]"></i>
+              <i class="fa-solid fa-circle-check text-[#3B63E8]"></i>
               <h3 class="font-bold text-gray-900">{cmp.itemB} 추천</h3>
             </div>
             <p class="text-sm text-gray-700 leading-relaxed">{cmp.recommendB}</p>
@@ -256,7 +256,7 @@ compareRoutes.get('/compare/:slug', (c) => {
         {/* FAQ */}
         <div class="mb-12">
           <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <i class="fa-solid fa-circle-question text-[#0066FF]"></i>
+            <i class="fa-solid fa-circle-question text-[#1E4BD8]"></i>
             자주 묻는 질문
           </h2>
           <div class="space-y-3">
@@ -287,7 +287,7 @@ compareRoutes.get('/compare/:slug', (c) => {
         {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
         <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-12">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center shrink-0">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center shrink-0">
               <i class="fa-solid fa-hospital text-white"></i>
             </div>
             <div>
@@ -305,7 +305,7 @@ compareRoutes.get('/compare/:slug', (c) => {
             <h2 class="text-lg font-bold text-gray-900 mb-4">관련 비교</h2>
             <div class="grid md:grid-cols-3 gap-3">
               {related.map(r => (
-                <a href={`/compare/${r.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#0066FF]/30 hover:bg-gray-50 transition-all">
+                <a href={`/compare/${r.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:bg-gray-50 transition-all">
                   <div class="text-sm font-semibold text-gray-900">{r.itemA} vs {r.itemB}</div>
                   <div class="text-xs text-gray-500 mt-1">자세히 보기 →</div>
                 </a>
@@ -315,11 +315,11 @@ compareRoutes.get('/compare/:slug', (c) => {
         )}
 
         {/* CTA */}
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white text-center">
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
           <h3 class="text-xl md:text-2xl font-black mb-2">어떤 게 맞을지 모르시겠다면?</h3>
           <p class="text-white/80 text-sm mb-5">서울대 출신 5인 전문의의 무료 상담을 받아보세요.</p>
           <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#0066FF] font-bold text-sm hover:scale-105 transition-all">
+            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm hover:scale-105 transition-all">
               <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담 예약
             </a>
             <a href={CLINIC.phoneTel} class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm hover:bg-white/20 transition-all">

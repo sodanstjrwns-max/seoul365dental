@@ -91,7 +91,7 @@ answersRoutes.get('/answers', (c) => {
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:16vh">
-          <p class="text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">AI ANSWER HUB</p>
+          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">AI ANSWER HUB</p>
           <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
             서울365치과 베스트 답변 모음
           </h1>
@@ -110,7 +110,7 @@ answersRoutes.get('/answers', (c) => {
           return (
             <div class="mb-16 reveal reveal-fade">
               <div class="flex items-center gap-3 mb-6">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center">
                   <i class={`fa-solid ${icon} text-white text-lg`}></i>
                 </div>
                 <div>
@@ -122,10 +122,10 @@ answersRoutes.get('/answers', (c) => {
                 {entries.map(entry => (
                   <a
                     href={`/answers/${questionToSlug(entry)}`}
-                    class="block p-6 rounded-2xl border border-gray-100 hover:border-[#0066FF]/30 hover:shadow-lg transition-all bg-white"
+                    class="block p-6 rounded-2xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:shadow-lg transition-all bg-white"
                   >
                     <h3 class="text-base md:text-lg font-bold text-gray-900 mb-2 flex items-start gap-2">
-                      <i class="fa-solid fa-circle-question text-[#0066FF] text-sm mt-1.5 shrink-0"></i>
+                      <i class="fa-solid fa-circle-question text-[#1E4BD8] text-sm mt-1.5 shrink-0"></i>
                       <span>{entry.question}</span>
                     </h3>
                     <p class="text-sm text-gray-600 leading-relaxed pl-6">{entry.shortAnswer}</p>
@@ -143,11 +143,11 @@ answersRoutes.get('/answers', (c) => {
         })}
 
         {/* CTA */}
-        <div class="mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white text-center reveal reveal-fade">
+        <div class="mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center reveal reveal-fade">
           <h3 class="text-2xl md:text-3xl font-black mb-3">더 궁금한 점이 있으신가요?</h3>
           <p class="text-white/80 mb-6">서울대 출신 5인 전문의가 1:1 무료 상담을 도와드립니다.</p>
           <div class="flex flex-wrap justify-center gap-3">
-            <a href="/reservation" class="px-6 py-3 rounded-xl bg-white text-[#0066FF] font-bold hover:scale-105 transition-all">
+            <a href="/reservation" class="px-6 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold hover:scale-105 transition-all">
               <i class="fa-solid fa-calendar-check mr-2"></i> 무료 상담 예약
             </a>
             <a href={CLINIC.phoneTel} class="px-6 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold hover:bg-white/20 transition-all">
@@ -280,7 +280,7 @@ answersRoutes.get('/answers/:slug', (c) => {
         <div class="hero-grid"></div>
         <div class="orb orb-1"></div>
         <div class="relative z-10 max-w-3xl mx-auto px-5" style="padding-top:14vh">
-          <div class="flex items-center gap-2 text-[#00E5FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">
+          <div class="flex items-center gap-2 text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">
             <i class={`fa-solid ${icon}`}></i>
             <span>{entry.category}</span>
           </div>
@@ -297,16 +297,16 @@ answersRoutes.get('/answers/:slug', (c) => {
       <article class="max-w-3xl mx-auto px-5 md:px-8 py-16">
         {/* Breadcrumb */}
         <nav class="text-xs text-gray-400 mb-6">
-          <a href="/" class="hover:text-[#0066FF]">홈</a>
+          <a href="/" class="hover:text-[#1E4BD8]">홈</a>
           <span class="mx-2">›</span>
-          <a href="/answers" class="hover:text-[#0066FF]">Answer Hub</a>
+          <a href="/answers" class="hover:text-[#1E4BD8]">Answer Hub</a>
           <span class="mx-2">›</span>
           <span class="text-gray-700">{entry.category}</span>
         </nav>
 
         {/* 짧은 답변 (피처드 스니펫 타겟) */}
-        <div class="p-6 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#0066FF]/10 mb-8" itemscope itemtype="https://schema.org/Answer">
-          <div class="flex items-center gap-2 text-[#0066FF] font-bold text-sm mb-2">
+        <div class="p-6 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#1E4BD8]/10 mb-8" itemscope itemtype="https://schema.org/Answer">
+          <div class="flex items-center gap-2 text-[#1E4BD8] font-bold text-sm mb-2">
             <i class="fa-solid fa-bolt"></i>
             <span>한 줄 답변</span>
           </div>
@@ -318,7 +318,7 @@ answersRoutes.get('/answers/:slug', (c) => {
         {/* 상세 답변 */}
         <div class="prose prose-lg max-w-none mb-8">
           <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-circle-info text-[#0066FF]"></i>
+            <i class="fa-solid fa-circle-info text-[#1E4BD8]"></i>
             상세 답변
           </h2>
           <p class="text-gray-700 leading-loose whitespace-pre-line">
@@ -329,7 +329,7 @@ answersRoutes.get('/answers/:slug', (c) => {
         {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
         <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-8">
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#0066FF] to-[#2979FF] flex items-center justify-center shrink-0">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center shrink-0">
               <i class="fa-solid fa-hospital text-white"></i>
             </div>
             <div class="flex-1">
@@ -346,13 +346,13 @@ answersRoutes.get('/answers/:slug', (c) => {
 
         {/* 관련 페이지 링크 */}
         {entry.relatedUrl && (
-          <a href={entry.relatedUrl} class="block p-5 rounded-2xl border border-[#0066FF]/20 hover:border-[#0066FF]/50 hover:bg-[#0066FF]/5 transition-all mb-8">
+          <a href={entry.relatedUrl} class="block p-5 rounded-2xl border border-[#1E4BD8]/20 hover:border-[#1E4BD8]/50 hover:bg-[#1E4BD8]/5 transition-all mb-8">
             <div class="flex items-center justify-between">
               <div>
-                <div class="text-xs text-[#0066FF] font-bold mb-1">관련 진료 안내</div>
+                <div class="text-xs text-[#1E4BD8] font-bold mb-1">관련 진료 안내</div>
                 <div class="text-gray-900 font-semibold">자세한 진료 정보 보기</div>
               </div>
-              <i class="fa-solid fa-arrow-right text-[#0066FF]"></i>
+              <i class="fa-solid fa-arrow-right text-[#1E4BD8]"></i>
             </div>
           </a>
         )}
@@ -368,12 +368,12 @@ answersRoutes.get('/answers/:slug', (c) => {
         {related.length > 0 && (
           <div class="mb-12">
             <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <i class="fa-solid fa-link text-[#0066FF]"></i>
+              <i class="fa-solid fa-link text-[#1E4BD8]"></i>
               관련 질문
             </h2>
             <div class="space-y-2">
               {related.map(r => (
-                <a href={`/answers/${questionToSlug(r)}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#0066FF]/30 hover:bg-gray-50 transition-all">
+                <a href={`/answers/${questionToSlug(r)}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:bg-gray-50 transition-all">
                   <div class="text-sm font-semibold text-gray-900">{r.question}</div>
                   <div class="text-xs text-gray-500 mt-1">{r.shortAnswer.slice(0, 60)}...</div>
                 </a>
@@ -383,11 +383,11 @@ answersRoutes.get('/answers/:slug', (c) => {
         )}
 
         {/* CTA */}
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#0066FF] to-[#2979FF] text-white text-center">
+        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
           <h3 class="text-xl md:text-2xl font-black mb-2">정확한 진단이 필요하신가요?</h3>
           <p class="text-white/80 text-sm mb-5">서울365치과에서 무료 상담을 받아보세요.</p>
           <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#0066FF] font-bold text-sm hover:scale-105 transition-all">
+            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm hover:scale-105 transition-all">
               <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담 예약
             </a>
             <a href={CLINIC.phoneTel} class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm hover:bg-white/20 transition-all">

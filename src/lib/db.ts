@@ -107,8 +107,8 @@ export function renderContent(md: string): string {
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) => {
       const isInternal = url.startsWith('/');
       return isInternal
-        ? `<a href="${url}" class="text-[#0066FF] underline hover:text-[#0052cc]">${text}</a>`
-        : `<a href="${url}" class="text-[#0066FF] underline hover:text-[#0052cc]" target="_blank" rel="noopener">${text}</a>`;
+        ? `<a href="${url}" class="text-[#1E4BD8] underline hover:text-[#0052cc]">${text}</a>`
+        : `<a href="${url}" class="text-[#1E4BD8] underline hover:text-[#0052cc]" target="_blank" rel="noopener">${text}</a>`;
     })
     // Headings with auto-generated IDs for TOC linking
     .replace(/^#### (.+)$/gm, (_, t) => `<h4 id="${slugifyHeading(t)}" class="text-base font-bold text-gray-800 mt-6 mb-2">${t}</h4>`)
@@ -117,7 +117,7 @@ export function renderContent(md: string): string {
     .replace(/^# (.+)$/gm, (_, t) => `<h1 id="${slugifyHeading(t)}" class="text-2xl font-bold text-gray-900 mt-12 mb-5">${t}</h1>`)
     .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-[#0066FF]/20 pl-4 py-2 my-4 text-gray-500 italic bg-[#0066FF]/[0.03] rounded-r-lg">$1</blockquote>')
+    .replace(/^&gt; (.+)$/gm, '<blockquote class="border-l-4 border-[#1E4BD8]/20 pl-4 py-2 my-4 text-gray-500 italic bg-[#1E4BD8]/[0.03] rounded-r-lg">$1</blockquote>')
     .replace(/^---$/gm, '<hr class="my-8 border-gray-100"/>')
     // Numbered lists
     .replace(/^\d+\. (.+)$/gm, '<li class="ml-4 text-gray-600 list-item-numbered">$1</li>')

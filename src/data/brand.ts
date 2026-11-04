@@ -325,16 +325,16 @@ export const DOCTOR_STORIES: Record<string, {
 } as const;
 
 // ─── DESIGN SYSTEM TOKENS ──────────────────────────────────
-// Note: 디자이너 지정 원래 팔레트 (#1B6FC9) → 현재 Electric Blue (#0066FF)로 업그레이드됨
+// Note: 디자이너 지정 원래 팔레트 (#1B6FC9) → 현재 Electric Blue (#1E4BD8)로 업그레이드됨
 // 아래는 참조용 디자인 시스템 사양
 export const DESIGN_TOKENS = {
-  primary: '#0066FF',        // 실제 적용된 Electric Blue
-  primaryDark: '#0050CC',
-  primaryBright: '#2979FF',
-  secondaryLight: '#E3F0FF',
-  accent: '#00E5FF',
-  darkBg: '#040B18',         // navy
-  darkBgLight: '#0A1628',    // navyLight
+  primary: '#1E4BD8',        // 실제 적용된 Electric Blue
+  primaryDark: '#1538A8',
+  primaryBright: '#3B63E8',
+  secondaryLight: '#E6ECFA',
+  accent: '#8FB4FF',
+  darkBg: '#0B1530',         // navy
+  darkBgLight: '#102048',    // navyLight
   textPrimary: '#0f172a',
   textSecondary: '#64748b',
   bgWhite: '#FFFFFF',
@@ -344,7 +344,7 @@ export const DESIGN_TOKENS = {
   _originalPrimary: '#1B6FC9',
   _originalDark: '#155BA3',
   _originalSecondaryLight: '#E8F0FE',
-  _originalDarkBg: '#0A1628',
+  _originalDarkBg: '#102048',
   _originalText: '#1a1a1a',
   _originalTextSub: '#666666',
 } as const;

@@ -336,8 +336,8 @@ eventRoutes.get('/event/implant', async (c) => {
                 '국내 치과의사가 가장 많이 사용하는 브랜드를 원하시는 분',
               ].map(item => (
                 <div class="flex items-start gap-3">
-                  <div class="w-6 h-6 rounded-full bg-[#0066FF]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <i class="fa-solid fa-check text-[#0066FF] text-xs"></i>
+                  <div class="w-6 h-6 rounded-full bg-[#1E4BD8]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <i class="fa-solid fa-check text-[#1E4BD8] text-xs"></i>
                   </div>
                   <span class="text-gray-700 text-sm leading-relaxed">{item}</span>
                 </div>
@@ -365,18 +365,18 @@ eventRoutes.get('/event/implant', async (c) => {
               { step: '05', title: '맞춤 보철물 제작', desc: '자체 기공실에서 지르코니아 크라운을 정밀 제작합니다.', icon: 'fa-gear', time: '1~2주' },
               { step: '06', title: '최종 장착 & 정기 관리', desc: '보철물 장착, 교합 미세 조정, 정기 검진 프로그램 안내.', icon: 'fa-face-smile', time: '당일' },
             ].map(item => (
-              <div class="glass-card p-6 flex items-center gap-6 group hover:border-[#0066FF]/20 transition-all">
+              <div class="glass-card p-6 flex items-center gap-6 group hover:border-[#1E4BD8]/20 transition-all">
                 <div class="flex-shrink-0 text-center">
-                  <span class="text-3xl font-black text-[#0066FF]/10 group-hover:text-[#0066FF]/20 transition-colors">{item.step}</span>
+                  <span class="text-3xl font-black text-[#1E4BD8]/10 group-hover:text-[#1E4BD8]/20 transition-colors">{item.step}</span>
                 </div>
                 <div class="icon-circle icon-circle-sm flex-shrink-0">
                   <i class={`fa-solid ${item.icon} text-sm`}></i>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <h3 class="font-bold text-gray-900 group-hover:text-[#0066FF] transition-colors">{item.title}</h3>
+                  <h3 class="font-bold text-gray-900 group-hover:text-[#1E4BD8] transition-colors">{item.title}</h3>
                   <p class="text-sm text-gray-500 mt-0.5">{item.desc}</p>
                 </div>
-                <span class="hidden sm:block text-xs text-[#0066FF] bg-[#0066FF]/5 px-3 py-1.5 rounded-full font-medium flex-shrink-0">{item.time}</span>
+                <span class="hidden sm:block text-xs text-[#1E4BD8] bg-[#1E4BD8]/5 px-3 py-1.5 rounded-full font-medium flex-shrink-0">{item.time}</span>
               </div>
             ))}
           </div>
@@ -403,7 +403,7 @@ eventRoutes.get('/event/implant', async (c) => {
               <details class="glass-card group" id={`faq-${i}`}>
                 <summary class="flex items-center justify-between cursor-pointer p-5 select-none list-none" role="button" aria-expanded="false">
                   <div class="flex items-center gap-3 min-w-0">
-                    <span class="text-[#0066FF] font-bold text-sm flex-shrink-0">Q.</span>
+                    <span class="text-[#1E4BD8] font-bold text-sm flex-shrink-0">Q.</span>
                     <span class="font-medium text-gray-800 text-sm">{item.q}</span>
                   </div>
                   <i class="fa-solid fa-chevron-down text-gray-300 text-xs flex-shrink-0 transition-transform group-open:rotate-180"></i>

@@ -1,270 +1,184 @@
-// Seoul365 Dental — Main App JS
+/* 서울365치과 — app.js v7 (2026-11-04 전면 리디자인)
+   헤더·드로어·진료 상태(KST)·등장 연출(IntersectionObserver)·카운터·FAQ(옛 버튼형)·로그인 상태·소개 영상.
+   메인 스크롤 연출은 immersive.js(GSAP). 팝업 시스템 v4 는 이 파일 끝에 그대로 둔다.
+   원칙: 글자는 전부 HTML 그대로. html.mx(동작 줄이기 아님 + IO 지원)일 때만 CSS 가 숨김 시작하고 여기서 노출한다. */
+(function () {
+  'use strict';
+  var d = document, w = window, html = d.documentElement;
+  var $ = function (s, c) { return (c || d).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || d).querySelectorAll(s)); };
+  var mx = html.classList.contains('mx');
 
-// ── Progressive Enhancement Gate ─────────────
-// IntersectionObserver가 정상 지원되는 환경에서만 애니메이션 숨김 시작 상태로 진입.
-// 네이버/카카오/삼성 인앱 브라우저 일부 또는 구형 안드로이드에서 미지원 시 텍스트는 그대로 표시됨.
-(function(){
-  try {
-    if ('IntersectionObserver' in window && 'IntersectionObserverEntry' in window) {
-      document.documentElement.classList.add('js-anim-ready');
-    }
-  } catch(e) { /* 보수적으로 통과 → 텍스트는 항상 보임 */ }
-  // 안전망: 2.5초 후에도 .visible 안 붙은 reveal 요소가 있으면 강제 노출
-  // (혹시 IO 등록 누락된 케이스 대비)
-  setTimeout(function(){
-    document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-3d, .reveal-blur, .reveal-pop, .reveal-elastic, .reveal-rotate, .text-split, .text-words, .stagger-cascade, .stagger-children').forEach(function(el){
-      if(!el.classList.contains('visible')){
-        var rect = el.getBoundingClientRect();
-        // 이미 화면 위쪽에 지나갔거나 현재 보이는 영역이면 .visible 강제 부여
-        if(rect.top < window.innerHeight && rect.bottom > 0){
-          el.classList.add('visible');
-        }
+  // ── 관리자 화면: 공용 크롬 숨김
+  if (location.pathname.indexOf('/admin') === 0) {
+    ['#main-header', 'footer', '.mobile-cta-bar', '.fab-col', '#scroll-progress'].forEach(function (s) { $$(s).forEach(function (el) { el.style.display = 'none'; }); });
+    d.body.style.paddingBottom = '0';
+  }
+
+  // ── 헤더: 스크롤 상태 · 아래로 내리면 숨김/올리면 표시 · 진행선 · 맨 위로 버튼
+  var header = $('#main-header'), progress = $('#scroll-progress'), fabTop = $('#fab-top');
+  var lastY = w.scrollY, ticking = false;
+  function onScroll() {
+    var y = w.scrollY;
+    if (header) {
+      header.classList.toggle('scrolled', y > 8);
+      if (!header.classList.contains('menu-open')) {
+        if (y > lastY + 6 && y > 160) header.classList.add('hide');
+        else if (y < lastY - 6 || y < 80) header.classList.remove('hide');
       }
+    }
+    if (progress) { var h = html.scrollHeight - w.innerHeight; progress.style.transform = 'scaleX(' + (h > 0 ? y / h : 0) + ')'; }
+    if (fabTop) fabTop.classList.toggle('show', y > 600);
+    lastY = y; ticking = false;
+  }
+  w.addEventListener('scroll', function () { if (!ticking) { requestAnimationFrame(onScroll); ticking = true; } }, { passive: true });
+  onScroll();
+  if (fabTop) fabTop.addEventListener('click', function () { w.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+  // ── 모바일 드로어
+  var mmBtn = $('#mobile-menu-btn'), menu = $('#mobile-menu');
+  function setMenu(open) {
+    if (!menu || !mmBtn) return;
+    menu.hidden = !open;
+    mmBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    mmBtn.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+    d.body.classList.toggle('menu-open', open);
+    if (header) { header.classList.toggle('menu-open', open); if (open) header.classList.remove('hide'); }
+  }
+  if (mmBtn && menu) {
+    mmBtn.addEventListener('click', function () { setMenu(menu.hidden); });
+    menu.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+    d.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) setMenu(false); });
+    w.addEventListener('resize', function () { if (w.innerWidth > 1100 && !menu.hidden) setMenu(false); });
+  }
+
+  // ── 진료 상태(KST): 상태 칩 · 히어로 시간 카드 · 요일 막대 '오늘'
+  //    월..일 = [10,21]x4, [10,19], [10,14], [14,18]  (공휴일은 일요일 시간과 같다 — 요일 판별만 한다)
+  var HOURS = [[10, 21], [10, 21], [10, 21], [10, 21], [10, 19], [10, 14], [14, 18]];
+  var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+  function kst() { var t = new Date(Date.now() + 9 * 3600000); return { day: t.getUTCDay(), h: t.getUTCHours(), m: t.getUTCMinutes() }; }
+  function tick() {
+    var k = kst(), idx = k.day === 0 ? 6 : k.day - 1, hh = HOURS[idx], now = k.h + k.m / 60;
+    var open = now >= hh[0] && now < hh[1];
+    var text = open ? '진료중 · ' + pad(hh[1]) + ':00까지' : (now < hh[0] ? '오늘 ' + pad(hh[0]) + ':00 진료 시작' : '오늘 진료 종료');
+    $$('[data-status]').forEach(function (el) { el.classList.toggle('is-open', open); var t = el.querySelector('.txt'); if (t) t.textContent = text; });
+    $$('[data-clock]').forEach(function (el) { el.textContent = pad(k.h) + ':' + pad(k.m); });
+    $$('[data-timecard]').forEach(function (el) {
+      el.classList.toggle('is-open', open);
+      var t = el.querySelector('[data-tc-text]'), c = el.querySelector('[data-tc-close]');
+      if (t) t.textContent = open ? '지금 진료중' : (now < hh[0] ? '진료 시작 전' : '오늘 진료 종료');
+      if (c) c.textContent = open ? '~ ' + pad(hh[1]) + ':00' : '오늘 ' + pad(hh[0]) + ':00–' + pad(hh[1]) + ':00';
     });
-  }, 2500);
+    $$('.wk-col').forEach(function (el) { el.classList.toggle('today', +el.getAttribute('data-day') === idx); });
+  }
+  tick(); setInterval(tick, 30000);
+
+  // ── 등장 연출: IntersectionObserver. html.mx 가 아니면 CSS 가 아무것도 숨기지 않으므로 할 일이 없다.
+  var LEGACY = '.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-3d, .reveal-blur, .reveal-pop, .reveal-elastic, .reveal-rotate, .text-split, .text-words, .img-reveal, .line-draw, .stagger-children, .stagger-cascade';
+  var NEW = '[data-rv], [data-rv-group], [data-on], .hl[data-rv="lines"]';
+  function show(el) { if (el.matches(NEW)) el.classList.add('on'); else el.classList.add('visible'); }
+  if (mx) {
+    var targets = $$(NEW + ', ' + LEGACY).filter(function (el) { return !el.closest('.hero'); }); // 홈 히어로는 immersive.js 타임라인이 맡는다
+    if ('IntersectionObserver' in w) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) { show(en.target); io.unobserve(en.target); } });
+      }, { threshold: 0.06, rootMargin: '0px 0px -6% 0px' });
+      targets.forEach(function (el) { io.observe(el); });
+    } else targets.forEach(show);
+    // 안전망: 2.5초 뒤에도 화면 안에 있는데 숨어 있으면 노출(IO 누락·인앱 브라우저 대비)
+    setTimeout(function () {
+      targets.forEach(function (el) {
+        if (el.classList.contains('on') || el.classList.contains('visible')) return;
+        var r = el.getBoundingClientRect(); if (r.top < w.innerHeight && r.bottom > 0) show(el);
+      });
+    }, 2500);
+    // #앵커로 들어온 경우: 해당 블록과 그 위는 즉시 노출
+    if (location.hash) { try { var tgt = $(location.hash); if (tgt) { targets.forEach(function (el) { if (el.compareDocumentPosition(tgt) & Node.DOCUMENT_POSITION_FOLLOWING || tgt.contains(el)) show(el); }); } } catch (e) {} }
+  }
+
+  // ── 카운터 [data-count] (data-prefix / data-suffix 지원 — 하위페이지 옛 .stat-number 호환)
+  function countUp(el) {
+    if (el.dataset.done) return; el.dataset.done = '1';
+    var target = parseFloat(el.getAttribute('data-count')); if (isNaN(target)) return;
+    var pre = el.getAttribute('data-prefix') || '', suf = el.getAttribute('data-suffix') || '';
+    var dec = target % 1 ? 1 : 0, t0 = null, dur = 1400;
+    function step(ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min((ts - t0) / dur, 1), e = 1 - Math.pow(1 - p, 4);
+      el.textContent = pre + (target * e).toFixed(dec) + suf;
+      if (p < 1) requestAnimationFrame(step); else el.textContent = pre + target.toFixed(dec) + suf;
+    }
+    requestAnimationFrame(step);
+  }
+  var counters = $$('[data-count]');
+  if (counters.length && mx && 'IntersectionObserver' in w) {
+    var cio = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { countUp(en.target); cio.unobserve(en.target); } }); }, { threshold: 0.4 });
+    counters.forEach(function (el) { cio.observe(el); });
+  }
+
+  // ── FAQ(옛 버튼형 아코디언 — 하위페이지)
+  $$('.faq-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var content = this.nextElementSibling, icon = this.querySelector('.faq-icon'), expanded = content && !content.classList.contains('hidden');
+      $$('.faq-toggle').forEach(function (o) {
+        if (o === btn || !o.nextElementSibling) return;
+        o.nextElementSibling.classList.add('hidden'); var oi = o.querySelector('.faq-icon'); if (oi) oi.classList.remove('rotate-180'); o.setAttribute('aria-expanded', 'false');
+      });
+      if (content) content.classList.toggle('hidden');
+      if (icon) icon.classList.toggle('rotate-180');
+      this.setAttribute('aria-expanded', String(!expanded));
+    });
+  });
+
+  // ── 로그인 상태
+  (function () {
+    fetch('/api/auth/me').then(function (r) { return r.json(); }).then(function (data) {
+      if (!(data && data.ok && data.user)) return;
+      var nav = $('#auth-nav'), user = $('#auth-user'), name = $('#auth-user-name');
+      if (nav) nav.classList.add('hidden'); if (user) user.classList.remove('hidden'); if (name) name.textContent = data.user.name + '님';
+      var mn = $('#mobile-auth-nav'), mu = $('#mobile-auth-user'), mname = $('#mobile-user-name');
+      if (mn) mn.classList.add('hidden'); if (mu) mu.classList.remove('hidden'); if (mname) mname.textContent = data.user.name + '님';
+    }).catch(function () {});
+    ['#auth-logout-btn', '#mobile-logout-btn'].forEach(function (s) {
+      var b = $(s); if (b) b.addEventListener('click', function () { fetch('/api/auth/logout', { method: 'POST' }).then(function () { location.reload(); }); });
+    });
+  })();
+
+  // ── 소개 영상(YouTube): 화면 가까이 오면 iframe 주입(화면을 덮도록 크기 계산), 음소거 토글, 벗어나면 일시정지
+  (function () {
+    var wrap = $('#yt-player-wrap'), poster = $('#yt-poster'), sec = $('#video-section'); if (!wrap || !sec) return;
+    var muted = true, iframe = null, injected = false, ID = 'gB_yiatcwAc';
+    function fit() {
+      if (!iframe) return;
+      var cw = sec.clientWidth, ch = sec.clientHeight, iw, ih;
+      if (cw / ch > 16 / 9) { iw = cw; ih = cw * 9 / 16; } else { ih = ch; iw = ch * 16 / 9; }
+      iframe.style.width = Math.ceil(iw) + 'px'; iframe.style.height = Math.ceil(ih) + 'px';
+    }
+    function inject() {
+      if (injected) return; injected = true;
+      iframe = d.createElement('iframe'); iframe.id = 'yt-iframe'; iframe.allow = 'autoplay; encrypted-media';
+      iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin'); iframe.title = '서울365치과 소개 영상';
+      iframe.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;border:0;';
+      iframe.src = 'https://www.youtube-nocookie.com/embed/' + ID + '?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=' + ID + '&playsinline=1&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&cc_load_policy=0&enablejsapi=1';
+      iframe.addEventListener('load', function () { if (poster) setTimeout(function () { poster.style.opacity = '0'; setTimeout(function () { poster.style.display = 'none'; }, 1000); }, 600); });
+      wrap.appendChild(iframe); fit();
+    }
+    w.addEventListener('resize', fit);
+    function cmd(f, a) { if (!iframe || !iframe.contentWindow) return; try { iframe.contentWindow.postMessage(JSON.stringify({ event: 'command', func: f, args: a || [] }), '*'); } catch (e) {} }
+    var btn = $('#yt-sound-toggle'), label = $('#yt-sound-label');
+    if (btn) btn.addEventListener('click', function () {
+      muted = !muted;
+      if (muted) cmd('mute'); else { cmd('unMute'); cmd('setVolume', [80]); }
+      btn.classList.toggle('on', !muted); btn.setAttribute('aria-pressed', String(!muted));
+      if (label) label.textContent = muted ? '소리 켜기' : '소리 끄기';
+    });
+    if (!('IntersectionObserver' in w)) { inject(); return; }
+    var lazy = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { inject(); lazy.disconnect(); } }); }, { rootMargin: '200px 0px' });
+    lazy.observe(sec);
+    var vis = new IntersectionObserver(function (es) { es.forEach(function (en) { if (!iframe) return; cmd(en.isIntersecting ? 'playVideo' : 'pauseVideo'); }); }, { threshold: 0.1 });
+    vis.observe(sec);
+  })();
 })();
-
-// ── Admin page layout cleanup ──────────────────
-(function(){if(window.location.pathname.startsWith('/admin')){var mh=document.getElementById('main-header');if(mh)mh.style.display='none';document.querySelectorAll('footer').forEach(function(el){el.style.display='none'});document.querySelectorAll('.mobile-cta-bar').forEach(function(el){el.style.display='none'});document.querySelectorAll('.floating-btn').forEach(function(el){if(el.parentElement)el.parentElement.style.display='none'});var cd=document.getElementById('cursor-dot');if(cd)cd.style.display='none';var cr=document.getElementById('cursor-ring');if(cr)cr.style.display='none';var s=document.createElement('style');s.textContent='body,body *,body *::before,body *::after{cursor:auto!important}a,button,select,[role=button]{cursor:pointer!important}input,textarea{cursor:text!important}';document.head.appendChild(s);var sp=document.getElementById('scroll-progress');if(sp)sp.style.display='none';document.body.style.overflow='auto'}})();
-
-// Clinic Open/Close Status
-(function(){var hours={0:{open:14,close:18},1:{open:10,close:21},2:{open:10,close:21},3:{open:10,close:21},4:{open:10,close:21},5:{open:10,close:19},6:{open:10,close:14}};function updateStatus(){var now=new Date();var kst=new Date(now.toLocaleString('en-US',{timeZone:'Asia/Seoul'}));var day=kst.getDay(),h=kst.getHours(),m=kst.getMinutes(),t=h+m/60;var s=hours[day];var isOpen=s&&t>=s.open&&t<s.close;document.querySelectorAll('#clinic-status-badge, #mobile-clinic-status').forEach(function(el){var dot=el.querySelector('span:first-child');var txt=el.querySelector('span:last-child');if(isOpen){el.className=el.className.replace(/text-gray-\S+|bg-gray-\S+/g,'').replace(/text-emerald-\S+|bg-emerald-\S+/g,'');el.classList.add('text-emerald-600','bg-emerald-50');if(dot)dot.className='w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse';if(txt)txt.textContent='진료중'}else{el.className=el.className.replace(/text-emerald-\S+|bg-emerald-\S+/g,'');el.classList.add('text-gray-500','bg-gray-100');if(dot)dot.className='w-1.5 h-1.5 bg-gray-400 rounded-full';if(txt)txt.textContent='진료종료'}})}updateStatus();setInterval(updateStatus,60000)})();
-
-// Custom Cursor (Desktop only — SNU crest mark)
-if(window.innerWidth>1024&&window.matchMedia('(pointer:fine)').matches){var dot=document.getElementById('cursor-dot');var ring=document.getElementById('cursor-ring');if(dot&&ring){var preImg=new Image();preImg.src='/static/cursor-logo.png';var mx=-100,my=-100,rx=-100,ry=-100,visible=false;document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';if(!visible){visible=true;dot.style.display='block';ring.style.display='block'}});(function animateRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animateRing)})();document.querySelectorAll('a, button, [data-cursor-hover], input, textarea, select').forEach(function(el){el.addEventListener('mouseenter',function(){dot.classList.add('hovering');ring.classList.add('hovering')});el.addEventListener('mouseleave',function(){dot.classList.remove('hovering');ring.classList.remove('hovering')})})}}else{document.body.style.cursor='auto'}
-
-// Scroll Progress
-window.addEventListener('scroll',function(){var h=document.documentElement.scrollHeight-window.innerHeight;var p=h>0?window.scrollY/h:0;var bar=document.getElementById('scroll-progress');if(bar)bar.style.transform='scaleX('+p+')';},{passive:true});
-
-// Mobile menu
-var mmBtn=document.getElementById('mobile-menu-btn');if(mmBtn)mmBtn.addEventListener('click',function(){var menu=document.getElementById('mobile-menu');var icon=this.querySelector('i');var expanded=!menu.classList.contains('hidden');menu.classList.toggle('hidden');this.setAttribute('aria-expanded',!expanded);icon.className=menu.classList.contains('hidden')?'fa-solid fa-bars text-xl':'fa-solid fa-xmark text-xl'});
-
-// Header scroll
-var header=document.getElementById('main-header');if(header)window.addEventListener('scroll',function(){if(window.scrollY>50)header.classList.add('scrolled');else header.classList.remove('scrolled')},{passive:true});
-
-// IntersectionObserver for scroll animations
-var revealObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting)entry.target.classList.add('visible')})},{threshold:0.05,rootMargin:'0px 0px -40px 0px'});
-document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-3d, .reveal-blur, .stagger-children, .img-reveal, .highlight-word').forEach(function(el){revealObserver.observe(el)});
-
-// FAQ accordion
-document.querySelectorAll('.faq-toggle').forEach(function(btn){btn.addEventListener('click',function(){var content=this.nextElementSibling;var icon=this.querySelector('.faq-icon');var expanded=!content.classList.contains('hidden');document.querySelectorAll('.faq-toggle').forEach(function(other){if(other!==btn){other.nextElementSibling.classList.add('hidden');var oi=other.querySelector('.faq-icon');if(oi)oi.classList.remove('rotate-180');other.setAttribute('aria-expanded','false')}});content.classList.toggle('hidden');if(icon)icon.classList.toggle('rotate-180');this.setAttribute('aria-expanded',!expanded)})});
-
-// Animated counter
-function animateCounters(){document.querySelectorAll('[data-count]').forEach(function(el){if(el.dataset.animated)return;el.dataset.animated='true';var target=parseFloat(el.dataset.count);var suffix=el.dataset.suffix||'';var prefix=el.dataset.prefix||'';var decimals=(target%1!==0)?1:0;var current=0;var duration=2200;var step=target/(duration/16);var counter=setInterval(function(){current+=step;if(current>=target){current=target;clearInterval(counter)}el.textContent=prefix+current.toFixed(decimals)+suffix},16)})}
-var counterObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){animateCounters();counterObserver.disconnect()}})},{threshold:0.3});
-var counterEl=document.querySelector('[data-counter-section]');if(counterEl)counterObserver.observe(counterEl);
-
-// Hero — Premium Constellation + Aurora
-(function(){
-var canvas=document.getElementById('hero-particles');if(!canvas)return;
-var ctx=canvas.getContext('2d');var w,h,t=0;
-var dpr=Math.min(window.devicePixelRatio||1,2);
-function resize(){w=canvas.parentElement.offsetWidth;h=canvas.parentElement.offsetHeight;canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(dpr,0,0,dpr,0,0)}
-resize();window.addEventListener('resize',resize);
-
-// Constellation nodes — sparse, elegant
-var nodes=[];var N=Math.min(Math.floor(w*h/25000),50);
-for(var i=0;i<N;i++){nodes.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.2+0.3,vx:(Math.random()-0.5)*0.15,vy:(Math.random()-0.5)*0.15,phase:Math.random()*Math.PI*2,speed:0.003+Math.random()*0.005})}
-
-// Floating light motes — very subtle
-var motes=[];for(var i=0;i<25;i++){motes.push({x:Math.random()*w,y:Math.random()*h,vy:-0.08-Math.random()*0.15,r:Math.random()*0.8+0.2,o:Math.random()*0.15+0.03,phase:Math.random()*Math.PI*2})}
-
-var mx=-9999,my=-9999,tmx=-9999,tmy=-9999;
-canvas.parentElement.addEventListener('mousemove',function(e){var r=canvas.parentElement.getBoundingClientRect();tmx=e.clientX-r.left;tmy=e.clientY-r.top});
-canvas.parentElement.addEventListener('mouseleave',function(){tmx=-9999;tmy=-9999});
-
-function draw(){
-t+=0.016;
-// Smooth mouse lerp
-mx+=(tmx-mx)*0.04;my+=(tmy-my)*0.04;
-ctx.clearRect(0,0,w,h);
-
-// Layer 1: Mouse aurora glow — soft radial gradient that follows cursor
-if(mx>0&&mx<w&&my>0&&my<h){
-  var ag=ctx.createRadialGradient(mx,my,0,mx,my,280);
-  ag.addColorStop(0,'rgba(0,102,255,0.06)');
-  ag.addColorStop(0.4,'rgba(0,180,255,0.025)');
-  ag.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=ag;ctx.fillRect(0,0,w,h);
-  // Second layer — warmer accent
-  var ag2=ctx.createRadialGradient(mx+60,my-40,0,mx+60,my-40,180);
-  ag2.addColorStop(0,'rgba(0,229,255,0.03)');
-  ag2.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=ag2;ctx.fillRect(0,0,w,h);
-}
-
-// Layer 2: Constellation nodes
-for(var i=0;i<nodes.length;i++){
-  var n=nodes[i];
-  n.x+=n.vx;n.y+=n.vy;
-  if(n.x<-20)n.x=w+20;if(n.x>w+20)n.x=-20;
-  if(n.y<-20)n.y=h+20;if(n.y>h+20)n.y=-20;
-  // Pulse opacity
-  var pulse=0.25+Math.sin(t*n.speed*60+n.phase)*0.15;
-  // Mouse proximity brightening
-  var dx=n.x-mx,dy=n.y-my,dm=Math.sqrt(dx*dx+dy*dy);
-  if(dm<200)pulse+=0.3*(1-dm/200);
-  // Gentle repulsion
-  if(dm<150&&dm>1){n.x+=dx/dm*0.3;n.y+=dy/dm*0.3}
-  // Draw node with soft glow
-  ctx.beginPath();ctx.arc(n.x,n.y,n.r+0.3,0,Math.PI*2);
-  ctx.fillStyle='rgba(180,210,255,'+Math.min(pulse,0.7)+')';ctx.fill();
-  // Outer halo
-  if(n.r>0.8){ctx.beginPath();ctx.arc(n.x,n.y,n.r*4,0,Math.PI*2);ctx.fillStyle='rgba(0,102,255,'+(pulse*0.06)+')';ctx.fill()}
-}
-
-// Layer 3: Constellation lines — only connect nearby nodes, very faint
-ctx.lineWidth=0.4;
-for(var i=0;i<nodes.length;i++){
-  for(var j=i+1;j<nodes.length;j++){
-    var dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=dx*dx+dy*dy;
-    if(d<22000){
-      var dist=Math.sqrt(d);var alpha=0.04*(1-dist/148);
-      // Brighten lines near mouse
-      var midX=(nodes[i].x+nodes[j].x)/2,midY=(nodes[i].y+nodes[j].y)/2;
-      var md=Math.sqrt((midX-mx)*(midX-mx)+(midY-my)*(midY-my));
-      if(md<200)alpha+=0.06*(1-md/200);
-      ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);
-      ctx.strokeStyle='rgba(100,160,255,'+Math.min(alpha,0.15)+')';ctx.stroke();
-    }
-  }
-}
-
-// Layer 4: Rising light motes — like dust in sunlight
-for(var i=0;i<motes.length;i++){
-  var m=motes[i];
-  m.y+=m.vy;m.x+=Math.sin(t*0.5+m.phase)*0.12;
-  if(m.y<-10){m.y=h+10;m.x=Math.random()*w}
-  var mo=m.o*(0.5+Math.sin(t*1.5+m.phase)*0.5);
-  ctx.beginPath();ctx.arc(m.x,m.y,m.r,0,Math.PI*2);
-  ctx.fillStyle='rgba(200,220,255,'+mo+')';ctx.fill();
-}
-
-requestAnimationFrame(draw)}
-draw()})();
-
-// Operating status v2
-(function(){function updateStatus(){var now=new Date(),day=now.getDay(),h=now.getHours(),m=now.getMinutes(),t=h*60+m;var text='',open=false;if(day>=1&&day<=4){open=t>=600&&t<1260;text=open?'진료중 · 21시까지':'진료 종료'}else if(day===5){open=t>=600&&t<1140;text=open?'진료중 · 19시까지':'진료 종료'}else if(day===6){open=t>=600&&t<840;text=open?'진료중 · 14시까지':'진료 종료'}else{open=t>=840&&t<1080;text=open?'진료중 · 18시까지':'진료 종료'}document.querySelectorAll('[data-status]').forEach(function(el){el.innerHTML=open?'<span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span><span class="font-semibold">'+text+'</span>':'<span class="w-2 h-2 bg-gray-500 rounded-full"></span><span class="text-white/40">'+text+'</span>'})}updateStatus();setInterval(updateStatus,60000)})();
-
-// 3D Tilt effect on cards (Desktop)
-if(window.innerWidth>768){document.querySelectorAll('.tilt-card').forEach(function(card){card.addEventListener('mousemove',function(e){var rect=card.getBoundingClientRect();var x=(e.clientX-rect.left)/rect.width-0.5;var y=(e.clientY-rect.top)/rect.height-0.5;card.style.transform='perspective(1000px) rotateY('+(x*10)+'deg) rotateX('+(-y*10)+'deg) scale(1.02)'});card.addEventListener('mouseleave',function(){card.style.transform='perspective(1000px) rotateY(0) rotateX(0) scale(1)';card.style.transition='transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'});card.addEventListener('mouseenter',function(){card.style.transition='none'})})}
-
-// Magnetic buttons (Desktop)
-if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic').forEach(function(btn){btn.addEventListener('mousemove',function(e){var rect=btn.getBoundingClientRect();var x=e.clientX-rect.left-rect.width/2;var y=e.clientY-rect.top-rect.height/2;btn.style.transform='translate('+(x*0.3)+'px, '+(y*0.3)+'px)'});btn.addEventListener('mouseleave',function(){btn.style.transform='translate(0, 0)'})})}
-
-// Auth state
-(async function(){try{var res=await fetch('/api/auth/me');var data=await res.json();if(data.ok&&data.user){var nav=document.getElementById('auth-nav');var userEl=document.getElementById('auth-user');var nameEl=document.getElementById('auth-user-name');if(nav)nav.classList.add('hidden');if(userEl){userEl.classList.remove('hidden');userEl.classList.add('flex')}if(nameEl)nameEl.textContent=data.user.name+'님';var mobileNav=document.getElementById('mobile-auth-nav');var mobileUser=document.getElementById('mobile-auth-user');var mobileName=document.getElementById('mobile-user-name');if(mobileNav)mobileNav.classList.add('hidden');if(mobileUser)mobileUser.classList.remove('hidden');if(mobileName)mobileName.textContent=data.user.name+'님'}}catch(e){}})();
-
-// Logout handlers
-var lb=document.getElementById('auth-logout-btn');if(lb)lb.addEventListener('click',async function(){await fetch('/api/auth/logout',{method:'POST'});window.location.reload()});
-var mlb=document.getElementById('mobile-logout-btn');if(mlb)mlb.addEventListener('click',async function(){await fetch('/api/auth/logout',{method:'POST'});window.location.reload()});
-
-// YouTube Background Video — Lazy iframe inject
-(function(){var wrap=document.getElementById('yt-player-wrap');var poster=document.getElementById('yt-poster');var videoSection=document.getElementById('video-section');if(!wrap||!videoSection)return;var isMuted=true,iframe=null,injected=false;function injectIframe(){if(injected)return;injected=true;iframe=document.createElement('iframe');iframe.id='yt-iframe';iframe.allow='autoplay; encrypted-media';iframe.setAttribute('allowfullscreen','false');iframe.setAttribute('referrerpolicy','strict-origin-when-cross-origin');iframe.title='서울365치과 소개 영상';var mob=window.innerWidth<768;iframe.style.cssText=mob?'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100%;height:56.25vw;pointer-events:none;border:0;':'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:56.25vw;min-height:100%;min-width:177.78vh;pointer-events:none;border:0;';iframe.src='https://www.youtube-nocookie.com/embed/gB_yiatcwAc?autoplay=1&mute=1&controls=0&showinfo=0&rel=0&loop=1&playlist=gB_yiatcwAc&playsinline=1&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&cc_load_policy=0&enablejsapi=1';iframe.addEventListener('load',function(){if(poster){setTimeout(function(){poster.style.opacity='0';setTimeout(function(){poster.style.display='none'},1000)},600)}});wrap.appendChild(iframe)}var lazyObs=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){injectIframe();lazyObs.disconnect()}})},{rootMargin:'200px 0px'});lazyObs.observe(videoSection);function postCmd(cmd,args){if(!iframe||!iframe.contentWindow)return;try{iframe.contentWindow.postMessage(JSON.stringify({event:'command',func:cmd,args:args||[]}),'*')}catch(e){}}var toggleBtn=document.getElementById('yt-sound-toggle');var soundIcon=document.getElementById('yt-sound-icon');var soundLabel=document.getElementById('yt-sound-label');if(toggleBtn){toggleBtn.addEventListener('click',function(){if(isMuted){postCmd('unMute');postCmd('setVolume',[80]);isMuted=false;if(soundIcon)soundIcon.className='fa-solid fa-volume-high text-sm';if(soundLabel)soundLabel.textContent='소리 끄기'}else{postCmd('mute');isMuted=true;if(soundIcon)soundIcon.className='fa-solid fa-volume-xmark text-sm';if(soundLabel)soundLabel.textContent='소리 켜기'}})}var vidObs=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(!iframe)return;if(entry.isIntersecting)postCmd('playVideo');else postCmd('pauseVideo')})},{threshold:0.1});vidObs.observe(videoSection)})();
-
-// Parallax on scroll + Scroll velocity skew + Multi-depth parallax
-var ticking=false;var lastScroll=0;var scrollVelocity=0;
-window.addEventListener('scroll',function(){if(!ticking){requestAnimationFrame(function(){var scrolled=window.scrollY;
-// Parallax
-document.querySelectorAll('.parallax-slow').forEach(function(el){el.style.transform='translateY('+(scrolled*0.08)+'px)'});
-document.querySelectorAll('.parallax-fast').forEach(function(el){el.style.transform='translateY('+(scrolled*-0.05)+'px)'});
-// Multi-depth parallax layers
-document.querySelectorAll('.parallax-depth-1').forEach(function(el){el.style.transform='translateY('+(scrolled*0.03)+'px)'});
-document.querySelectorAll('.parallax-depth-2').forEach(function(el){el.style.transform='translateY('+(scrolled*0.06)+'px)'});
-document.querySelectorAll('.parallax-depth-3').forEach(function(el){el.style.transform='translateY('+(scrolled*0.1)+'px)'});
-// Scroll velocity-based skew
-scrollVelocity=(scrolled-lastScroll)*0.15;scrollVelocity=Math.max(-4,Math.min(4,scrollVelocity));
-document.querySelectorAll('.scroll-skew').forEach(function(el){el.style.transform='skewY('+scrollVelocity+'deg)'});
-lastScroll=scrolled;ticking=false});ticking=true}},{passive:true});
-
-// ====== MICRO-INTERACTION ENHANCEMENTS v6 ======
-
-// 1. Text Split Animation — split text-split elements into individual chars
-document.querySelectorAll('.text-split').forEach(function(el){
-  if(el.dataset.split) return; el.dataset.split='true';
-  if(/gradient-text/.test(el.className)) return; // background-clip:text 와 글자 분할은 함께 쓰면 글자가 투명해짐
-  var text=el.textContent||'';var html='';
-  for(var i=0;i<text.length;i++){
-    if(text[i]===' ') html+=' ';
-    else html+='<span class="char" style="transition-delay:'+(i*0.03)+'s">'+text[i]+'</span>';
-  }
-  el.innerHTML=html;
-});
-
-// 2. Word-by-word reveal — split text-words elements into words
-document.querySelectorAll('.text-words').forEach(function(el){
-  if(el.dataset.wordsplit) return; el.dataset.wordsplit='true';
-  var words=(el.textContent||'').split(/\s+/);var html='';
-  words.forEach(function(w,i){
-    if(w) html+='<span class="word" style="transition-delay:'+(i*0.06)+'s">'+w+'</span> ';
-  });
-  el.innerHTML=html.trim();
-});
-
-// 3. Enhanced IntersectionObserver — include new animation classes
-var enhancedObserver=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){entry.target.classList.add('visible');
-// Trigger counter bounce on stat numbers
-if(entry.target.classList.contains('stat-number')){entry.target.classList.add('counter-bounce');setTimeout(function(){entry.target.classList.remove('counter-bounce')},500)}
-}})},{threshold:0.05,rootMargin:'0px 0px -40px 0px'});
-document.querySelectorAll('.text-split, .text-words, .line-draw, .divider-animated, .reveal-rotate, .stagger-cascade, .reveal-pop, .reveal-elastic').forEach(function(el){enhancedObserver.observe(el)});
-
-// 4. Ripple effect on click — for buttons with .ripple-effect class
-document.addEventListener('click',function(e){
-  var btn=e.target.closest('.ripple-effect');if(!btn) return;
-  var rect=btn.getBoundingClientRect();var ripple=document.createElement('span');ripple.className='ripple';
-  var size=Math.max(rect.width,rect.height)*2;ripple.style.width=ripple.style.height=size+'px';
-  ripple.style.left=(e.clientX-rect.left-size/2)+'px';ripple.style.top=(e.clientY-rect.top-size/2)+'px';
-  btn.appendChild(ripple);setTimeout(function(){ripple.remove()},600);
-});
-
-// 5. Glow trail — mouse-following glow on .glow-trail cards
-document.querySelectorAll('.glow-trail').forEach(function(card){
-  card.addEventListener('mousemove',function(e){
-    var rect=card.getBoundingClientRect();var before=card.querySelector(':before')||card;
-    card.style.setProperty('--glow-x',(e.clientX-rect.left)+'px');
-    card.style.setProperty('--glow-y',(e.clientY-rect.top)+'px');
-    // Use CSS custom properties for glow position
-    if(card.style.cssText.indexOf('--glow-x')!==-1){
-      var pseudo=getComputedStyle(card,':before');
-      card.style.cssText+=';--glow-x:'+(e.clientX-rect.left)+'px;--glow-y:'+(e.clientY-rect.top)+'px';
-    }
-  });
-});
-
-// 6. Enhanced animated counter with easing
-function animateCounterEnhanced(el){
-  if(el.dataset.animated) return; el.dataset.animated='true';
-  var target=parseFloat(el.dataset.count);var suffix=el.dataset.suffix||'';var prefix=el.dataset.prefix||'';
-  var decimals=(target%1!==0)?1:0;var duration=2400;var start=performance.now();
-  function easeOutExpo(t){return t===1?1:1-Math.pow(2,-10*t)}
-  function update(now){
-    var elapsed=now-start;var progress=Math.min(elapsed/duration,1);var eased=easeOutExpo(progress);
-    var current=eased*target;el.textContent=prefix+current.toFixed(decimals)+suffix;
-    if(progress<1) requestAnimationFrame(update);
-    else{el.textContent=prefix+target.toFixed(decimals)+suffix;el.classList.add('counter-bounce')}
-  }
-  requestAnimationFrame(update);
-}
-// Override old counter with enhanced version
-var counterObserver2=new IntersectionObserver(function(entries){entries.forEach(function(entry){if(entry.isIntersecting){
-  entry.target.querySelectorAll('[data-count]').forEach(animateCounterEnhanced);counterObserver2.unobserve(entry.target)}})},{threshold:0.3});
-var counterSections=document.querySelectorAll('[data-counter-section]');counterSections.forEach(function(s){counterObserver2.observe(s)});
-
-// 7. Smooth section reveal with progress tracking
-var sectionProgress=new IntersectionObserver(function(entries){entries.forEach(function(entry){
-  if(entry.isIntersecting){
-    var fill=entry.target.querySelector('.scroll-fill');
-    if(fill){var ratio=Math.min(entry.intersectionRatio*2,1);fill.style.width=(ratio*100)+'%'}
-  }
-})},{threshold:[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]});
-document.querySelectorAll('[data-section-progress]').forEach(function(el){sectionProgress.observe(el)});
-
-// 8. Enhanced magnetic buttons (stronger + bounce back)
-if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').forEach(function(btn){
-  btn.addEventListener('mousemove',function(e){var rect=btn.getBoundingClientRect();var x=e.clientX-rect.left-rect.width/2;var y=e.clientY-rect.top-rect.height/2;
-  btn.style.transform='translate('+(x*0.4)+'px, '+(y*0.4)+'px) scale(1.05)'});
-  btn.addEventListener('mouseleave',function(){btn.style.transform='translate(0, 0) scale(1)'})
-})}
 
 // ====== POPUP NOTICE SYSTEM v4 (여러 개 동시 표시) ======
 // 이미지 팝업만 표시 · 최대 5개 (고정 우선 → 최신순, /api/popup-notices 의 popups 배열)
@@ -319,17 +233,17 @@ if(window.innerWidth>1024){document.querySelectorAll('.btn-magnetic-strong').for
     + '#p365-popups .p365-foot{padding:6px 12px 6px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;flex:none}'
     + '#p365-popups .p365-hide{display:flex;align-items:center;gap:6px;min-height:44px;padding:0;background:none;border:none;cursor:pointer;font-size:12px;color:#999}'
     + '#p365-popups .p365-hide:hover{color:#555}'
-    + '#p365-popups .p365-hide input{width:15px;height:15px;accent-color:#0066FF;pointer-events:none;margin:0}'
+    + '#p365-popups .p365-hide input{width:15px;height:15px;accent-color:#1E4BD8;pointer-events:none;margin:0}'
     + '#p365-popups .p365-close{min-height:36px;background:none;border:1px solid #ddd;padding:6px 16px;border-radius:8px;font-size:12px;font-weight:600;color:#666;cursor:pointer;transition:background .2s}'
     + '#p365-popups .p365-close:hover{background:#f5f5f5}'
-    + '#p365-popups :focus-visible{outline:2px solid #0066FF;outline-offset:2px}'
+    + '#p365-popups :focus-visible{outline:2px solid #1E4BD8;outline-offset:2px}'
     + '#p365-popups .p365-chip,#p365-popups .p365-nav{display:none}'
     // 모바일 compact 칩 (기존 compact 모드 유지: 우상단 88px, 260px, 흰 카드)
     + '#p365-popups.compact{inset:88px 16px auto auto;padding:0;background:none;overflow:visible;width:260px;max-width:calc(100vw - 32px)}'
     + '#p365-popups.compact .p365-stack,#p365-popups.compact .p365-nav{display:none}'
     + '#p365-popups.compact .p365-chip{display:block;position:relative;width:100%;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25)}'
     + '#p365-popups .p365-expand{display:block;min-height:48px;width:100%;padding:12px 52px 12px 16px;border:0;background:#fff;color:#0050cc;font-size:14px;font-weight:700;text-align:left;cursor:pointer}'
-    + '#p365-popups .p365-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;margin-left:6px;padding:0 6px;border-radius:99px;background:#0066FF;color:#fff;font-size:12px;font-weight:800;vertical-align:1px}'
+    + '#p365-popups .p365-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;margin-left:6px;padding:0 6px;border-radius:99px;background:#1E4BD8;color:#fff;font-size:12px;font-weight:800;vertical-align:1px}'
     + '#p365-popups .p365-chip .p365-x{top:2px;right:2px;background:none;color:#999}'
     + '#p365-popups .p365-chip .p365-x:hover{background:#f2f5fa;color:#333}'
     // 모바일 한 장씩 보기

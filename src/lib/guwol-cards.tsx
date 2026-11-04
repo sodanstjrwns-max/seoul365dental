@@ -5,6 +5,7 @@
 //    (1200×630 jpg: /static/cards/guwol-{slug}.jpg, 정사각 600×600 webp: /static/cards/guwol-{slug}-600.webp)
 //  - 사진은 원내 톤(흰색·블루)에 맞춘 AI 생성 장면 — 사람 얼굴·치료 결과 암시 없음. 원본 2k: tools/subpage-cards/gen/seoul365dental/
 //  - 한 줄 설명은 레포의 진료 데이터(treatments·area-treatment)에 있는 사실만 사용
+//  - 2026-11-04 리디자인: 마크업·링크·ItemList 는 그대로, CSS 만 새 비주얼 시스템(코발트·Paperlogy·Geist Mono)으로
 // ============================================================
 
 const SITE = 'https://seoul365dc.kr'
@@ -33,7 +34,7 @@ export function GuwolCardGrid({ idPrefix, exclude = '' }: { idPrefix: string; ex
     <ul class="gw-cards" role="list">
       {cards.map((c, i) => (
         <li>
-          <a class="gw-card" href={`/area/guwol-dong/${c.slug}`} aria-labelledby={`${idPrefix}-${c.slug}`} data-cursor-hover>
+          <a class="gw-card" href={`/area/guwol-dong/${c.slug}`} aria-labelledby={`${idPrefix}-${c.slug}`}>
             <span class="gw-card-img"><img src={thumb(c.slug)} width="600" height="600" loading="lazy" decoding="async" alt={c.name} /></span>
             <span class="gw-card-body">
               <span class="gw-card-tag" aria-hidden="true">{String(i + 1).padStart(2, '0')} / {c.tag}</span>
@@ -48,19 +49,19 @@ export function GuwolCardGrid({ idPrefix, exclude = '' }: { idPrefix: string; ex
 }
 
 export const GUWOL_CARD_CSS = `.gw-cards{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.gw-card{display:flex;flex-direction:column;height:100%;background:#fff;border:1px solid #e8eef8;border-radius:18px;overflow:hidden;text-decoration:none;box-shadow:0 2px 12px rgba(0,40,120,.05);transition:transform .25s,box-shadow .25s,border-color .25s}
-.gw-card:hover{transform:translateY(-3px);border-color:rgba(0,102,255,.35);box-shadow:0 10px 28px rgba(0,102,255,.12)}
-.gw-card:focus-visible{outline:3px solid #0066FF;outline-offset:3px}
-.gw-card-img{display:block;aspect-ratio:1/1;overflow:hidden;background:#f2f6fc}
-.gw-card-img img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .4s}
-.gw-card:hover .gw-card-img img{transform:scale(1.04)}
+.gw-half .gw-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+.gw-card{display:flex;flex-direction:column;height:100%;background:#fff;border:1px solid #DDE3EE;border-radius:22px;overflow:hidden;text-decoration:none;box-shadow:0 1px 2px rgb(11 21 48 / .04),0 16px 40px -24px rgb(11 21 48 / .22);transition:transform .32s cubic-bezier(.2,.8,.2,1),box-shadow .32s,border-color .32s}
+.gw-card:hover{transform:translateY(-4px);border-color:rgb(30 75 216 / .3);box-shadow:0 24px 60px -24px rgb(11 21 48 / .35)}
+.gw-card:focus-visible{outline:3px solid #1E4BD8;outline-offset:3px}
+.gw-card-img{display:block;aspect-ratio:1/1;overflow:hidden;background:#EEF1F7}
+.gw-card-img img{display:block;width:100%;height:100%;object-fit:cover}
 .gw-card-body{display:flex;flex-direction:column;gap:5px;padding:14px 16px 18px}
-.gw-card-tag{font-size:10.5px;letter-spacing:.14em;font-weight:700;color:#0066FF}
-.gw-card-title{font-size:16px;font-weight:800;color:#0b1220;line-height:1.35}
-.gw-card-line{font-size:13px;color:#5b6475;line-height:1.6;word-break:keep-all}
-@media(max-width:900px){.gw-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+.gw-card-tag{font-family:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;letter-spacing:.14em;font-weight:500;color:#1E4BD8}
+.gw-card-title{font-family:'Paperlogy','Pretendard Variable',Pretendard,-apple-system,sans-serif;font-size:17px;font-weight:700;color:#0B1530;line-height:1.3;letter-spacing:-.02em}
+.gw-card-line{font-size:13px;color:#6C7892;line-height:1.6;word-break:keep-all}
+@media(max-width:900px){.gw-cards,.gw-half .gw-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
 @media(max-width:520px){.gw-card-body{padding:11px 12px 13px}.gw-card-title{font-size:14.5px}.gw-card-line{display:none}}
-@media(prefers-reduced-motion:reduce){.gw-card,.gw-card-img img{transition:none}}`
+@media(prefers-reduced-motion:reduce){.gw-card{transition:none}}`
 
 /** 화면 카드와 1:1인 ItemList (같은 순서·이름·URL·사진) */
 export function guwolCardItemList(listUrl: string) {
