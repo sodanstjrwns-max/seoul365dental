@@ -9,6 +9,9 @@ import { initAdminTables } from '../lib/db'
 import { AREAS, getAreasSorted } from '../data/areas'
 import { MATRIX_TREATMENT_SLUGS } from '../data/area-treatment'
 import { CONTENT_DATES, LEAD_REVIEWER } from '../lib/content-dates'
+import { doctors } from '../data/doctors'
+import { Icon, KakaoMark } from '../lib/icons'
+import { matrixCardImage } from '../lib/guwol-cards'
 
 // 진료 페이지 상단 핵심 답변 — 기존 본문 첫 상세 섹션('○○란?')의 앞 2문장 (새 주장 없음, 2026-09-29)
 function txAnswer(t: any): string {
@@ -23,53 +26,66 @@ const treatmentRoutes = new Hono<{ Bindings: Bindings }>()
 treatmentRoutes.get('/treatments', (c) => {
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">서울365치과 전체 진료 안내</h1>
-          <p class="hero-sub text-white/35 max-w-xl reveal" style="transition-delay:0.6s">각 분야 전문의가 최적의 치료를 제안합니다.</p>
+      {/* 페이지 히어로 — 분류 바로가기 */}
+      <section class="phead" aria-labelledby="tx-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">진료안내</li></ol></nav>
+            <p class="eyebrow">Treatments · {treatments.length} services</p>
+            <h1 id="tx-h1" class="display-xl">서울365치과 전체 진료 안내</h1>
+            <p class="lead hero-sub">각 분야 전문의가 최적의 치료를 제안합니다.</p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href="/info#pricing" class="btn btn-light">비용 안내</a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <nav class="phead-jump" aria-label="진료 분류 바로가기">
+              {treatmentCategories.map((cat, i) => (
+                <a href={`#cat-${i + 1}`}>{cat.name}<small>{cat.treatments.length}</small></a>
+              ))}
+            </nav>
+          </div>
         </div>
       </section>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          {treatmentCategories.map(cat => (
-            <div class="mb-16 last:mb-0">
-              <div class="flex items-center gap-3 mb-7 reveal">
-                <div class="icon-circle icon-circle-sm">
-                  <i class={`fa-solid ${cat.icon}`}></i>
+      <section class="sec">
+        <div class="wrap">
+          {treatmentCategories.map((cat, ci) => (
+            <div class="cat-block" id={`cat-${ci + 1}`}>
+              <div class="sec-head-row">
+                <div class="sec-head" data-rv>
+                  <p class="eyebrow">{String(ci + 1).padStart(2, '0')} / Category</p>
+                  <h2 class="display-2">{cat.name}</h2>
                 </div>
-                <h2 class="text-xl font-bold text-gray-900">{cat.name}</h2>
+                <span class="mono t-mute" style="font-size:.8rem">{cat.treatments.length} 진료</span>
               </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 stagger-children">
+              <ul class="tx-tiles" data-rv-group>
                 {cat.treatments.map(t => (
-                  <a href={`/treatments/${t.slug}`} class="glass-card p-5 group block" data-cursor-hover>
-                    <div class="flex items-center gap-3">
-                      <div class="icon-circle icon-circle-sm flex-shrink-0">
-                        <i class={`fa-solid ${t.icon} text-sm`}></i>
-                      </div>
-                      <div class="min-w-0">
-                        <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition-colors truncate">{t.name}</h3>
-                        <p class="text-xs text-gray-400 truncate">{t.shortDesc}</p>
-                      </div>
-                    </div>
-                  </a>
+                  <li>
+                    <a href={`/treatments/${t.slug}`} class="tx-tile">
+                      <span class="tx-tile-name">{t.name}</span>
+                      <span class="tx-tile-desc">{t.shortDesc}</span>
+                      <Icon name="arrowUpRight" />
+                    </a>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
           ))}
         </div>
       </section>
 
       {/* 백과사전 링크 */}
-      <section class="section-md bg-white">
-        <div class="max-w-2xl mx-auto px-5 md:px-8 text-center reveal">
-          <a href="/encyclopedia" class="glass-card p-8 block group hover:border-[#1E4BD8]/30 transition-all" data-cursor-hover>
-            <i class="fa-solid fa-book-medical text-[#1E4BD8] text-2xl mb-4"></i>
-            <h3 class="font-bold text-gray-900 text-lg mb-2 group-hover:text-[#1E4BD8] transition-colors">치과 백과사전</h3>
-            <p class="text-gray-400 text-sm">임플란트, 교정, 충치, 신경치료 등 치과 진료에 대한 핵심 지식을 한눈에 확인하세요.</p>
-            <span class="inline-flex items-center gap-1.5 text-[#1E4BD8] text-sm font-medium mt-4 group-hover:gap-2.5 transition-all">
-              자세히 보기 <i class="fa-solid fa-arrow-right text-xs"></i>
-            </span>
+      <section class="sec-tight" style="background:var(--card)">
+        <div class="wrap-n">
+          <a href="/encyclopedia" class="card enc-card hover" data-rv>
+            <Icon name="book" />
+            <div>
+              <h3>치과 백과사전</h3>
+              <p>임플란트, 교정, 충치, 신경치료 등 치과 진료에 대한 핵심 지식을 한눈에 확인하세요.</p>
+            </div>
+            <span class="arrow-link">자세히 보기<Icon name="arrow" /></span>
           </a>
         </div>
       </section>
@@ -196,103 +212,114 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
     txPosts = rp.results || [];
   } catch {}
 
+  const heroImg = matrixCardImage(t.slug);
+  const doctor = doctors.find(d => d.slug === t.doctorSlug);
+  const stepTitle = (s: string) => s.replace(/^\d+\s*단계\s*[:：]\s*/, '');
+  const isFixture = ['implant', 'full-implant', 'digital-full-arch', 'implant-revision'].includes(t.slug);
+
   return c.render(
     <>
-      {/* Hero — Persona-based Empathy */}
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-
-          {empathy ? (
-            <>
-              <h1 class="hero-display text-white mb-5 reveal" style="font-size:clamp(2rem,6vw,4.5rem);transition-delay:0.4s;white-space:pre-line">{empathy.heroTagline}</h1>
-              <p class="hero-sub text-white/40 max-w-2xl mb-8 reveal" style="transition-delay:0.6s">{empathy.heroSub}</p>
-            </>
-          ) : (
-            <>
-              <h1 class="hero-display text-white mb-5 reveal" style="font-size:clamp(2rem,6vw,4.5rem);transition-delay:0.4s">{t.heroTitle}</h1>
-              <p class="hero-sub text-white/35 max-w-2xl mb-8 reveal" style="transition-delay:0.6s">{t.heroSub}</p>
-            </>
-          )}
-          <div class="flex flex-wrap gap-3 reveal" style="transition-delay:0.8s">
-            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 상담 예약</a>
-            <a href="/info" class="btn-premium btn-premium-white" data-cursor-hover><i class="fa-solid fa-won-sign"></i> 비용 안내</a>
+      {/* 페이지 히어로 — 공감 문구(있으면) + 담당 원장·사실 카드 */}
+      <section class="phead" aria-labelledby="tx-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li><a href="/treatments">진료안내</a></li><li aria-current="page">{t.name}</li></ol></nav>
+            <p class="eyebrow">{t.category} · {t.name}</p>
+            {empathy ? (
+              <>
+                <h1 id="tx-h1" class="display-xl" style="white-space:pre-line">{empathy.heroTagline}</h1>
+                <p class="lead hero-sub">{empathy.heroSub}</p>
+              </>
+            ) : (
+              <>
+                <h1 id="tx-h1" class="display-xl">{t.heroTitle}</h1>
+                <p class="lead hero-sub">{t.heroSub}</p>
+              </>
+            )}
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href="/info#pricing" class="btn btn-light">비용 안내</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
+            </div>
           </div>
+          <aside class="phead-aside" aria-label={`${t.name} 진료 정보`}>
+            {heroImg && (
+              <div class="phead-img"><img src={heroImg} alt={`서울365치과 ${t.name} 안내 사진`} width="1200" height="630" loading="eager" decoding="async" /></div>
+            )}
+            <div class="fact-card">
+              {doctor && (
+                <a href={`/doctors/${doctor.slug}`} class="fact-doc">
+                  <img src={doctor.photo} alt="" width="52" height="52" loading="lazy" decoding="async" onerror={`this.onerror=null;this.src='${doctor.photoFallback}'`} />
+                  <span><small>담당 원장</small><b>{doctor.name} {doctor.titleShort}</b></span>
+                  <Icon name="arrow" />
+                </a>
+              )}
+              <dl class="fact-rows">
+                <div><dt>진료 분류</dt><dd>{t.category}</dd></div>
+                <div><dt>진료 시간</dt><dd>월–목 10–21시 · 금 –19시 · 토 –14시 · 일·공휴 14–18시</dd></div>
+                <div><dt>최종 검토</dt><dd><time datetime={reviewed}>{reviewed}</time></dd></div>
+              </dl>
+            </div>
+          </aside>
         </div>
       </section>
 
       {/* 핵심 답변 + 감수 줄 (AEO 답변 우선 블록, 2026-09-29) */}
-      <section class="bg-white pt-10 md:pt-12 pb-2">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <div class="glass-card p-6 md:p-7">
-            <p class="text-xs font-bold text-[#1E4BD8] tracking-wider mb-2">{t.name} 핵심 요약</p>
-            <p id="tx-answer" class="text-gray-800 text-[0.95rem] leading-[1.85]">{answer}</p>
-            <p class="tx-reviewer text-xs text-gray-400 mt-4">
-              감수: <a href="/doctors/park-junkyu" class="underline underline-offset-2 hover:text-[#1E4BD8]">{LEAD_REVIEWER.name} {LEAD_REVIEWER.jobTitle}</a> · 최종 검토 <time datetime={reviewed}>{reviewed}</time>
-            </p>
+      <section class="sec-tight" style="background:var(--card)">
+        <div class="wrap">
+          <div class="answer-card" data-rv>
+            <p class="eyebrow">{t.name} 핵심 요약</p>
+            <p id="tx-answer" class="answer-a">{answer}</p>
+            <p class="tx-reviewer answer-rev"><Icon name="check" size={14} />감수: <a href="/doctors/park-junkyu">{LEAD_REVIEWER.name} {LEAD_REVIEWER.jobTitle}</a> · 최종 검토 <time datetime={reviewed}>{reviewed}</time></p>
           </div>
         </div>
       </section>
 
-      {/* Concerns */}
-      <section class="section-lg bg-mesh">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">FOR YOU</span>
-            <h2 class="section-sub-headline text-gray-900">{t.name}, 이런 고민 있으신가요?</h2>
+      {/* 이런 고민 */}
+      <section class="sec" aria-labelledby="h-concern">
+        <div class="wrap">
+          <div class="sec-head" data-rv>
+            <p class="eyebrow">For you</p>
+            <h2 id="h-concern" class="display-2">{t.name}, 이런 고민 있으신가요?</h2>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 stagger-children">
-            {t.concerns.map(concern => (
-              <div class="glass-card p-5 flex items-start gap-3">
-                <div class="w-8 h-8 rounded-lg bg-[#1E4BD8]/8 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <i class="fa-solid fa-circle-check text-[#1E4BD8] text-sm"></i>
-                </div>
-                <p class="text-gray-700 text-[0.9rem] leading-relaxed">{concern}</p>
+          <ul class="check-list" data-rv-group>
+            {t.concerns.map(concern => <li><Icon name="check" /><span>{concern}</span></li>)}
+          </ul>
+        </div>
+      </section>
+
+      {/* 종류 */}
+      <section class="sec" style="background:var(--card)" aria-labelledby="h-types">
+        <div class="wrap">
+          <div class="sec-head" data-rv>
+            <p class="eyebrow">Types</p>
+            <h2 id="h-types" class="display-2">서울365치과 {t.name} 종류</h2>
+          </div>
+          <div class="type-grid" data-rv-group>
+            {t.types.map((type, i) => (
+              <div class="card type-card">
+                <span class="n mono">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{type.name}</h3>
+                <p>{type.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Types */}
-      <section class="section-lg bg-white">
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">TYPES</span>
-            <h2 class="section-sub-headline text-gray-900">서울365치과 {t.name} 종류</h2>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
-            {t.types.map(type => (
-              <div class="premium-card p-7 tilt-card">
-                <h3 class="font-bold text-gray-900 text-lg mb-3">{type.name}</h3>
-                <p class="text-gray-500 text-[0.9rem] leading-relaxed">{type.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Detail Sections — 상세 정보 */}
+      {/* 상세 정보 */}
       {t.detailSections && t.detailSections.length > 0 && (
-        <section class="section-lg bg-mesh">
-          <div class="max-w-4xl mx-auto px-5 md:px-8">
-            <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">DETAILS</span>
-              <h2 class="section-sub-headline text-gray-900">{t.name} 상세 정보</h2>
+        <section class="sec" aria-labelledby="h-detail">
+          <div class="wrap tx-two">
+            <div class="sec-head tx-sticky" data-rv>
+              <p class="eyebrow">Details</p>
+              <h2 id="h-detail" class="display-2">{t.name} 상세 정보</h2>
             </div>
-            <div class="space-y-5 stagger-children">
+            <div class="detail-list">
               {t.detailSections.map(section => (
-                <div class="glass-card p-7">
-                  <div class="flex items-start gap-4">
-                    {section.icon && (
-                      <div class="icon-circle flex-shrink-0">
-                        <i class={`fa-solid ${section.icon}`}></i>
-                      </div>
-                    )}
-                    <div>
-                      <h3 class="font-bold text-gray-900 text-lg mb-3">{section.title}</h3>
-                      <p class="text-gray-600 text-[0.9rem] leading-[1.85]">{section.content}</p>
-                    </div>
-                  </div>
+                <div class="detail-row" data-rv>
+                  <h3>{section.title}</h3>
+                  <p>{section.content}</p>
                 </div>
               ))}
             </div>
@@ -300,196 +327,137 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
         </section>
       )}
 
-      {/* Why Us */}
-      <section class="section-lg bg-mesh">
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">WHY US</span>
-            <h2 class="section-sub-headline text-gray-900">왜 서울365치과의 {t.name}인가요?</h2>
+      {/* 왜 서울365 */}
+      <section class="sec" style="background:var(--card)" aria-labelledby="h-why">
+        <div class="wrap">
+          <div class="sec-head" data-rv>
+            <p class="eyebrow">Why us</p>
+            <h2 id="h-why" class="display-2">왜 서울365치과의 {t.name}인가요?</h2>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
-            {t.whyUs.map(w => (
-              <div class="glass-card p-7 group tilt-card">
-                <div class="icon-circle mb-5">
-                  <i class={`fa-solid ${w.icon}`}></i>
-                </div>
-                <h3 class="font-bold text-gray-900 mb-2 group-hover:text-[#1E4BD8] transition-colors">{w.title}</h3>
-                <p class="text-gray-500 text-[0.9rem] leading-relaxed">{w.desc}</p>
+          <div class="why-grid" data-rv-group>
+            {t.whyUs.map((w, i) => (
+              <div class="why-item">
+                <span class="n mono">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{w.title}</h3>
+                <p>{w.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Comparison Table */}
+      {/* 비교 표 */}
       {t.comparisonTable && t.comparisonTable.length > 0 && t.comparisonHeaders && (
-        <section class="section-lg bg-white">
-          <div class="max-w-4xl mx-auto px-5 md:px-8">
-            <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">COMPARE</span>
-              <h2 class="section-sub-headline text-gray-900">{t.name} 비교</h2>
+        <section class="sec" aria-labelledby="h-cmp">
+          <div class="wrap-n">
+            <div class="sec-head" data-rv>
+              <p class="eyebrow">Compare</p>
+              <h2 id="h-cmp" class="display-2">{t.name} 비교</h2>
             </div>
-            <div class="glass-card overflow-hidden reveal">
-              <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr class="bg-gradient-to-r from-[#1E4BD8]/5 to-[#1E4BD8]/10">
-                      {t.comparisonHeaders.map((h: string) => (
-                        <th class="px-4 py-4 text-left font-bold text-gray-800 whitespace-nowrap">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {t.comparisonTable.map((row, i) => (
-                      <tr class={i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}>
-                        <td class="px-4 py-3.5 font-semibold text-gray-800 whitespace-nowrap">{row.item}</td>
-                        {row.values.map((v: string) => (
-                          <td class="px-4 py-3.5 text-gray-600">{v}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            <div class="table-wrap" data-rv>
+              <table class="cmp-table">
+                <thead><tr>{t.comparisonHeaders.map((h: string) => <th scope="col">{h}</th>)}</tr></thead>
+                <tbody>
+                  {t.comparisonTable.map(row => (
+                    <tr><th scope="row">{row.item}</th>{row.values.map((v: string) => <td>{v}</td>)}</tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
       )}
 
-      {/* Process */}
-      <section class="section-lg bg-white" itemscope itemtype="https://schema.org/HowTo">
+      {/* 치료 과정 (HowTo 마이크로데이터 유지, #step-N 앵커) */}
+      <section class="sec" style="background:var(--card)" itemscope itemtype="https://schema.org/HowTo" aria-labelledby="h-proc">
         <meta itemprop="name" content={`${t.name} 치료 과정`} />
         <meta itemprop="description" content={`서울365치과의 ${t.name} 치료는 다음 단계로 진행됩니다.`} />
         <meta itemprop="totalTime" content="PT1H" />
-        <div class="max-w-3xl mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">PROCESS</span>
-            <h2 class="section-sub-headline text-gray-900">{t.name} 치료 과정</h2>
+        <div class="wrap tx-two">
+          <div class="sec-head tx-sticky" data-rv>
+            <p class="eyebrow">Process</p>
+            <h2 id="h-proc" class="display-2">{t.name} 치료 과정</h2>
+            <p class="lead">{t.process.length}단계로 진행합니다. 각 단계마다 충분히 설명드리고 다음으로 넘어갑니다.</p>
           </div>
-          <div class="space-y-0 stagger-children">
+          <ol class="steps">
             {t.process.map((step, i) => (
-              <div class="timeline-line flex gap-5 pb-8" itemprop="step" itemscope itemtype="https://schema.org/HowToStep">
+              <li class="step" id={`step-${i + 1}`} itemprop="step" itemscope itemtype="https://schema.org/HowToStep" data-rv>
                 <meta itemprop="position" content={String(i + 1)} />
-                <div class="timeline-dot" aria-label={`${i + 1}단계`}>{i + 1}</div>
-                <div class="pt-3">
-                  <h3 class="font-bold text-gray-900" itemprop="name">{step.step}</h3>
-                  {step.desc && <p class="text-gray-500 text-sm mt-1" itemprop="text">{step.desc}</p>}
+                <meta itemprop="name" content={step.step} />
+                <span class="step-n mono" aria-label={`${i + 1}단계`}>{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3>{stepTitle(step.step)}</h3>
+                  {step.desc && <p itemprop="text">{step.desc}</p>}
                 </div>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      {/* Warnings & Aftercare */}
+      {/* 주의사항 · 치료 후 관리 */}
       {(t.warnings && t.warnings.length > 0) || (t.aftercare && t.aftercare.length > 0) ? (
-        <section class="section-lg bg-mesh">
-          <div class="max-w-4xl mx-auto px-5 md:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 stagger-children">
-              {/* Warnings */}
-              {t.warnings && t.warnings.length > 0 && (
-                <div class="glass-card p-7">
-                  <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                      <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
-                    </div>
-                    <h3 class="font-bold text-gray-900 text-lg">주의사항</h3>
-                  </div>
-                  <ul class="space-y-3">
-                    {t.warnings.map(w => (
-                      <li class="flex items-start gap-2.5 text-[0.9rem] text-gray-600 leading-relaxed">
-                        <i class="fa-solid fa-circle-exclamation text-amber-400 text-xs mt-1.5 flex-shrink-0"></i>
-                        {w}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {/* Aftercare */}
-              {t.aftercare && t.aftercare.length > 0 && (
-                <div class="glass-card p-7">
-                  <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                      <i class="fa-solid fa-heart-pulse text-emerald-500"></i>
-                    </div>
-                    <h3 class="font-bold text-gray-900 text-lg">치료 후 관리</h3>
-                  </div>
-                  <ul class="space-y-3">
-                    {t.aftercare.map(a => (
-                      <li class="flex items-start gap-2.5 text-[0.9rem] text-gray-600 leading-relaxed">
-                        <i class="fa-solid fa-check-circle text-emerald-400 text-xs mt-1.5 flex-shrink-0"></i>
-                        {a}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+        <section class="sec">
+          <div class="wrap note-grid" data-rv-group>
+            {t.warnings && t.warnings.length > 0 && (
+              <div class="card note-card warn">
+                <h3><span class="dot" aria-hidden="true"></span>주의사항</h3>
+                <ul>{t.warnings.map(w => <li>{w}</li>)}</ul>
+              </div>
+            )}
+            {t.aftercare && t.aftercare.length > 0 && (
+              <div class="card note-card care">
+                <h3><span class="dot" aria-hidden="true"></span>치료 후 관리</h3>
+                <ul>{t.aftercare.map(a => <li>{a}</li>)}</ul>
+              </div>
+            )}
           </div>
         </section>
       ) : null}
 
-      {/* Before & After Cases from DB */}
+      {/* 치료 사례 (DB) */}
       {dbCases.length > 0 && (
-        <section class="section-lg bg-white">
-          <div class="max-w-5xl mx-auto px-5 md:px-8">
-            <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">BEFORE &amp; AFTER</span>
-              <h2 class="section-sub-headline text-gray-900">{t.name} 실제 치료 사례</h2>
-              <p class="text-gray-400 text-sm mt-3">실제 환자분의 치료 전후 사진입니다. 클릭하여 상세히 확인하세요.</p>
+        <section class="sec" style="background:var(--card)" aria-labelledby="h-cases">
+          <div class="wrap">
+            <div class="sec-head-row">
+              <div class="sec-head" data-rv>
+                <p class="eyebrow">Before &amp; After</p>
+                <h2 id="h-cases" class="display-2">{t.name} 실제 치료 사례</h2>
+                <p class="lead">실제 환자분의 치료 전후 사진입니다. 클릭하여 상세히 확인하세요.</p>
+              </div>
+              <a href="/cases/gallery" class="arrow-link" data-rv>전체 치료 사례 보기<Icon name="arrow" /></a>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children" id="txCasesGrid">
+            <div class="case-grid" id="txCasesGrid" data-rv-group>
               {dbCases.map((cs: any, idx: number) => (
-                <div class="premium-card overflow-hidden group cursor-pointer hover:shadow-xl transition-all duration-300 tx-case-card" onclick={`openTxCaseModal(${idx})`}>
-                  {/* Thumbnail — Before only (After 공개 제한) */}
-                  <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
-                    {cs.before_image ? (
-                      <>
-                        <img src={cs.before_image} alt={`${t.name} 치료 전`} class="w-full h-full object-cover" loading="lazy" />
-                        <span class="absolute top-2.5 left-2.5 text-[0.55rem] font-bold tracking-widest uppercase text-white bg-black/40 backdrop-blur-sm px-2 py-0.5 rounded">Before</span>
-                      </>
-                    ) : (
-                      <div class="w-full h-full flex items-center justify-center">
-                        <i class="fa-solid fa-images text-gray-200 text-3xl"></i>
-                      </div>
-                    )}
-                    {/* Hover overlay */}
-                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                      <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm rounded-full w-11 h-11 flex items-center justify-center shadow-lg">
-                        <i class="fa-solid fa-expand text-[#1E4BD8]"></i>
-                      </div>
-                    </div>
+                <div class="card case-card hover tx-case-card" onclick={`openTxCaseModal(${idx})`} role="button" tabindex={0}>
+                  <div class="case-ph">
+                    {cs.before_image ? <img src={cs.before_image} alt={`${t.name} 치료 전`} loading="lazy" decoding="async" /> : <span class="ph-empty">BEFORE</span>}
+                    <span class="lab">Before</span>
                   </div>
-                  {/* Card Info */}
-                  <div class="p-4">
-                    <div class="flex items-center gap-2 mb-1.5">
-                      <span class="text-[0.65rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2 py-0.5 rounded-full font-semibold">{cs.tag}</span>
-                      {cs.duration && <span class="text-[0.6rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
-                    </div>
-                    <h3 class="font-bold text-gray-900 text-[0.85rem] group-hover:text-[#1E4BD8] transition-colors line-clamp-1"><a href={`/cases/${cs.id}`} onclick="event.stopPropagation()">{cs.title}</a></h3>
-                    <p class="text-[0.75rem] text-gray-400 mt-1">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender && cs.patient_gender !== '선택안함' ? ` ${cs.patient_gender}` : ''}</p>
+                  <div class="card-body">
+                    <span class="tag">{cs.tag}{cs.duration ? ` · ${cs.duration}` : ''}</span>
+                    <h3><a href={`/cases/${cs.id}`} onclick="event.stopPropagation()">{cs.title}</a></h3>
+                    <p class="meta">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender && cs.patient_gender !== '선택안함' ? ` ${cs.patient_gender}` : ''}</p>
                   </div>
                 </div>
               ))}
             </div>
-            <div class="text-center mt-8 reveal">
-              <a href="/cases/gallery" class="inline-flex items-center gap-2 text-[#1E4BD8] hover:text-[#0052cc] font-semibold text-sm transition" data-cursor-hover>
-                전체 치료 사례 보기 <i class="fa-solid fa-arrow-right text-xs"></i>
-              </a>
-            </div>
-            <p class="text-[0.7rem] text-gray-300 text-center mt-6">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
+            <p class="fine" style="text-align:center;margin-top:1.4rem">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
           </div>
         </section>
       )}
 
       {/* 관련 칼럼 (같은 진료 최신 5편) */}
       {txPosts.length > 0 && (
-        <section class="section-lg bg-white" style="padding-top:0">
-          <div class="max-w-5xl mx-auto px-5 md:px-8">
-            <h2 class="section-sub-headline text-gray-900 mb-6">{t.name} 관련 칼럼</h2>
-            <ul class="divide-y divide-gray-100 border-y border-gray-100">
+        <section class="sec-tight" aria-labelledby="h-posts">
+          <div class="wrap-n">
+            <div class="sec-head" data-rv style="margin-bottom:1.2rem">
+              <p class="eyebrow">Columns</p>
+              <h2 id="h-posts" class="display-2">{t.name} 관련 칼럼</h2>
+            </div>
+            <ul class="post-list" data-rv>
               {txPosts.map((bp: any) => (
-                <li><a href={`/blog/${bp.slug}`} class="flex justify-between gap-4 py-3 text-gray-700 hover:text-[#1E4BD8] transition text-[0.92rem]"><span>{bp.title}</span><time class="text-gray-300 text-xs whitespace-nowrap" datetime={kstYmd(bp.created_at)}>{kstYmd(bp.created_at)}</time></a></li>
+                <li><a href={`/blog/${bp.slug}`}><span>{bp.title}</span><time datetime={kstYmd(bp.created_at)}>{kstYmd(bp.created_at)}</time></a></li>
               ))}
             </ul>
           </div>
@@ -725,97 +693,71 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
         </section>
       )}
 
-      {/* FAQ */}
-      <section class="section-lg bg-white">
-        <div class="max-w-3xl mx-auto px-5 md:px-8">
-          <div class="text-center mb-14 reveal">
-            <span class="section-eyebrow text-[#1E4BD8] mb-3 block">FAQ</span>
-            <h2 class="section-sub-headline text-gray-900">{t.name} 자주 묻는 질문</h2>
+      {/* FAQ — details(크롤러에 열림), 문구는 FAQPage JSON-LD 와 동일 */}
+      <section class="sec" style="background:var(--card)" aria-labelledby="h-faq">
+        <div class="wrap-n">
+          <div class="sec-head center" data-rv>
+            <p class="eyebrow">FAQ</p>
+            <h2 id="h-faq" class="display-2">{t.name} 자주 묻는 질문</h2>
           </div>
-          <div class="space-y-3 stagger-children">
-            {t.faq.map(faq => (
-              <div class="faq-item">
-                <button class="faq-toggle w-full text-left px-6 py-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors" data-cursor-hover>
-                  <h3 class="font-semibold text-gray-800 text-[0.9rem] pr-4">{faq.q}</h3>
-                  <i class="fa-solid fa-chevron-down text-gray-300 text-sm faq-icon flex-shrink-0"></i>
-                </button>
-                <div class="hidden px-6 pb-5">
-                  <p class="text-gray-500 text-[0.9rem] leading-relaxed">{faq.a}</p>
-                </div>
-              </div>
+          <div data-rv-group>
+            {t.faq.map((faq, i) => (
+              <details class="fq" open={i === 0 ? true : undefined}>
+                <summary><h3>{faq.q}</h3><span class="pm" aria-hidden="true"><Icon name="plus" /></span></summary>
+                <div class="fq-a"><p>{faq.a}</p></div>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section class="cta-dark section-md">
-        <div class="relative z-10 max-w-4xl mx-auto px-5 md:px-8 text-center reveal-blur">
-          <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">지금 바로 상담 예약하세요</h2>
-          <p class="text-white/35 mb-8">{t.name}에 대해 자세히 상담받아 보세요.</p>
-          <div class="flex flex-wrap justify-center gap-3">
-            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white" data-cursor-hover><i class="fa-solid fa-phone"></i> 전화 상담</a>
-            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium" style="background:#FEE500;color:#3C1E1E;border:none;" data-cursor-hover><i class="fa-solid fa-comment"></i> 카카오톡</a>
-            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 예약하기</a>
+      {/* 상담 밴드 */}
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Consultation</p>
+          <h2 class="display-xl" data-rv>지금 바로 상담 예약하세요</h2>
+          <p class="lead" data-rv>{t.name}에 대해 자세히 상담받아 보세요.</p>
+          <div class="cta-actions" data-rv-group>
+            <a href={CLINIC.phoneTel} class="btn btn-white btn-lg"><Icon name="phone" />전화 상담</a>
+            <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" class="btn btn-kakao btn-lg"><KakaoMark size={18} />카카오톡</a>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />예약하기</a>
           </div>
           {/* 오시는 길·진료 안내 — "구월동 치과" 허브 링크 (2026-10-08) */}
-          <p class="text-white/45 text-sm mt-8">{t.name} 진료 위치·주차·진료시간은 <HubA cls="text-[#8FB4FF] font-semibold hover:underline" /> 안내에서 확인하실 수 있습니다.</p>
+          <p class="cta-meta" data-rv>{t.name} 진료 위치·주차·진료시간은 <HubA cls="cta-link" /> 안내에서 확인하실 수 있습니다.</p>
         </div>
       </section>
 
-      {/* 🎯 지역별 {진료} SEO 그리드 — 매트릭스 진입로 (핵심 진료만 노출) */}
+      {/* 지역별 {진료} SEO 그리드 — 매트릭스 진입로 (핵심 진료만 노출) */}
       {MATRIX_TREATMENT_SLUGS.includes(t.slug as any) && (
-        <section class="section-md bg-gradient-to-b from-gray-50 to-white">
-          <div class="max-w-6xl mx-auto px-5 md:px-8">
-            <div class="text-center mb-10 reveal">
-              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">BY AREA</span>
-              <h2 class="text-xl md:text-2xl font-bold text-gray-900">
-                지역별 {t.name} 안내 — 우리 동네에서 가까운 곳
-              </h2>
-              <p class="text-gray-400 text-sm mt-3">
-                인천 {AREAS.length}개 지역에서 서울365치과 {t.name} 받으러 오시는 거리·시간 안내
-              </p>
+        <section class="sec" style="background:var(--paper-2)" aria-labelledby="h-area">
+          <div class="wrap">
+            <div class="sec-head center" data-rv>
+              <p class="eyebrow">By area</p>
+              <h2 id="h-area" class="display-2">지역별 {t.name} 안내 — 우리 동네에서 가까운 곳</h2>
+              <p class="lead">인천 {AREAS.length}개 지역에서 서울365치과 {t.name} 받으러 오시는 거리·시간 안내</p>
             </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 stagger-children">
+            <div class="area-chips" style="justify-content:center" data-rv>
               {getAreasSorted().map(a => (
-                <a href={`/area/${a.slug}/${t.slug}`}
-                   class="premium-card p-3 text-center group hover:border-[#1E4BD8]/20 transition-all block"
-                   data-cursor-hover
-                   title={`${a.name} ${t.name}`}>
-                  <p class="font-bold text-gray-900 text-xs group-hover:text-[#1E4BD8] transition-colors leading-snug">
-                    {a.name} {t.name}
-                  </p>
-                  <p class="text-[10px] text-gray-400 mt-1">
-                    {a.distKm === 0 ? '도보 3분' : `${a.distKm}km · ${a.travelMin}분`}
-                  </p>
-                </a>
+                <a href={`/area/${a.slug}/${t.slug}`} title={`${a.name} ${t.name}`}>{a.name} {t.name}<small>{a.distKm === 0 ? '도보 3분' : `${a.distKm}km · ${a.travelMin}분`}</small></a>
               ))}
             </div>
-            <p class="text-center text-xs text-gray-400 mt-6">
-              모든 지역에서 동일한 {t.name} 진료 · 예술회관역 5번 출구 도보 3분
-            </p>
+            <p class="fine" style="text-align:center;margin-top:1.4rem">모든 지역에서 동일한 {t.name} 진료 · 예술회관역 5번 출구 도보 3분</p>
           </div>
         </section>
       )}
 
-      {/* Related Treatments */}
+      {/* 관련 진료 */}
       {t.relatedSlugs && t.relatedSlugs.length > 0 && (
-        <section class="section-md bg-mesh">
-          <div class="max-w-4xl mx-auto px-5 md:px-8">
-            <div class="text-center mb-10 reveal">
-              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">RELATED</span>
-              <h2 class="text-xl font-bold text-gray-900">관련 진료 안내</h2>
+        <section class="sec-tight" aria-labelledby="h-rel">
+          <div class="wrap-n" style="text-align:center">
+            <div class="sec-head center" data-rv style="margin-bottom:1.2rem">
+              <p class="eyebrow">Related</p>
+              <h2 id="h-rel" class="display-2">관련 진료 안내</h2>
             </div>
-            <div class="flex flex-wrap justify-center gap-3 stagger-children">
+            <div class="tx-all" style="justify-content:center" data-rv>
               {t.relatedSlugs.map(rs => {
                 const related = getTreatmentBySlug(rs);
-                return related ? (
-                  <a href={`/treatments/${related.slug}`} class="glass-card px-5 py-3 flex items-center gap-2.5 hover:border-[#1E4BD8]/30 transition-all group" data-cursor-hover>
-                    <i class={`fa-solid ${related.icon} text-[#1E4BD8] text-sm`}></i>
-                    <span class="font-medium text-gray-700 group-hover:text-[#1E4BD8] transition-colors text-[0.9rem]">{related.name}</span>
-                    <i class="fa-solid fa-arrow-right text-xs text-gray-300 group-hover:text-[#1E4BD8] transition-colors"></i>
-                  </a>
-                ) : null;
+                return related ? <a href={`/treatments/${related.slug}`}>{related.name}</a> : null;
               })}
             </div>
           </div>

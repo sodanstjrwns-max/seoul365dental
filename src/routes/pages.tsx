@@ -12,87 +12,100 @@ import { getTreatmentBySlug } from '../data/treatments'
 import { terms, totalTerms, flatTerms, getTermBySlug, getRelatedTerms, TERM_REDIRECTS } from '../data/encyclopedia-terms'
 import { isThinTerm, isThinCase, NOINDEX_FOLLOW } from '../lib/thin-content'
 import { isoKst, kstYmd, doctorByName, LEAD_DOCTOR, physicianRef } from '../lib/column-seo'
+import { Icon, NaverMark, KakaoMark } from '../lib/icons'
 
 const pageRoutes = new Hono<{ Bindings: Bindings }>()
 
 pageRoutes.get('/reservation', (c) => {
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">상담 예약하기</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">편하신 방법으로 상담 예약해 주세요.</p>
+      <section class="phead" aria-labelledby="rs-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">상담 예약</li></ol></nav>
+            <p class="eyebrow">Reservation</p>
+            <h1 id="rs-h1" class="display-xl">상담 예약하기</h1>
+            <p class="lead hero-sub">편하신 방법으로 상담 예약해 주세요.</p>
+            <div class="phead-cta">
+              <a href={CLINIC.phoneTel} class="btn btn-primary mono"><Icon name="phone" />{CLINIC.phone}</a>
+              <a href={CLINIC.naverBooking} target="_blank" rel="noopener noreferrer nofollow" class="btn btn-naver"><NaverMark size={15} />네이버 예약</a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">진료시간</p>
+              <dl class="fact-rows">
+                {HOURS.map(h => <div><dt>{h.day}</dt><dd class="mono">{h.time}</dd></div>)}
+              </dl>
+              <p class="fine" style="margin:.8rem 0 0;color:var(--sky)">점심시간 없이 연속 진료 · 365일 진료</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
+      <section class="sec">
+        <div class="wrap resv-grid">
           {/* Quick CTAs */}
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16 stagger-children">
-            <a href={CLINIC.phoneTel} class="glass-card p-8 text-center group block" data-cursor-hover>
-              <div class="icon-circle mx-auto mb-4">
-                <i class="fa-solid fa-phone"></i>
-              </div>
-              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1E4BD8] transition-colors">전화 상담</h2>
-              <p class="text-[#1E4BD8] font-extrabold text-xl">{CLINIC.phone}</p>
-              <p class="text-sm text-gray-400 mt-2">가장 빠른 상담 방법</p>
+          <div class="resv-side" data-rv-group>
+            <a href={CLINIC.phoneTel} class="card contact-card hover">
+              <span class="ci phone"><Icon name="phone" /></span>
+              <div><h2>전화 상담</h2><p class="big mono">{CLINIC.phone}</p><p class="fine">가장 빠른 상담 방법</p></div>
+              <Icon name="arrow" />
             </a>
-            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="glass-card p-8 text-center group block" data-cursor-hover>
-              <div class="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-100 transition-colors">
-                <i class="fa-solid fa-comment text-yellow-500 text-xl"></i>
-              </div>
-              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1E4BD8] transition-colors">카카오톡 상담</h2>
-              <p class="text-yellow-600 font-bold">채팅으로 편하게</p>
-              <p class="text-sm text-gray-400 mt-2">사진/영상 전송 가능</p>
+            <a href={CLINIC.kakao} target="_blank" rel="noopener noreferrer nofollow" class="card contact-card hover">
+              <span class="ci kakao"><KakaoMark size={22} /></span>
+              <div><h2>카카오톡 상담</h2><p class="big">채팅으로 편하게</p><p class="fine">사진/영상 전송 가능</p></div>
+              <Icon name="arrowUpRight" />
             </a>
-            <a href={CLINIC.naverBooking} target="_blank" rel="noopener" class="glass-card p-8 text-center group block" data-cursor-hover>
-              <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4 group-hover:bg-green-100 transition-colors">
-                <i class="fa-solid fa-calendar-check text-green-500 text-xl"></i>
-              </div>
-              <h2 class="font-bold text-gray-900 text-lg mb-1 group-hover:text-[#1E4BD8] transition-colors">네이버 예약</h2>
-              <p class="text-green-600 font-bold">온라인 간편 예약</p>
-              <p class="text-sm text-gray-400 mt-2">원하는 시간 선택</p>
+            <a href={CLINIC.naverBooking} target="_blank" rel="noopener noreferrer nofollow" class="card contact-card hover">
+              <span class="ci naver"><NaverMark size={18} /></span>
+              <div><h2>네이버 예약</h2><p class="big">온라인 간편 예약</p><p class="fine">원하는 시간 선택</p></div>
+              <Icon name="arrowUpRight" />
             </a>
+            <div class="card" style="padding:1.2rem 1.3rem">
+              <p class="box-h" style="margin-bottom:.5rem">오시는 길</p>
+              <p style="margin:0;font-size:.95rem;color:var(--ink)">{CLINIC.address}</p>
+              <p class="fine" style="margin:.2rem 0 .8rem">{CLINIC.nearStation}</p>
+              <a href="/info" class="arrow-link" style="font-size:.9rem">지도·주차 안내<Icon name="arrow" /></a>
+            </div>
           </div>
 
           {/* Form */}
-          <div class="premium-card p-8 md:p-10 reveal-3d">
-            <h2 class="text-xl font-bold text-gray-900 mb-8">온라인 상담 신청</h2>
-            <form id="consultForm" class="space-y-5">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                  <label class="block text-sm font-semibold text-gray-700 mb-2">이름 *</label>
-                  <input type="text" name="name" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="이름을 입력해주세요" />
+          <div class="card form-card" data-rv>
+            <h2>온라인 상담 신청</h2>
+            <form id="consultForm" class="form">
+              <div class="row2">
+                <div class="field">
+                  <label for="rs-name">이름 *</label>
+                  <input id="rs-name" type="text" name="name" required placeholder="이름을 입력해주세요" autocomplete="name" />
                 </div>
-                <div>
-                  <label class="block text-sm font-semibold text-gray-700 mb-2">연락처 *</label>
-                  <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="010-0000-0000" />
+                <div class="field">
+                  <label for="rs-phone">연락처 *</label>
+                  <input id="rs-phone" type="tel" name="phone" required placeholder="010-0000-0000" autocomplete="tel" />
                 </div>
               </div>
-              <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">관심 치료</label>
-                <select name="treatment" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm text-gray-600">
+              <div class="field">
+                <label for="rs-treatment">관심 치료</label>
+                <select id="rs-treatment" name="treatment">
                   <option value="">선택해주세요</option>
                   <option>전체임플란트</option><option>디지털풀아치 임플란트</option><option>일반 임플란트</option>
                   <option>치아교정</option><option>인비절라인</option><option>수면진료</option>
                   <option>심미치료</option><option>충치/신경치료</option><option>기타</option>
                 </select>
               </div>
-              <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">상담 내용</label>
-                <textarea name="message" rows={4} class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm resize-none" placeholder="궁금하신 내용을 자유롭게 적어주세요"></textarea>
+              <div class="field">
+                <label for="rs-message">상담 내용</label>
+                <textarea id="rs-message" name="message" rows={4} placeholder="궁금하신 내용을 자유롭게 적어주세요"></textarea>
               </div>
-              <div class="flex items-start gap-2.5">
-                <input type="checkbox" required class="mt-1 accent-[#1E4BD8]" id="privacy-agree" />
-                <label for="privacy-agree" class="text-sm text-gray-500">
-                  <a href="/privacy" class="text-[#1E4BD8] font-semibold underline underline-offset-2">개인정보처리방침</a>에 동의합니다 *
-                </label>
-              </div>
-              <button type="submit" id="consultSubmitBtn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>상담 신청하기</button>
+              <label class="agree" for="privacy-agree">
+                <input type="checkbox" required id="privacy-agree" />
+                <span><a href="/privacy">개인정보처리방침</a>에 동의합니다 *</span>
+              </label>
+              <button type="submit" id="consultSubmitBtn" class="btn btn-primary btn-lg btn-block">상담 신청하기</button>
               <div id="consultResult" class="hidden text-center text-sm py-3 rounded-xl"></div>
             </form>
-            <p class="mt-6 text-center text-sm text-gray-400">
-              이미 문의하셨나요? <a href="/consultations/check" class="text-[#1E4BD8] font-semibold underline underline-offset-2">문의 답변 확인</a> — 접수번호 또는 이름+전화번호로 병원 답변을 확인하실 수 있습니다.
+            <p class="fine" style="margin-top:1.2rem;text-align:center">
+              이미 문의하셨나요? <a href="/consultations/check" style="color:var(--blue);font-weight:600;text-decoration:underline;text-underline-offset:3px">문의 답변 확인</a> — 접수번호 또는 이름+전화번호로 병원 답변을 확인하실 수 있습니다.
             </p>
           </div>
           <script dangerouslySetInnerHTML={{__html: `
@@ -265,169 +278,122 @@ pageRoutes.get('/invisalign', (c) => c.redirect('/treatments/invisalign', 301))
 pageRoutes.get('/투명교정', (c) => c.redirect('/treatments/invisalign', 301))
 
 pageRoutes.get('/info', (c) => {
+  const DIRECTIONS = [
+    { title: '주소', main: CLINIC.address, sub: '(우) 21556' },
+    { title: '지하철', main: '인천 1호선 예술회관역 5번 출구', sub: '도보 약 3분 (250m)' },
+    { title: '주차', main: '이토타워 건물 내 주차장 이용', sub: '진료 시 주차 지원 가능' },
+    { title: '버스', main: '예술회관역 정류장 하차', sub: '다수 시내버스 이용 가능' },
+  ];
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">내원 안내</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">진료 비용과 찾아오시는 방법을 안내드립니다.</p>
+      <section class="phead" aria-labelledby="info-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">내원안내</li></ol></nav>
+            <p class="eyebrow">Visit · Pricing</p>
+            <h1 id="info-h1" class="display-xl">내원 안내</h1>
+            <p class="lead hero-sub">진료 비용과 찾아오시는 방법을 안내드립니다.</p>
+            <p class="t-mute" style="font-size:.95rem;margin:0 0 1.6rem">{CLINIC.address} · {CLINIC.nearStation}</p>
+            <div class="phead-cta">
+              <a href={CLINIC.phoneTel} class="btn btn-primary mono"><Icon name="phone" />{CLINIC.phone}</a>
+              <a href="/reservation" class="btn btn-light"><Icon name="calendar" />상담 예약</a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">진료시간</p>
+              <dl class="fact-rows">
+                {HOURS.map(h => <div><dt>{h.day}</dt><dd class="mono">{h.time}</dd></div>)}
+              </dl>
+              <p class="fine" style="margin:.8rem 0 0;color:var(--sky)">점심시간 없이 연속 진료 · 공휴일은 일요일과 같습니다</p>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Tab Switcher */}
-      <section class="sticky top-[72px] z-30 bg-white/90 backdrop-blur border-b border-gray-100">
-        <div class="max-w-5xl mx-auto px-5 md:px-8">
-          <div class="flex gap-0" id="infoTabs">
-            <button onclick="switchInfoTab('directions')" id="tab-directions" class="info-tab active flex-1 py-4 text-center text-sm font-bold text-[#1E4BD8] border-b-2 border-[#1E4BD8] transition-all">
-              <i class="fa-solid fa-location-dot mr-1.5"></i>오시는 길
-            </button>
-            <button onclick="switchInfoTab('pricing')" id="tab-pricing" class="info-tab flex-1 py-4 text-center text-sm font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-600 transition-all">
-              <i class="fa-solid fa-won-sign mr-1.5"></i>비용 안내
-            </button>
-          </div>
+      <div class="info-tabs" id="infoTabs">
+        <div class="wrap-n">
+          <button onclick="switchInfoTab('directions')" id="tab-directions" class="info-tab active" type="button"><Icon name="pin" />오시는 길</button>
+          <button onclick="switchInfoTab('pricing')" id="tab-pricing" class="info-tab" type="button"><Icon name="news" />비용 안내</button>
         </div>
-      </section>
+      </div>
 
       {/* === PRICING TAB === */}
-      <section id="panel-pricing" class="section-lg bg-mesh" style="display:none">
-        <div class="max-w-5xl mx-auto px-5 md:px-8">
+      <section id="panel-pricing" class="sec" style="display:none">
+        <div class="wrap-n">
           <h2 class="sr-only">서울365치과 진료비용 안내</h2>
-          {/* Category Quick Nav */}
-          <div class="flex flex-wrap gap-2 justify-center mb-12 reveal">
-            {pricingCategories.map(cat => (
-              <a href={`#pricing-${cat.key}`} class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-gray-200 bg-white text-gray-600 text-[0.78rem] font-medium hover:border-[#1E4BD8]/40 hover:text-[#1E4BD8] transition-all">
-                <i class={`fa-solid ${cat.icon} text-[0.65rem]`}></i>
-                {cat.label}
-              </a>
-            ))}
+          <div class="area-chips" style="justify-content:center;margin-bottom:2.2rem">
+            {pricingCategories.map(cat => <a href={`#pricing-${cat.key}`}>{cat.label}</a>)}
           </div>
-
-          {/* Category Tables */}
           {pricingCategories.map(cat => {
             const items = pricingData.filter(p => p.category === cat.key);
             if (items.length === 0) return null;
             return (
-              <div id={`pricing-${cat.key}`} class="mb-12 reveal-3d">
-                <div class="flex items-center gap-2 mb-4">
-                  <div class="w-8 h-8 rounded-lg bg-[#1E4BD8]/10 flex items-center justify-center">
-                    <i class={`fa-solid ${cat.icon} text-[#1E4BD8] text-sm`}></i>
-                  </div>
-                  <h3 class="text-lg font-bold text-gray-800">{cat.label}</h3>
-                  <span class="text-xs text-gray-400 ml-1">{items.length}항목</span>
+              <div id={`pricing-${cat.key}`} class="price-block">
+                <div class="sec-head-row" style="margin-bottom:.9rem">
+                  <h3 class="display-2" style="font-size:1.35rem">{cat.label}</h3>
+                  <span class="mono t-mute" style="font-size:.78rem">{items.length}항목</span>
                 </div>
-                <div class="premium-card overflow-hidden">
-                  <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                      <thead>
-                        <tr class="bg-gradient-to-r from-navy to-navy-lighter text-white/90">
-                          <th class="text-left px-5 py-3 font-semibold text-[0.78rem]">치료 항목</th>
-                          <th class="text-right px-5 py-3 font-semibold text-[0.78rem]">비용</th>
-                          <th class="text-right px-5 py-3 font-semibold text-[0.78rem] hidden sm:table-cell">보험</th>
-                        </tr>
-                      </thead>
-                      <tbody class="divide-y divide-gray-50">
-                        {items.map((p, i) => (
-                          <tr class={`hover:bg-[#1E4BD8]/[0.02] transition-colors ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                            <td class="px-5 py-3 text-gray-800 font-medium">
-                              {p.treatment}
-                              {p.note && <span class="text-[0.65rem] text-gray-400 ml-1.5">({p.note})</span>}
-                            </td>
-                            <td class="px-5 py-3 text-right text-[#1E4BD8] font-bold whitespace-nowrap">{p.price}</td>
-                            <td class="px-5 py-3 text-right text-gray-400 hidden sm:table-cell text-xs">{p.insurance}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                <table class="price-table">
+                  <thead><tr><th scope="col">치료 항목</th><th scope="col" style="text-align:right">비용</th><th scope="col" style="text-align:right">보험</th></tr></thead>
+                  <tbody>
+                    {items.map(p => (
+                      <tr>
+                        <td>{p.treatment}{p.note && <span class="fine" style="margin-left:.4rem">({p.note})</span>}</td>
+                        <td class="price">{p.price}</td>
+                        <td class="ins">{p.insurance}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             );
           })}
-
-          <div class="mt-8 glass-card p-5 reveal">
-            <div class="flex items-start gap-3">
-              <i class="fa-solid fa-circle-info text-amber-500 mt-0.5"></i>
-              <div>
-                <p class="text-sm text-gray-600 font-medium">위 가격은 참고용이며, 환자 상태에 따라 달라질 수 있습니다. 정확한 비용은 정밀 진단 후 안내드립니다.</p>
-                <p class="text-xs text-gray-400 mt-1">카드 결제 및 분할 결제가 가능합니다.</p>
-              </div>
-            </div>
+          <div class="card" style="padding:1.2rem 1.4rem">
+            <p style="margin:0 0 .25rem;font-size:.95rem;color:var(--ink)">위 가격은 참고용이며, 환자 상태에 따라 달라질 수 있습니다. 정확한 비용은 정밀 진단 후 안내드립니다.</p>
+            <p class="fine" style="margin:0">카드 결제 및 분할 결제가 가능합니다.</p>
           </div>
-
-          <div class="text-center mt-10 reveal">
-            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>비용 상담 예약하기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>
-          </div>
+          <p style="text-align:center;margin-top:2rem"><a href="/reservation" class="btn btn-primary">비용 상담 예약하기<Icon name="arrow" /></a></p>
         </div>
       </section>
 
       {/* === DIRECTIONS TAB (default visible) === */}
-      <section id="panel-directions" class="section-lg bg-mesh">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
+      <section id="panel-directions" class="sec">
+        <div class="wrap-n">
           <h2 class="sr-only">서울365치과 오시는 길</h2>
-          {/* Google Maps Embed */}
-          <div class="premium-card overflow-hidden mb-10 reveal-3d" style="aspect-ratio:16/9">
+          <div class="map-frame" data-rv>
             <iframe
               src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent('서울365치과의원 인천 남동구 예술로 138 이토타워')}&center=${CLINIC.geo.lat},${CLINIC.geo.lng}&zoom=16&language=ko`}
-              width="100%" height="100%" style="border:0;min-height:350px" allowfullscreen loading="lazy"
+              width="100%" height="100%" allowfullscreen loading="lazy"
               referrerpolicy="no-referrer-when-downgrade"
               title="서울365치과 위치 - 인천 남동구 예술로 138 이토타워 2층">
             </iframe>
           </div>
-
-          {/* Google Maps Link Buttons */}
-          <div class="flex flex-wrap justify-center gap-3 mb-10 reveal">
-            <a href={`https://www.google.com/maps/search/?api=1&query=${CLINIC.geo.lat},${CLINIC.geo.lng}`}
-               target="_blank" rel="noopener"
-               class="btn-premium btn-premium-outline text-sm px-6 py-3" data-cursor-hover>
-              <i class="fa-brands fa-google text-xs"></i> Google Maps
-            </a>
-            <a href={`https://map.naver.com/p/search/${encodeURIComponent(CLINIC.address)}`}
-               target="_blank" rel="noopener"
-               class="btn-premium btn-premium-outline text-sm px-6 py-3" style="border-color:#03cf5d40;color:#03cf5d" data-cursor-hover>
-              <i class="fa-solid fa-map text-xs"></i> 네이버 지도
-            </a>
-            <a href={`https://map.kakao.com/link/search/${encodeURIComponent(CLINIC.address)}`}
-               target="_blank" rel="noopener"
-               class="btn-premium btn-premium-outline text-sm px-6 py-3" style="border-color:#FEE50040;color:#3C1E1E" data-cursor-hover>
-              <i class="fa-solid fa-location-dot text-xs"></i> 카카오맵
-            </a>
+          <div class="map-links" data-rv>
+            <a href={`https://www.google.com/maps/search/?api=1&query=${CLINIC.geo.lat},${CLINIC.geo.lng}`} target="_blank" rel="noopener" class="btn btn-ghost btn-sm">Google Maps</a>
+            <a href={`https://map.naver.com/p/search/${encodeURIComponent(CLINIC.address)}`} target="_blank" rel="noopener" class="btn btn-ghost btn-sm"><NaverMark size={13} />네이버 지도</a>
+            <a href={`https://map.kakao.com/link/search/${encodeURIComponent(CLINIC.address)}`} target="_blank" rel="noopener" class="btn btn-ghost btn-sm"><Icon name="pin" />카카오맵</a>
           </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 stagger-children">
-            {[
-              { icon: 'fa-location-dot', title: '주소', main: CLINIC.address, sub: '(우) 21556' },
-              { icon: 'fa-train-subway', title: '지하철', main: '인천 1호선 예술회관역 5번 출구', sub: '도보 약 3분 (250m)' },
-              { icon: 'fa-car', title: '주차', main: '이토타워 건물 내 주차장 이용', sub: '진료 시 주차 지원 가능' },
-              { icon: 'fa-bus', title: '버스', main: '예술회관역 정류장 하차', sub: '다수 시내버스 이용 가능' },
-            ].map(info => (
-              <div class="glass-card p-6 tilt-card">
-                <div class="flex items-center gap-3 mb-3">
-                  <div class="icon-circle icon-circle-sm">
-                    <i class={`fa-solid ${info.icon}`}></i>
-                  </div>
-                  <h3 class="font-bold text-gray-900">{info.title}</h3>
-                </div>
-                <p class="text-gray-700 text-[0.9rem]">{info.main}</p>
-                <p class="text-gray-400 text-xs mt-1">{info.sub}</p>
+          <div class="dir-grid" data-rv-group>
+            {DIRECTIONS.map(info => (
+              <div class="card dir-card">
+                <h3>{info.title}</h3>
+                <p>{info.main}</p>
+                <p class="fine">{info.sub}</p>
               </div>
             ))}
           </div>
-
-          <div class="text-center mt-10 reveal">
-            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-phone"></i> 전화 문의 {CLINIC.phone}</a>
-          </div>
+          <p style="text-align:center;margin-top:2rem"><a href={CLINIC.phoneTel} class="btn btn-primary"><Icon name="phone" />전화 문의 {CLINIC.phone}</a></p>
         </div>
       </section>
 
       {/* Tab Switching Script */}
       <script dangerouslySetInnerHTML={{__html: `
         function switchInfoTab(tab) {
-          document.querySelectorAll('.info-tab').forEach(b => {
-            b.classList.remove('active','text-[#1E4BD8]','border-[#1E4BD8]');
-            b.classList.add('text-gray-400','border-transparent');
-          });
-          const active = document.getElementById('tab-' + tab);
-          if (active) { active.classList.add('active','text-[#1E4BD8]','border-[#1E4BD8]'); active.classList.remove('text-gray-400','border-transparent'); }
+          document.querySelectorAll('.info-tab').forEach(function (b) { b.classList.remove('active'); });
+          var active = document.getElementById('tab-' + tab);
+          if (active) active.classList.add('active');
           document.getElementById('panel-directions').style.display = tab === 'directions' ? '' : 'none';
           document.getElementById('panel-pricing').style.display = tab === 'pricing' ? '' : 'none';
           history.replaceState(null, '', tab === 'pricing' ? '/info#pricing' : '/info');

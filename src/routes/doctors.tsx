@@ -5,61 +5,48 @@ import { CLINIC } from '../data/clinic'
 import { doctors, getDoctorBySlug } from '../data/doctors'
 import { getTreatmentBySlug } from '../data/treatments'
 import { DOCTOR_STORIES } from '../data/brand'
+import { Icon } from '../lib/icons'
 
 const doctorRoutes = new Hono<{ Bindings: Bindings }>()
 
 doctorRoutes.get('/doctors', (c) => {
   return c.render(
     <>
-      <section class="relative overflow-hidden" style="min-height:clamp(480px,60vw,700px)">
-        {/* Team Photo Background — full visible */}
-        <div class="absolute inset-0 z-0">
-          <img src="/static/team-photo.jpg" alt="서울365치과 의료진 단체사진" class="w-full h-full object-cover object-center" loading="eager" />
-          <div class="absolute inset-0" style="background:linear-gradient(to top, #0B1530 0%, rgba(11,21,48,0.7) 30%, rgba(11,21,48,0.35) 60%, rgba(11,21,48,0.5) 100%)"></div>
-        </div>
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 pt-28 md:pt-36 pb-12">
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s;text-shadow:0 2px 20px rgba(0,0,0,0.5)">서울365치과 의료진 소개</h1>
-          <p class="hero-sub text-white/60 max-w-xl reveal" style="transition-delay:0.6s;text-shadow:0 1px 10px rgba(0,0,0,0.5)">서울대 출신 원장들이 하나의 케이스를 함께 봅니다.</p>
-          <p class="text-white/30 text-sm mt-4 reveal" style="transition-delay:0.75s">
-            <i class="fa-solid fa-users text-[#1E4BD8]/50 mr-2"></i>서울대 출신 원장 · 전문 스태프 20여 명이 함께합니다.
-          </p>
+      <section class="phead" aria-labelledby="dr-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">의료진</li></ol></nav>
+            <p class="eyebrow">Our doctors · {doctors.length}</p>
+            <h1 id="dr-h1" class="display-xl">서울365치과 의료진 소개</h1>
+            <p class="lead hero-sub">서울대 출신 원장들이 하나의 케이스를 함께 봅니다.</p>
+            <p class="t-mute" style="font-size:.92rem;margin:0 0 1.6rem">서울대 출신 원장 · 전문 스태프 20여 명이 함께합니다.</p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <div class="phead-img wide"><img src="/static/team-photo.jpg" alt="서울365치과 의료진 단체사진" width="1024" height="683" loading="eager" decoding="async" /></div>
+          </div>
         </div>
       </section>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          {/* All 5 Doctors — Equal Cards */}
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 stagger-children">
+      <section class="sec">
+        <div class="wrap">
+          <div class="dr-grid" data-rv-group>
             {doctors.map((doc, i) => (
-              <a href={`/doctors/${doc.slug}`} class="premium-card block group overflow-hidden relative" style="border-radius:1.5rem" data-cursor-hover>
-                {/* Lead badge */}
-                {i === 0 && <div class="absolute top-4 left-4 z-20 bg-[#1E4BD8] text-white text-[0.6rem] font-bold px-2.5 py-1 rounded-full shadow-lg">LEAD</div>}
-                {/* Photo area */}
-                <div class="relative overflow-hidden" style="background:#c8ced8;padding-top:120%">
-                  <img
-                    src={doc.photo}
-                    alt={`${doc.name} ${doc.title} 프로필 사진 - 서울365치과`}
-                    title={`서울365치과 ${doc.name} ${doc.title}`}
-                    class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
-                    loading="lazy"
-                    onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
-                  />
+              <a href={`/doctors/${doc.slug}`} class="card dr-tile hover">
+                <div class="dr-tile-ph">
+                  {i === 0 && <span class="lead-badge">LEAD</span>}
+                  <img src={doc.photo} alt={`${doc.name} ${doc.title} 프로필 사진 - 서울365치과`} title={`서울365치과 ${doc.name} ${doc.title}`} width="797" height="1024" loading="lazy" decoding="async" onerror={`this.onerror=null;this.src='${doc.photoFallback}'`} />
                 </div>
-                {/* Info */}
-                <div class="p-5 pt-3 text-center">
-                  <h2 class="font-bold text-gray-900 text-xl">{doc.name}</h2>
-                  <p class="text-[#1E4BD8] text-sm font-semibold mt-1">{doc.title}</p>
-                  <div class="flex flex-wrap justify-center gap-1.5 mt-3">
-                    {doc.specialties.slice(0, 3).map(s => (
-                      <span class="text-[0.65rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2.5 py-0.5 rounded-full font-medium">{s}</span>
-                    ))}
-                  </div>
-                  <p class="text-gray-400 text-xs mt-3 line-clamp-1">{doc.education[0]}</p>
-                  {doc.credentials[0] && <p class="text-[#1E4BD8]/60 text-xs mt-1 line-clamp-1">{doc.credentials[0]}</p>}
-                  <p class="text-gray-400 text-[0.75rem] mt-3 italic line-clamp-2 leading-relaxed">"{doc.philosophy.split('.')[0]}."</p>
-                  <div class="mt-4 text-sm text-[#1E4BD8] font-semibold group-hover:gap-2 transition-all flex items-center justify-center gap-1.5">
-                    프로필 보기 <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
-                  </div>
+                <div class="dr-tile-body">
+                  <span class="tag">{doc.title}</span>
+                  <h2>{doc.name}</h2>
+                  <p class="sp">{doc.specialties.slice(0, 3).join(' · ')}</p>
+                  <p class="edu">{doc.education[0]}{doc.credentials[0] ? ` · ${doc.credentials[0]}` : ''}</p>
+                  <blockquote>“{doc.philosophy.split('.')[0]}.”</blockquote>
+                  <span class="arrow-link">프로필 보기<Icon name="arrow" /></span>
                 </div>
               </a>
             ))}
@@ -178,118 +165,89 @@ doctorRoutes.get('/doctors/:slug', (c) => {
   const doc = getDoctorBySlug(slug);
   if (!doc) return c.notFound();
   const story = DOCTOR_STORIES[slug];
+  // h1 "이름 직함 – 소속/전문의"를 두 줄로(글자는 그대로, 대시는 화면에서만 숨김) — 의미 중간 줄바꿈 방지
+  const h1Parts = doc.h1.split(/\s[–-]\s/);
 
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-
-          <div class="md:flex items-center gap-8 reveal" style="transition-delay:0.4s">
-            <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-[#1E4BD8]/20 flex-shrink-0 mx-auto md:mx-0 mb-6 md:mb-0" style="box-shadow:0 0 30px rgba(30,75,216,0.15);background:#c8ced8">
-              <img 
-                src={doc.photo} 
-                alt={`${doc.name} ${doc.titleShort} 프로필 사진`}
-                class="w-full h-full object-cover object-top" 
-                loading="eager"
-                onerror={`this.onerror=null;this.src='${doc.photoFallback}'`}
-              />
+      <section class="phead" aria-labelledby="doc-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li><a href="/doctors">의료진</a></li><li aria-current="page">{doc.name}</li></ol></nav>
+            <p class="eyebrow">{doc.title}</p>
+            <h1 id="doc-h1" class="display-xl">{h1Parts.length === 2 ? <><span class="block">{h1Parts[0]}</span><span class="sr-only"> – </span><span class="block h1-sub">{h1Parts[1]}</span></> : doc.h1}</h1>
+            {story && <p class="lead quote">“{story.principle}”</p>}
+            <div class="chips">{doc.specialties.map(s => <span class="chip">{s}</span>)}</div>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />예약하기</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
             </div>
-            <div class="text-center md:text-left">
-              <h1 class="text-3xl md:text-4xl font-bold text-white">{doc.h1}</h1>
-              {story && (
-                <p class="text-[#8FB4FF] text-sm font-semibold mt-2 italic">"{story.principle}"</p>
-              )}
-              <div class="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
-                {doc.specialties.map(s => <span class="text-[0.75rem] bg-white/[0.06] text-white/60 px-3 py-1.5 rounded-full border border-white/[0.06]">{s}</span>)}
-              </div>
+          </div>
+          <div class="phead-aside">
+            <div class="prof-photo">
+              <img src={doc.photo} alt={`${doc.name} ${doc.titleShort} 프로필 사진`} width="797" height="1024" loading="eager" decoding="async" onerror={`this.onerror=null;this.src='${doc.photoFallback}'`} />
             </div>
           </div>
         </div>
       </section>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
+      <section class="sec">
+        <div class="wrap-n">
           <h2 class="sr-only">프로필 상세</h2>
-          {/* Story-type Introduction */}
           {story ? (
-            <div class="mb-14 reveal">
-              <div class="premium-card p-8 md:p-10">
-                <h3 class="font-bold text-gray-900 text-lg mb-6 flex items-center gap-2">
-                  <i class="fa-solid fa-book-open text-[#1E4BD8]"></i> 소개
-                </h3>
-                <div class="text-gray-600 text-[0.95rem] leading-[1.9] space-y-4">
-                  {story.storyIntro.split('\n\n').map(paragraph => (
-                    <p>{paragraph}</p>
-                  ))}
-                </div>
-                {/* 3-line profile summary */}
-                <div class="mt-8 pt-6 border-t border-gray-100">
-                  <div class="flex flex-wrap gap-3">
-                    {story.profileSummary.map(line => (
-                      <div class="flex items-start gap-2 text-sm text-gray-500">
-                        <i class="fa-solid fa-check text-[#1E4BD8] text-xs mt-1 flex-shrink-0"></i>
-                        <span>{line}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            <div class="card prose-card" data-rv>
+              <h3 class="box-h">소개</h3>
+              {story.storyIntro.split('\n\n').map(paragraph => <p>{paragraph}</p>)}
+              <ul class="check-list compact">
+                {story.profileSummary.map(line => <li><Icon name="check" /><span>{line}</span></li>)}
+              </ul>
             </div>
           ) : (
-            <blockquote class="text-xl text-gray-600 italic border-l-3 border-[#1E4BD8] pl-6 mb-14 leading-relaxed reveal" style="border-left-width:3px">
-              "{doc.philosophy}"
-            </blockquote>
+            <blockquote class="quote-big" data-rv>“{doc.philosophy}”</blockquote>
           )}
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 stagger-children">
-            <div class="glass-card p-7">
-              <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-graduation-cap text-[#1E4BD8]"></i> 학력</h3>
-              <ul class="space-y-2.5">{doc.education.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#1E4BD8] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+          <div class="prof-grid" data-rv-group>
+            <div class="card prof-box">
+              <h3 class="box-h">학력</h3>
+              <ul>{doc.education.map(e => <li>{e}</li>)}</ul>
             </div>
-
             {doc.credentials.length > 0 && (
-              <div class="glass-card p-7">
-                <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-certificate text-[#1E4BD8]"></i> 자격/전문의</h3>
-                <ul class="space-y-2.5">{doc.credentials.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#1E4BD8] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+              <div class="card prof-box">
+                <h3 class="box-h">자격 / 전문의</h3>
+                <ul>{doc.credentials.map(e => <li>{e}</li>)}</ul>
               </div>
             )}
-
-            <div class="glass-card p-7">
-              <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-briefcase text-[#1E4BD8]"></i> 경력</h3>
-              <ul class="space-y-2.5">{doc.career.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#1E4BD8] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+            <div class="card prof-box">
+              <h3 class="box-h">경력</h3>
+              <ul>{doc.career.map(e => <li>{e}</li>)}</ul>
             </div>
-
             {doc.societies.length > 0 && (
-              <div class="glass-card p-7">
-                <h3 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-users text-[#1E4BD8]"></i> 학회</h3>
-                <ul class="space-y-2.5">{doc.societies.map(e => <li class="text-gray-600 flex items-start gap-2.5 text-[0.9rem]"><span class="w-1 h-1 bg-[#1E4BD8] rounded-full mt-2.5 flex-shrink-0"></span>{e}</li>)}</ul>
+              <div class="card prof-box">
+                <h3 class="box-h">학회</h3>
+                <ul>{doc.societies.map(e => <li>{e}</li>)}</ul>
               </div>
             )}
           </div>
 
-          {/* Treatment Links */}
-          <div class="mt-12 reveal">
-            <h3 class="font-bold text-gray-900 text-lg mb-5 flex items-center gap-2"><i class="fa-solid fa-stethoscope text-[#1E4BD8]"></i> 담당 치료</h3>
-            <div class="flex flex-wrap gap-3">
+          <div class="prof-tx" data-rv>
+            <h3 class="box-h">담당 치료</h3>
+            <div class="tx-all">
               {doc.treatmentLinks.map(link => {
                 const treat = getTreatmentBySlug(link.split('/').pop()!);
-                return treat ? (
-                  <a href={link} class="btn-premium btn-premium-outline text-sm px-5 py-2.5" data-cursor-hover>
-                    <i class={`fa-solid ${treat.icon} text-xs`}></i> {treat.name}
-                  </a>
-                ) : null;
+                return treat ? <a href={link}>{treat.name}</a> : null;
               })}
             </div>
           </div>
         </div>
       </section>
 
-      <section class="cta-dark section-md">
-        <div class="relative z-10 max-w-4xl mx-auto px-5 md:px-8 text-center reveal-blur">
-          <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">{doc.name} {doc.titleShort}에게 상담받기</h2>
-          <div class="flex flex-wrap justify-center gap-3 mt-6">
-            <a href={CLINIC.phoneTel} class="btn-premium btn-premium-white" data-cursor-hover><i class="fa-solid fa-phone"></i> 전화 상담</a>
-            <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover><i class="fa-solid fa-calendar-check"></i> 예약하기</a>
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Consultation</p>
+          <h2 class="display-xl" data-rv>{doc.name} {doc.titleShort}에게 상담받기</h2>
+          <div class="cta-actions" style="margin-top:2rem" data-rv-group>
+            <a href={CLINIC.phoneTel} class="btn btn-white btn-lg"><Icon name="phone" />전화 상담</a>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />예약하기</a>
           </div>
         </div>
       </section>
