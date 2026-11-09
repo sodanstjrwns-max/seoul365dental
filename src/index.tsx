@@ -186,14 +186,16 @@ app.notFound((c) => {
   c.status(404); // soft-404 방지: 반드시 HTTP 404 상태코드 반환 (SEO 필수)
   c.header('X-Robots-Tag', 'noindex');
   return c.render(
-    <section class="hero-premium" style="min-height:70vh">
-      <div class="wrap" style="text-align:center;padding:4rem 0 5rem">
-        <p class="eyebrow no-bar" style="justify-content:center;color:var(--sky)">404 NOT FOUND</p>
-        <h1 class="section-headline text-white mb-4">페이지를 찾을 수 없습니다</h1>
-        <p class="text-white/60 mb-8">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
-        <div class="flex flex-wrap justify-center gap-3">
-          <a href="/" class="btn btn-primary">홈으로 가기</a>
-          <a href="/treatments" class="btn btn-light">진료 안내</a>
+    <section class="phead" style="min-height:70vh;display:flex;align-items:center">
+      <div class="wrap phead-in" style="grid-template-columns:1fr;text-align:center">
+        <div class="phead-text">
+          <p class="eyebrow no-bar" style="justify-content:center">404 NOT FOUND</p>
+          <h1 class="display-xl">페이지를 찾을 수 없습니다</h1>
+          <p class="lead" style="margin-inline:auto">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
+          <div class="phead-cta" style="justify-content:center">
+            <a href="/" class="btn btn-primary">홈으로 가기</a>
+            <a href="/treatments" class="btn btn-light">진료 안내</a>
+          </div>
         </div>
       </div>
     </section>,

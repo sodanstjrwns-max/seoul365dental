@@ -114,7 +114,7 @@ pageRoutes.get('/reservation', (c) => {
               const btn = document.getElementById('consultSubmitBtn');
               const result = document.getElementById('consultResult');
               btn.disabled = true;
-              btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>전송 중...';
+              btn.textContent = '전송 중...';
               result.classList.add('hidden');
               try {
                 const fd = new FormData(this);
@@ -132,7 +132,7 @@ pageRoutes.get('/reservation', (c) => {
                 if (data.ok) {
                   result.className = 'text-center text-sm py-3 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200';
                   var code = data.code ? String(data.code).replace(/[^A-Z0-9]/g, '') : '';
-                  result.innerHTML = '<i class="fa-solid fa-circle-check mr-1.5"></i>상담 신청이 완료되었습니다. 빠른 시일 내에 연락드리겠습니다!'
+                  result.textContent = '상담 신청이 완료되었습니다. 빠른 시일 내에 연락드리겠습니다!'
                     + (code ? '<div class="mt-3 pt-3 border-t border-emerald-200 text-emerald-800"><span class="font-extrabold tracking-widest text-base">접수번호 ' + code + '</span> — 답변은 <a href="/consultations/check?code=' + code + '" class="font-bold underline underline-offset-2">\u2018문의 답변 확인\u2019 페이지</a>에서 접수번호 또는 전화번호로 확인하실 수 있습니다.</div>' : '');
                   result.classList.remove('hidden');
                   this.reset();
@@ -141,7 +141,7 @@ pageRoutes.get('/reservation', (c) => {
                 }
               } catch(err) {
                 result.className = 'text-center text-sm py-3 rounded-xl bg-red-50 text-red-600 border border-red-200';
-                result.innerHTML = '<i class="fa-solid fa-circle-exclamation mr-1.5"></i>' + err.message;
+                result.textContent = err.message;
                 result.classList.remove('hidden');
               } finally {
                 btn.disabled = false;
@@ -743,85 +743,74 @@ pageRoutes.get('/cases/gallery', async (c) => {
   // Show gallery (cards visible to all, detail modal requires login)
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">치료 사례 Before &amp; After</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">
-            {isLoggedIn ? '실제 치료 전후 사례를 확인하세요.' : 'Before 사진을 확인하고, After는 로그인 후 열람 가능합니다.'}
-          </p>
+      <section class="phead" aria-labelledby="cg-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">치료사례</li></ol></nav>
+            <p class="eyebrow">Cases{dbCases.length ? ` · ${dbCases.length}` : ''}</p>
+            <h1 id="cg-h1" class="display-xl">치료 사례 Before &amp; After</h1>
+            <p class="lead hero-sub">
+              {isLoggedIn ? '실제 치료 전후 사례를 확인하세요.' : 'Before 사진을 확인하고, After는 로그인 후 열람 가능합니다.'}
+            </p>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card case-gate">
+              {isLoggedIn ? (
+                <p><Icon name="user" /><span><b>{user!.name}</b>님, 환영합니다.</span></p>
+              ) : (
+                <>
+                  <p><Icon name="lock" /><span>After 사진 열람은 <a href="/login">로그인</a> 후 가능합니다.</span></p>
+                  <div class="phead-cta">
+                    <a href="/login" class="btn btn-primary btn-sm">로그인</a>
+                    <a href="/register" class="btn btn-light btn-sm">회원가입</a>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-[1400px] mx-auto px-5 md:px-8">
-          {isLoggedIn ? (
-            <div class="flex items-center justify-between mb-8 reveal">
-              <p class="text-sm text-gray-400"><i class="fa-solid fa-user-check text-[#1E4BD8] mr-1.5"></i> <span class="font-medium text-gray-600">{user!.name}</span>님, 환영합니다.</p>
-            </div>
-          ) : (
-            <div class="flex items-center justify-between mb-8 reveal">
-              <p class="text-sm text-gray-400"><i class="fa-solid fa-lock text-[#1E4BD8]/50 mr-1.5"></i> After 사진 열람은 <a href="/login" class="text-[#1E4BD8] font-semibold underline">로그인</a> 후 가능합니다.</p>
-              <div class="flex gap-2">
-                <a href="/login" class="text-xs px-3 py-1.5 rounded-lg bg-[#1E4BD8] text-white font-bold hover:bg-[#0052cc] transition">로그인</a>
-                <a href="/register" class="text-xs px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 font-bold hover:bg-gray-200 transition">회원가입</a>
-              </div>
-            </div>
-          )}
-
+      <section class="sec">
+        <div class="wrap">
           {dbCases.length === 0 ? (
-            <div class="text-center py-20">
-              <div class="w-20 h-20 rounded-full bg-[#1E4BD8]/5 mx-auto mb-6 flex items-center justify-center">
-                <i class="fa-solid fa-images text-3xl text-[#1E4BD8]/20"></i>
-              </div>
-              <h2 class="text-lg font-bold text-gray-900 mb-2">아직 등록된 사례가 없습니다</h2>
-              <p class="text-gray-400 text-sm">곧 실제 치료 사례를 업로드할 예정입니다.</p>
+            <div class="no-results case-empty">
+              <h2>아직 등록된 사례가 없습니다</h2>
+              <p>곧 실제 치료 사례를 업로드할 예정입니다.</p>
             </div>
           ) : (
             <>
               {/* Filter Tabs */}
-              <div class="flex flex-wrap gap-2 mb-8 reveal" id="caseFilters">
-                <button onclick="filterCases('all')" class="case-filter-btn active px-4 py-2 rounded-full text-xs font-semibold bg-[#1E4BD8] text-white transition" data-filter="all">전체 ({dbCases.length})</button>
+              <div class="case-filters" id="caseFilters" data-rv>
+                <button type="button" onclick="filterCases('all')" class="case-filter-btn active" data-filter="all">전체 ({dbCases.length})</button>
                 {Array.from(new Set(dbCases.map((cs: any) => cs.tag))).map((tag: any) => (
-                  <button onclick={`filterCases('${tag}')`} data-filter={tag} class="case-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-gray-100 text-gray-500 hover:bg-gray-200 transition">{tag} ({dbCases.filter((cs: any) => cs.tag === tag).length})</button>
+                  <button type="button" onclick={`filterCases('${tag}')`} data-filter={tag} class="case-filter-btn">{tag} ({dbCases.filter((cs: any) => cs.tag === tag).length})</button>
                 ))}
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children" id="casesGrid">
+              <div class="case-grid" id="casesGrid">
                 {dbCases.map((cs: any, idx: number) => (
-                  <div class="premium-card overflow-hidden tilt-card electric-card-border case-card cursor-pointer group" data-tag={cs.tag} onclick={isLoggedIn ? `openCaseModal(${idx})` : `showLoginRequired()`}>
-                    <div class="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center relative overflow-hidden">
+                  <div class="card case-card hover" data-tag={cs.tag} data-rv role="button" tabindex={0}
+                       onclick={isLoggedIn ? `openCaseModal(${idx})` : `showLoginRequired()`}
+                       onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();this.click()}">
+                    <div class="case-ph">
                       {/* Before 사진만 전체 표시 */}
-                      {cs.before_image ? (
-                        <img src={cs.before_image} alt={`${cs.title} 치료 전`} class="absolute inset-0 w-full h-full object-cover" />
-                      ) : (
-                        <div class="absolute inset-0 flex items-center justify-center bg-gray-100">
-                          <span class="text-gray-300 text-sm font-bold tracking-widest uppercase">Before</span>
-                        </div>
-                      )}
+                      {cs.before_image
+                        ? <img src={cs.before_image} alt={`${cs.title} 치료 전`} loading="lazy" decoding="async" />
+                        : <span class="ph-empty">Before</span>}
                       {/* Before 라벨 */}
-                      <span class="absolute top-3 left-3 text-[0.6rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-lg z-10">Before</span>
-                      {/* After 잠금 오버레이 (우하단) */}
-                      <div class="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 bg-black/50 backdrop-blur-sm text-white text-[0.65rem] font-bold px-3 py-1.5 rounded-lg">
-                        <i class={`fa-solid ${isLoggedIn ? 'fa-eye' : 'fa-lock'} text-[0.55rem]`}></i>
-                        <span>{isLoggedIn ? 'After 보기' : 'After 잠금'}</span>
-                      </div>
-                      {/* Hover overlay */}
-                      <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
-                        <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
-                          <i class={`fa-solid ${isLoggedIn ? 'fa-expand' : 'fa-lock'} text-[#1E4BD8] text-lg`}></i>
-                        </div>
-                      </div>
+                      <span class="lab">Before</span>
+                      {/* After 잠금 표시 (우하단) */}
+                      <span class="lock"><Icon name={isLoggedIn ? 'search' : 'lock'} />{isLoggedIn ? 'After 보기' : 'After 잠금'}</span>
                     </div>
-                    <div class="p-5">
-                      <div class="flex items-center gap-2 mb-2">
-                        <span class="text-[0.7rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2.5 py-0.5 rounded-full font-semibold">{cs.tag}</span>
-                        {cs.duration && <span class="text-[0.65rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
-                      </div>
-                      <h3 class="font-bold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition-colors">{cs.title}</h3>
-                      {cs.description && <p class="text-gray-500 text-xs mt-1.5 line-clamp-2">{cs.description}</p>}
-                      <p class="text-xs text-gray-400 mt-2">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</p>
-                      {/* SEO: Crawlable link to individual case page (hidden visually, discoverable by bots) */}
-                      <a href={`/cases/${cs.id}`} class="text-[0.6rem] text-[#1E4BD8]/50 hover:text-[#1E4BD8] mt-2 inline-block" onclick="event.stopPropagation()">상세보기 →</a>
+                    <div class="card-body">
+                      <span class="tag">{cs.tag}</span>
+                      {cs.duration && <span class="case-dur"><Icon name="clock" />{cs.duration}</span>}
+                      <h3>{cs.title}</h3>
+                      {cs.description && <p class="ex">{cs.description}</p>}
+                      <p class="meta">담당: {cs.doctor_name}{cs.patient_age ? ` · ${cs.patient_age}` : ''}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</p>
+                      {/* SEO: Crawlable link to individual case page */}
+                      <a href={`/cases/${cs.id}`} class="case-more" onclick="event.stopPropagation()">상세보기 →</a>
                     </div>
                   </div>
                 ))}
@@ -829,60 +818,49 @@ pageRoutes.get('/cases/gallery', async (c) => {
             </>
           )}
 
-          <p class="text-[0.72rem] text-gray-300 text-center mt-10">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
+          <p class="fine" style="text-align:center;margin:2.4rem 0 0">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
         </div>
       </section>
 
       {/* Case Detail Modal */}
-      <div id="caseModal" class="fixed inset-0 z-[100] hidden" onclick="closeCaseModal(event)">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-        <div class="relative z-10 flex items-center justify-center min-h-screen p-4 md:p-8">
-          <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
-            {/* Modal Header */}
-            <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <div class="flex items-center gap-2">
-                <span id="modalTag" class="text-[0.7rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2.5 py-0.5 rounded-full font-semibold"></span>
-                <span id="modalDuration" class="text-[0.65rem] text-gray-400"></span>
+      <div id="caseModal" class="case-modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle" onclick="closeCaseModal(event)">
+        <div class="case-modal-box" onclick="event.stopPropagation()">
+          {/* Modal Header */}
+          <div class="case-modal-head">
+            <div class="l">
+              <span id="modalTag" class="tag"></span>
+              <span id="modalDuration" class="case-dur"></span>
+            </div>
+            <div class="r">
+              <button type="button" class="prev" onclick="navCase(-1)" title="이전 사례" aria-label="이전 사례"><Icon name="chevron" /></button>
+              <button type="button" onclick="navCase(1)" title="다음 사례" aria-label="다음 사례"><Icon name="chevron" /></button>
+              <button type="button" onclick="closeCaseModal()" title="닫기" aria-label="닫기"><Icon name="close" /></button>
+            </div>
+          </div>
+          {/* Before/After Comparison */}
+          <div class="case-modal-body">
+            <div class="case-pair">
+              <div class="case-shot">
+                <img id="modalBefore" src="" alt="Before" />
+                <span class="lab">Before</span>
               </div>
-              <div class="flex items-center gap-2">
-                <button onclick="navCase(-1)" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition" title="이전 사례">
-                  <i class="fa-solid fa-chevron-left text-gray-500 text-sm"></i>
-                </button>
-                <button onclick="navCase(1)" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition" title="다음 사례">
-                  <i class="fa-solid fa-chevron-right text-gray-500 text-sm"></i>
-                </button>
-                <button onclick="closeCaseModal()" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-red-100 hover:text-red-500 flex items-center justify-center transition ml-1" title="닫기">
-                  <i class="fa-solid fa-xmark text-gray-500 text-sm"></i>
-                </button>
+              <div class="case-shot">
+                <img id="modalAfter" src="" alt="After" />
+                <span class="lab after">After</span>
               </div>
             </div>
-            {/* Before/After Comparison */}
-            <div class="p-6">
-              <div class="grid grid-cols-2 gap-3 mb-6">
-                <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
-                  <img id="modalBefore" src="" alt="Before" class="w-full h-full object-cover" />
-                  <span class="absolute top-3 left-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded-lg">Before</span>
-                </div>
-                <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
-                  <img id="modalAfter" src="" alt="After" class="w-full h-full object-cover" />
-                  <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#1E4BD8]/80 backdrop-blur-sm px-3 py-1 rounded-lg">After</span>
-                </div>
-              </div>
-              {/* Info */}
-              <h2 id="modalTitle" class="text-xl font-bold text-gray-900 mb-3"></h2>
-              <p id="modalDesc" class="text-gray-600 text-sm leading-relaxed mb-4"></p>
-              <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500 bg-gray-50 rounded-xl px-5 py-4">
-                <span id="modalDoctor"><i class="fa-solid fa-user-doctor text-[#1E4BD8]/60 mr-1.5"></i></span>
-                <span id="modalPatient"><i class="fa-solid fa-user text-[#1E4BD8]/60 mr-1.5"></i></span>
-                <span id="modalDur"><i class="fa-regular fa-clock text-[#1E4BD8]/60 mr-1.5"></i></span>
-              </div>
-              {/* CTA */}
-              <div class="mt-6 text-center">
-                <p class="text-gray-400 text-xs mb-3">비슷한 고민을 가지고 계신가요?</p>
-                <a href="/reservation" class="inline-flex items-center gap-2 bg-[#1E4BD8] hover:bg-[#0052cc] text-white font-bold text-sm px-6 py-3 rounded-xl transition">
-                  <i class="fa-solid fa-calendar-check text-xs"></i> 무료 상담 예약
-                </a>
-              </div>
+            {/* Info */}
+            <h2 id="modalTitle" class="case-modal-t"></h2>
+            <p id="modalDesc" class="case-modal-d"></p>
+            <div class="case-modal-meta">
+              <span id="modalDoctor"></span>
+              <span id="modalPatient"></span>
+              <span id="modalDur"></span>
+            </div>
+            {/* CTA */}
+            <div class="case-modal-cta">
+              <p>비슷한 고민을 가지고 계신가요?</p>
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />무료 상담 예약</a>
             </div>
           </div>
         </div>
@@ -937,9 +915,9 @@ pageRoutes.get('/cases/gallery', async (c) => {
           document.getElementById('modalAfter').src = c.after_image || '';
           document.getElementById('modalTitle').textContent = c.title;
           document.getElementById('modalDesc').textContent = c.description || '상세 설명이 없습니다.';
-          document.getElementById('modalDoctor').innerHTML = '<i class="fa-solid fa-user-doctor text-[#1E4BD8]/60 mr-1.5"></i>담당: ' + c.doctor_name;
-          document.getElementById('modalPatient').innerHTML = '<i class="fa-solid fa-user text-[#1E4BD8]/60 mr-1.5"></i>' + (c.patient_age || '') + ' ' + (c.patient_gender || '');
-          document.getElementById('modalDur').innerHTML = '<i class="fa-regular fa-clock text-[#1E4BD8]/60 mr-1.5"></i>' + (c.duration || '-');
+          document.getElementById('modalDoctor').textContent = '담당: ' + c.doctor_name;
+          document.getElementById('modalPatient').textContent = (c.patient_age || '') + ' ' + (c.patient_gender || '');
+          document.getElementById('modalDur').textContent = c.duration || '-';
           document.getElementById('modalDur').style.display = c.duration ? '' : 'none';
           document.getElementById('modalPatient').style.display = (c.patient_age || c.patient_gender) ? '' : 'none';
         }
@@ -953,13 +931,10 @@ pageRoutes.get('/cases/gallery', async (c) => {
         });
 
         function filterCases(tag) {
-          document.querySelectorAll('.case-filter-btn').forEach(b => {
-            b.classList.remove('bg-[#1E4BD8]', 'text-white', 'active');
-            b.classList.add('bg-gray-100', 'text-gray-500');
-          });
-          const activeBtn = document.querySelector('[data-filter="'+tag+'"]');
-          if (activeBtn) { activeBtn.classList.add('bg-[#1E4BD8]', 'text-white', 'active'); activeBtn.classList.remove('bg-gray-100', 'text-gray-500'); }
-          document.querySelectorAll('.case-card').forEach(card => {
+          document.querySelectorAll('.case-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+          var activeBtn = document.querySelector('.case-filter-btn[data-filter="'+tag+'"]');
+          if (activeBtn) activeBtn.classList.add('active');
+          document.querySelectorAll('.case-card').forEach(function(card) {
             if (tag === 'all' || card.dataset.tag === tag) { card.style.display = ''; } else { card.style.display = 'none'; }
           });
         }
@@ -971,29 +946,19 @@ pageRoutes.get('/cases/gallery', async (c) => {
       `}} />
 
       {/* 로그인 필요 모달 (비로그인 시 카드 클릭) */}
-      <div id="loginRequiredModal" class="fixed inset-0 z-[100] hidden" onclick="if(event.target===this)this.classList.add('hidden')" style="background:rgba(0,0,0,0.55);backdrop-filter:blur(4px)">
-        <div class="flex items-center justify-center min-h-screen p-4">
-          <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 text-center relative" onclick="event.stopPropagation()">
-            <button onclick="document.getElementById('loginRequiredModal').classList.add('hidden')" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition">
-              <i class="fa-solid fa-xmark text-gray-400"></i>
-            </button>
-            <div class="w-16 h-16 rounded-full bg-[#1E4BD8]/10 mx-auto mb-5 flex items-center justify-center">
-              <i class="fa-solid fa-lock text-2xl text-[#1E4BD8]/50"></i>
-            </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">After 사진 열람</h3>
-            <p class="text-gray-500 text-sm mb-6 leading-relaxed">
-              치료 후(After) 사진 확인은<br/>로그인 후 이용하실 수 있습니다.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-3 justify-center">
-              <a href="/login" class="btn-premium btn-premium-fill px-7 py-3" data-cursor-hover>
-                <i class="fa-solid fa-right-to-bracket mr-1"></i> 로그인
-              </a>
-              <a href="/register" class="btn-premium btn-premium-outline px-7 py-3" data-cursor-hover>
-                <i class="fa-solid fa-user-plus mr-1"></i> 회원가입
-              </a>
-            </div>
-            <p class="text-xs text-gray-300 mt-5">가입은 30초면 충분합니다.</p>
+      <div id="loginRequiredModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="lrm-h" onclick="if(event.target===this)this.classList.add('hidden')">
+        <div class="modal-box">
+          <button type="button" class="modal-x" onclick="document.getElementById('loginRequiredModal').classList.add('hidden')" aria-label="닫기"><Icon name="close" /></button>
+          <div class="modal-ic"><Icon name="lock" /></div>
+          <h3 id="lrm-h">After 사진 열람</h3>
+          <p>
+            치료 후(After) 사진 확인은<br/>로그인 후 이용하실 수 있습니다.
+          </p>
+          <div class="modal-actions">
+            <a href="/login" class="btn btn-primary">로그인</a>
+            <a href="/register" class="btn btn-ghost">회원가입</a>
           </div>
+          <p class="fine" style="margin:1rem 0 0">가입은 30초면 충분합니다.</p>
         </div>
       </div>
 
@@ -1099,153 +1064,137 @@ pageRoutes.get('/cases/:id', async (c) => {
 
     return c.render(
       <>
-        <article class="pt-24 pb-16">
+        <article class="case-page">
+          <section class="phead" aria-labelledby="case-h1">
+            <div class="wrap phead-in">
+              <div class="phead-text">
+                {/* Breadcrumb navigation */}
+                <nav class="crumb" aria-label="현재 위치">
+                  <ol>
+                    <li><a href="/">홈</a></li>
+                    <li><a href="/cases/gallery">치료사례</a></li>
+                    {linkedTreatment && <li><a href={`/treatments/${linkedTreatment.slug}`}>{linkedTreatment.name}</a></li>}
+                    <li aria-current="page">{cs.title}</li>
+                  </ol>
+                </nav>
 
-          <div class="max-w-4xl mx-auto px-5 md:px-8">
-            {/* Breadcrumb navigation */}
-            <nav class="flex items-center gap-2 text-xs text-gray-400 mb-8" aria-label="Breadcrumb">
-              <a href="/" class="hover:text-[#1E4BD8] transition">홈</a>
-              <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
-              <a href="/cases/gallery" class="hover:text-[#1E4BD8] transition">치료사례</a>
-              {linkedTreatment && <><i class="fa-solid fa-chevron-right text-[0.5rem]"></i><a href={`/treatments/${linkedTreatment.slug}`} class="hover:text-[#1E4BD8] transition">{linkedTreatment.name}</a></>}
-              <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
-              <span class="text-gray-600 font-medium">{cs.title}</span>
-            </nav>
+                {/* Header */}
+                <p class="eyebrow">{cs.tag}{cs.duration ? ` · ${cs.duration}` : ''}</p>
+                <h1 id="case-h1" class="case-h1">{cs.title}</h1>
+                <p class="case-summary">{caseSummary}</p>
+                <p class="post-meta">
+                  <span>담당: <b class="by">{cs.doctor_name}</b></span>
+                  {cs.patient_age && <span>{cs.patient_age}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</span>}
+                  <time datetime={casePublished}>{kstYmd(cs.created_at) || caseDate}</time>
+                </p>
+              </div>
 
-            {/* Header */}
-            <header class="mb-8">
-              <div class="flex items-center gap-2 mb-3">
-                <span class="text-[0.7rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-3 py-1 rounded-full font-semibold">{cs.tag}</span>
-                {cs.duration && <span class="text-[0.65rem] text-gray-400"><i class="fa-regular fa-clock mr-0.5"></i>{cs.duration}</span>}
+              {/* Case Info */}
+              <div class="phead-aside">
+                <div class="fact-card">
+                  <h2 class="eyebrow">치료 상세 정보</h2>
+                  <dl class="fact-rows">
+                    <div><dt>치료 분류</dt><dd>{cs.tag}</dd></div>
+                    <div><dt>담당 의료진</dt><dd>{cs.doctor_name}</dd></div>
+                    {cs.duration && <div><dt>치료 기간</dt><dd>{cs.duration}</dd></div>}
+                    {cs.patient_age && <div><dt>환자 정보</dt><dd>{cs.patient_age}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</dd></div>}
+                  </dl>
+                </div>
               </div>
-              <h1 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">{cs.title}</h1>
-              {cs.description && <p class="case-description text-gray-500 text-base leading-relaxed mt-3">{cs.description}</p>}
-              <p class="case-summary text-gray-600 text-sm leading-relaxed mt-3">{caseSummary}</p>
-              <div class="flex items-center gap-4 mt-5 text-sm text-gray-400">
-                <span><i class="fa-solid fa-user-doctor text-[#1E4BD8]/60 mr-1.5"></i>담당: <span class="text-gray-600 font-medium">{cs.doctor_name}</span></span>
-                {cs.patient_age && <span>·</span>}
-                {cs.patient_age && <span>{cs.patient_age}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</span>}
-                <span>·</span>
-                <time datetime={casePublished}>{kstYmd(cs.created_at) || caseDate}</time>
-              </div>
-            </header>
+            </div>
+          </section>
 
-            {/* Before & After Images */}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-              {/* Before */}
-              <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3] shadow-lg">
-                {cs.before_image ? (
-                  <img src={cs.before_image} alt={`${txName} 치료 전`} class="w-full h-full object-cover" loading="eager" decoding="async" />
-                ) : (
-                  <div class="w-full h-full flex items-center justify-center bg-gray-100">
-                    <span class="text-gray-300 text-lg font-bold tracking-widest uppercase">Before</span>
-                  </div>
-                )}
-                <span class="absolute top-3 left-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-lg">Before</span>
-              </div>
-              {/* After */}
-              <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3] shadow-lg">
-                {isLoggedIn && cs.after_image ? (
-                  <img src={cs.after_image} alt={`${txName} 치료 후`} class="w-full h-full object-cover" loading="eager" decoding="async" />
-                ) : (
-                  <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 relative">
-                    <div class="text-center">
-                      <i class="fa-solid fa-lock text-3xl text-[#1E4BD8]/30 mb-3"></i>
-                      <p class="text-gray-400 text-sm font-medium">After 사진은 로그인 후 열람</p>
-                      <a href="/login" class="inline-block mt-3 px-5 py-2 rounded-xl bg-[#1E4BD8] text-white text-xs font-bold hover:bg-[#0052cc] transition">로그인하기</a>
+          <div class="sec">
+            <div class="wrap-n">
+              {/* Before & After Images */}
+              <div class="case-pair stack">
+                {/* Before */}
+                <div class="case-shot">
+                  {cs.before_image ? (
+                    <img src={cs.before_image} alt={`${txName} 치료 전`} loading="eager" decoding="async" />
+                  ) : (
+                    <span class="ph-empty">Before</span>
+                  )}
+                  <span class="lab">Before</span>
+                </div>
+                {/* After */}
+                <div class="case-shot">
+                  {isLoggedIn && cs.after_image ? (
+                    <img src={cs.after_image} alt={`${txName} 치료 후`} loading="eager" decoding="async" />
+                  ) : (
+                    <div class="case-locked">
+                      <Icon name="lock" />
+                      <p>After 사진은 로그인 후 열람</p>
+                      <a href="/login" class="btn btn-primary btn-sm">로그인하기</a>
                     </div>
+                  )}
+                  <span class="lab after">After</span>
+                </div>
+              </div>
+
+              {cs.description && <p class="case-description">{cs.description}</p>}
+
+              {/* Related Treatment Link */}
+              {linkedTreatment && (
+                <div class="card post-tx" data-rv>
+                  <p class="box-h">관련 진료 안내</p>
+                  <a href={`/treatments/${linkedTreatment.slug}`} class="main">
+                    {linkedTreatment.name} — 진료 상세보기 <Icon name="arrow" />
+                  </a>
+                </div>
+              )}
+
+              {/* Related Cases */}
+              {relatedCases.length > 0 && (
+                <div class="case-rel" data-rv>
+                  <h3 class="display-2 case-rel-h">같은 분류 치료 사례</h3>
+                  <div class="case-grid">
+                    {relatedCases.map((rc: any) => (
+                      <a href={`/cases/${rc.id}`} class="card">
+                        <div class="case-ph">
+                          {rc.before_image ? (
+                            <img src={rc.before_image} alt={`${rc.tag || txName} 치료 전`} loading="lazy" decoding="async" />
+                          ) : (
+                            <span class="ph-empty">Before</span>
+                          )}
+                          <span class="lab">{rc.tag}</span>
+                        </div>
+                        <div class="card-body">
+                          <h4 class="case-rel-t">{rc.title}</h4>
+                          <p class="meta">담당: {rc.doctor_name}</p>
+                        </div>
+                      </a>
+                    ))}
                   </div>
-                )}
-                <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#1E4BD8]/80 backdrop-blur-sm px-3 py-1.5 rounded-lg">After</span>
-              </div>
+                </div>
+              )}
+
+              {relatedPosts.length > 0 && (
+                <div class="case-rel" data-rv>
+                  <h2 class="display-2 case-rel-h">{txName} 관련 칼럼</h2>
+                  <ul class="post-list">
+                    {relatedPosts.map((bp: any) => (
+                      <li><a href={`/blog/${bp.slug}`}>{bp.title}</a></li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <p class="fine" style="text-align:center;margin:2.4rem 0 0">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
             </div>
-
-            {/* Case Info */}
-            <div class="bg-gray-50 rounded-2xl p-6 mb-10">
-              <h2 class="text-lg font-bold text-gray-900 mb-4">치료 상세 정보</h2>
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <span class="text-gray-400 text-xs font-semibold uppercase">치료 분류</span>
-                  <p class="text-gray-900 font-medium mt-1">{cs.tag}</p>
-                </div>
-                <div>
-                  <span class="text-gray-400 text-xs font-semibold uppercase">담당 의료진</span>
-                  <p class="text-gray-900 font-medium mt-1">{cs.doctor_name}</p>
-                </div>
-                {cs.duration && (
-                  <div>
-                    <span class="text-gray-400 text-xs font-semibold uppercase">치료 기간</span>
-                    <p class="text-gray-900 font-medium mt-1">{cs.duration}</p>
-                  </div>
-                )}
-                {cs.patient_age && (
-                  <div>
-                    <span class="text-gray-400 text-xs font-semibold uppercase">환자 정보</span>
-                    <p class="text-gray-900 font-medium mt-1">{cs.patient_age}{cs.patient_gender ? ` ${cs.patient_gender}` : ''}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Related Treatment Link */}
-            {linkedTreatment && (
-              <div class="p-5 rounded-2xl bg-[#1E4BD8]/[0.03] border border-[#1E4BD8]/10 mb-10">
-                <div class="flex items-center gap-2 mb-2">
-                  <i class="fa-solid fa-stethoscope text-[#1E4BD8] text-xs"></i>
-                  <span class="text-xs font-semibold text-[#1E4BD8]">관련 진료 안내</span>
-                </div>
-                <a href={`/treatments/${linkedTreatment.slug}`} class="text-gray-900 font-bold hover:text-[#1E4BD8] transition">
-                  {linkedTreatment.name} — 진료 상세보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
-                </a>
-              </div>
-            )}
-
-            {/* CTA */}
-            <div class="p-6 rounded-2xl bg-gradient-to-br from-navy to-navy-lighter text-center mb-10">
-              <h3 class="text-white font-bold text-lg mb-2">비슷한 고민을 가지고 계신가요?</h3>
-              <p class="text-white/40 text-sm mb-5">서울365치과에서 직접 상담받아 보세요.</p>
-              <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>무료 상담 예약 <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>
-            </div>
-
-            {/* Related Cases */}
-            {relatedCases.length > 0 && (
-              <div class="pt-10 border-t border-gray-100">
-                <h3 class="text-lg font-bold text-gray-900 mb-6">같은 분류 치료 사례</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {relatedCases.map((rc: any) => (
-                    <a href={`/cases/${rc.id}`} class="premium-card overflow-hidden group hover:shadow-lg transition">
-                      <div class="aspect-[4/3] bg-gray-50 relative overflow-hidden">
-                        {rc.before_image ? (
-                          <img src={rc.before_image} alt={`${rc.tag || txName} 치료 전`} class="w-full h-full object-cover" loading="lazy" decoding="async" />
-                        ) : (
-                          <div class="w-full h-full flex items-center justify-center"><span class="text-gray-300 text-xs">Before</span></div>
-                        )}
-                        <span class="absolute top-2 left-2 text-[0.55rem] font-bold text-white bg-black/50 px-2 py-0.5 rounded-lg">{rc.tag}</span>
-                      </div>
-                      <div class="p-4">
-                        <h4 class="font-bold text-gray-900 text-sm group-hover:text-[#1E4BD8] transition line-clamp-2">{rc.title}</h4>
-                        <p class="text-xs text-gray-400 mt-1">담당: {rc.doctor_name}</p>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {relatedPosts.length > 0 && (
-              <div class="pt-10 mt-10 border-t border-gray-100">
-                <h2 class="text-lg font-bold text-gray-900 mb-4">{txName} 관련 칼럼</h2>
-                <ul class="space-y-2">
-                  {relatedPosts.map((bp: any) => (
-                    <li><a href={`/blog/${bp.slug}`} class="text-sm text-gray-600 hover:text-[#1E4BD8] transition">{bp.title}</a></li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <p class="text-[0.72rem] text-gray-300 text-center mt-10">※ 개인에 따라 치료 결과가 다를 수 있습니다. 모든 사례는 환자 동의 하에 게시되었습니다.</p>
           </div>
         </article>
+
+        {/* CTA */}
+        <section class="cta-band" aria-label="상담 안내">
+          <div class="wrap-n" style="text-align:center;position:relative">
+            <h3 class="display-xl" data-rv>비슷한 고민을 가지고 계신가요?</h3>
+            <p class="lead" data-rv>서울365치과에서 직접 상담받아 보세요.</p>
+            <div class="cta-actions" data-rv>
+              <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />무료 상담 예약</a>
+            </div>
+          </div>
+        </section>
       </>,
       {
         title: `${caseTitle} | 서울365치과`,
@@ -1298,75 +1247,75 @@ pageRoutes.get('/cases/:id', async (c) => {
 pageRoutes.get('/register', (c) => {
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">회원가입</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">30초면 가입이 완료됩니다.</p>
-        </div>
-      </section>
+      <section class="phead auth-head" aria-labelledby="rg-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">회원가입</li></ol></nav>
+            <h1 id="rg-h1" class="display-xl">회원가입</h1>
+            <p class="lead hero-sub">30초면 가입이 완료됩니다.</p>
+          </div>
+          <div class="phead-aside">
+            <div class="card form-card">
+              <h2>회원 정보 입력</h2>
+              <div id="register-error" class="auth-error hidden" role="alert"></div>
+              <form id="register-form" class="form">
+                <div class="field">
+                  <label for="rg-name">이름 *</label>
+                  <input id="rg-name" type="text" name="name" required placeholder="홍길동" autocomplete="name" />
+                </div>
+                <div class="field">
+                  <label for="rg-phone">휴대폰 번호 *</label>
+                  <input id="rg-phone" type="tel" name="phone" required placeholder="010-1234-5678" autocomplete="tel" />
+                </div>
+                <div class="field">
+                  <label for="rg-pw">비밀번호 *</label>
+                  <input id="rg-pw" type="password" name="password" required minlength="4" placeholder="4자리 이상" autocomplete="new-password" />
+                </div>
+                <div class="field">
+                  <label for="rg-pw2">비밀번호 확인 *</label>
+                  <input id="rg-pw2" type="password" name="password2" required minlength="4" placeholder="비밀번호 재입력" autocomplete="new-password" />
+                </div>
+                <div class="auth-agree">
+                  <p class="box-h">약관 동의</p>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-md mx-auto px-5 md:px-8">
-          <div class="premium-card p-8 md:p-10 reveal-3d">
-            <h2 class="text-lg font-bold text-gray-900 mb-6">회원 정보 입력</h2>
-            <div id="register-error" class="hidden mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium"></div>
-            <form id="register-form" class="space-y-5">
-              <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">이름 *</label>
-                <input type="text" name="name" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="홍길동" />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">휴대폰 번호 *</label>
-                <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="010-1234-5678" />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 *</label>
-                <input type="password" name="password" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="4자리 이상" />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호 확인 *</label>
-                <input type="password" name="password2" required minlength="4" class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="비밀번호 재입력" />
-              </div>
-              <div class="space-y-3 pt-1">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">약관 동의</p>
-                
-                {/* 전체 동의 */}
-                <div class="flex items-center gap-2.5 p-3.5 bg-gray-50 rounded-2xl border border-gray-100">
-                  <input type="checkbox" class="accent-[#1E4BD8] w-4 h-4" id="agree-all" />
-                  <label for="agree-all" class="text-sm font-bold text-gray-800 cursor-pointer select-none">전체 동의</label>
-                </div>
+                  {/* 전체 동의 */}
+                  <div class="all">
+                    <input type="checkbox" id="agree-all" />
+                    <label for="agree-all">전체 동의</label>
+                  </div>
 
-                {/* 개인정보 수집·이용 동의 (필수) */}
-                <div class="flex items-start gap-2.5 pl-1">
-                  <input type="checkbox" required class="mt-0.5 accent-[#1E4BD8] w-4 h-4" id="agree-privacy" name="privacy_agreed" />
-                  <label for="agree-privacy" class="text-sm text-gray-600 cursor-pointer select-none">
-                    <span class="text-[#1E4BD8] font-semibold">[필수]</span>{' '}
-                    <a href="/privacy" target="_blank" class="text-[#1E4BD8] font-semibold underline underline-offset-2 hover:text-[#0044CC]">개인정보 수집·이용</a>에 동의합니다
-                  </label>
-                </div>
-                <div class="ml-7 -mt-2 p-3 bg-gray-50/80 rounded-xl text-xs text-gray-400 leading-relaxed border border-gray-100/60">
-                  수집항목: 이름, 연락처 | 이용목적: 회원관리, 진료상담 | 보유기간: 탈퇴 시까지 (의료법 보존의무 별도)
-                </div>
+                  {/* 개인정보 수집·이용 동의 (필수) */}
+                  <div class="item">
+                    <input type="checkbox" required id="agree-privacy" name="privacy_agreed" />
+                    <label for="agree-privacy">
+                      <span class="req">[필수]</span>{' '}
+                      <a href="/privacy" target="_blank">개인정보 수집·이용</a>에 동의합니다
+                    </label>
+                  </div>
+                  <div class="desc">
+                    수집항목: 이름, 연락처 | 이용목적: 회원관리, 진료상담 | 보유기간: 탈퇴 시까지 (의료법 보존의무 별도)
+                  </div>
 
-                {/* 광고·마케팅 활용 동의 (선택) */}
-                <div class="flex items-start gap-2.5 pl-1">
-                  <input type="checkbox" class="mt-0.5 accent-[#1E4BD8] w-4 h-4" id="agree-marketing" name="marketing_agreed" />
-                  <label for="agree-marketing" class="text-sm text-gray-600 cursor-pointer select-none">
-                    <span class="text-gray-400 font-semibold">[선택]</span>{' '}
-                    광고·마케팅 정보 수신에 동의합니다
-                  </label>
+                  {/* 광고·마케팅 활용 동의 (선택) */}
+                  <div class="item">
+                    <input type="checkbox" id="agree-marketing" name="marketing_agreed" />
+                    <label for="agree-marketing">
+                      <span class="opt">[선택]</span>{' '}
+                      광고·마케팅 정보 수신에 동의합니다
+                    </label>
+                  </div>
+                  <div class="desc">
+                    치료 이벤트, 건강정보, 프로모션 등 문자(SMS/카카오) 안내 | 동의 후 언제든 철회 가능
+                  </div>
                 </div>
-                <div class="ml-7 -mt-2 p-3 bg-gray-50/80 rounded-xl text-xs text-gray-400 leading-relaxed border border-gray-100/60">
-                  치료 이벤트, 건강정보, 프로모션 등 문자(SMS/카카오) 안내 | 동의 후 언제든 철회 가능
-                </div>
-              </div>
-              <button type="submit" id="register-btn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>
-                회원가입
-              </button>
-            </form>
-            <p class="text-center text-sm text-gray-400 mt-6">
-              이미 계정이 있으신가요? <a href="/login" class="text-[#1E4BD8] font-semibold link-underline">로그인</a>
-            </p>
+                <button type="submit" id="register-btn" class="btn btn-primary btn-lg btn-block">
+                  회원가입
+                </button>
+              </form>
+              <p class="auth-alt">
+                이미 계정이 있으신가요? <a href="/login">로그인</a>
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -1453,34 +1402,34 @@ pageRoutes.get('/register', (c) => {
 pageRoutes.get('/login', (c) => {
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">로그인</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">회원 전용 콘텐츠를 열람하세요.</p>
-        </div>
-      </section>
-
-      <section class="section-lg bg-mesh">
-        <div class="max-w-md mx-auto px-5 md:px-8">
-          <div class="premium-card p-8 md:p-10 reveal-3d">
-            <h2 class="text-lg font-bold text-gray-900 mb-6">휴대폰 번호로 로그인</h2>
-            <div id="login-error" class="hidden mb-6 p-4 rounded-2xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium"></div>
-            <form id="login-form" class="space-y-5">
-              <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">휴대폰 번호</label>
-                <input type="tel" name="phone" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="010-1234-5678" />
-              </div>
-              <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">비밀번호</label>
-                <input type="password" name="password" required class="w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm" placeholder="비밀번호 입력" />
-              </div>
-              <button type="submit" id="login-btn" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>
-                로그인
-              </button>
-            </form>
-            <p class="text-center text-sm text-gray-400 mt-6">
-              계정이 없으신가요? <a href="/register" class="text-[#1E4BD8] font-semibold link-underline">회원가입</a>
-            </p>
+      <section class="phead auth-head" aria-labelledby="lg-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">로그인</li></ol></nav>
+            <h1 id="lg-h1" class="display-xl">로그인</h1>
+            <p class="lead hero-sub">회원 전용 콘텐츠를 열람하세요.</p>
+          </div>
+          <div class="phead-aside">
+            <div class="card form-card">
+              <h2>휴대폰 번호로 로그인</h2>
+              <div id="login-error" class="auth-error hidden" role="alert"></div>
+              <form id="login-form" class="form">
+                <div class="field">
+                  <label for="lg-phone">휴대폰 번호</label>
+                  <input id="lg-phone" type="tel" name="phone" required placeholder="010-1234-5678" autocomplete="tel" />
+                </div>
+                <div class="field">
+                  <label for="lg-pw">비밀번호</label>
+                  <input id="lg-pw" type="password" name="password" required placeholder="비밀번호 입력" autocomplete="current-password" />
+                </div>
+                <button type="submit" id="login-btn" class="btn btn-primary btn-lg btn-block">
+                  로그인
+                </button>
+              </form>
+              <p class="auth-alt">
+                계정이 없으신가요? <a href="/register">회원가입</a>
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -1540,61 +1489,61 @@ pageRoutes.get('/notices', async (c) => {
     notices = result.results || [];
   } catch {}
 
-  const categoryColors: Record<string, string> = {
-    '공지': 'bg-[#1E4BD8]/8 text-[#1E4BD8]',
-    '이벤트': 'bg-pink-50 text-pink-600',
-    '안내': 'bg-emerald-50 text-emerald-600',
-    '휴무': 'bg-amber-50 text-amber-700',
-  };
+  // 분류별 공지 수 (히어로 사실 카드)
+  const catCount: Record<string, number> = {};
+  for (const n of notices) catCount[n.category] = (catCount[n.category] || 0) + 1;
 
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">공지사항</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">서울365치과의 소식과 안내사항을 확인하세요.</p>
+      <section class="phead" aria-labelledby="ntc-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">공지사항</li></ol></nav>
+            <p class="eyebrow">Notice{notices.length ? ` · ${notices.length}` : ''}</p>
+            <h1 id="ntc-h1" class="display-xl">공지사항</h1>
+            <p class="lead hero-sub">서울365치과의 소식과 안내사항을 확인하세요.</p>
+          </div>
+          {notices.length > 0 && (
+            <div class="phead-aside">
+              <div class="fact-card">
+                <p class="eyebrow">분류별 공지 수</p>
+                <dl class="fact-rows">
+                  {Object.keys(catCount).map((k) => (
+                    <div><dt>{k}</dt><dd class="mono">{catCount[k]}</dd></div>
+                  ))}
+                </dl>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
+      <section class="sec">
+        <div class="wrap-n">
           {notices.length === 0 ? (
-            <div class="text-center py-20 reveal">
-              <div class="w-16 h-16 rounded-full bg-gray-100 mx-auto mb-4 flex items-center justify-center">
-                <i class="fa-solid fa-bullhorn text-2xl text-gray-300"></i>
-              </div>
-              <p class="text-gray-400">아직 공지사항이 없습니다.</p>
+            <div class="no-results ntc-empty">
+              <Icon name="bell" />
+              <p>아직 공지사항이 없습니다.</p>
             </div>
           ) : (
-            <div class="space-y-3 stagger-children">
+            <ul class="ntc-list">
               {notices.map((n: any) => (
-                <a href={`/notices/${n.id}`} class="glass-card p-5 md:p-6 block group hover:border-[#1E4BD8]/20 transition-all" data-cursor-hover>
-                  <div class="flex items-start gap-4">
-                    {n.is_pinned ? (
-                      <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center mt-0.5">
-                        <i class="fa-solid fa-thumbtack text-amber-500 text-xs"></i>
-                      </div>
-                    ) : (
-                      <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center mt-0.5">
-                        <i class="fa-solid fa-file-lines text-gray-300 text-xs"></i>
-                      </div>
-                    )}
-                    <div class="flex-1 min-w-0">
-                      <div class="flex items-center gap-2 mb-1.5">
-                        <span class={`text-[0.65rem] font-bold px-2 py-0.5 rounded-full ${categoryColors[n.category] || categoryColors['공지']}`}>{n.category}</span>
-                        {n.is_pinned ? <span class="text-[0.6rem] text-amber-500 font-bold">고정</span> : null}
-                      </div>
-                      <h3 class="text-base font-bold text-gray-900 group-hover:text-[#1E4BD8] transition-colors truncate">{n.title}</h3>
-                      <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
-                        <span><i class="fa-regular fa-calendar mr-1"></i>{n.created_at?.slice(0, 10)}</span>
-                        <span><i class="fa-regular fa-eye mr-1"></i>{n.view_count}</span>
-                      </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-gray-200 group-hover:text-[#1E4BD8]/50 transition-colors mt-3 text-sm"></i>
-                  </div>
-                </a>
+                <li data-rv>
+                  <a href={`/notices/${n.id}`} class={`ntc-row${n.is_pinned ? ' pinned' : ''}`}>
+                    <span class="top">
+                      <span class="ntc-cat" data-cat={n.category}>{n.category}</span>
+                      {n.is_pinned ? <span class="ntc-pin">고정</span> : null}
+                    </span>
+                    <h3>{n.title}</h3>
+                    <span class="meta">
+                      <time>{n.created_at?.slice(0, 10)}</time>
+                      <span>조회 {n.view_count}</span>
+                    </span>
+                    <Icon name="chevron" />
+                  </a>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
         </div>
       </section>
@@ -1620,12 +1569,13 @@ pageRoutes.get('/notices/:id', async (c) => {
 
   if (!notice) {
     return c.render(
-      <section class="section-lg bg-mesh text-center">
-        <div class="max-w-2xl mx-auto px-5 py-20">
-          <i class="fa-solid fa-circle-exclamation text-4xl text-gray-300 mb-4"></i>
-          <h1 class="text-xl font-bold text-gray-900 mb-2">공지사항을 찾을 수 없습니다</h1>
-          <p class="text-gray-400 mb-6">삭제되었거나 비공개 처리된 공지입니다.</p>
-          <a href="/notices" class="btn-premium btn-premium-fill">목록으로 돌아가기</a>
+      <section class="phead" style="min-height:70vh;display:flex;align-items:center">
+        <div class="wrap phead-in" style="grid-template-columns:1fr;text-align:center">
+          <div class="phead-text">
+            <h1 class="display-xl">공지사항을 찾을 수 없습니다</h1>
+            <p class="lead" style="margin-inline:auto">삭제되었거나 비공개 처리된 공지입니다.</p>
+            <div class="phead-cta" style="justify-content:center"><a href="/notices" class="btn btn-primary">목록으로 돌아가기</a></div>
+          </div>
         </div>
       </section>,
       { title: '공지사항 | 서울365치과' }
@@ -1639,31 +1589,32 @@ pageRoutes.get('/notices/:id', async (c) => {
 
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="text-2xl md:text-3xl font-bold text-white mb-4 reveal" style="transition-delay:0.3s">{notice.title}</h1>
-          <div class="flex items-center gap-3 text-white/35 text-sm reveal" style="transition-delay:0.5s">
-            <span class="bg-white/10 px-2.5 py-0.5 rounded-full text-xs font-bold">{notice.category}</span>
-            <span><i class="fa-regular fa-calendar mr-1"></i>{notice.created_at?.slice(0, 10)}</span>
-            <span><i class="fa-regular fa-eye mr-1"></i>{notice.view_count}</span>
+      <section class="phead" aria-labelledby="ntc-h1">
+        <div class="wrap phead-in post-solo">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li><a href="/notices">공지사항</a></li></ol></nav>
+            <p class="eyebrow">{notice.category}</p>
+            <h1 id="ntc-h1" class="ntc-h1">{notice.title}</h1>
+            <p class="post-meta">
+              <time>{notice.created_at?.slice(0, 10)}</time>
+              <span>조회 {notice.view_count}</span>
+            </p>
           </div>
         </div>
       </section>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-3xl mx-auto px-5 md:px-8">
-          <div class="premium-card p-8 md:p-10">
+      <section class="sec">
+        <div class="wrap-n">
+          <article class="card ntc-body">
             {notice.image && (
-              <div class="mb-6 rounded-2xl overflow-hidden">
-                <img src={notice.image} alt={notice.title} class="w-full rounded-2xl" loading="lazy" />
-              </div>
+              <figure>
+                <img src={notice.image} alt={notice.title} loading="lazy" />
+              </figure>
             )}
-            <div class="text-gray-600 leading-relaxed text-[0.95rem]" dangerouslySetInnerHTML={{__html: contentHtml}}></div>
-          </div>
-          <div class="text-center mt-10">
-            <a href="/notices" class="btn-premium btn-premium-outline" data-cursor-hover>
-              <i class="fa-solid fa-list mr-1.5"></i>목록으로 돌아가기
-            </a>
+            <div class="ntc-content" dangerouslySetInnerHTML={{__html: contentHtml}}></div>
+          </article>
+          <div class="ntc-back">
+            <a href="/notices" class="btn btn-ghost">목록으로 돌아가기</a>
           </div>
         </div>
       </section>
@@ -2035,78 +1986,75 @@ async function renderConsultCheck(c: any, input: { code?: string; name?: string;
     }
   }
 
-  const inputCls = 'w-full px-5 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#1E4BD8]/20 focus:border-[#1E4BD8]/30 transition-all text-sm';
-
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.3s">문의 답변 확인</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.5s">온라인 상담 문의에 대한 병원 답변을 확인하실 수 있습니다.</p>
+      <section class="phead" aria-labelledby="cc-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">문의 답변 확인</li></ol></nav>
+            <h1 id="cc-h1" class="display-xl">문의 답변 확인</h1>
+            <p class="lead hero-sub">온라인 상담 문의에 대한 병원 답변을 확인하실 수 있습니다.</p>
+          </div>
         </div>
       </section>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-3xl mx-auto px-5 md:px-8">
-          <div class="premium-card p-8 md:p-10">
-            <form method="post" action="/consultations/check" class="space-y-6">
-              <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">접수번호로 확인</label>
-                <input type="text" name="code" value={code} maxlength={12} autocomplete="off" class={inputCls + ' tracking-widest uppercase'} placeholder="예: AB3K9Q (문의 접수 시 안내된 6자리)" />
+      <section class="sec">
+        <div class="wrap-n">
+          <div class="card form-card">
+            <form method="post" action="/consultations/check" class="form">
+              <div class="field">
+                <label for="cc-code">접수번호로 확인</label>
+                <input id="cc-code" type="text" name="code" value={code} maxlength={12} autocomplete="off" class="cchk-code" placeholder="예: AB3K9Q (문의 접수 시 안내된 6자리)" />
               </div>
-              <div class="flex items-center gap-3 text-xs text-gray-300">
-                <span class="flex-1 h-px bg-gray-100"></span>또는<span class="flex-1 h-px bg-gray-100"></span>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                  <label class="block text-sm font-semibold text-gray-700 mb-2">이름</label>
-                  <input type="text" name="name" value={name} maxlength={50} class={inputCls} placeholder="문의 시 입력한 이름" />
+              <div class="cchk-or">또는</div>
+              <div class="row2">
+                <div class="field">
+                  <label for="cc-name">이름</label>
+                  <input id="cc-name" type="text" name="name" value={name} maxlength={50} placeholder="문의 시 입력한 이름" />
                 </div>
-                <div>
-                  <label class="block text-sm font-semibold text-gray-700 mb-2">전화번호</label>
-                  <input type="tel" name="phone" value={phone} maxlength={40} class={inputCls} placeholder="문의 시 입력한 번호 (해외번호 가능)" />
+                <div class="field">
+                  <label for="cc-phone">전화번호</label>
+                  <input id="cc-phone" type="tel" name="phone" value={phone} maxlength={40} placeholder="문의 시 입력한 번호 (해외번호 가능)" />
                 </div>
               </div>
-              <button type="submit" class="btn-premium btn-premium-fill w-full py-4 text-[0.95rem]" data-cursor-hover>답변 확인하기</button>
+              <button type="submit" class="btn btn-primary btn-lg btn-block">답변 확인하기</button>
             </form>
+          </div>
 
-            {error ? (
-              <div class="mt-6 text-center text-sm py-3 px-4 rounded-xl bg-amber-50 text-amber-700 border border-amber-200">
-                <i class="fa-solid fa-circle-info mr-1.5"></i>{error}
+          {error ? (
+            <div class="notice-box warn" role="alert">{error}</div>
+          ) : null}
+
+          {matches.map((m: any) => (
+            <div class="card cchk-item">
+              <div class="head">
+                <span>접수번호 <b>{m.lookup_code || '-'}</b></span>
+                <span>접수일 {fmtDate(m.created_at)}</span>
               </div>
-            ) : null}
-
-            {matches.map((m: any) => (
-              <div class="mt-8 border border-gray-100 rounded-2xl overflow-hidden">
-                <div class="bg-gray-50 px-5 py-3 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
-                  <span>접수번호 <b class="text-gray-800 tracking-widest">{m.lookup_code || '-'}</b></span>
-                  <span>접수일 {fmtDate(m.created_at)}</span>
+              <div class="body">
+                <div>
+                  <p class="k">관심 치료</p>
+                  <p class="v">{m.treatment || '-'}</p>
                 </div>
-                <div class="px-5 py-5 space-y-4 text-sm">
-                  <div>
-                    <div class="text-xs font-semibold text-gray-400 mb-1">관심 치료</div>
-                    <div class="text-gray-800">{m.treatment || '-'}</div>
-                  </div>
-                  <div>
-                    <div class="text-xs font-semibold text-gray-400 mb-1">문의 내용</div>
-                    <div class="text-gray-800 whitespace-pre-wrap leading-relaxed" style="word-break:keep-all">{m.message || '내용 없음'}</div>
-                  </div>
-                  <div class="pt-4 border-t border-gray-100">
-                    <div class="text-xs font-semibold text-[#1E4BD8] mb-2"><i class="fa-solid fa-comment-medical mr-1"></i>서울365치과 답변{m.replied_at ? <span class="text-gray-400 font-normal ml-2">{fmtDate(m.replied_at)}</span> : null}</div>
-                    {m.reply ? (
-                      <div class="bg-blue-50/60 border border-blue-100 rounded-xl px-5 py-4 text-gray-800 whitespace-pre-wrap leading-relaxed" style="word-break:keep-all">{m.reply}</div>
-                    ) : (
-                      <div class="bg-gray-50 border border-gray-100 rounded-xl px-5 py-4 text-gray-500">아직 답변 준비 중입니다. 답변이 등록되면 이 페이지에서 확인하실 수 있습니다.</div>
-                    )}
-                  </div>
+                <div>
+                  <p class="k">문의 내용</p>
+                  <p class="v">{m.message || '내용 없음'}</p>
+                </div>
+                <div class="cchk-reply">
+                  <p class="k">서울365치과 답변{m.replied_at ? <span>{fmtDate(m.replied_at)}</span> : null}</p>
+                  {m.reply ? (
+                    <div class="box">{m.reply}</div>
+                  ) : (
+                    <div class="box wait">아직 답변 준비 중입니다. 답변이 등록되면 이 페이지에서 확인하실 수 있습니다.</div>
+                  )}
                 </div>
               </div>
-            ))}
-
-            <div class="mt-8 text-center text-xs text-gray-400 space-y-1">
-              <p>접수번호를 모르시면 문의 시 입력한 이름과 전화번호로 확인할 수 있습니다.</p>
-              <p>추가 문의: <a href={CLINIC.phoneTel} class="text-[#1E4BD8] font-semibold">{CLINIC.phone}</a> · <a href="/reservation" class="text-[#1E4BD8] font-semibold">온라인 상담 신청</a></p>
             </div>
+          ))}
+
+          <div class="cchk-help">
+            <p>접수번호를 모르시면 문의 시 입력한 이름과 전화번호로 확인할 수 있습니다.</p>
+            <p>추가 문의: <a href={CLINIC.phoneTel}>{CLINIC.phone}</a> · <a href="/reservation">온라인 상담 신청</a></p>
           </div>
         </div>
       </section>

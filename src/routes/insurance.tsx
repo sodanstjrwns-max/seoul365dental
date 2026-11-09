@@ -4,6 +4,7 @@
 // ============================================================
 import { Hono } from 'hono';
 import type { Bindings } from '../lib/types';
+import { Icon } from '../lib/icons';
 
 const app = new Hono<{ Bindings: Bindings }>();
 const SITE_URL = 'https://seoul365dc.kr';
@@ -142,6 +143,13 @@ const INSURANCE_GUIDES: InsuranceGuide[] = [
   },
 ];
 
+// 히어로 제목: " — " 앞(주제)과 뒤(부제)를 두 줄로 나눠 보여준다. 글자는 그대로이고 줄표만 화면에서 숨긴다.
+const TitleLines = ({ text }: { text: string }) => {
+  const i = text.indexOf(' — ');
+  if (i < 0) return <>{text}</>;
+  return <><span class="block">{text.slice(0, i)}</span><span class="sr-only"> — </span><span class="block h1-sub">{text.slice(i + 3)}</span></>;
+};
+
 // ── /insurance 인덱스 ──
 app.get('/insurance', (c) => {
   const canonicalUrl = `${SITE_URL}/insurance`;
@@ -173,31 +181,46 @@ app.get('/insurance', (c) => {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      <section class="hero-premium" style="min-height:40vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 pt-20 pb-12 text-center">
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-300 text-xs mb-4">
-            <i class="fas fa-shield-alt"></i> 보험 적용으로 부담 줄이기
+      <section class="phead" aria-labelledby="ins-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">보험 가이드</li></ol></nav>
+            <p class="eyebrow">보험 적용으로 부담 줄이기</p>
+            <h1 id="ins-h1" class="display-xl">
+              치과 건강보험 가이드
+            </h1>
+            <p class="lead hero-sub">
+              임플란트·틀니·스케일링·교정 — 건강보험과 실손보험 활용법
+            </p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href="tel:032-432-0365" class="btn btn-light mono"><Icon name="phone" />032-432-0365</a>
+            </div>
           </div>
-          <h1 class="text-4xl md:text-5xl font-black gradient-text-white leading-tight mb-4">
-            치과 건강보험 가이드
-          </h1>
-          <p class="text-white/60 text-lg">
-            임플란트·틀니·스케일링·교정 — 건강보험과 실손보험 활용법
-          </p>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Guides · {INSURANCE_GUIDES.length}</p>
+              <ol class="hubx-toc">
+                {INSURANCE_GUIDES.map((g) => (
+                  <li><a href={`/insurance/${g.slug}`}>{g.title.split(' — ')[0]}</a></li>
+                ))}
+              </ol>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="bg-gray-50 py-12">
-        <div class="max-w-4xl mx-auto px-5 space-y-4">
-          {INSURANCE_GUIDES.map((g) => (
-            <a href={`/insurance/${g.slug}`} class="block bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition">
-              <h2 class="text-xl font-bold text-gray-900 mb-2">{g.title}</h2>
-              <p class="text-sm text-gray-600 mb-3">{g.shortAnswer}</p>
-              <span class="text-blue-600 text-sm font-bold">자세히 보기 →</span>
-            </a>
-          ))}
+      <section class="sec">
+        <div class="wrap-n">
+          <div class="hubx-grid one" data-rv-group>
+            {INSURANCE_GUIDES.map((g) => (
+              <a href={`/insurance/${g.slug}`} class="card hubx-card hover">
+                <h2>{g.title}</h2>
+                <p>{g.shortAnswer}</p>
+                <span class="arrow-link">자세히 보기<Icon name="arrow" /></span>
+              </a>
+            ))}
+          </div>
         </div>
       </section>
     </>,
@@ -268,54 +291,63 @@ app.get('/insurance/:slug', (c) => {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      <section class="hero-premium" style="min-height:35vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 pt-20 pb-10">
-          <nav class="text-sm text-white/40 mb-4">
-            <a href="/" class="hover:text-white">홈</a> ›{' '}
-            <a href="/insurance" class="hover:text-white">보험 가이드</a>
-          </nav>
-          <h1 class="text-3xl md:text-4xl font-black gradient-text-white leading-tight mb-4">
-            {guide.title}
-          </h1>
-          <p class="text-white/70 text-base bg-white/5 border border-white/10 rounded-xl p-4">
-            <i class="fas fa-info-circle text-blue-300 mr-2"></i>
-            {guide.shortAnswer}
-          </p>
+      <section class="phead" aria-labelledby="ins-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li><a href="/insurance">보험 가이드</a></li></ol></nav>
+            <p class="eyebrow">Insurance Guide</p>
+            <h1 id="ins-h1" class="display-xl hubx-h1"><TitleLines text={guide.title} /></h1>
+            <p class="lead hero-sub">
+              {guide.shortAnswer}
+            </p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href="tel:032-432-0365" class="btn btn-light mono"><Icon name="phone" />032-432-0365</a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Contents</p>
+              <ol class="hubx-toc">
+                {guide.sections.map((s, i) => (
+                  <li><a href={`#ins-sec-${i + 1}`}>{s.heading}</a></li>
+                ))}
+                <li><a href="#ins-faq">자주 묻는 질문</a></li>
+              </ol>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="bg-white py-12">
-        <div class="max-w-3xl mx-auto px-5">
-          {guide.sections.map((s) => (
-            <div class="mb-8">
-              <h2 class="text-xl font-bold text-gray-900 mb-3">{s.heading}</h2>
-              <p class="text-gray-700 leading-relaxed">{s.body}</p>
-            </div>
+      <section class="sec">
+        <article class="wrap-n">
+          {guide.sections.map((s, i) => (
+            <section id={`ins-sec-${i + 1}`} class="prose-sec hubx-anchor" data-rv>
+              <h2>{s.heading}</h2>
+              <p>{s.body}</p>
+            </section>
           ))}
 
-          <h2 class="text-xl font-bold text-gray-900 mb-4 mt-12">자주 묻는 질문</h2>
-          <div class="space-y-3 mb-12">
-            {guide.faqs.map((f) => (
-              <details class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <summary class="font-bold text-gray-900 cursor-pointer">Q. {f.q}</summary>
-                <p class="mt-3 text-sm text-gray-700 leading-relaxed">A. {f.a}</p>
+          <section id="ins-faq" class="hubx-sec" style="margin-bottom:0" data-rv>
+            <h2>자주 묻는 질문</h2>
+            {guide.faqs.map((f, i) => (
+              <details class="fq" open={i === 0 ? true : undefined}>
+                <summary><h3>{f.q}</h3><span class="pm" aria-hidden="true"><Icon name="plus" /></span></summary>
+                <div class="fq-a"><p>{f.a}</p></div>
               </details>
             ))}
-          </div>
+          </section>
+        </article>
+      </section>
 
-          <div class="p-6 bg-blue-50 rounded-2xl text-center">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">보험 적용 가능한지 확인하세요</h3>
-            <p class="text-gray-600 mb-4 text-sm">전화 또는 온라인 예약으로 상담받아보세요</p>
-            <div class="flex flex-wrap justify-center gap-3">
-              <a href="tel:032-432-0365" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full font-bold">
-                <i class="fas fa-phone"></i> 032-432-0365
-              </a>
-              <a href="/reservation" class="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-full font-bold">
-                <i class="fas fa-calendar"></i> 예약·상담
-              </a>
-            </div>
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Consultation</p>
+          <h2 class="display-xl" data-rv>보험 적용 가능한지 확인하세요</h2>
+          <p class="lead" data-rv>전화 또는 온라인 예약으로 상담받아보세요</p>
+          <div class="cta-actions" data-rv-group>
+            <a href="tel:032-432-0365" class="btn btn-white btn-lg mono"><Icon name="phone" />032-432-0365</a>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />예약·상담</a>
           </div>
         </div>
       </section>

@@ -5,12 +5,22 @@
 import { Hono } from 'hono';
 import type { Bindings } from '../lib/types';
 import { PROCEDURES, getProcedureBySlug, getAllProcedureSlugs } from '../data/procedures';
+import { Icon } from '../lib/icons';
 
 const app = new Hono<{ Bindings: Bindings }>();
 const SITE_URL = 'https://seoul365dc.kr';
 // 절차 가이드 최종 검토일 — 기존 HowTo.dateModified 고정값과 동일하게 화면·스키마에 사용 (2026-09-29)
 const PROC_REVIEWED = '2026-05-26';
 const LEAD_REVIEWER_ID = `${SITE_URL}/doctors/park-junkyu#physician`;
+// 화면 표시용: 단계 이름 앞 번호("1. ")는 번호 표식(01)이 대신한다. HowTo 스키마의 name 은 원문 그대로 둔다.
+const stepLabel = (name: string) => name.replace(/^\d+\.\s*/, '');
+
+// 히어로 제목: " — " 앞(주제)과 뒤(부제)를 두 줄로 나눠 보여준다. 글자는 그대로이고 줄표만 화면에서 숨긴다.
+const TitleLines = ({ text }: { text: string }) => {
+  const i = text.indexOf(' — ');
+  if (i < 0) return <>{text}</>;
+  return <><span class="block">{text.slice(0, i)}</span><span class="sr-only"> — </span><span class="block h1-sub">{text.slice(i + 3)}</span></>;
+};
 
 // ── /procedures 인덱스 ──
 app.get('/procedures', (c) => {
@@ -43,34 +53,45 @@ app.get('/procedures', (c) => {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      <section class="hero-premium" style="min-height:40vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 pt-20 pb-12 text-center">
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs mb-4">
-            <i class="fas fa-list-ol"></i> 단계별 완벽 가이드
+      <section class="phead" aria-labelledby="proc-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">시술 절차</li></ol></nav>
+            <p class="eyebrow">단계별 완벽 가이드</p>
+            <h1 id="proc-h1" class="display-xl">
+              시술 절차 가이드
+            </h1>
+            <p class="lead hero-sub">
+              서울365치과 주요 시술의 단계별 진행 과정과 소요 기간·비용·주의사항
+            </p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href="tel:032-432-0365" class="btn btn-light mono"><Icon name="phone" />032-432-0365</a>
+            </div>
           </div>
-          <h1 class="text-4xl md:text-5xl font-black gradient-text-white leading-tight mb-4">
-            시술 절차 가이드
-          </h1>
-          <p class="text-white/60 text-lg">
-            서울365치과 주요 시술의 단계별 진행 과정과 소요 기간·비용·주의사항
-          </p>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Procedures · {PROCEDURES.length}</p>
+              <div class="phead-jump">
+                {PROCEDURES.map((p) => <a href={`/procedures/${p.slug}`}>{p.category}<small>{p.steps.length}</small></a>)}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="bg-gray-50 py-12">
-        <div class="max-w-5xl mx-auto px-5">
-          <div class="grid md:grid-cols-3 gap-5">
+      <section class="sec">
+        <div class="wrap">
+          <div class="hubx-grid three" data-rv-group>
             {PROCEDURES.map((p) => (
-              <a href={`/procedures/${p.slug}`} class="block bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-lg transition">
-                <div class="text-xs text-blue-600 font-bold mb-2">{p.category}</div>
-                <h2 class="text-xl font-bold text-gray-900 mb-3">{p.title}</h2>
-                <p class="text-sm text-gray-600 leading-relaxed mb-4">{p.description}</p>
-                <div class="flex items-center gap-3 text-xs text-gray-500">
-                  <span><i class="fas fa-clock"></i> {p.steps.length}단계</span>
-                  <span><i class="fas fa-coins"></i> {p.estimatedCost}</span>
-                </div>
+              <a href={`/procedures/${p.slug}`} class="card hubx-card hover">
+                <span class="tag">{p.category}</span>
+                <h2>{p.title}</h2>
+                <p>{p.description}</p>
+                <span class="meta">
+                  <span>{p.steps.length}단계</span>
+                  <span>{p.estimatedCost}</span>
+                </span>
               </a>
             ))}
           </div>
@@ -176,96 +197,100 @@ app.get('/procedures/:slug', (c) => {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      <section class="hero-premium" style="min-height:40vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 pt-20 pb-12">
-          <nav class="text-sm text-white/40 mb-4">
-            <a href="/" class="hover:text-white">홈</a> ›{' '}
-            <a href="/procedures" class="hover:text-white">시술 절차</a> › {proc.category}
-          </nav>
-          <h1 class="text-3xl md:text-4xl font-black gradient-text-white leading-tight mb-4">
-            {proc.title}
-          </h1>
-          <p id="tx-answer" class="text-white/60 text-lg mb-3">{proc.description}</p>
-          <p class="tx-reviewer text-white/40 text-xs mb-6">
-            감수: <a href="/doctors/park-junkyu" class="underline underline-offset-2 hover:text-white">박준규 대표원장</a> · 최종 검토 <time datetime={PROC_REVIEWED}>{PROC_REVIEWED}</time>
-          </p>
-          <div class="flex flex-wrap gap-3 text-xs">
-            <span class="px-3 py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-200">
-              <i class="fas fa-list-ol"></i> {proc.steps.length}단계
-            </span>
-            <span class="px-3 py-1.5 rounded-full bg-green-500/15 border border-green-500/30 text-green-200">
-              <i class="fas fa-coins"></i> {proc.estimatedCost}
-            </span>
-            <span class="px-3 py-1.5 rounded-full bg-purple-500/15 border border-purple-500/30 text-purple-200">
-              <i class="fas fa-tags"></i> {proc.category}
-            </span>
+      <section class="phead" aria-labelledby="proc-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li><a href="/procedures">시술 절차</a></li><li aria-current="page">{proc.category}</li></ol></nav>
+            <p class="eyebrow">Procedure Guide</p>
+            <h1 id="proc-h1" class="display-xl hubx-h1"><TitleLines text={proc.title} /></h1>
+            <p id="tx-answer" class="lead hero-sub">{proc.description}</p>
+            <p class="tx-reviewer phead-note">
+              감수: <a href="/doctors/park-junkyu" class="cta-link">박준규 대표원장</a> · 최종 검토 <time datetime={PROC_REVIEWED}>{PROC_REVIEWED}</time>
+            </p>
+            <div class="chips">
+              <span class="chip">{proc.steps.length}단계</span>
+              <span class="chip">{proc.estimatedCost}</span>
+              <span class="chip">{proc.category}</span>
+            </div>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href="tel:032-432-0365" class="btn btn-light mono"><Icon name="phone" />032-432-0365</a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">시술 단계</p>
+              <ol class="hubx-toc">
+                {proc.steps.map((s, i) => (
+                  <li><a href={`#step-${i + 1}`}>{stepLabel(s.name)}</a></li>
+                ))}
+              </ol>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="bg-white py-12">
-        <div class="max-w-3xl mx-auto px-5">
+      <section class="sec">
+        <article class="wrap-n">
           {/* 준비물 */}
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">사전 준비</h2>
-          <ul class="grid grid-cols-2 gap-2 mb-12">
-            {proc.supplies.map((s) => (
-              <li class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg text-sm text-gray-700">
-                <i class="fas fa-check-circle text-green-500"></i> {s}
-              </li>
-            ))}
-          </ul>
+          <section class="hubx-sec" data-rv>
+            <h2>사전 준비</h2>
+            <ul class="check-list">
+              {proc.supplies.map((s) => (
+                <li><Icon name="check" /><span>{s}</span></li>
+              ))}
+            </ul>
+          </section>
 
           {/* 단계별 */}
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">시술 단계</h2>
-          <ol class="space-y-6 mb-12">
-            {proc.steps.map((s, i) => (
-              <li class="flex gap-4 p-5 bg-blue-50 rounded-xl">
-                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center">
-                  {i + 1}
-                </div>
-                <div class="flex-1">
-                  <h3 class="font-bold text-gray-900 mb-2">{s.name}</h3>
-                  <p class="text-sm text-gray-700 leading-relaxed">{s.text}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <section class="hubx-sec">
+            <h2 data-rv>시술 단계</h2>
+            <ol class="steps" data-rv-group>
+              {proc.steps.map((s, i) => (
+                <li class="step hubx-anchor" id={`step-${i + 1}`}>
+                  <span class="step-n mono" aria-label={`${i + 1}단계`}>{String(i + 1).padStart(2, '0')}</span>
+                  <div>
+                    <h3>{stepLabel(s.name)}</h3>
+                    <p>{s.text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
 
           {/* 시술 후 관리 */}
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">시술 후 주의사항</h2>
-          <ul class="space-y-2 mb-12 p-5 bg-yellow-50 rounded-xl border border-yellow-200">
-            {proc.aftercare.map((a) => (
-              <li class="flex items-start gap-2 text-sm text-gray-700">
-                <i class="fas fa-exclamation-circle text-yellow-600 mt-0.5"></i>
-                <span>{a}</span>
-              </li>
-            ))}
-          </ul>
+          <section class="hubx-sec" data-rv>
+            <h2>시술 후 주의사항</h2>
+            <div class="card note-card">
+              <ul>
+                {proc.aftercare.map((a) => (
+                  <li>{a}</li>
+                ))}
+              </ul>
+            </div>
+          </section>
 
           {/* FAQ */}
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">자주 묻는 질문</h2>
-          <div class="space-y-3 mb-12">
-            {proc.faqs.map((f) => (
-              <details class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                <summary class="font-bold text-gray-900 cursor-pointer">{f.q}</summary>
-                <p class="mt-3 text-sm text-gray-700 leading-relaxed">{f.a}</p>
+          <section class="hubx-sec" style="margin-bottom:0" data-rv>
+            <h2>자주 묻는 질문</h2>
+            {proc.faqs.map((f, i) => (
+              <details class="fq" open={i === 0 ? true : undefined}>
+                <summary><h3>{f.q}</h3><span class="pm" aria-hidden="true"><Icon name="plus" /></span></summary>
+                <div class="fq-a"><p>{f.a}</p></div>
               </details>
             ))}
-          </div>
+          </section>
+        </article>
+      </section>
 
-          {/* CTA */}
-          <div class="p-6 bg-blue-50 rounded-2xl text-center">
-            <h3 class="text-xl font-bold text-gray-900 mb-3">{proc.category} 상담받기</h3>
-            <div class="flex flex-wrap justify-center gap-3">
-              <a href="tel:032-432-0365" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full font-bold">
-                <i class="fas fa-phone"></i> 032-432-0365
-              </a>
-              <a href="/reservation" class="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-full font-bold">
-                <i class="fas fa-calendar"></i> 온라인 예약
-              </a>
-            </div>
+      {/* CTA */}
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Consultation</p>
+          <h2 class="display-xl" style="margin-bottom:2.4rem" data-rv>{proc.category} 상담받기</h2>
+          <div class="cta-actions" data-rv-group>
+            <a href="tel:032-432-0365" class="btn btn-white btn-lg mono"><Icon name="phone" />032-432-0365</a>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />온라인 예약</a>
           </div>
         </div>
       </section>

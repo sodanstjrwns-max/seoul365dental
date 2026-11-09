@@ -4,6 +4,7 @@
 // ============================================================
 import { Hono } from 'hono';
 import type { Bindings } from '../lib/types';
+import { Icon } from '../lib/icons';
 
 const app = new Hono<{ Bindings: Bindings }>();
 const SITE_URL = 'https://seoul365dc.kr';
@@ -127,38 +128,53 @@ app.get('/events', (c) => {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      <section class="hero-premium" style="min-height:40vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 pt-20 pb-12 text-center">
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/30 text-red-300 text-xs mb-4">
-            <i class="fas fa-fire"></i> 진행중 이벤트
+      {/* 히어로 — 오른쪽에 분야별 기간 사실 카드 */}
+      <section class="phead" aria-labelledby="evl-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치">
+              <ol>
+                <li><a href="/">홈</a></li>
+                <li aria-current="page">이벤트</li>
+              </ol>
+            </nav>
+            <p class="eyebrow">
+              진행중 이벤트
+            </p>
+            <h1 id="evl-h1" class="display-xl evl-h1">
+              서울365치과 진행중 이벤트
+            </h1>
+            <p class="lead">
+              시즌별 할인 · 카드 무이자 할부 · 가족 패키지 혜택
+            </p>
           </div>
-          <h1 class="text-4xl md:text-5xl font-black gradient-text-white leading-tight mb-4">
-            서울365치과 진행중 이벤트
-          </h1>
-          <p class="text-white/60 text-lg">
-            시즌별 할인 · 카드 무이자 할부 · 가족 패키지 혜택
-          </p>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Schedule</p>
+              <dl class="fact-rows">
+                {EVENTS.map((e) => (
+                  <div><dt>{e.category}</dt><dd class="mono">{e.startDate} ~ {e.endDate}</dd></div>
+                ))}
+              </dl>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="bg-gray-50 py-12">
-        <div class="max-w-5xl mx-auto px-5">
-          <div class="grid md:grid-cols-2 gap-5">
+      <section class="sec">
+        <div class="wrap">
+          <div class="evl-grid" data-rv-group>
             {EVENTS.map((e) => (
-              <a href={`/events/${e.slug}`} class="block bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition">
-                <div class="p-6">
-                  <div class="flex items-center gap-2 mb-3">
-                    <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">{e.category}</span>
-                    <span class="text-xs text-gray-500">{e.startDate} ~ {e.endDate}</span>
-                  </div>
-                  <h2 class="text-xl font-bold text-gray-900 mb-2">{e.name}</h2>
-                  <p class="text-sm text-gray-600 mb-4 leading-relaxed">{e.description}</p>
-                  <div class="p-3 bg-red-50 rounded-lg border border-red-100">
-                    <div class="text-xs text-red-600 font-bold mb-1">혜택</div>
-                    <div class="text-sm font-bold text-red-700">{e.benefit}</div>
-                  </div>
+              <a href={`/events/${e.slug}`} class="card hover evl-card">
+                <p class="evl-meta">
+                  <span class="evl-cat">{e.category}</span>
+                  <span class="mono">{e.startDate} ~ {e.endDate}</span>
+                </p>
+                <h2>{e.name}</h2>
+                <p class="evl-desc">{e.description}</p>
+                <div class="evl-benefit">
+                  <span class="evl-benefit-k">혜택</span>
+                  <b>{e.benefit}</b>
                 </div>
               </a>
             ))}
@@ -243,52 +259,66 @@ app.get('/events/:slug', (c) => {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(medicalSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      <section class="hero-premium" style="min-height:40vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 pt-20 pb-12">
-          <nav class="text-sm text-white/40 mb-4">
-            <a href="/" class="hover:text-white">홈</a> ›{' '}
-            <a href="/events" class="hover:text-white">이벤트</a> › {ev.category}
-          </nav>
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/30 text-red-300 text-xs mb-4">
-            <i class="fas fa-fire"></i> {ev.startDate} ~ {ev.endDate}
+      {/* 히어로 — 오른쪽에 핵심 혜택 사실 카드 */}
+      <section class="phead" aria-labelledby="evl-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치">
+              <ol>
+                <li><a href="/">홈</a></li>
+                <li><a href="/events">이벤트</a></li>
+                <li aria-current="page">{ev.category}</li>
+              </ol>
+            </nav>
+            <p class="eyebrow no-bar mono">
+              <Icon name="clock" size={14} /> {ev.startDate} ~ {ev.endDate}
+            </p>
+            <h1 id="evl-h1" class="display-xl evl-h1">
+              {ev.name}
+            </h1>
+            <p class="lead">{ev.description}</p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />온라인 예약</a>
+              <a href="tel:032-432-0365" class="btn btn-light mono"><Icon name="phone" />032-432-0365</a>
+            </div>
           </div>
-          <h1 class="text-3xl md:text-4xl font-black gradient-text-white leading-tight mb-4">
-            {ev.name}
-          </h1>
-          <p class="text-white/70 text-lg">{ev.description}</p>
+          <div class="phead-aside">
+            <div class="fact-card evl-key">
+              <p class="evl-key-k">핵심 혜택</p>
+              <p class="evl-key-v">{ev.benefit}</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="bg-white py-12">
-        <div class="max-w-3xl mx-auto px-5">
-          <div class="p-6 bg-red-50 rounded-2xl border-2 border-red-200 mb-8">
-            <div class="text-xs text-red-600 font-bold mb-2">🎁 핵심 혜택</div>
-            <div class="text-xl font-bold text-red-700">{ev.benefit}</div>
+      <section class="sec">
+        <div class="wrap-n">
+          <div class="sec-head" data-rv>
+            <p class="eyebrow">Details</p>
+            <h2 class="display-2">상세 내용</h2>
           </div>
-
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">상세 내용</h2>
-          <ul class="space-y-3 mb-12">
+          <ul class="check-list evl-details" data-rv-group>
             {ev.details.map((d) => (
-              <li class="flex items-start gap-3 p-4 bg-gray-50 rounded-xl">
-                <i class="fas fa-check-circle text-green-500 mt-1"></i>
-                <span class="text-gray-700">{d}</span>
+              <li>
+                <Icon name="check" />
+                <span>{d}</span>
               </li>
             ))}
           </ul>
+        </div>
+      </section>
 
-          <div class="p-6 bg-blue-50 rounded-2xl text-center">
-            <h3 class="text-xl font-bold text-gray-900 mb-2">이벤트 적용 상담받기</h3>
-            <p class="text-gray-600 mb-4 text-sm">이벤트 종료 전 예약 시 혜택 적용 가능</p>
-            <div class="flex flex-wrap justify-center gap-3">
-              <a href="tel:032-432-0365" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full font-bold">
-                <i class="fas fa-phone"></i> 032-432-0365
-              </a>
-              <a href="/reservation" class="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-full font-bold">
-                <i class="fas fa-calendar"></i> 온라인 예약
-              </a>
-            </div>
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <h2 class="display-xl" data-rv>이벤트 적용 상담받기</h2>
+          <p class="lead" data-rv>이벤트 종료 전 예약 시 혜택 적용 가능</p>
+          <div class="cta-actions" data-rv-group>
+            <a href="tel:032-432-0365" class="btn btn-white btn-lg mono">
+              <Icon name="phone" /> 032-432-0365
+            </a>
+            <a href="/reservation" class="btn btn-primary btn-lg">
+              <Icon name="calendar" /> 온라인 예약
+            </a>
           </div>
         </div>
       </section>

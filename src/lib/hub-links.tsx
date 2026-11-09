@@ -4,6 +4,7 @@
 //  - 한 페이지 허브 링크 최대 2개: 전역 푸터(구월동 치과) 1 + 본문 1. nofollow 금지, 허브 자신에는 자기 링크 없음.
 // ============================================================
 
+import { Icon } from './icons'
 export const HUB_GUWOL = { href: '/area/guwol-dong', anchor: '구월동 치과' } as const
 export const HUB_NAMDONG = { href: '/area/namdong-gu', anchor: '인천 남동구 치과' } as const
 
@@ -34,8 +35,8 @@ export function BlogHubNote({ slug, topic }: { slug: string; topic?: string }) {
     body = <>남동구 어느 동에서 오시는지에 따라 걸리는 시간과 노선이 다릅니다 — 동별 거리와 교통편은 <HubA hub={HUB_NAMDONG} /> 안내에 정리해 두었습니다.</>
   }
   return (
-    <p class="mt-10 text-[0.9rem] text-gray-600 leading-relaxed rounded-2xl border border-gray-100 bg-gray-50/70 px-5 py-4">
-      <i class="fa-solid fa-location-dot text-[#1E4BD8]/60 mr-2" aria-hidden="true"></i>{body}
+    <p class="hub-note boxed">
+      <Icon name="pin" size={16} /><span>{body}</span>
     </p>
   )
 }

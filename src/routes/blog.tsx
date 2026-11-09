@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { BlogHubNote } from '../lib/hub-links'
+import { Icon } from '../lib/icons'
 import type { Bindings } from '../lib/types'
 import { treatments, getTreatmentBySlug } from '../data/treatments'
 import { doctors } from '../data/doctors'
@@ -1117,74 +1118,85 @@ blogRoutes.get('/blog', async (c) => {
   // 글이 있는 분류만 필터 링크로 노출
   const categories = ['전체', ...['치과상식', '임플란트', '교정', '심미치료', '소아치과', '잇몸/외과', '수면진료', '병원소식'].filter(k => catCounts[k] || k === category)];
 
+  const allCount = Object.values(catCounts).reduce((a, b) => a + b, 0);
+
   return c.render(
     <>
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">서울365치과 블로그</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">치아 건강에 대한 전문 정보를 쉽게 알려드립니다.</p>
+      <section class="phead" aria-labelledby="blog-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">블로그</li></ol></nav>
+            <p class="eyebrow">Columns{allCount ? ` · ${allCount}` : ''}</p>
+            <h1 id="blog-h1" class="display-xl">서울365치과 블로그</h1>
+            <p class="lead hero-sub">치아 건강에 대한 전문 정보를 쉽게 알려드립니다.</p>
+          </div>
+          {categories.length > 1 && (
+            <div class="phead-aside">
+              <div class="fact-card">
+                <p class="eyebrow">분류</p>
+                {/* Category Filter */}
+                <nav class="phead-jump post-cats" aria-label="분류">
+                  {categories.map(cat => {
+                    const on = (cat === '전체' && !category) || category === cat;
+                    const n = cat === '전체' ? allCount : (catCounts[cat] || 0);
+                    return (
+                      <a href={cat === '전체' ? '/blog' : `/blog?category=${encodeURIComponent(cat)}`} aria-current={on ? 'page' : undefined}>
+                        {cat}{n ? <small>{n}</small> : null}
+                      </a>
+                    );
+                  })}
+                </nav>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
-      <section class="section-lg bg-mesh">
-        <div class="max-w-5xl mx-auto px-5 md:px-8">
-          <h2 class="text-xl font-bold text-gray-900 mb-6 reveal">치아 건강 전문 정보</h2>
-          {/* Category Filter */}
-          <div class="flex flex-wrap gap-2 mb-10 reveal">
-            {categories.map(cat => (
-              <a href={cat === '전체' ? '/blog' : `/blog?category=${encodeURIComponent(cat)}`}
-                 class={`px-4 py-2 rounded-full text-xs font-semibold transition ${(cat === '전체' && !category) || category === cat ? 'bg-[#1E4BD8] text-white' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'}`}>
-                {cat}
-              </a>
-            ))}
+      <section class="sec">
+        <div class="wrap">
+          <div class="sec-head" data-rv>
+            <h2 class="display-2">치아 건강 전문 정보</h2>
           </div>
 
           {posts.length === 0 ? (
-            <div class="text-center py-20">
-              <div class="w-20 h-20 rounded-full bg-[#1E4BD8]/5 mx-auto mb-6 flex items-center justify-center">
-                <i class="fa-solid fa-pen-nib text-3xl text-[#1E4BD8]/20"></i>
-              </div>
-              <h2 class="text-lg font-bold text-gray-900 mb-2">아직 작성된 글이 없습니다</h2>
-              <p class="text-gray-400 text-sm">곧 유익한 치과 정보를 올려드리겠습니다!</p>
+            <div class="no-results post-empty">
+              <Icon name="news" />
+              <h2>아직 작성된 글이 없습니다</h2>
+              <p>곧 유익한 치과 정보를 올려드리겠습니다!</p>
             </div>
           ) : (
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 stagger-children">
+            <div class="post-grid">
               {posts.map((post: any) => (
-                <a href={`/blog/${post.slug}`} class="premium-card overflow-hidden group hover:shadow-xl transition-all duration-300 tilt-card">
-                  <div class="aspect-[16/9] bg-gradient-to-br from-[#1E4BD8]/5 to-[#8FB4FF]/[0.03] flex items-center justify-center">
-                    {post.cover_image ? (
-                      <img src={post.cover_image} alt={post.title} class="w-full h-full object-cover" loading="lazy" decoding="async" />
-                    ) : (
-                      <i class="fa-solid fa-tooth text-4xl text-[#1E4BD8]/10"></i>
-                    )}
+                <a href={`/blog/${post.slug}`} class="card" data-rv>
+                  <div class="post-ph">
+                    {post.cover_image
+                      ? <img src={post.cover_image} alt={post.title} loading="lazy" decoding="async" />
+                      : <Icon name="news" />}
                   </div>
-                  <div class="p-5">
-                    <div class="flex items-center gap-2 mb-2">
-                      <span class="text-[0.65rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2.5 py-0.5 rounded-full font-semibold">{post.category}</span>
-                      <span class="text-gray-200" aria-hidden="true">·</span>
-                      <span class="text-[0.6rem] text-gray-300">{kstYmd(post.created_at)}</span>
-                    </div>
-                    <h3 class="font-bold text-gray-900 group-hover:text-[#1E4BD8] transition-colors line-clamp-2">{post.title}</h3>
-                    {post.excerpt && <p class="text-gray-500 text-[0.82rem] mt-2 line-clamp-2">{post.excerpt}</p>}
+                  <div class="card-body">
+                    <span class="tag">{post.category}</span>
+                    <h3>{post.title}</h3>
+                    {post.excerpt && <p class="ex">{post.excerpt}</p>}
                     {post.tags && (
-                      <div class="flex flex-wrap gap-1 mt-3">
+                      <p class="post-tags">
                         {post.tags.split(',').slice(0, 3).map((tag: string) => (
-                          <span class="text-[0.6rem] text-gray-400 bg-gray-50 px-2 py-0.5 rounded">#{tag.trim()}</span>
+                          <span>#{tag.trim()}</span>
                         ))}
-                      </div>
+                      </p>
                     )}
+                    <p class="meta mono post-date">{kstYmd(post.created_at)}</p>
                   </div>
                 </a>
               ))}
             </div>
           )}
           {totalPages > 1 && (
-            <div class="flex flex-wrap justify-center gap-2 mt-12" role="navigation" aria-label="페이지">
-              {page > 1 && <a href={pageHref(page - 1)} rel="prev" class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#1E4BD8] hover:text-[#1E4BD8]">이전</a>}
+            <div class="post-pager" role="navigation" aria-label="페이지">
+              {page > 1 && <a href={pageHref(page - 1)} rel="prev">이전</a>}
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => n === page
-                ? <span aria-current="page" class="px-3 py-2 rounded-lg bg-[#1E4BD8] text-white text-sm font-semibold">{n}</span>
-                : <a href={pageHref(n)} class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#1E4BD8] hover:text-[#1E4BD8]">{n}</a>)}
-              {page < totalPages && <a href={pageHref(page + 1)} rel="next" class="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-500 hover:border-[#1E4BD8] hover:text-[#1E4BD8]">다음</a>}
+                ? <span aria-current="page">{n}</span>
+                : <a href={pageHref(n)}>{n}</a>)}
+              {page < totalPages && <a href={pageHref(page + 1)} rel="next">다음</a>}
             </div>
           )}
         </div>
@@ -1522,52 +1534,52 @@ blogRoutes.get('/blog/:slug', async (c) => {
 
   return c.render(
     <>
-      <article class="pt-24 pb-16">
-        {post.cover_image && (
-          <div class="max-w-5xl mx-auto px-5 md:px-8 mb-8">
-            <div class="relative rounded-2xl overflow-hidden shadow-lg">
-              <img src={post.cover_image} alt={post.title} class="w-full h-[280px] md:h-[400px] object-cover" id="blogCover" loading="eager" fetchpriority="high" decoding="async" />
-              <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+      <article class="post-page">
+        <section class="phead" aria-labelledby="post-h1">
+          <div class={`wrap phead-in${post.cover_image ? '' : ' post-solo'}`}>
+            <div class="phead-text">
+              <nav class="crumb" aria-label="현재 위치">
+                <ol>
+                  <li><a href="/">홈</a></li>
+                  <li><a href="/blog">블로그</a></li>
+                  {catCrumb && <li><a href={`/blog?category=${encodeURIComponent(post.category)}`}>{post.category}</a></li>}
+                </ol>
+              </nav>
+              {post.category && <p class="eyebrow">{post.category}</p>}
+              <h1 id="post-h1" class="post-h1">{post.title}</h1>
+              <p class="post-meta">
+                <span class="by">{authorDoc ? `${authorDoc.name} ${authorDoc.title}` : '서울365치과 발행'}</span>
+                <time datetime={publishedIso}>{postDate}</time>
+                {updateDate !== postDate && <span>수정 <time datetime={modifiedIso}>{updateDate}</time></span>}
+                <span><Icon name="clock" size={14} />{readingTime}분 읽기</span>
+              </p>
             </div>
+            {post.cover_image && (
+              <div class="phead-aside">
+                <figure class="phead-img post-cover">
+                  <img src={post.cover_image} alt={post.title} id="blogCover" loading="eager" fetchpriority="high" decoding="async" />
+                </figure>
+              </div>
+            )}
           </div>
-        )}
+        </section>
 
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <nav class="flex flex-wrap items-center gap-2 text-xs text-gray-400 mb-6" aria-label="Breadcrumb">
-            <a href="/" class="hover:text-[#1E4BD8] transition">홈</a>
-            <i class="fa-solid fa-chevron-right text-[0.5rem]"></i>
-            <a href="/blog" class="hover:text-[#1E4BD8] transition">블로그</a>
-            {catCrumb && <><i class="fa-solid fa-chevron-right text-[0.5rem]"></i><a href={`/blog?category=${encodeURIComponent(post.category)}`} class="hover:text-[#1E4BD8] transition">{post.category}</a></>}
-          </nav>
+        <div class="sec">
+          <div class={`wrap post-layout${headings.length > 1 ? '' : ' solo'}`}>
+            <div class="post-main">
+              {summary && (
+                <div class="answer-card answer-summary">
+                  <p class="eyebrow">핵심 답변</p>
+                  <p class="answer-a" style="margin:0">{summary}</p>
+                </div>
+              )}
 
-          <header class="mb-8">
-            <span class="text-[0.7rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-3 py-1 rounded-full font-semibold">{post.category}</span>
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mt-4 mb-4 leading-tight">{post.title}</h1>
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-4 pt-4 border-t border-gray-100 text-sm text-gray-400">
-              <span class="font-medium text-gray-600">{authorDoc ? `${authorDoc.name} ${authorDoc.title}` : '서울365치과 발행'}</span>
-              <span>·</span>
-              <time datetime={publishedIso}>{postDate}</time>
-              {updateDate !== postDate && <><span>·</span><span>수정 <time datetime={modifiedIso}>{updateDate}</time></span></>}
-              <span>·</span>
-              <span><i class="fa-regular fa-clock mr-1"></i>{readingTime}분 읽기</span>
-            </div>
-          </header>
-
-          {summary && (
-            <div class="answer-summary mb-10 rounded-2xl border border-[#1E4BD8]/15 border-l-4 border-l-[#1E4BD8] bg-[#1E4BD8]/[0.03] px-5 py-4">
-              <p class="text-[0.7rem] font-bold text-[#1E4BD8] tracking-wider mb-1.5">핵심 답변</p>
-              <p class="text-gray-800 text-[0.95rem] leading-relaxed">{summary}</p>
-            </div>
-          )}
-
-          <div class="flex gap-10">
-            <div class="flex-1 min-w-0">
-              <div class="blog-body text-[0.92rem] leading-relaxed" dangerouslySetInnerHTML={{__html: contentHtml}} />
+              <div class="blog-body post-body" dangerouslySetInnerHTML={{__html: contentHtml}} />
 
               {tagsArray.length > 0 && (
-                <div class="flex flex-wrap gap-2 mt-10 pt-6 border-t border-gray-100">
+                <div class="post-tags big">
                   {tagsArray.map((tag: string) => (
-                    <span class="text-xs text-gray-400 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">#{tag}</span>
+                    <span>#{tag}</span>
                   ))}
                 </div>
               )}
@@ -1577,93 +1589,98 @@ blogRoutes.get('/blog/:slug', async (c) => {
 
               {/* 작성자 박스 — 의료진 작성 글(병원 직접 입력)만 원장 표시, 그 외 병원 발행 */}
               {authorDoc ? (
-              <div class="mt-10 flex items-start gap-4 p-5 rounded-2xl border border-gray-100 bg-white">
-                <a href={`/doctors/${authorDoc.slug}`} class="shrink-0">
-                  <img src={authorDoc.photo} alt={`${authorDoc.name} ${authorDoc.title}`} width="64" height="64" loading="lazy" decoding="async" class="w-16 h-16 rounded-full object-cover object-top border border-gray-100" />
+              <div class="card post-author">
+                <a href={`/doctors/${authorDoc.slug}`}>
+                  <img src={authorDoc.photo} alt={`${authorDoc.name} ${authorDoc.title}`} width="64" height="64" loading="lazy" decoding="async" />
                 </a>
-                <div class="min-w-0 text-sm">
-                  <p class="text-gray-400 text-xs mb-0.5">작성</p>
-                  <a href={`/doctors/${authorDoc.slug}`} class="font-bold text-gray-900 hover:text-[#1E4BD8] transition">{authorDoc.name} {authorDoc.title}</a>
-                  {authorDoc.credentials?.[0] && <p class="text-gray-500 text-xs mt-1">{authorDoc.credentials[0]}</p>}
-                  <p class="text-gray-400 text-xs mt-1">최종 업데이트 <time datetime={modifiedIso}>{updateDate}</time></p>
+                <div>
+                  <p class="k">작성</p>
+                  <a href={`/doctors/${authorDoc.slug}`} class="n">{authorDoc.name} {authorDoc.title}</a>
+                  {authorDoc.credentials?.[0] && <p class="d">{authorDoc.credentials[0]}</p>}
+                  <p class="d">최종 업데이트 <time datetime={modifiedIso}>{updateDate}</time></p>
                 </div>
               </div>
               ) : (
-              <div class="mt-10 flex items-start gap-4 p-5 rounded-2xl border border-gray-100 bg-white">
-                <img src="/static/logo-192.png" alt="서울365치과 로고" width="64" height="64" loading="lazy" decoding="async" class="shrink-0 w-16 h-16 rounded-full object-contain border border-gray-100 bg-white" />
-                <div class="min-w-0 text-sm">
-                  <p class="text-gray-400 text-xs mb-0.5">작성·발행</p>
-                  <p class="font-bold text-gray-900">서울365치과</p>
-                  <p class="text-gray-500 text-xs mt-1">{CLINIC_GENERAL_INFO_NOTE}</p>
-                  <p class="text-gray-400 text-xs mt-1">최종 업데이트 <time datetime={modifiedIso}>{updateDate}</time></p>
+              <div class="card post-author">
+                <img src="/static/logo-192.png" alt="서울365치과 로고" width="64" height="64" loading="lazy" decoding="async" class="logo" />
+                <div>
+                  <p class="k">작성·발행</p>
+                  <p class="n">서울365치과</p>
+                  <p class="d">{CLINIC_GENERAL_INFO_NOTE}</p>
+                  <p class="d">최종 업데이트 <time datetime={modifiedIso}>{updateDate}</time></p>
                 </div>
               </div>
               )}
 
               {linkedTreatment && (
-                <div class="mt-8 p-5 rounded-2xl bg-[#1E4BD8]/[0.03] border border-[#1E4BD8]/10">
-                  <div class="flex items-center gap-2 mb-2">
-                    <i class="fa-solid fa-link text-[#1E4BD8] text-xs"></i>
-                    <span class="text-xs font-semibold text-[#1E4BD8]">관련 진료</span>
-                  </div>
-                  <a href={`/treatments/${linkedTreatment.slug}`} class="text-gray-900 font-bold hover:text-[#1E4BD8] transition">
-                    {linkedTreatment.name} — 자세히 보기 <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
+                <div class="card post-tx">
+                  <p class="box-h">관련 진료</p>
+                  <a href={`/treatments/${linkedTreatment.slug}`} class="main">
+                    {linkedTreatment.name} — 자세히 보기 <Icon name="arrow" />
                   </a>
                   {relatedCases.length > 0 && (
-                    <ul class="mt-3 space-y-1">
+                    <ul>
                       {relatedCases.map((rc: any) => (
-                        <li><a href={`/cases/${rc.id}`} class="text-sm text-gray-600 hover:text-[#1E4BD8] transition">치료 사례: {rc.title}{rc.duration ? ` (${rc.duration})` : ''}</a></li>
+                        <li><a href={`/cases/${rc.id}`}>치료 사례: {rc.title}{rc.duration ? ` (${rc.duration})` : ''}</a></li>
                       ))}
                     </ul>
                   )}
                 </div>
               )}
 
-              <p class="text-[0.72rem] text-gray-400 mt-8">※ 이 글은 일반적인 치과 정보이며, 정확한 진단과 치료 방법은 검사 후 결정됩니다. 개인에 따라 치료 결과가 다를 수 있습니다.</p>
-
-              <div class="mt-10 p-6 rounded-2xl bg-gradient-to-br from-navy to-navy-lighter text-center">
-                <h2 class="text-white font-bold text-lg mb-2">더 궁금한 점이 있으신가요?</h2>
-                <p class="text-white/40 text-sm mb-5">서울365치과에서 직접 상담받아 보세요.</p>
-                <a href="/reservation" class="btn-premium btn-premium-fill" data-cursor-hover>무료 상담 예약 <i class="fa-solid fa-arrow-right text-xs ml-1"></i></a>
-              </div>
+              <p class="notice">※ 이 글은 일반적인 치과 정보이며, 정확한 진단과 치료 방법은 검사 후 결정됩니다. 개인에 따라 치료 결과가 다를 수 있습니다.</p>
             </div>
 
             {headings.length > 1 && (
-              <aside class="hidden lg:block w-56 shrink-0">
-                <div class="sticky top-24">
-                  <p class="text-[0.68rem] font-bold text-gray-400 uppercase tracking-wider mb-3">목차</p>
-                  <nav class="space-y-1.5" aria-label="목차">
-                    {headings.map((h: any) => (
-                      <a href={`#${h.id}`} class={`block text-xs transition truncate ${h.level === 2 ? 'text-gray-500 hover:text-[#1E4BD8] font-medium' : 'text-gray-400 hover:text-[#1E4BD8] pl-3 text-[0.7rem]'}`}>{h.text}</a>
-                    ))}
-                  </nav>
-                </div>
+              <aside class="post-toc">
+                <p class="box-h">목차</p>
+                <nav aria-label="목차">
+                  {headings.map((h: any) => (
+                    <a href={`#${h.id}`} class={h.level === 2 ? undefined : 'sub'}>{h.text}</a>
+                  ))}
+                </nav>
               </aside>
             )}
           </div>
-
-          {related.length > 0 && (
-            <div class="mt-16 pt-10 border-t border-gray-100">
-              <h2 class="text-lg font-bold text-gray-900 mb-6">관련 칼럼</h2>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {related.map((r: any) => (
-                  <a href={`/blog/${r.slug}`} class="glass-card p-5 hover:border-[#1E4BD8]/20 transition group">
-                    <span class="text-[0.6rem] text-[#1E4BD8] font-semibold">{r.category}</span>
-                    <h3 class="font-bold text-gray-900 text-sm mt-1 group-hover:text-[#1E4BD8] transition line-clamp-2">{r.title}</h3>
-                    <p class="text-xs text-gray-400 mt-2">{kstYmd(r.created_at)}</p>
-                  </a>
-                ))}
-              </div>
-              {catCrumb && <p class="mt-4 text-sm"><a href={`/blog?category=${encodeURIComponent(post.category)}`} class="text-[#1E4BD8] font-semibold">{post.category} 칼럼 더 보기 →</a></p>}
-            </div>
-          )}
         </div>
       </article>
 
-      <div id="imgLightbox" class="hidden fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out" onclick="this.classList.add('hidden')">
-        <img id="lbImg" src="" alt="" class="max-w-full max-h-[90vh] rounded-xl shadow-2xl object-contain" />
-        <button class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white text-xl flex items-center justify-center transition" aria-label="닫기" onclick="event.stopPropagation(); document.getElementById('imgLightbox').classList.add('hidden')">
-          <i class="fa-solid fa-xmark"></i>
+      {related.length > 0 && (
+        <section class="sec post-rel" aria-labelledby="post-rel-h">
+          <div class="wrap">
+            <div class="sec-head" data-rv>
+              <h2 id="post-rel-h" class="display-2">관련 칼럼</h2>
+            </div>
+            <div class="post-grid" data-rv-group>
+              {related.map((r: any) => (
+                <a href={`/blog/${r.slug}`} class="card">
+                  <div class="card-body">
+                    <span class="tag">{r.category}</span>
+                    <h3>{r.title}</h3>
+                    <p class="meta mono post-date">{kstYmd(r.created_at)}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+            {catCrumb && <p style="margin:0"><a href={`/blog?category=${encodeURIComponent(post.category)}`} class="post-more">{post.category} 칼럼 더 보기 →</a></p>}
+          </div>
+        </section>
+      )}
+
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <h2 class="display-xl" data-rv>더 궁금한 점이 있으신가요?</h2>
+          <p class="lead" data-rv>서울365치과에서 직접 상담받아 보세요.</p>
+          <div class="cta-actions" data-rv>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />무료 상담 예약</a>
+          </div>
+        </div>
+      </section>
+
+      <div id="imgLightbox" class="post-lb hidden" onclick="this.classList.add('hidden')">
+        <img id="lbImg" src="" alt="" />
+        <button type="button" aria-label="닫기" onclick="event.stopPropagation(); document.getElementById('imgLightbox').classList.add('hidden')">
+          <Icon name="close" />
         </button>
       </div>
 

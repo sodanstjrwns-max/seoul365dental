@@ -8,6 +8,7 @@ import type { Bindings } from '../lib/types'
 import { COMPARISONS, type ComparisonEntry } from '../data/answer-hub'
 import { AGENCY_HUB_PUBLISHED, CLINIC_GENERAL_INFO_NOTE } from '../lib/column-seo'
 import { CLINIC } from '../data/clinic'
+import { Icon } from '../lib/icons'
 
 const compareRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -44,45 +45,55 @@ compareRoutes.get('/compare', (c) => {
   const allKeywords = COMPARISONS.flatMap(c => c.keywords).filter((v, i, a) => a.indexOf(v) === i).join(', ');
 
   return c.render(
-    <section class="min-h-screen bg-white">
+    <>
       {/* Hero */}
-      <div class="hero-premium" style="min-height:50vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:16vh">
-          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">COMPARE GUIDES</p>
-          <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
-            진료·재료·브랜드 비교 가이드
-          </h1>
-          <p class="text-white/40 text-sm md:text-base max-w-2xl mx-auto reveal reveal-fade" style="transition-delay:0.4s">
-            임플란트 브랜드, 교정 종류, 보철 재료 — 어떤 게 좋을까?<br/>
-            서울365치과가 환자 분들이 자주 궁금해하는 비교를 정리했습니다.
-          </p>
-        </div>
-      </div>
-
-      <div class="max-w-5xl mx-auto px-5 md:px-8 py-16 md:py-24">
-        {Object.entries(grouped).map(([cat, items]) => (
-          <div class="mb-16 reveal reveal-fade">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">{cat} 비교</h2>
-            <div class="grid md:grid-cols-2 gap-4">
-              {items.map(cmp => (
-                <a href={`/compare/${cmp.slug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:shadow-lg transition-all bg-white">
-                  <div class="flex items-center gap-3 mb-3">
-                    <span class="text-sm font-bold text-gray-900">{cmp.itemA}</span>
-                    <span class="text-xs text-gray-400 px-2">VS</span>
-                    <span class="text-sm font-bold text-gray-900">{cmp.itemB}</span>
-                  </div>
-                  <p class="text-sm text-gray-600 leading-relaxed">{cmp.description}</p>
-                  <div class="mt-3 text-xs text-[#1E4BD8] font-bold">자세히 비교 →</div>
-                </a>
-              ))}
+      <section class="phead" aria-labelledby="compare-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">비교 가이드</li></ol></nav>
+            <p class="eyebrow">COMPARE GUIDES</p>
+            <h1 id="compare-h1" class="display-xl">진료·재료·브랜드 비교 가이드</h1>
+            <p class="lead hero-sub">
+              임플란트 브랜드, 교정 종류, 보철 재료 — 어떤 게 좋을까?<br class="hidden md:inline" />{' '}
+              서울365치과가 환자 분들이 자주 궁금해하는 비교를 정리했습니다.
+            </p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
             </div>
           </div>
-        ))}
-      </div>
-    </section>,
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Categories · {Object.keys(grouped).length}</p>
+              <div class="phead-jump">
+                {Object.entries(grouped).map(([cat, items]) => <a href={`#${cat}`}>{cat}<small>{items.length}</small></a>)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <div class="wrap">
+          {Object.entries(grouped).map(([cat, items]) => (
+            <article id={cat} class="hubx-row" data-rv>
+              <div class="hubx-row-head">
+                <h2>{cat} 비교</h2>
+              </div>
+              <div class="hubx-grid one">
+                {items.map(cmp => (
+                  <a href={`/compare/${cmp.slug}`} class="card hubx-card hover">
+                    <span class="t">{cmp.itemA}<span class="cmpg-vs">VS</span>{cmp.itemB}</span>
+                    <p>{cmp.description}</p>
+                    <span class="arrow-link">자세히 비교<Icon name="arrow" /></span>
+                  </a>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </>,
     {
       title: '치과 진료·브랜드 비교 가이드 | 서울365치과',
       description: `오스템 vs 스트라우만, 인비절라인 vs 메탈교정, 지르코니아 vs E-max — ${COMPARISONS.length}개 비교 가이드. 서울대 출신 전문의가 알기 쉽게 정리했습니다.`,
@@ -172,163 +183,142 @@ compareRoutes.get('/compare/:slug', (c) => {
   };
 
   return c.render(
-    <section class="min-h-screen bg-white">
+    <>
       {/* Hero */}
-      <div class="hero-premium" style="min-height:50vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:14vh">
-          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{cmp.category} 비교</p>
-          <h1 class="text-2xl md:text-4xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
-            {cmp.itemA} <span class="text-[#8FB4FF] mx-2">VS</span> {cmp.itemB}
-          </h1>
-          <p class="text-white/50 text-sm md:text-base reveal reveal-fade max-w-2xl mx-auto" style="transition-delay:0.4s">
-            {cmp.description}
-          </p>
-        </div>
-      </div>
-
-      <article class="max-w-4xl mx-auto px-5 md:px-8 py-16">
-        {/* Breadcrumb */}
-        <nav class="text-xs text-gray-400 mb-6">
-          <a href="/" class="hover:text-[#1E4BD8]">홈</a>
-          <span class="mx-2">›</span>
-          <a href="/compare" class="hover:text-[#1E4BD8]">비교 가이드</a>
-          <span class="mx-2">›</span>
-          <span class="text-gray-700">{cmp.itemA} vs {cmp.itemB}</span>
-        </nav>
-
-        {/* Summary (Featured Snippet 타겟) */}
-        <div class="p-6 md:p-8 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#1E4BD8]/10 mb-10">
-          <div class="flex items-center gap-2 text-[#1E4BD8] font-bold text-sm mb-3">
-            <i class="fa-solid fa-bolt"></i>
-            <span>한 줄 요약</span>
-          </div>
-          <p class="text-gray-900 leading-relaxed text-base md:text-lg">
-            {cmp.summary}
-          </p>
-        </div>
-
-        {/* 비교 표 */}
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <i class="fa-solid fa-table-list text-[#1E4BD8]"></i>
-          상세 비교표
-        </h2>
-        <div class="overflow-x-auto rounded-2xl border border-gray-100 mb-12">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="bg-gray-50 border-b border-gray-100">
-                <th class="px-4 py-3 text-left font-bold text-gray-500 text-xs uppercase tracking-wide">항목</th>
-                <th class="px-4 py-3 text-left font-bold text-[#1E4BD8]">{cmp.itemA}</th>
-                <th class="px-4 py-3 text-left font-bold text-[#3B63E8]">{cmp.itemB}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cmp.rows.map((row, idx) => (
-                <tr class={idx % 2 === 0 ? 'bg-white border-b border-gray-50' : 'bg-gray-50/30 border-b border-gray-50'}>
-                  <td class="px-4 py-3 font-semibold text-gray-700">{row.criterion}</td>
-                  <td class="px-4 py-3 text-gray-900">{row.valueA}</td>
-                  <td class="px-4 py-3 text-gray-900">{row.valueB}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* 추천 케이스 */}
-        <div class="grid md:grid-cols-2 gap-5 mb-12">
-          <div class="p-6 rounded-2xl border-2 border-[#1E4BD8]/20 bg-[#1E4BD8]/[0.02]">
-            <div class="flex items-center gap-2 mb-3">
-              <i class="fa-solid fa-circle-check text-[#1E4BD8]"></i>
-              <h3 class="font-bold text-gray-900">{cmp.itemA} 추천</h3>
+      <section class="phead" aria-labelledby="compare-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            {/* Breadcrumb */}
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li><a href="/compare">비교 가이드</a></li><li aria-current="page">{cmp.itemA} vs {cmp.itemB}</li></ol></nav>
+            <p class="eyebrow">{cmp.category} 비교</p>
+            <h1 id="compare-h1" class="display-xl hubx-h1">
+              {cmp.itemA} <span class="cmpg-vs">VS</span> {cmp.itemB}
+            </h1>
+            <p class="lead hero-sub">
+              {cmp.description}
+            </p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
             </div>
-            <p class="text-sm text-gray-700 leading-relaxed">{cmp.recommendA}</p>
           </div>
-          <div class="p-6 rounded-2xl border-2 border-[#3B63E8]/20 bg-[#3B63E8]/[0.02]">
-            <div class="flex items-center gap-2 mb-3">
-              <i class="fa-solid fa-circle-check text-[#3B63E8]"></i>
-              <h3 class="font-bold text-gray-900">{cmp.itemB} 추천</h3>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Contents</p>
+              <ol class="hubx-toc">
+                <li><a href="#cmp-summary">한 줄 요약</a></li>
+                <li><a href="#cmp-table">상세 비교표</a></li>
+                <li><a href="#cmp-rec-a">{cmp.itemA} 추천</a></li>
+                <li><a href="#cmp-rec-b">{cmp.itemB} 추천</a></li>
+                <li><a href="#cmp-faq">자주 묻는 질문</a></li>
+              </ol>
             </div>
-            <p class="text-sm text-gray-700 leading-relaxed">{cmp.recommendB}</p>
           </div>
         </div>
+      </section>
 
-        {/* FAQ */}
-        <div class="mb-12">
-          <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-            <i class="fa-solid fa-circle-question text-[#1E4BD8]"></i>
-            자주 묻는 질문
-          </h2>
-          <div class="space-y-3">
-            <details class="p-5 rounded-xl border border-gray-100 group">
-              <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
-                <span>{cmp.itemA}와 {cmp.itemB}의 차이는 무엇인가요?</span>
-                <i class="fa-solid fa-chevron-down text-xs text-gray-400 group-open:rotate-180 transition-transform"></i>
-              </summary>
-              <p class="mt-3 text-sm text-gray-600 leading-relaxed">{cmp.summary}</p>
+      <section class="sec">
+        <article class="wrap-n">
+          {/* Summary (Featured Snippet 타겟) */}
+          <div id="cmp-summary" class="answer-card hubx-anchor" style="margin-bottom:2.6rem" data-rv>
+            <p class="eyebrow">한 줄 요약</p>
+            <p class="answer-a" style="margin-bottom:0">
+              {cmp.summary}
+            </p>
+          </div>
+
+          {/* 비교 표 */}
+          <section id="cmp-table" class="hubx-sec" data-rv>
+            <h2>상세 비교표</h2>
+            <div class="table-wrap">
+              <table class="cmp-table wrap-th cmpg-table">
+                <thead>
+                  <tr>
+                    <th scope="col">항목</th>
+                    <th scope="col" class="item">{cmp.itemA}</th>
+                    <th scope="col" class="item">{cmp.itemB}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {cmp.rows.map(row => (
+                    <tr>
+                      <th scope="row">{row.criterion}</th>
+                      <td>{row.valueA}</td>
+                      <td>{row.valueB}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* 추천 케이스 */}
+          <div class="rec-grid" style="margin-bottom:2.6rem" data-rv-group>
+            <div id="cmp-rec-a" class="card type-card hubx-anchor">
+              <h3>{cmp.itemA} 추천</h3>
+              <p>{cmp.recommendA}</p>
+            </div>
+            <div id="cmp-rec-b" class="card type-card hubx-anchor">
+              <h3>{cmp.itemB} 추천</h3>
+              <p>{cmp.recommendB}</p>
+            </div>
+          </div>
+
+          {/* FAQ */}
+          <section id="cmp-faq" class="hubx-sec" data-rv>
+            <h2>자주 묻는 질문</h2>
+            <details class="fq" open>
+              <summary><h3>{cmp.itemA}와 {cmp.itemB}의 차이는 무엇인가요?</h3><span class="pm" aria-hidden="true"><Icon name="plus" /></span></summary>
+              <div class="fq-a"><p>{cmp.summary}</p></div>
             </details>
-            <details class="p-5 rounded-xl border border-gray-100 group">
-              <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
-                <span>{cmp.itemA}는 어떤 사람에게 추천되나요?</span>
-                <i class="fa-solid fa-chevron-down text-xs text-gray-400 group-open:rotate-180 transition-transform"></i>
-              </summary>
-              <p class="mt-3 text-sm text-gray-600 leading-relaxed">{cmp.recommendA}</p>
+            <details class="fq">
+              <summary><h3>{cmp.itemA}는 어떤 사람에게 추천되나요?</h3><span class="pm" aria-hidden="true"><Icon name="plus" /></span></summary>
+              <div class="fq-a"><p>{cmp.recommendA}</p></div>
             </details>
-            <details class="p-5 rounded-xl border border-gray-100 group">
-              <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
-                <span>{cmp.itemB}는 어떤 사람에게 추천되나요?</span>
-                <i class="fa-solid fa-chevron-down text-xs text-gray-400 group-open:rotate-180 transition-transform"></i>
-              </summary>
-              <p class="mt-3 text-sm text-gray-600 leading-relaxed">{cmp.recommendB}</p>
+            <details class="fq">
+              <summary><h3>{cmp.itemB}는 어떤 사람에게 추천되나요?</h3><span class="pm" aria-hidden="true"><Icon name="plus" /></span></summary>
+              <div class="fq-a"><p>{cmp.recommendB}</p></div>
             </details>
+          </section>
+
+          {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
+          <aside class="card hubx-byline" style={related.length > 0 ? undefined : 'margin-bottom:0'} data-rv>
+            <p class="k">작성·발행</p>
+            <p class="who">서울365치과</p>
+            <p class="note">{CLINIC_GENERAL_INFO_NOTE}</p>
+            <p class="meta-line">최종 업데이트: 2026-05-26</p>
+          </aside>
+
+          {/* 관련 비교 */}
+          {related.length > 0 && (
+            <section class="hubx-sec" style="margin-bottom:0" data-rv>
+              <h2>관련 비교</h2>
+              <div class="hubx-grid three">
+                {related.map(r => (
+                  <a href={`/compare/${r.slug}`} class="card hubx-card sm hover">
+                    <span class="t">{r.itemA} vs {r.itemB}</span>
+                    <span class="arrow-link">자세히 보기<Icon name="arrow" /></span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+        </article>
+      </section>
+
+      {/* CTA */}
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Consultation</p>
+          <h2 class="display-xl" data-rv>어떤 게 맞을지 모르시겠다면?</h2>
+          <p class="lead" data-rv>서울대 출신 5인 전문의의 무료 상담을 받아보세요.</p>
+          <div class="cta-actions" data-rv-group>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />무료 상담 예약</a>
+            <a href={CLINIC.phoneTel} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
           </div>
         </div>
-
-        {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
-        <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-12">
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-hospital text-white"></i>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500 mb-1">작성·발행</div>
-              <div class="font-bold text-gray-900">서울365치과</div>
-              <div class="text-sm text-gray-600 mt-1">{CLINIC_GENERAL_INFO_NOTE}</div>
-              <div class="text-xs text-gray-400 mt-2">최종 업데이트: 2026-05-26</div>
-            </div>
-          </div>
-        </div>
-
-        {/* 관련 비교 */}
-        {related.length > 0 && (
-          <div class="mb-12">
-            <h2 class="text-lg font-bold text-gray-900 mb-4">관련 비교</h2>
-            <div class="grid md:grid-cols-3 gap-3">
-              {related.map(r => (
-                <a href={`/compare/${r.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:bg-gray-50 transition-all">
-                  <div class="text-sm font-semibold text-gray-900">{r.itemA} vs {r.itemB}</div>
-                  <div class="text-xs text-gray-500 mt-1">자세히 보기 →</div>
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* CTA */}
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
-          <h3 class="text-xl md:text-2xl font-black mb-2">어떤 게 맞을지 모르시겠다면?</h3>
-          <p class="text-white/80 text-sm mb-5">서울대 출신 5인 전문의의 무료 상담을 받아보세요.</p>
-          <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm hover:scale-105 transition-all">
-              <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담 예약
-            </a>
-            <a href={CLINIC.phoneTel} class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm hover:bg-white/20 transition-all">
-              <i class="fa-solid fa-phone mr-1.5"></i> {CLINIC.phone}
-            </a>
-          </div>
-        </div>
-      </article>
-    </section>,
+      </section>
+    </>,
     {
       title: cmp.title,
       description: cmp.description,

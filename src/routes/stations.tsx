@@ -8,6 +8,7 @@ import { AGENCY_HUB_PUBLISHED } from '../lib/column-seo'
 import { STATIONS, getStationBySlug, type StationInfo } from '../data/stations'
 import { MATRIX_TREATMENT_INFO, TREATMENT_PRICING } from '../data/area-treatment'
 import { CLINIC } from '../data/clinic'
+import { Icon } from '../lib/icons'
 
 const stationsRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -23,44 +24,55 @@ stationsRoutes.get('/stations', (c) => {
   };
 
   return c.render(
-    <section class="min-h-screen bg-white">
-      <div class="hero-premium" style="min-height:50vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:16vh">
-          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">STATIONS & LANDMARKS</p>
-          <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
-            지하철역·랜드마크별 길안내
-          </h1>
-          <p class="text-white/40 text-sm md:text-base max-w-2xl mx-auto reveal reveal-fade" style="transition-delay:0.4s">
-            예술회관역에서 도보 3분 — 인천 주요 역·랜드마크에서 서울365치과까지 안내
-          </p>
+    <>
+      <section class="phead" aria-labelledby="stations-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">역·랜드마크 안내</li></ol></nav>
+            <p class="eyebrow">STATIONS & LANDMARKS</p>
+            <h1 id="stations-h1" class="display-xl hubx-h1">
+              지하철역·랜드마크별 길안내
+            </h1>
+            <p class="lead hero-sub">
+              예술회관역에서 도보 3분 — 인천 주요 역·랜드마크에서 서울365치과까지 안내
+            </p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">{CLINIC.name}</p>
+              <dl class="fact-rows stack">
+                <div><dt>주소</dt><dd>{CLINIC.address}</dd></div>
+                <div><dt>가까운 역</dt><dd>{CLINIC.nearStation}</dd></div>
+                <div><dt>전화</dt><dd class="mono"><a href={CLINIC.phoneTel}>{CLINIC.phone}</a></dd></div>
+              </dl>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="max-w-5xl mx-auto px-5 md:px-8 py-16">
-        <div class="grid md:grid-cols-2 gap-4">
-          {STATIONS.map(st => (
-            <a href={`/stations/${st.slug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:shadow-lg transition-all bg-white">
-              <div class="flex items-center gap-3 mb-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center">
-                  <i class={`fa-solid ${st.line.includes('호선') ? 'fa-train-subway' : 'fa-location-dot'} text-white text-sm`}></i>
-                </div>
-                <div>
-                  <h2 class="font-bold text-gray-900">{st.name}</h2>
-                  <p class="text-xs text-gray-400">{st.line}</p>
-                </div>
-              </div>
-              <div class="text-sm text-gray-600 leading-relaxed">
-                <i class="fa-solid fa-route text-[#1E4BD8] mr-1"></i>
-                서울365치과까지 {st.travelDesc} ({st.travelMin}분)
-              </div>
-            </a>
-          ))}
+      <section class="sec">
+        <div class="wrap">
+          <div class="hubx-grid three" data-rv-group>
+            {STATIONS.map(st => (
+              <a href={`/stations/${st.slug}`} class="card hubx-card hover">
+                <span class="stn-top">
+                  <span class="tag">{st.line}</span>
+                  <span class="stn-min">{st.travelMin}<small>분</small></span>
+                </span>
+                <h2>{st.name}</h2>
+                <p>
+                  서울365치과까지 {st.travelDesc} ({st.travelMin}분)
+                </p>
+              </a>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>,
+      </section>
+    </>,
     {
       title: '지하철역·랜드마크별 길안내 | 서울365치과',
       description: '예술회관역 5번 출구 도보 3분. 인천시청역, 간석오거리역, 인천종합터미널, 롯데백화점 등 주요 역·랜드마크에서 서울365치과까지의 길안내.',
@@ -124,133 +136,132 @@ stationsRoutes.get('/stations/:slug', (c) => {
   const recommendTreatments = ['implant', 'invisalign', 'sedation', 'full-implant'];
 
   return c.render(
-    <section class="min-h-screen bg-white">
-      <div class="hero-premium" style="min-height:50vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:14vh">
-          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{st.line}</p>
-          <h1 class="text-2xl md:text-4xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
-            {st.name}에서 치과 가기
-          </h1>
-          <p class="text-white/60 text-sm md:text-base reveal reveal-fade" style="transition-delay:0.4s">
-            서울365치과까지 <span class="text-[#8FB4FF] font-bold">{st.travelDesc}</span> ({st.travelMin}분)
-          </p>
-        </div>
-      </div>
-
-      <article class="max-w-3xl mx-auto px-5 md:px-8 py-16">
-        <nav class="text-xs text-gray-400 mb-6">
-          <a href="/" class="hover:text-[#1E4BD8]">홈</a> <span class="mx-2">›</span>
-          <a href="/stations" class="hover:text-[#1E4BD8]">역·랜드마크</a> <span class="mx-2">›</span>
-          <span class="text-gray-700">{st.name}</span>
-        </nav>
-
-        {/* 핵심 정보 박스 */}
-        <div class="p-6 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#1E4BD8]/10 mb-10">
-          <div class="grid md:grid-cols-3 gap-4">
-            <div>
-              <div class="text-xs text-gray-500 mb-1">소요 시간</div>
-              <div class="text-2xl font-black text-[#1E4BD8]">{st.travelMin}분</div>
+    <>
+      <section class="phead" aria-labelledby="station-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li><a href="/stations">역·랜드마크</a></li><li aria-current="page">{st.name}</li></ol></nav>
+            <p class="eyebrow">{st.line}</p>
+            <h1 id="station-h1" class="display-xl hubx-h1">
+              {st.name}에서 치과 가기
+            </h1>
+            <p class="lead hero-sub">
+              서울365치과까지 <span style="color:var(--sky);font-weight:700">{st.travelDesc}</span> ({st.travelMin}분)
+            </p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
             </div>
-            <div>
-              <div class="text-xs text-gray-500 mb-1">이동 방법</div>
-              <div class="font-bold text-gray-900">{st.travelDesc}</div>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500 mb-1">지역</div>
-              <div class="font-bold text-gray-900">{st.area}</div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">{CLINIC.name}</p>
+              <dl class="fact-rows stack">
+                <div><dt>주소</dt><dd>{CLINIC.address}</dd></div>
+                <div><dt>가까운 역</dt><dd>{CLINIC.nearStation}</dd></div>
+                <div><dt>전화</dt><dd class="mono"><a href={CLINIC.phoneTel}>{CLINIC.phone}</a></dd></div>
+              </dl>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* 본문 */}
-        <div class="prose prose-lg max-w-none mb-10">
-          <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-route text-[#1E4BD8]"></i>
-            {st.name}에서 서울365치과 가는 길
-          </h2>
-          <p class="text-gray-700 leading-loose mb-4">
-            {st.name}에서 인천 구월동에 위치한 서울365치과까지는 {st.travelDesc}이면 도착하실 수 있습니다.
-            서울365치과는 인천 구월동 예술로 138 이토타워 2층 212호에 위치하고 있으며,
-            예술회관역 5번 출구에서 도보 3분 거리의 최적의 입지를 자랑합니다.
-          </p>
-          <p class="text-gray-700 leading-loose mb-4">
-            <strong>{st.name} 인근에서 치과를 찾으시는 분</strong>들에게 서울365치과는 다음과 같은 장점을 제공합니다:
-          </p>
-          <ul class="space-y-2 text-gray-700 mb-6">
-            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i> 365일 진료 — 평일 야간 21시, 토요일 14시, 일·공휴일 14~18시</li>
-            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i> 서울대학교 치과대학 출신 5인 원장 협진</li>
-            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i> 자체 기공실 보유 — 빠른 보철 제작</li>
-            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i> 임플란트·인비절라인·수면진료·전체임플란트 전문</li>
-            <li class="flex items-start gap-2"><i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i> 무료 주차장 완비</li>
+      <section class="sec">
+        <article class="wrap-n">
+          {/* 핵심 정보 박스 */}
+          <div class="stat-row" style="margin-bottom:2.6rem" data-rv-group>
+            <div class="card stat">
+              <p class="k">소요 시간</p>
+              <p class="v">{st.travelMin}<small>분</small></p>
+            </div>
+            <div class="card stat">
+              <p class="k">이동 방법</p>
+              <p class="v txt">{st.travelDesc}</p>
+            </div>
+            <div class="card stat">
+              <p class="k">지역</p>
+              <p class="v txt">{st.area}</p>
+            </div>
+          </div>
+
+          {/* 본문 */}
+          <div class="prose-sec" style="margin-bottom:1.2rem" data-rv>
+            <h2>{st.name}에서 서울365치과 가는 길</h2>
+            <p>
+              {st.name}에서 인천 구월동에 위치한 서울365치과까지는 {st.travelDesc}이면 도착하실 수 있습니다.
+              서울365치과는 인천 구월동 예술로 138 이토타워 2층 212호에 위치하고 있으며,
+              예술회관역 5번 출구에서 도보 3분 거리의 최적의 입지를 자랑합니다.
+            </p>
+            <p>
+              <strong>{st.name} 인근에서 치과를 찾으시는 분</strong>들에게 서울365치과는 다음과 같은 장점을 제공합니다:
+            </p>
+          </div>
+          <ul class="check-list" style="margin-bottom:2.6rem" data-rv-group>
+            <li><Icon name="check" /><span>365일 진료 — 평일 야간 21시, 토요일 14시, 일·공휴일 14~18시</span></li>
+            <li><Icon name="check" /><span>서울대학교 치과대학 출신 5인 원장 협진</span></li>
+            <li><Icon name="check" /><span>자체 기공실 보유 — 빠른 보철 제작</span></li>
+            <li><Icon name="check" /><span>임플란트·인비절라인·수면진료·전체임플란트 전문</span></li>
+            <li><Icon name="check" /><span>무료 주차장 완비</span></li>
           </ul>
-        </div>
 
-        {/* 추천 진료 */}
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-          <i class="fa-solid fa-tooth text-[#1E4BD8]"></i>
-          {st.name} 인근 주민이 많이 찾는 진료
-        </h2>
-        <div class="grid md:grid-cols-2 gap-4 mb-12">
-          {recommendTreatments.map(tslug => {
-            const info = MATRIX_TREATMENT_INFO[tslug as keyof typeof MATRIX_TREATMENT_INFO];
-            const pricing = TREATMENT_PRICING[tslug];
-            if (!info) return null;
-            return (
-              <a href={`/treatments/${tslug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:shadow-lg transition-all">
-                <div class="flex items-center gap-3 mb-3">
-                  <i class={`fa-solid ${info.icon} text-[#1E4BD8] text-2xl`}></i>
-                  <div>
-                    <h3 class="font-bold text-gray-900">{info.name}</h3>
-                    <p class="text-xs text-gray-400">{info.tagline}</p>
-                  </div>
-                </div>
-                {pricing && pricing.items?.[0] && (
-                  <div class="text-sm text-gray-600">
-                    가격: <span class="font-bold text-[#1E4BD8]">{pricing.items[0].price.toLocaleString()}원~</span>
-                  </div>
-                )}
-              </a>
-            );
-          })}
-        </div>
+          {/* 추천 진료 */}
+          <section class="hubx-sec" data-rv>
+            <h2>{st.name} 인근 주민이 많이 찾는 진료</h2>
+            <div class="rec-grid">
+              {recommendTreatments.map(tslug => {
+                const info = MATRIX_TREATMENT_INFO[tslug as keyof typeof MATRIX_TREATMENT_INFO];
+                const pricing = TREATMENT_PRICING[tslug];
+                if (!info) return null;
+                return (
+                  <a href={`/treatments/${tslug}`} class="card rec-card hover">
+                    <h3>{info.name}</h3>
+                    <p style="margin-bottom:0">{info.tagline}</p>
+                    {pricing && pricing.items?.[0] && (
+                      <p style="margin:.6rem 0 0">
+                        가격: <span class="mono" style="color:var(--blue);font-weight:700">{pricing.items[0].price.toLocaleString()}원~</span>
+                      </p>
+                    )}
+                  </a>
+                );
+              })}
+            </div>
+          </section>
 
-        {/* 키워드 */}
-        <div class="flex flex-wrap gap-2 mb-10">
-          {st.keywords.map(kw => (
-            <span class="px-3 py-1 rounded-full bg-gray-100 text-xs text-gray-600">#{kw}</span>
-          ))}
-        </div>
-
-        {/* 다른 역·랜드마크 */}
-        <div class="mb-10">
-          <h2 class="text-lg font-bold text-gray-900 mb-4">다른 역·랜드마크</h2>
-          <div class="grid md:grid-cols-2 gap-3">
-            {otherStations.map(s => (
-              <a href={`/stations/${s.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:bg-gray-50 transition-all">
-                <div class="text-sm font-bold text-gray-900">{s.name}에서 치과 가기</div>
-                <div class="text-xs text-gray-500 mt-1">{s.travelDesc} ({s.travelMin}분)</div>
-              </a>
+          {/* 키워드 */}
+          <div class="hubx-tags" data-rv>
+            {st.keywords.map(kw => (
+              <span class="chip">#{kw}</span>
             ))}
           </div>
-        </div>
 
-        {/* CTA */}
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
-          <h3 class="text-xl md:text-2xl font-black mb-2">{st.name} 인근 치과 찾으세요?</h3>
-          <p class="text-white/80 text-sm mb-5">서울365치과 무료 상담 받아보세요.</p>
-          <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm hover:scale-105 transition-all">
-              <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담 예약
-            </a>
-            <a href={CLINIC.phoneTel} class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm hover:bg-white/20 transition-all">
-              <i class="fa-solid fa-phone mr-1.5"></i> {CLINIC.phone}
-            </a>
+          {/* 다른 역·랜드마크 */}
+          <section class="hubx-sec" style="margin-bottom:0" data-rv>
+            <h2>다른 역·랜드마크</h2>
+            <div class="hubx-grid">
+              {otherStations.map(s => (
+                <a href={`/stations/${s.slug}`} class="card hubx-card sm hover">
+                  <span class="t">{s.name}에서 치과 가기</span>
+                  <p>{s.travelDesc} ({s.travelMin}분)</p>
+                </a>
+              ))}
+            </div>
+          </section>
+        </article>
+      </section>
+
+      {/* CTA */}
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Consultation</p>
+          <h2 class="display-xl" data-rv>{st.name} 인근 치과 찾으세요?</h2>
+          <p class="lead" data-rv>서울365치과 무료 상담 받아보세요.</p>
+          <div class="cta-actions" data-rv-group>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />무료 상담 예약</a>
+            <a href={CLINIC.phoneTel} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
           </div>
         </div>
-      </article>
-    </section>,
+      </section>
+    </>,
     {
       title: `${st.name} 근처 치과 - 서울365치과 (${st.travelDesc}) | 임플란트·교정`,
       description: `${st.name}에서 서울365치과까지 ${st.travelDesc} (${st.travelMin}분). 서울대 출신 5인 원장, 365일·야간21시 진료. 임플란트·인비절라인·수면진료 전문. ☎ ${CLINIC.phone}`,

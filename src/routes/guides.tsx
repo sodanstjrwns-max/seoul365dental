@@ -8,6 +8,7 @@ import type { Bindings } from '../lib/types'
 import { TOPIC_CLUSTERS, type TopicCluster } from '../data/answer-hub'
 import { CLINIC } from '../data/clinic'
 import { AGENCY_HUB_PUBLISHED, CLINIC_GENERAL_INFO_NOTE } from '../lib/column-seo'
+import { Icon } from '../lib/icons'
 
 const guidesRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -175,50 +176,55 @@ guidesRoutes.get('/guides', (c) => {
   const allKeywords = TOPIC_CLUSTERS.flatMap(c => c.spokes.flatMap(s => s.keywords)).filter((v, i, a) => a.indexOf(v) === i).join(', ');
 
   return c.render(
-    <section class="min-h-screen bg-white">
-      <div class="hero-premium" style="min-height:50vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:16vh">
-          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">COMPLETE GUIDES 2026</p>
-          <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
-            치과 진료 완벽 가이드 2026
-          </h1>
-          <p class="text-white/40 text-sm md:text-base max-w-2xl mx-auto reveal reveal-fade" style="transition-delay:0.4s">
-            임플란트·인비절라인·치아교정에 대한 모든 정보<br/>
-            서울365치과가 정리한 일반 건강정보 가이드.
-          </p>
-        </div>
-      </div>
-
-      <div class="max-w-5xl mx-auto px-5 md:px-8 py-16 md:py-24">
-        {TOPIC_CLUSTERS.map(cluster => (
-          <div class="mb-16 reveal reveal-fade">
-            <a href={`/guides/${cluster.slug}`} class="block group">
-              <div class="flex items-center gap-3 mb-6">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center">
-                  <i class="fa-solid fa-book-open text-white text-lg"></i>
-                </div>
-                <div>
-                  <h2 class="text-2xl font-bold text-gray-900 group-hover:text-[#1E4BD8] transition-colors">{cluster.pillarName}</h2>
-                  <p class="text-xs text-gray-400">{cluster.spokes.length}개 세부 가이드</p>
-                </div>
-              </div>
-              <p class="text-gray-600 mb-4">{cluster.pillarDesc}</p>
-            </a>
-            <div class="grid md:grid-cols-2 gap-3">
-              {cluster.spokes.map(spoke => (
-                <a href={`/guides/${cluster.slug}/${spoke.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:bg-gray-50 transition-all">
-                  <div class="text-sm font-bold text-gray-900 mb-1">{spoke.title}</div>
-                  <div class="text-xs text-gray-500">{spoke.description}</div>
-                </a>
-              ))}
+    <>
+      <section class="phead" aria-labelledby="guides-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">완벽 가이드</li></ol></nav>
+            <p class="eyebrow">COMPLETE GUIDES 2026</p>
+            <h1 id="guides-h1" class="display-xl">치과 진료 완벽 가이드 2026</h1>
+            <p class="lead hero-sub">
+              임플란트·인비절라인·치아교정에 대한 모든 정보<br class="hidden md:inline" />{' '}
+              서울365치과가 정리한 일반 건강정보 가이드.
+            </p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
             </div>
           </div>
-        ))}
-      </div>
-    </section>,
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Guides · {TOPIC_CLUSTERS.length}</p>
+              <div class="phead-jump">
+                {TOPIC_CLUSTERS.map(cluster => <a href={`#guide-${cluster.slug}`}>{cluster.category}<small>{cluster.spokes.length}</small></a>)}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <div class="wrap">
+          {TOPIC_CLUSTERS.map(cluster => (
+            <article id={`guide-${cluster.slug}`} class="gu-block" data-rv>
+              <div class="gu-head hubx-head">
+                <h2><a href={`/guides/${cluster.slug}`}>{cluster.pillarName}</a></h2>
+                <span class="cnt">{cluster.spokes.length}개 세부 가이드</span>
+              </div>
+              <p class="hubx-desc">{cluster.pillarDesc}</p>
+              <div class="hubx-grid three">
+                {cluster.spokes.map(spoke => (
+                  <a href={`/guides/${cluster.slug}/${spoke.slug}`} class="card hubx-card hover">
+                    <span class="t">{spoke.title}</span>
+                    <p>{spoke.description}</p>
+                  </a>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </>,
     {
       title: '치과 진료 완벽 가이드 2026 | 서울365치과',
       description: '임플란트·인비절라인·치아교정 완벽 가이드. 비용, 기간, 종류, 부작용, 사후관리까지 서울365치과가 정리한 16개 세부 가이드.',
@@ -272,90 +278,71 @@ guidesRoutes.get('/guides/:cluster', (c) => {
   };
 
   return c.render(
-    <section class="min-h-screen bg-white">
-      <div class="hero-premium" style="min-height:50vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:14vh">
-          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{cluster.category} GUIDE</p>
-          <h1 class="text-2xl md:text-4xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
-            {cluster.pillarName}
-          </h1>
-          <p class="text-white/50 text-sm md:text-base max-w-2xl mx-auto reveal reveal-fade" style="transition-delay:0.4s">
-            {cluster.pillarDesc}
-          </p>
-        </div>
-      </div>
-
-      <article class="max-w-4xl mx-auto px-5 md:px-8 py-16">
-        <nav class="text-xs text-gray-400 mb-6">
-          <a href="/" class="hover:text-[#1E4BD8]">홈</a>
-          <span class="mx-2">›</span>
-          <a href="/guides" class="hover:text-[#1E4BD8]">완벽 가이드</a>
-          <span class="mx-2">›</span>
-          <span class="text-gray-700">{cluster.pillarName}</span>
-        </nav>
-
-        <div class="p-6 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#1E4BD8]/10 mb-10">
-          <div class="flex items-center gap-2 text-[#1E4BD8] font-bold text-sm mb-3">
-            <i class="fa-solid fa-list-check"></i>
-            <span>이 가이드에서 다루는 내용</span>
+    <>
+      <section class="phead" aria-labelledby="guide-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li><a href="/guides">완벽 가이드</a></li><li aria-current="page">{cluster.pillarName}</li></ol></nav>
+            <p class="eyebrow">{cluster.category} GUIDE</p>
+            <h1 id="guide-h1" class="display-xl hubx-h1">{cluster.pillarName}</h1>
+            <p class="lead hero-sub">{cluster.pillarDesc}</p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
+            </div>
           </div>
-          <ul class="space-y-2 text-gray-700">
-            {cluster.spokes.map(s => (
-              <li class="flex items-start gap-2">
-                <i class="fa-solid fa-check text-[#1E4BD8] mt-1.5 text-xs"></i>
-                <a href={`${canonicalUrl}/${s.slug}`} class="hover:text-[#1E4BD8] transition-colors">{s.title}</a>
-              </li>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">이 가이드에서 다루는 내용</p>
+              <ol class="hubx-toc">
+                {cluster.spokes.map(s => (
+                  <li><a href={`${canonicalUrl}/${s.slug}`}>{s.title}</a></li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <article class="wrap-n">
+          <div class="sec-head" data-rv>
+            <p class="eyebrow">Guides</p>
+            <h2 class="display-2">세부 가이드 ({cluster.spokes.length}개)</h2>
+          </div>
+          <div class="hubx-grid" style="margin-bottom:2.6rem" data-rv-group>
+            {cluster.spokes.map((spoke, idx) => (
+              <a href={`${canonicalUrl}/${spoke.slug}`} class="card hubx-card hover">
+                <span class="tag">{String(idx + 1).padStart(2, '0')} · {cluster.category}</span>
+                <h3>{spoke.title}</h3>
+                <p>{spoke.description}</p>
+                <span class="arrow-link">자세히 보기<Icon name="arrow" /></span>
+              </a>
             ))}
-          </ul>
-        </div>
+          </div>
 
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">세부 가이드 ({cluster.spokes.length}개)</h2>
-        <div class="grid md:grid-cols-2 gap-4 mb-12">
-          {cluster.spokes.map((spoke, idx) => (
-            <a href={`${canonicalUrl}/${spoke.slug}`} class="block p-6 rounded-2xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:shadow-lg transition-all">
-              <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
-                <span class="font-bold">{String(idx + 1).padStart(2, '0')}</span>
-                <span>·</span>
-                <span>{cluster.category}</span>
-              </div>
-              <h3 class="text-base font-bold text-gray-900 mb-2">{spoke.title}</h3>
-              <p class="text-sm text-gray-600 leading-relaxed">{spoke.description}</p>
-              <div class="mt-3 text-xs text-[#1E4BD8] font-bold">자세히 보기 →</div>
-            </a>
-          ))}
-        </div>
+          {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
+          <aside class="card hubx-byline" style="margin-bottom:0" data-rv>
+            <p class="k">작성·발행</p>
+            <p class="who">서울365치과</p>
+            <p class="note">{CLINIC_GENERAL_INFO_NOTE}</p>
+            <p class="meta-line">최종 업데이트: 2026-05-26</p>
+          </aside>
+        </article>
+      </section>
 
-        {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
-        <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-12">
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-hospital text-white"></i>
-            </div>
-            <div>
-              <div class="text-xs text-gray-500 mb-1">작성·발행</div>
-              <div class="font-bold text-gray-900">서울365치과</div>
-              <div class="text-sm text-gray-600 mt-1">{CLINIC_GENERAL_INFO_NOTE}</div>
-              <div class="text-xs text-gray-400 mt-2">최종 업데이트: 2026-05-26</div>
-            </div>
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Consultation</p>
+          <h2 class="display-xl" data-rv>개인 맞춤 상담이 필요하신가요?</h2>
+          <p class="lead" data-rv>서울365치과의 무료 상담을 받아보세요.</p>
+          <div class="cta-actions" data-rv-group>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />무료 상담 예약</a>
+            <a href={CLINIC.phoneTel} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
           </div>
         </div>
-
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
-          <h3 class="text-xl md:text-2xl font-black mb-2">개인 맞춤 상담이 필요하신가요?</h3>
-          <p class="text-white/80 text-sm mb-5">서울365치과의 무료 상담을 받아보세요.</p>
-          <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm hover:scale-105 transition-all">
-              <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담 예약
-            </a>
-            <a href={CLINIC.phoneTel} class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm hover:bg-white/20 transition-all">
-              <i class="fa-solid fa-phone mr-1.5"></i> {CLINIC.phone}
-            </a>
-          </div>
-        </div>
-      </article>
-    </section>,
+      </section>
+    </>,
     {
       title: `${cluster.pillarName} | 서울365치과`,
       description: cluster.pillarDesc,
@@ -423,85 +410,77 @@ guidesRoutes.get('/guides/:cluster/:spoke', (c) => {
   };
 
   return c.render(
-    <section class="min-h-screen bg-white">
-      <div class="hero-premium" style="min-height:45vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-3xl mx-auto px-5" style="padding-top:14vh">
-          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">{cluster.category}</p>
-          <h1 class="text-2xl md:text-4xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
-            {spoke.title}
-          </h1>
-          <p class="text-white/60 text-sm md:text-base reveal reveal-fade" style="transition-delay:0.4s">
-            {spoke.description}
-          </p>
-        </div>
-      </div>
-
-      <article class="max-w-3xl mx-auto px-5 md:px-8 py-16">
-        <nav class="text-xs text-gray-400 mb-6">
-          <a href="/" class="hover:text-[#1E4BD8]">홈</a>
-          <span class="mx-2">›</span>
-          <a href="/guides" class="hover:text-[#1E4BD8]">가이드</a>
-          <span class="mx-2">›</span>
-          <a href={`/guides/${clusterSlug}`} class="hover:text-[#1E4BD8]">{cluster.pillarName}</a>
-          <span class="mx-2">›</span>
-          <span class="text-gray-700">{spoke.title}</span>
-        </nav>
-
-        {/* 본문 */}
-        <div class="prose prose-lg max-w-none mb-12">
-          {content.map(paragraph => (
-            <p class="text-gray-700 leading-loose mb-4">{paragraph}</p>
-          ))}
-        </div>
-
-        {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
-        <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-10">
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-hospital text-white"></i>
+    <>
+      <section class="phead" aria-labelledby="guide-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li><a href="/guides">가이드</a></li><li><a href={`/guides/${clusterSlug}`}>{cluster.pillarName}</a></li><li aria-current="page">{spoke.title}</li></ol></nav>
+            <p class="eyebrow">{cluster.category}</p>
+            <h1 id="guide-h1" class="display-xl hubx-h1">{spoke.title}</h1>
+            <p class="lead hero-sub">{spoke.description}</p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
             </div>
-            <div>
-              <div class="text-xs text-gray-500 mb-1">작성·발행</div>
-              <div class="font-bold text-gray-900">서울365치과</div>
-              <div class="text-sm text-gray-600 mt-1">{CLINIC_GENERAL_INFO_NOTE}</div>
-              <div class="text-xs text-gray-400 mt-2">최종 업데이트: 2026-05-26</div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Guide</p>
+              <dl class="fact-rows">
+                <div><dt>분류</dt><dd>{cluster.category}</dd></div>
+                <div><dt>가이드</dt><dd><a href={`/guides/${clusterSlug}`}>{cluster.pillarName}</a></dd></div>
+                <div><dt>최종 업데이트</dt><dd class="mono">2026-05-26</dd></div>
+              </dl>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* 같은 클러스터 다른 가이드 */}
-        <div class="mb-12">
-          <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-layer-group text-[#1E4BD8]"></i>
-            {cluster.pillarName} 다른 가이드
-          </h2>
-          <div class="grid md:grid-cols-2 gap-3">
-            {others.map(s => (
-              <a href={`/guides/${clusterSlug}/${s.slug}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:bg-gray-50 transition-all">
-                <div class="text-sm font-bold text-gray-900">{s.title}</div>
-                <div class="text-xs text-gray-500 mt-1">{s.description}</div>
-              </a>
+      <section class="sec">
+        <article class="wrap-n">
+          {/* 본문 */}
+          <div class="prose-sec" data-rv>
+            {content.map(paragraph => (
+              <p>{paragraph}</p>
             ))}
           </div>
-        </div>
 
-        {/* CTA */}
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
-          <h3 class="text-xl md:text-2xl font-black mb-2">상담이 필요하신가요?</h3>
-          <p class="text-white/80 text-sm mb-5">서울365치과의 1:1 무료 상담을 받아보세요.</p>
-          <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm hover:scale-105 transition-all">
-              <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담 예약
-            </a>
-            <a href={CLINIC.phoneTel} class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm hover:bg-white/20 transition-all">
-              <i class="fa-solid fa-phone mr-1.5"></i> {CLINIC.phone}
-            </a>
+          {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
+          <aside class="card hubx-byline" data-rv>
+            <p class="k">작성·발행</p>
+            <p class="who">서울365치과</p>
+            <p class="note">{CLINIC_GENERAL_INFO_NOTE}</p>
+            <p class="meta-line">최종 업데이트: 2026-05-26</p>
+          </aside>
+
+          {/* 같은 클러스터 다른 가이드 */}
+          <section class="hubx-sec" style="margin-bottom:0" data-rv>
+            <h2>{cluster.pillarName} 다른 가이드</h2>
+            <div class="hubx-grid">
+              {others.map(s => (
+                <a href={`/guides/${clusterSlug}/${s.slug}`} class="card hubx-card sm hover">
+                  <span class="t">{s.title}</span>
+                  <p>{s.description}</p>
+                </a>
+              ))}
+            </div>
+          </section>
+        </article>
+      </section>
+
+      {/* CTA */}
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Consultation</p>
+          <h2 class="display-xl" data-rv>상담이 필요하신가요?</h2>
+          <p class="lead" data-rv>서울365치과의 1:1 무료 상담을 받아보세요.</p>
+          <div class="cta-actions" data-rv-group>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />무료 상담 예약</a>
+            <a href={CLINIC.phoneTel} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
           </div>
         </div>
-      </article>
-    </section>,
+      </section>
+    </>,
     {
       title: `${spoke.title} | 서울365치과 ${cluster.pillarName}`,
       description: spoke.description,

@@ -7,8 +7,9 @@
 // ============================================================
 import { Hono } from 'hono';
 import type { Bindings } from '../lib/types';
-import { CLINIC } from '../data/clinic';
+import { CLINIC, HOURS } from '../data/clinic';
 import { getSetting } from '../lib/db';
+import { Icon, KakaoMark } from '../lib/icons';
 import {
   buildBreadcrumb,
   buildFAQ,
@@ -18,6 +19,13 @@ import {
 } from '../lib/schemas';
 
 const app = new Hono<{ Bindings: Bindings }>();
+
+// h1 을 ' — ' 기준으로 본제목/부제목 두 줄로 나눠 그린다(문구는 그대로, 2026-11-05 4차 손질)
+const H1Parts = ({ text }: { text: string }) => {
+  const i = text.indexOf(' — ');
+  if (i < 0) return <>{text}</>;
+  return <><span class="block">{text.slice(0, i)}</span>{' '}<span class="block h1-sub">— {text.slice(i + 3)}</span></>;
+};
 
 // ────────────────────────────────────────────────
 // 가격 비교 데이터 (실제 서울365치과 진료비 기준)
@@ -342,38 +350,63 @@ app.get('/prices', async (c) => {
   };
   const schemas = [breadcrumbSchema, itemListSchema];
 
+  const priceList = Object.values(PRICE_PAGES);
+
   return c.render(
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
 
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <div class="text-emerald-400/80 text-sm font-bold mb-3 reveal" style="transition-delay:0.2s">PRICE GUIDE 2026</div>
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">인천 치과 진료 가격 안내</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">서울365치과는 모든 진료비를 투명하게 공개합니다. 정확한 견적은 무료 1:1 상담 후 안내해드립니다.</p>
+      {/* 히어로 — 왼쪽 안내, 오른쪽 항목별 시작가 사실 카드 */}
+      <section class="phead" aria-labelledby="prc-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치">
+              <ol>
+                <li><a href="/">홈</a></li>
+                <li aria-current="page">가격 안내</li>
+              </ol>
+            </nav>
+            <p class="eyebrow">PRICE GUIDE 2026</p>
+            <h1 id="prc-h1" class="display-xl">인천 치과 진료 가격 안내</h1>
+            <p class="lead hero-sub">서울365치과는 모든 진료비를 투명하게 공개합니다. 정확한 견적은 무료 1:1 상담 후 안내해드립니다.</p>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">PRICE</p>
+              <dl class="fact-rows">
+                {priceList.map(p => (
+                  <div><dt>{p.slug}</dt><dd class="mono">{p.tiers[0]?.price}</dd></div>
+                ))}
+              </dl>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="section-lg bg-white">
-        <div class="max-w-6xl mx-auto px-5 md:px-8">
-          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Object.values(PRICE_PAGES).map(p => (
-              <a href={`/prices/${p.slug}`} class="block p-7 rounded-2xl bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 hover:shadow-xl hover:-translate-y-1 transition-all">
-                <div class="text-emerald-500 text-xs font-bold mb-2">PRICE</div>
-                <h2 class="text-xl font-black text-gray-900 mb-2">{p.slug}</h2>
-                <p class="text-sm text-gray-500 mb-4">{p.tiers[0]?.price} 부터</p>
-                <div class="text-emerald-600 text-sm font-bold">자세히 보기 →</div>
+      {/* 항목 타일 */}
+      <section class="sec">
+        <div class="wrap">
+          <div class="prc-grid" data-rv-group>
+            {priceList.map(p => (
+              <a href={`/prices/${p.slug}`} class="card hover prc-tile">
+                <span class="tag">PRICE</span>
+                <h2>{p.slug}</h2>
+                <p class="prc-from"><b>{p.tiers[0]?.price}</b> 부터</p>
+                <span class="arrow-link">자세히 보기<Icon name="arrow" /></span>
               </a>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div class="mt-16 p-8 rounded-2xl bg-gradient-to-r from-gray-900 to-gray-800 text-white">
-            <h2 class="text-2xl font-black mb-3">정확한 비용은 무료 1:1 상담으로</h2>
-            <p class="text-white/70 mb-5 text-sm">치아 상태에 따라 비용이 달라집니다. 서울대 출신 5인 전문의가 정밀 진단 후 정직한 견적을 안내드립니다.</p>
-            <div class="flex gap-3">
-              <a href={`tel:${CLINIC.phone}`} class="btn-premium btn-premium-fill"><i class="fa-solid fa-phone mr-2"></i>{CLINIC.phone}</a>
-              <a href="/reservation" class="btn-premium btn-premium-white">예약 상담</a>
-            </div>
+      {/* 상담 안내 */}
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <h2 class="display-xl" data-rv>정확한 비용은 무료 1:1 상담으로</h2>
+          <p class="lead" data-rv>치아 상태에 따라 비용이 달라집니다. 서울대 출신 5인 전문의가 정밀 진단 후 정직한 견적을 안내드립니다.</p>
+          <div class="cta-actions" data-rv-group>
+            <a href={`tel:${CLINIC.phone}`} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />예약 상담</a>
           </div>
         </div>
       </section>
@@ -426,38 +459,59 @@ app.get('/prices/:treatment', async (c) => {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
 
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <nav class="text-white/40 text-xs mb-6 reveal" style="transition-delay:0.2s">
-            <a href="/" class="hover:text-white">홈</a> / <a href="/prices" class="hover:text-white">가격 안내</a> / <span class="text-white/60">{page.slug}</span>
-          </nav>
-          <div class="text-emerald-400/80 text-sm font-bold mb-3 reveal" style="transition-delay:0.3s">PRICE GUIDE · {page.slug.toUpperCase()}</div>
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">{page.h1}</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">{page.intro}</p>
+      {/* 히어로 — 왼쪽 안내, 오른쪽 종류별 시작가 사실 카드 */}
+      <section class="phead" aria-labelledby="prc-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치">
+              <ol>
+                <li><a href="/">홈</a></li>
+                <li><a href="/prices">가격 안내</a></li>
+                <li aria-current="page">{page.slug}</li>
+              </ol>
+            </nav>
+            <p class="eyebrow">PRICE GUIDE · {page.slug.toUpperCase()}</p>
+            <h1 id="prc-h1" class="display-xl prc-h1"><H1Parts text={page.h1} /></h1>
+            <p class="lead hero-sub">{page.intro}</p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />예약 상담</a>
+              <a href={`tel:${CLINIC.phone}`} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">PRICE</p>
+              <dl class="fact-rows">
+                {page.tiers.map(tier => (
+                  <div><dt>{tier.name}</dt><dd class="mono">{tier.price}</dd></div>
+                ))}
+              </dl>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* 가격 카드 */}
-      <section class="section-lg bg-white">
-        <div class="max-w-6xl mx-auto px-5 md:px-8">
-          <h2 class="text-3xl font-black text-gray-900 mb-2">{page.slug} 종류별 비용</h2>
-          <p class="text-gray-500 mb-10 text-sm">아래 가격은 표준 시술 기준이며, 환자 상태에 따라 변동될 수 있습니다.</p>
+      <section class="sec" aria-labelledby="prc-tiers-h">
+        <div class="wrap">
+          <div class="sec-head" data-rv>
+            <p class="eyebrow">Pricing</p>
+            <h2 id="prc-tiers-h" class="display-2">{page.slug} 종류별 비용</h2>
+            <p class="lead">아래 가격은 표준 시술 기준이며, 환자 상태에 따라 변동될 수 있습니다.</p>
+          </div>
 
-          <div class="grid md:grid-cols-3 gap-6">
+          <div class={`prc-tiers n${Math.min(page.tiers.length, 3)}`} data-rv-group>
             {page.tiers.map(tier => (
-              <div class={`relative p-7 rounded-2xl border ${tier.recommended ? 'bg-gradient-to-br from-emerald-50 to-white border-emerald-300 shadow-xl' : 'bg-white border-gray-200'}`}>
+              <div class={`card prc-tier${tier.recommended ? ' is-rec' : ''}`}>
                 {tier.recommended && (
-                  <div class="absolute -top-3 left-7 px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-bold">추천</div>
+                  <span class="prc-badge">추천</span>
                 )}
-                <h3 class="text-xl font-black text-gray-900 mb-2">{tier.name}</h3>
-                <div class="text-3xl font-black text-emerald-600 mb-1">{tier.price}</div>
-                <div class="text-gray-400 text-xs mb-5">{tier.range}</div>
-                <ul class="space-y-2">
+                <h3>{tier.name}</h3>
+                <p class="prc-price">{tier.price}</p>
+                <p class="prc-range">{tier.range}</p>
+                <ul class="check-list compact">
                   {tier.features.map(f => (
-                    <li class="text-sm text-gray-600 flex items-start gap-2">
-                      <i class="fa-solid fa-check text-emerald-500 mt-1 text-xs"></i>
-                      <span>{f}</span>
-                    </li>
+                    <li><Icon name="check" /><span>{f}</span></li>
                   ))}
                 </ul>
               </div>
@@ -467,33 +521,33 @@ app.get('/prices/:treatment', async (c) => {
       </section>
 
       {/* 가격 결정 요인 */}
-      <section class="section-lg bg-gray-50">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <h2 class="text-3xl font-black text-gray-900 mb-2">가격 결정 요인</h2>
-          <p class="text-gray-500 mb-8 text-sm">왜 사람마다 견적이 다른지 핵심 요인을 알려드립니다.</p>
-          <ul class="space-y-3">
+      <section class="sec" style="background:var(--card)" aria-labelledby="prc-factors-h">
+        <div class="wrap tx-two">
+          <div class="sec-head" data-rv>
+            <p class="eyebrow">Factors</p>
+            <h2 id="prc-factors-h" class="display-2">가격 결정 요인</h2>
+            <p class="lead">왜 사람마다 견적이 다른지 핵심 요인을 알려드립니다.</p>
+          </div>
+          <ol class="prc-factors" data-rv-group>
             {page.factors.map((f, i) => (
-              <li class="flex items-start gap-4 p-5 rounded-xl bg-white border border-gray-100">
-                <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 font-bold text-sm flex items-center justify-center flex-shrink-0">{i + 1}</div>
-                <div class="text-gray-700 text-sm leading-relaxed">{f}</div>
-              </li>
+              <li><span class="n mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span><span>{f}</span></li>
             ))}
-          </ul>
+          </ol>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section class="section-lg bg-white">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <h2 class="text-3xl font-black text-gray-900 mb-8">자주 묻는 질문</h2>
-          <div class="space-y-4">
-            {page.faqs.map(faq => (
-              <details class="p-5 rounded-xl bg-gray-50 border border-gray-100 group">
-                <summary class="font-bold text-gray-900 cursor-pointer flex items-center justify-between">
-                  <span>{faq.q}</span>
-                  <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition"></i>
-                </summary>
-                <p class="text-gray-600 text-sm leading-relaxed mt-4">{faq.a}</p>
+      {/* FAQ — 문구는 FAQPage JSON-LD 와 동일 */}
+      <section class="sec" aria-labelledby="prc-faq-h">
+        <div class="wrap-n">
+          <div class="sec-head center" data-rv>
+            <p class="eyebrow">FAQ</p>
+            <h2 id="prc-faq-h" class="display-2">자주 묻는 질문</h2>
+          </div>
+          <div data-rv-group>
+            {page.faqs.map((faq, i) => (
+              <details class="fq" open={i === 0 ? true : undefined}>
+                <summary><h3>{faq.q}</h3><span class="pm" aria-hidden="true"><Icon name="plus" /></span></summary>
+                <div class="fq-a"><p>{faq.a}</p></div>
               </details>
             ))}
           </div>
@@ -501,14 +555,14 @@ app.get('/prices/:treatment', async (c) => {
       </section>
 
       {/* CTA */}
-      <section class="section-lg bg-gradient-to-r from-gray-900 to-gray-800">
-        <div class="max-w-4xl mx-auto px-5 md:px-8 text-center">
-          <h2 class="text-3xl md:text-4xl font-black text-white mb-4">정확한 {page.slug} 비용이 궁금하세요?</h2>
-          <p class="text-white/60 mb-8">무료 1:1 상담으로 정직한 견적을 받아보세요. 서울대 출신 5인 협진.</p>
-          <div class="flex justify-center gap-3 flex-wrap">
-            <a href={`tel:${CLINIC.phone}`} class="btn-premium btn-premium-fill"><i class="fa-solid fa-phone mr-2"></i>{CLINIC.phone}</a>
-            <a href="/reservation" class="btn-premium btn-premium-white">예약 상담</a>
-            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn-premium btn-premium-white">카카오 상담</a>
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <h2 class="display-xl" data-rv>정확한 {page.slug} 비용이 궁금하세요?</h2>
+          <p class="lead" data-rv>무료 1:1 상담으로 정직한 견적을 받아보세요. 서울대 출신 5인 협진.</p>
+          <div class="cta-actions" data-rv-group>
+            <a href={`tel:${CLINIC.phone}`} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />예약 상담</a>
+            <a href={CLINIC.kakao} target="_blank" rel="noopener" class="btn btn-kakao btn-lg"><KakaoMark size={18} />카카오 상담</a>
           </div>
         </div>
       </section>
@@ -550,90 +604,128 @@ app.get('/emergency', (c) => {
 
   const schemas = [breadcrumbSchema, clinicSchema, faqSchema];
 
+  // 응급 진료 시간 — 2026-09-29: src/data/clinic.ts HOURS·스키마와 일치하도록 수정 (금 19시·토 14시)
+  // 히어로 사실 카드와 본문 표가 같은 값을 쓴다.
+  const emergencyHours = [
+    { day: '평일 (월~목)', time: '10:00 ~ 21:00 (야간진료)' },
+    { day: '금요일', time: '10:00 ~ 19:00' },
+    { day: '토요일', time: '10:00 ~ 14:00' },
+    { day: '일요일 · 공휴일', time: '14:00 ~ 18:00' },
+  ];
+  const emergencyAllYear = { day: '365일 진료', time: '설·추석 당일 외 연중 무휴' };
+
   return c.render(
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
 
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <div class="text-red-400 text-sm font-bold mb-3 reveal" style="transition-delay:0.2s"><i class="fa-solid fa-circle-exclamation mr-2"></i>EMERGENCY · 응급 진료</div>
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">인천 응급 치과 — 당일 진료 가능</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">갑작스러운 치통·외상·임플란트 흔들림 — 서울365치과는 365일 진료로 응급 환자를 신속하게 대응합니다.</p>
-          <div class="mt-8 flex gap-3 reveal" style="transition-delay:0.8s">
-            <a href={`tel:${CLINIC.phone}`} class="btn-premium btn-premium-fill text-lg"><i class="fa-solid fa-phone mr-2"></i>지금 전화 {CLINIC.phone}</a>
+      {/* 히어로 — 전화가 먼저, 오른쪽에 진료 시간 */}
+      <section class="phead" aria-labelledby="emg-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치">
+              <ol>
+                <li><a href="/">홈</a></li>
+                <li aria-current="page">응급 진료</li>
+              </ol>
+            </nav>
+            <p class="eyebrow emg-eyebrow">EMERGENCY · 응급 진료</p>
+            <h1 id="emg-h1" class="display-xl"><H1Parts text="인천 응급 치과 — 당일 진료 가능" /></h1>
+            <p class="lead hero-sub">갑작스러운 치통·외상·임플란트 흔들림 — 서울365치과는 365일 진료로 응급 환자를 신속하게 대응합니다.</p>
+            <div class="phead-cta">
+              <a href={`tel:${CLINIC.phone}`} class="btn btn-primary btn-lg"><Icon name="phone" />지금 전화 <span class="mono">{CLINIC.phone}</span></a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Hours</p>
+              <dl class="fact-rows">
+                {emergencyHours.map(h => (
+                  <div><dt>{h.day}</dt><dd class="mono">{h.time}</dd></div>
+                ))}
+                <div><dt>{emergencyAllYear.day}</dt><dd>{emergencyAllYear.time}</dd></div>
+              </dl>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="section-lg bg-white">
-        <div class="max-w-5xl mx-auto px-5 md:px-8">
-          <h2 class="text-3xl font-black text-gray-900 mb-2">이런 응급 상황 대응합니다</h2>
-          <p class="text-gray-500 mb-8 text-sm">전화 주시면 도착 즉시 진료받으실 수 있도록 준비해놓겠습니다.</p>
+      {/* 응급 상황 */}
+      <section class="sec" aria-labelledby="emg-cases-h">
+        <div class="wrap">
+          <div class="sec-head" data-rv>
+            <p class="eyebrow">Cases</p>
+            <h2 id="emg-cases-h" class="display-2">이런 응급 상황 대응합니다</h2>
+            <p class="lead">전화 주시면 도착 즉시 진료받으실 수 있도록 준비해놓겠습니다.</p>
+          </div>
 
-          <div class="grid md:grid-cols-2 gap-5">
+          <div class="why-grid" data-rv-group>
             {[
-              { icon: 'tooth', title: '극심한 치통', desc: '신경통·치아 갈라짐·심부 충치로 인한 즉시 통증 완화 및 신경 응급처치' },
-              { icon: 'user-injured', title: '치아 외상', desc: '넘어짐·운동 중 부딪힘으로 치아가 깨지거나 빠진 경우 — 빠른 재식립 가능' },
-              { icon: 'wrench', title: '보철물 탈락', desc: '크라운·인레이·라미네이트가 떨어진 경우 즉시 재부착 또는 임시 보철' },
-              { icon: 'screw', title: '임플란트 흔들림', desc: '임플란트 보철 흔들림·골절·잇몸 부음 — 응급 진단 및 처치' },
-              { icon: 'wind', title: '발치 후 출혈·통증', desc: '발치 후 지혈이 잘 되지 않거나 통증이 심한 경우 응급 처치' },
-              { icon: 'face-frown', title: '잇몸 부음·고름', desc: '치근단 농양·치주 농양 — 절개 배농 및 항생제 처방' },
-            ].map(item => (
-              <div class="p-6 rounded-2xl bg-red-50 border border-red-100">
-                <div class="w-12 h-12 rounded-xl bg-red-500 text-white flex items-center justify-center mb-3">
-                  <i class={`fa-solid fa-${item.icon}`}></i>
-                </div>
-                <h3 class="font-black text-gray-900 mb-2">{item.title}</h3>
-                <p class="text-gray-600 text-sm">{item.desc}</p>
+              { title: '극심한 치통', desc: '신경통·치아 갈라짐·심부 충치로 인한 즉시 통증 완화 및 신경 응급처치' },
+              { title: '치아 외상', desc: '넘어짐·운동 중 부딪힘으로 치아가 깨지거나 빠진 경우 — 빠른 재식립 가능' },
+              { title: '보철물 탈락', desc: '크라운·인레이·라미네이트가 떨어진 경우 즉시 재부착 또는 임시 보철' },
+              { title: '임플란트 흔들림', desc: '임플란트 보철 흔들림·골절·잇몸 부음 — 응급 진단 및 처치' },
+              { title: '발치 후 출혈·통증', desc: '발치 후 지혈이 잘 되지 않거나 통증이 심한 경우 응급 처치' },
+              { title: '잇몸 부음·고름', desc: '치근단 농양·치주 농양 — 절개 배농 및 항생제 처방' },
+            ].map((item, i) => (
+              <div class="why-item">
+                <span class="n mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{item.title}</h3>
+                <p>{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section class="section-lg bg-gray-50">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <h2 class="text-3xl font-black text-gray-900 mb-8">응급 진료 시간</h2>
-          <div class="bg-white rounded-2xl p-8 border border-gray-100">
-            <table class="w-full text-sm">
-              <tbody>
-                {/* 2026-09-29: src/data/clinic.ts HOURS·스키마와 일치하도록 수정 (금 19시·토 14시) */}
-                <tr class="border-b border-gray-100"><td class="py-3 font-bold text-gray-700">평일 (월~목)</td><td class="py-3 text-emerald-600 font-bold">10:00 ~ 21:00 (야간진료)</td></tr>
-                <tr class="border-b border-gray-100"><td class="py-3 font-bold text-gray-700">금요일</td><td class="py-3 text-emerald-600 font-bold">10:00 ~ 19:00</td></tr>
-                <tr class="border-b border-gray-100"><td class="py-3 font-bold text-gray-700">토요일</td><td class="py-3 text-emerald-600 font-bold">10:00 ~ 14:00</td></tr>
-                <tr class="border-b border-gray-100"><td class="py-3 font-bold text-gray-700">일요일 · 공휴일</td><td class="py-3 text-emerald-600 font-bold">14:00 ~ 18:00</td></tr>
-                <tr><td class="py-3 font-bold text-red-500">365일 진료</td><td class="py-3 text-gray-600">설·추석 당일 외 연중 무휴</td></tr>
-              </tbody>
-            </table>
-            <div class="mt-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-sm text-amber-800">
-              <i class="fa-solid fa-circle-info mr-2"></i>
-              응급 환자는 <strong>전화 후 방문</strong>하시면 우선 진료 안내해드립니다. 진료 가능 여부 확인을 위해 반드시 전화 주세요.
-            </div>
+      {/* 응급 진료 시간 */}
+      <section class="hours-band" aria-labelledby="emg-hours-h">
+        <div class="wrap-n">
+          <div class="sec-head center" data-rv>
+            <p class="eyebrow eyebrow-light">Hours</p>
+            <h2 id="emg-hours-h" class="display-2">응급 진료 시간</h2>
           </div>
+          <table class="hours-table emg-hours" aria-labelledby="emg-hours-h" data-rv>
+            <tbody>
+              {emergencyHours.map(h => {
+                const m = h.time.match(/^(.*?)\s*(\(.*\))$/);
+                return (
+                  <tr><th scope="row">{h.day}</th><td>{m ? <>{m[1]} <span class="paren">{m[2]}</span></> : h.time}</td></tr>
+                );
+              })}
+              <tr class="all"><th scope="row">{emergencyAllYear.day}</th><td>{emergencyAllYear.time}</td></tr>
+            </tbody>
+          </table>
+          <p class="emg-note" data-rv>
+            응급 환자는 <strong>전화 후 방문</strong>하시면 우선 진료 안내해드립니다. 진료 가능 여부 확인을 위해 반드시 전화 주세요.
+          </p>
+        </div>
+      </section>
 
-          {/* 응급 FAQ */}
-          <div class="mt-12">
-            <h3 class="text-2xl font-black text-gray-900 mb-6">응급 진료 FAQ</h3>
-            <div class="space-y-3">
-              {emergencyFaqs.map(faq => (
-                <details class="p-5 rounded-xl bg-white border border-gray-100 group">
-                  <summary class="font-bold text-gray-900 cursor-pointer flex items-center justify-between">
-                    <span>{faq.q}</span>
-                    <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition"></i>
-                  </summary>
-                  <p class="text-gray-600 text-sm leading-relaxed mt-4">{faq.a}</p>
-                </details>
-              ))}
-            </div>
+      {/* 응급 FAQ — 문구는 FAQPage JSON-LD 와 동일 */}
+      <section class="sec" aria-labelledby="emg-faq-h">
+        <div class="wrap-n">
+          <div class="sec-head center" data-rv>
+            <p class="eyebrow">FAQ</p>
+            <h2 id="emg-faq-h" class="display-2">응급 진료 FAQ</h2>
+          </div>
+          <div data-rv-group>
+            {emergencyFaqs.map((faq, i) => (
+              <details class="fq" open={i === 0 ? true : undefined}>
+                <summary><h3>{faq.q}</h3><span class="pm" aria-hidden="true"><Icon name="plus" /></span></summary>
+                <div class="fq-a"><p>{faq.a}</p></div>
+              </details>
+            ))}
           </div>
         </div>
       </section>
 
-      <section class="section-lg bg-gradient-to-r from-red-600 to-red-700">
-        <div class="max-w-4xl mx-auto px-5 md:px-8 text-center text-white">
-          <h2 class="text-3xl md:text-4xl font-black mb-4"><i class="fa-solid fa-circle-exclamation mr-2"></i>지금 통증이 있다면 바로 전화하세요</h2>
-          <p class="text-white/80 mb-8">응급 환자 우선 진료. 도착 즉시 진단 가능합니다.</p>
-          <a href={`tel:${CLINIC.phone}`} class="inline-flex items-center px-8 py-4 bg-white text-red-600 rounded-2xl font-black text-lg hover:scale-105 transition-transform"><i class="fa-solid fa-phone mr-2"></i>{CLINIC.phone}</a>
+      <section class="cta-band" aria-label="응급 전화 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <h2 class="display-xl" data-rv>지금 통증이 있다면 바로 전화하세요</h2>
+          <p class="lead" data-rv>응급 환자 우선 진료. 도착 즉시 진단 가능합니다.</p>
+          <div class="cta-actions" data-rv>
+            <a href={`tel:${CLINIC.phone}`} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
+          </div>
         </div>
       </section>
     </>,
@@ -678,96 +770,112 @@ app.get('/night-clinic', (c) => {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />
 
-      <section class="treatment-hero">
-        <div class="relative z-10 max-w-[1400px] mx-auto px-5 md:px-8 py-28 md:py-36">
-          <div class="text-purple-400 text-sm font-bold mb-3 reveal" style="transition-delay:0.2s"><i class="fa-solid fa-moon mr-2"></i>NIGHT CLINIC · 야간 진료</div>
-          <h1 class="section-headline text-white mb-4 reveal" style="transition-delay:0.4s">구월동 야간 치과 — 평일 21시까지</h1>
-          <p class="hero-sub text-white/35 reveal" style="transition-delay:0.6s">퇴근 후에도 진료받으실 수 있도록 평일 21시까지 운영합니다. 직장인·학생·맞벌이 가정을 위한 야간 진료 시스템.</p>
-          <div class="mt-8 flex gap-3 reveal" style="transition-delay:0.8s">
-            <a href={`tel:${CLINIC.phone}`} class="btn-premium btn-premium-fill"><i class="fa-solid fa-phone mr-2"></i>{CLINIC.phone}</a>
-            <a href="/reservation" class="btn-premium btn-premium-white">예약하기</a>
+      {/* 히어로 — 오른쪽에 진료시간 사실 카드(src/data/clinic.ts HOURS) */}
+      <section class="phead" aria-labelledby="nc-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치">
+              <ol>
+                <li><a href="/">홈</a></li>
+                <li aria-current="page">야간 진료</li>
+              </ol>
+            </nav>
+            <p class="eyebrow no-bar"><Icon name="moon" size={14} />NIGHT CLINIC · 야간 진료</p>
+            <h1 id="nc-h1" class="display-xl"><H1Parts text="구월동 야간 치과 — 평일 21시까지" /></h1>
+            <p class="lead hero-sub">퇴근 후에도 진료받으실 수 있도록 평일 21시까지 운영합니다. 직장인·학생·맞벌이 가정을 위한 야간 진료 시스템.</p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />예약하기</a>
+              <a href={`tel:${CLINIC.phone}`} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Hours</p>
+              <dl class="fact-rows">
+                {HOURS.map(h => (
+                  <div><dt>{h.day}</dt><dd class="mono">{h.time}</dd></div>
+                ))}
+              </dl>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="section-lg bg-white">
-        <div class="max-w-5xl mx-auto px-5 md:px-8">
-          <h2 class="text-3xl font-black text-gray-900 mb-2">왜 서울365치과 야간 진료를 선택할까요?</h2>
-          <p class="text-gray-500 mb-10 text-sm">인천 구월동에서 평일 21시까지 일관되게 진료하는 치과입니다.</p>
+      <section class="sec" aria-labelledby="nc-why-h">
+        <div class="wrap">
+          <div class="sec-head" data-rv>
+            <p class="eyebrow">Why night</p>
+            <h2 id="nc-why-h" class="display-2">왜 서울365치과 야간 진료를 선택할까요?</h2>
+            <p class="lead">인천 구월동에서 평일 21시까지 일관되게 진료하는 치과입니다.</p>
+          </div>
 
-          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div class="why-grid" data-rv-group>
             {[
-              { icon: 'moon', title: '평일 21시 마감', desc: '월~목 10:00~21:00 운영(금 19시). 퇴근 후 18~21시 슬롯 가장 인기' },
-              { icon: 'user-md', title: '야간에도 5인 협진', desc: '주간과 동일한 의료진. 단독 진료가 아닌 협진 시스템 유지' },
-              { icon: 'syringe', title: '야간 수면진료 가능', desc: '마취과 전문의 직접 상주. 통증 공포 환자도 편안하게' },
-              { icon: 'briefcase', title: '직장인 친화', desc: '퇴근 후 1~2시간 충분히 진료 가능. 예약 우선 확보' },
-              { icon: 'graduation-cap', title: '학생 친화', desc: '학원·과외 시간 끝나고 야간 교정 체크업' },
-              { icon: 'baby', title: '맞벌이 가정', desc: '어린이 야간 진료 가능. 부모님 퇴근 후 함께 방문' },
-            ].map(item => (
-              <div class="p-6 rounded-2xl bg-gradient-to-br from-purple-50 to-white border border-purple-100">
-                <div class="w-12 h-12 rounded-xl bg-purple-500 text-white flex items-center justify-center mb-3">
-                  <i class={`fa-solid fa-${item.icon}`}></i>
-                </div>
-                <h3 class="font-black text-gray-900 mb-2">{item.title}</h3>
-                <p class="text-gray-600 text-sm">{item.desc}</p>
+              { title: '평일 21시 마감', desc: '월~목 10:00~21:00 운영(금 19시). 퇴근 후 18~21시 슬롯 가장 인기' },
+              { title: '야간에도 5인 협진', desc: '주간과 동일한 의료진. 단독 진료가 아닌 협진 시스템 유지' },
+              { title: '야간 수면진료 가능', desc: '마취과 전문의 직접 상주. 통증 공포 환자도 편안하게' },
+              { title: '직장인 친화', desc: '퇴근 후 1~2시간 충분히 진료 가능. 예약 우선 확보' },
+              { title: '학생 친화', desc: '학원·과외 시간 끝나고 야간 교정 체크업' },
+              { title: '맞벌이 가정', desc: '어린이 야간 진료 가능. 부모님 퇴근 후 함께 방문' },
+            ].map((item, i) => (
+              <div class="why-item">
+                <span class="n mono" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{item.title}</h3>
+                <p>{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section class="section-lg bg-gray-50">
-        <div class="max-w-4xl mx-auto px-5 md:px-8">
-          <h2 class="text-3xl font-black text-gray-900 mb-8">야간 진료 추천 시간대</h2>
-          <div class="space-y-4">
-            <div class="p-5 rounded-2xl bg-white border border-gray-100 flex items-center gap-5">
-              <div class="text-3xl font-black text-purple-500 w-24">18~19시</div>
-              <div>
-                <div class="font-bold text-gray-900 mb-1">퇴근 직후</div>
-                <div class="text-sm text-gray-500">가장 인기 슬롯. 예약 권장. 정기 검진·스케일링·간단한 충치 치료 최적</div>
-              </div>
-            </div>
-            <div class="p-5 rounded-2xl bg-white border border-gray-100 flex items-center gap-5">
-              <div class="text-3xl font-black text-purple-500 w-24">19~20시</div>
-              <div>
-                <div class="font-bold text-gray-900 mb-1">저녁 식사 후</div>
-                <div class="text-sm text-gray-500">대기 없이 편안하게 진료. 임플란트 상담·교정 체크업·보철 진료 권장</div>
-              </div>
-            </div>
-            <div class="p-5 rounded-2xl bg-white border border-gray-100 flex items-center gap-5">
-              <div class="text-3xl font-black text-purple-500 w-24">20~21시</div>
-              <div>
-                <div class="font-bold text-gray-900 mb-1">마지막 슬롯</div>
-                <div class="text-sm text-gray-500">가장 조용함. 1:1 상담·정밀 진단 권장. 당일 진료비 5% 할인</div>
-              </div>
-            </div>
+      {/* 추천 시간대 */}
+      <section class="sec" style="padding-top:0" aria-labelledby="nc-slots-h">
+        <div class="wrap">
+          <div class="sec-head" data-rv>
+            <p class="eyebrow">Time slots</p>
+            <h2 id="nc-slots-h" class="display-2">야간 진료 추천 시간대</h2>
           </div>
-
-          {/* 야간 FAQ */}
-          <div class="mt-12">
-            <h3 class="text-2xl font-black text-gray-900 mb-6">야간 진료 FAQ</h3>
-            <div class="space-y-3">
-              {nightFaqs.map(faq => (
-                <details class="p-5 rounded-xl bg-white border border-gray-100 group">
-                  <summary class="font-bold text-gray-900 cursor-pointer flex items-center justify-between">
-                    <span>{faq.q}</span>
-                    <i class="fa-solid fa-chevron-down text-gray-400 group-open:rotate-180 transition"></i>
-                  </summary>
-                  <p class="text-gray-600 text-sm leading-relaxed mt-4">{faq.a}</p>
-                </details>
-              ))}
-            </div>
+          <div class="stat-row nc-slots" data-rv-group>
+            {[
+              { time: '18~19시', title: '퇴근 직후', desc: '가장 인기 슬롯. 예약 권장. 정기 검진·스케일링·간단한 충치 치료 최적' },
+              { time: '19~20시', title: '저녁 식사 후', desc: '대기 없이 편안하게 진료. 임플란트 상담·교정 체크업·보철 진료 권장' },
+              { time: '20~21시', title: '마지막 슬롯', desc: '가장 조용함. 1:1 상담·정밀 진단 권장. 당일 진료비 5% 할인' },
+            ].map(slot => (
+              <div class="card stat">
+                <p class="k">{slot.title}</p>
+                <p class="v">{slot.time.replace(/시$/, '')}<small>시</small></p>
+                <p class="d">{slot.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <section class="section-lg bg-gradient-to-r from-purple-600 to-indigo-700">
-        <div class="max-w-4xl mx-auto px-5 md:px-8 text-center text-white">
-          <h2 class="text-3xl md:text-4xl font-black mb-4">오늘 저녁, 진료 예약하세요</h2>
-          <p class="text-white/80 mb-8">평일 21시까지 일관된 의료 품질 — 구월동 서울365치과</p>
-          <div class="flex justify-center gap-3 flex-wrap">
-            <a href={`tel:${CLINIC.phone}`} class="btn-premium btn-premium-fill"><i class="fa-solid fa-phone mr-2"></i>{CLINIC.phone}</a>
-            <a href="/reservation" class="btn-premium btn-premium-white">예약 상담</a>
+      {/* 야간 FAQ — 문구는 FAQPage JSON-LD 와 동일 */}
+      <section class="sec" style="background:var(--card)" aria-labelledby="nc-faq-h">
+        <div class="wrap-n">
+          <div class="sec-head center" data-rv>
+            <p class="eyebrow">FAQ</p>
+            <h2 id="nc-faq-h" class="display-2">야간 진료 FAQ</h2>
+          </div>
+          <div data-rv-group>
+            {nightFaqs.map((faq, i) => (
+              <details class="fq" open={i === 0 ? true : undefined}>
+                <summary><h3>{faq.q}</h3><span class="pm" aria-hidden="true"><Icon name="plus" /></span></summary>
+                <div class="fq-a"><p>{faq.a}</p></div>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="cta-band" aria-label="예약 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <h2 class="display-xl" data-rv>오늘 저녁, 진료 예약하세요</h2>
+          <p class="lead" data-rv>평일 21시까지 일관된 의료 품질 — 구월동 서울365치과</p>
+          <div class="cta-actions" data-rv-group>
+            <a href={`tel:${CLINIC.phone}`} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />예약 상담</a>
           </div>
         </div>
       </section>

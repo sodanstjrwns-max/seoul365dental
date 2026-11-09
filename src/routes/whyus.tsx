@@ -4,6 +4,7 @@
 // ============================================================
 import { Hono } from 'hono';
 import type { Bindings } from '../lib/types';
+import { Icon } from '../lib/icons';
 
 const app = new Hono<{ Bindings: Bindings }>();
 const SITE_URL = 'https://seoul365dc.kr';
@@ -44,104 +45,115 @@ app.get('/why-us', (c) => {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      <section class="hero-premium" style="min-height:45vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 pt-20 pb-16 text-center">
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 text-xs mb-4">
-            <i class="fas fa-circle-info"></i> 구월동 예술회관역 · 365일 진료
+      {/* 페이지 히어로 */}
+      <section class="phead" aria-labelledby="why-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">왜 서울365치과인가?</li></ol></nav>
+            <p class="eyebrow">구월동 예술회관역 · 365일 진료</p>
+            <h1 id="why-h1" class="display-xl">
+              왜 서울365치과인가?
+            </h1>
+            <p class="lead">
+              서울365치과의 <strong class="wu-em">진료 환경 9가지</strong>를 안내합니다
+            </p>
           </div>
-          <h1 class="text-4xl md:text-5xl font-black gradient-text-white leading-tight mb-4">
-            왜 서울365치과인가?
-          </h1>
-          <p class="text-white/60 text-lg max-w-2xl mx-auto">
-            서울365치과의 <strong class="text-yellow-300">진료 환경 9가지</strong>를 안내합니다
-          </p>
+          <div class="phead-aside">
+            <nav class="fact-card" aria-label="진료 환경 바로가기">
+              <div class="phead-jump">
+                {DIFFERENTIATORS.map((d, i) => (
+                  <a href={`#why-${i + 1}`}><small>{String(i + 1).padStart(2, '0')}</small>{d.feature}</a>
+                ))}
+              </div>
+            </nav>
+          </div>
         </div>
       </section>
 
-      <section class="bg-white py-12">
-        <div class="max-w-5xl mx-auto px-5">
-          <div class="grid md:grid-cols-2 gap-4">
+      {/* 진료 환경 9가지 */}
+      <section class="sec">
+        <div class="wrap">
+          <div class="why-grid" data-rv-group>
             {DIFFERENTIATORS.map((d, i) => (
-              <div class="p-5 rounded-2xl bg-gradient-to-br from-blue-50 to-white border border-blue-100">
-                <div class="flex items-center gap-3 mb-3">
-                  <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center">
-                    <i class={`fas fa-${d.icon}`}></i>
-                  </div>
-                  <h3 class="font-bold text-gray-900">{d.feature}</h3>
-                </div>
-                <div class="space-y-2 text-sm">
-                  <div class="flex gap-2 p-2 rounded-lg bg-green-50 border border-green-200">
-                    <span class="text-green-600 font-bold flex-shrink-0">✓ 서울365</span>
-                    <span class="text-gray-700">{d.us}</span>
-                  </div>
-                </div>
+              <div class="why-item wu-item" id={`why-${i + 1}`}>
+                <span class="n mono">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{d.feature}</h3>
+                <p>
+                  <span class="wu-us">✓ 서울365</span>
+                  <span>{d.us}</span>
+                </p>
               </div>
             ))}
           </div>
 
-          <div class="mt-12 grid md:grid-cols-3 gap-4">
-            <div class="text-center p-6 rounded-2xl bg-blue-600 text-white">
-              <div class="text-4xl font-black mb-1">5<span class="text-2xl">인</span></div>
-              <div class="text-sm opacity-90">서울대 치과대학 출신 원장 협진</div>
+          <div class="stat-row wu-stats" data-rv-group>
+            <div class="card stat">
+              <p class="v">5<small>인</small></p>
+              <p class="d">서울대 치과대학 출신 원장 협진</p>
             </div>
-            <div class="text-center p-6 rounded-2xl bg-gray-900 text-white">
-              <div class="text-4xl font-black mb-1">400<span class="text-2xl">평+</span></div>
-              <div class="text-sm opacity-90">대형 진료 공간 · 6개 수술실</div>
+            <div class="card stat">
+              <p class="v">400<small>평+</small></p>
+              <p class="d">대형 진료 공간 · 6개 수술실</p>
             </div>
-            <div class="text-center p-6 rounded-2xl bg-green-600 text-white">
-              <div class="text-4xl font-black mb-1">365<span class="text-2xl">일</span></div>
-              <div class="text-sm opacity-90">평일 야간 · 주말·공휴일 진료</div>
+            <div class="card stat">
+              <p class="v">365<small>일</small></p>
+              <p class="d">평일 야간 · 주말·공휴일 진료</p>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="mt-12 p-8 bg-gray-50 rounded-2xl border border-gray-100">
-            <h2 class="text-2xl font-bold text-gray-900 mb-4 text-center">서울대 치과대학 출신 의료진 협진</h2>
-            <p class="text-gray-700 leading-relaxed text-center mb-6">
+      {/* 의료진 협진 */}
+      <section class="sec" style="padding-top:0">
+        <div class="wrap">
+          <div class="sec-head center" data-rv>
+            <h2 class="display-2">서울대 치과대학 출신 의료진 협진</h2>
+            <p class="lead">
               서울365치과는 임플란트, 보존과, 교정과 등 분야별 원장이 협진하여,
               여러 분야가 함께 필요한 경우에도 한 병원에서 진단과 치료 계획을 함께 세웁니다.
             </p>
-            <div class="grid grid-cols-2 md:grid-cols-6 gap-3 text-center">
-              <div class="p-3 bg-white rounded-xl">
-                <div class="font-bold text-gray-900">박준규</div>
-                <div class="text-xs text-gray-500">대표원장 · 임플란트</div>
-              </div>
-              <div class="p-3 bg-white rounded-xl">
-                <div class="font-bold text-gray-900">최다빈</div>
-                <div class="text-xs text-gray-500">임플란트·심미</div>
-              </div>
-              <div class="p-3 bg-white rounded-xl">
-                <div class="font-bold text-gray-900">정문희</div>
-                <div class="text-xs text-gray-500">보존과 전문의</div>
-              </div>
-              <div class="p-3 bg-white rounded-xl">
-                <div class="font-bold text-gray-900">상세훈</div>
-                <div class="text-xs text-gray-500">보철</div>
-              </div>
-              <div class="p-3 bg-white rounded-xl">
-                <div class="font-bold text-gray-900">하누리</div>
-                <div class="text-xs text-gray-500">교정과 전문의</div>
-              </div>
-              <div class="p-3 bg-white rounded-xl">
-                <div class="font-bold text-gray-900">차해나</div>
-                <div class="text-xs text-gray-500">보철·심미</div>
-              </div>
+          </div>
+          <div class="wu-team" data-rv-group>
+            <div class="card wu-doc">
+              <div class="wu-doc-name">박준규</div>
+              <div class="wu-doc-role">대표원장 · 임플란트</div>
+            </div>
+            <div class="card wu-doc">
+              <div class="wu-doc-name">최다빈</div>
+              <div class="wu-doc-role">임플란트·심미</div>
+            </div>
+            <div class="card wu-doc">
+              <div class="wu-doc-name">정문희</div>
+              <div class="wu-doc-role">보존과 전문의</div>
+            </div>
+            <div class="card wu-doc">
+              <div class="wu-doc-name">상세훈</div>
+              <div class="wu-doc-role">보철</div>
+            </div>
+            <div class="card wu-doc">
+              <div class="wu-doc-name">하누리</div>
+              <div class="wu-doc-role">교정과 전문의</div>
+            </div>
+            <div class="card wu-doc">
+              <div class="wu-doc-name">차해나</div>
+              <div class="wu-doc-role">보철·심미</div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div class="mt-12 p-6 bg-blue-50 rounded-2xl text-center">
-            <h3 class="text-2xl font-bold text-gray-900 mb-3">상담 예약 안내</h3>
-            <p class="text-gray-600 mb-5">초진 상담 무료 · 비용 안내 투명</p>
-            <div class="flex flex-wrap justify-center gap-3">
-              <a href="tel:032-432-0365" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700">
-                <i class="fas fa-phone"></i> 032-432-0365
-              </a>
-              <a href="/reservation" class="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-blue-600 text-blue-600 rounded-full font-bold hover:bg-blue-50">
-                <i class="fas fa-calendar"></i> 온라인 예약
-              </a>
-            </div>
+      {/* 상담 안내 */}
+      <section class="cta-band" aria-label="상담 예약 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <h3 class="display-xl" data-rv>상담 예약 안내</h3>
+          <p class="lead" data-rv>초진 상담 무료 · 비용 안내 투명</p>
+          <div class="cta-actions" data-rv-group>
+            <a href="tel:032-432-0365" class="btn btn-white btn-lg mono">
+              <Icon name="phone" /> 032-432-0365
+            </a>
+            <a href="/reservation" class="btn btn-primary btn-lg">
+              <Icon name="calendar" /> 온라인 예약
+            </a>
           </div>
         </div>
       </section>

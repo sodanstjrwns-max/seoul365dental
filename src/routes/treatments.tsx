@@ -467,47 +467,42 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
       {/* Treatment Case Modal */}
       {dbCases.length > 0 && (
         <>
-          <div id="txCaseModal" class="fixed inset-0 z-[100] hidden" onclick="closeTxCaseModal(event)">
-            <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
-            <div class="relative z-10 flex items-center justify-center min-h-screen p-4 md:p-8">
-              <div class="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
-                {/* Modal Header */}
-                <div class="sticky top-0 bg-white/95 backdrop-blur-sm z-10 flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                  <div class="flex items-center gap-2">
-                    <span id="txModalTag" class="text-[0.7rem] bg-[#1E4BD8]/8 text-[#1E4BD8] px-2.5 py-0.5 rounded-full font-semibold"></span>
-                    <span id="txModalDuration" class="text-[0.65rem] text-gray-400"></span>
+          <div id="txCaseModal" class="case-modal hidden" role="dialog" aria-modal="true" aria-labelledby="txModalTitle" onclick="closeTxCaseModal(event)">
+            <div class="case-modal-box" onclick="event.stopPropagation()">
+              {/* Modal Header */}
+              <div class="case-modal-head">
+                <div class="l">
+                  <span id="txModalTag" class="tag"></span>
+                  <span id="txModalDuration" class="case-dur"></span>
+                </div>
+                <div class="r">
+                  <button type="button" class="prev" onclick="navTxCase(-1)" title="이전 사례" aria-label="이전 사례"><Icon name="chevron" /></button>
+                  <button type="button" onclick="navTxCase(1)" title="다음 사례" aria-label="다음 사례"><Icon name="chevron" /></button>
+                  <button type="button" onclick="closeTxCaseModal()" title="닫기" aria-label="닫기"><Icon name="close" /></button>
+                </div>
+              </div>
+              {/* Before/After Comparison */}
+              <div class="case-modal-body">
+                <div class="case-pair">
+                  <div class="case-shot">
+                    <img id="txModalBefore" src="" alt={`${t.name} 치료 전`} />
+                    <span class="lab">Before</span>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <button onclick="navTxCase(-1)" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition" title="이전 사례"><i class="fa-solid fa-chevron-left text-gray-500 text-sm"></i></button>
-                    <button onclick="navTxCase(1)" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition" title="다음 사례"><i class="fa-solid fa-chevron-right text-gray-500 text-sm"></i></button>
-                    <button onclick="closeTxCaseModal()" class="w-9 h-9 rounded-full bg-gray-100 hover:bg-red-100 hover:text-red-500 flex items-center justify-center transition ml-1" title="닫기"><i class="fa-solid fa-xmark text-gray-500 text-sm"></i></button>
+                  <div class="case-shot">
+                    <img id="txModalAfter" src="" alt={`${t.name} 치료 후`} />
+                    <span class="lab after">After</span>
                   </div>
                 </div>
-                {/* Before/After Comparison */}
-                <div class="p-6">
-                  <div class="grid grid-cols-2 gap-3 mb-6">
-                    <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
-                      <img id="txModalBefore" src="" alt={`${t.name} 치료 전`} class="w-full h-full object-cover" />
-                      <span class="absolute top-3 left-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-black/50 backdrop-blur-sm px-3 py-1 rounded-lg">Before</span>
-                    </div>
-                    <div class="relative rounded-2xl overflow-hidden bg-gray-50 aspect-[4/3]">
-                      <img id="txModalAfter" src="" alt={`${t.name} 치료 후`} class="w-full h-full object-cover" />
-                      <span class="absolute top-3 right-3 text-[0.65rem] font-bold tracking-widest uppercase text-white bg-[#1E4BD8]/80 backdrop-blur-sm px-3 py-1 rounded-lg">After</span>
-                    </div>
-                  </div>
-                  <h2 id="txModalTitle" class="text-xl font-bold text-gray-900 mb-3"></h2>
-                  <p id="txModalDesc" class="text-gray-600 text-sm leading-relaxed mb-4"></p>
-                  <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-500 bg-gray-50 rounded-xl px-5 py-4">
-                    <span id="txModalDoctor"><i class="fa-solid fa-user-doctor text-[#1E4BD8]/60 mr-1.5"></i></span>
-                    <span id="txModalPatient"><i class="fa-solid fa-user text-[#1E4BD8]/60 mr-1.5"></i></span>
-                    <span id="txModalDur"><i class="fa-regular fa-clock text-[#1E4BD8]/60 mr-1.5"></i></span>
-                  </div>
-                  <div class="mt-6 text-center">
-                    <p class="text-gray-400 text-xs mb-3">비슷한 고민을 가지고 계신가요?</p>
-                    <a href="/reservation" class="inline-flex items-center gap-2 bg-[#1E4BD8] hover:bg-[#0052cc] text-white font-bold text-sm px-6 py-3 rounded-xl transition">
-                      <i class="fa-solid fa-calendar-check text-xs"></i> 무료 상담 예약
-                    </a>
-                  </div>
+                <h2 id="txModalTitle" class="case-modal-t"></h2>
+                <p id="txModalDesc" class="case-modal-d"></p>
+                <div class="case-modal-meta">
+                  <span id="txModalDoctor"></span>
+                  <span id="txModalPatient"></span>
+                  <span id="txModalDur"></span>
+                </div>
+                <div class="case-modal-cta">
+                  <p>비슷한 고민을 가지고 계신가요?</p>
+                  <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />무료 상담 예약</a>
                 </div>
               </div>
             </div>
@@ -551,10 +546,10 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
               document.getElementById('txModalAfter').src = c.after_image || '';
               document.getElementById('txModalTitle').textContent = c.title;
               document.getElementById('txModalDesc').textContent = c.description || '상세 설명이 없습니다.';
-              document.getElementById('txModalDoctor').innerHTML = '<i class="fa-solid fa-user-doctor text-[#1E4BD8]/60 mr-1.5"></i>담당: ' + c.doctor_name;
+              document.getElementById('txModalDoctor').textContent = '담당: ' + c.doctor_name;
               var patientText = (c.patient_age || '') + (c.patient_gender && c.patient_gender !== '선택안함' ? ' ' + c.patient_gender : '');
-              document.getElementById('txModalPatient').innerHTML = '<i class="fa-solid fa-user text-[#1E4BD8]/60 mr-1.5"></i>' + patientText;
-              document.getElementById('txModalDur').innerHTML = '<i class="fa-regular fa-clock text-[#1E4BD8]/60 mr-1.5"></i>' + (c.duration || '-');
+              document.getElementById('txModalPatient').textContent = patientText;
+              document.getElementById('txModalDur').textContent = c.duration || '-';
               document.getElementById('txModalDur').style.display = c.duration ? '' : 'none';
               document.getElementById('txModalPatient').style.display = patientText.trim() ? '' : 'none';
             }
@@ -573,108 +568,62 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
 
       {/* Materials / Fixture Guide */}
       {t.materials && t.materials.length > 0 && (
-        <section class="section-lg bg-mesh" itemScope itemType="https://schema.org/ItemList">
+        <section class="sec" aria-labelledby="h-mat" itemScope itemType="https://schema.org/ItemList">
           <meta itemProp="name" content={`${t.name} 사용 재료 및 픽스처`} />
-          <div class="max-w-5xl mx-auto px-5 md:px-8">
-            <div class="text-center mb-14 reveal">
-              <span class="section-eyebrow text-[#1E4BD8] mb-3 block">
+          <div class="wrap">
+            <div class="sec-head center" data-rv>
+              <p class="eyebrow">
                 {['implant','full-implant','digital-full-arch','implant-revision'].includes(t.slug) ? 'FIXTURE GUIDE' : 'MATERIALS'}
-              </span>
-              <h2 class="section-sub-headline text-gray-900">
+              </p>
+              <h2 id="h-mat" class="display-2">
                 {['implant','full-implant','digital-full-arch','implant-revision'].includes(t.slug) ? '임플란트 픽스처 안내' : '사용 재료 및 장비'}
               </h2>
               {['implant','full-implant','digital-full-arch'].includes(t.slug) && (
-                <p class="text-gray-500 text-[0.9rem] mt-4 max-w-2xl mx-auto">CT 정밀 진단 후 뼈 상태·위치·예산에 맞는 최적의 픽스처를 추천드립니다.</p>
+                <p class="lead">CT 정밀 진단 후 뼈 상태·위치·예산에 맞는 최적의 픽스처를 추천드립니다.</p>
               )}
             </div>
 
             {/* 픽스처 상세 필드가 있는 경우: 확장된 카드 레이아웃 */}
             {t.materials.some(m => m.price || m.origin || m.surface) ? (
-              <div class="space-y-6 stagger-children">
+              <div class="mat-list" data-rv-group>
                 {t.materials.map((m, idx) => (
-                  <div class="glass-card overflow-hidden" itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
+                  <article class="card mat-card" itemProp="itemListElement" itemScope itemType="https://schema.org/ListItem">
                     <meta itemProp="position" content={String(idx + 1)} />
                     <div itemProp="item" itemScope itemType="https://schema.org/Product">
-                      {/* 헤더 */}
-                      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between p-5 pb-0 sm:pb-5 gap-3 border-b border-gray-100">
-                        <div class="flex items-start gap-3">
-                          <div class="w-10 h-10 rounded-xl bg-[#1E4BD8]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <i class={`fa-solid ${m.grade?.includes('수입') ? 'fa-globe' : m.grade?.includes('보철') || m.grade?.includes('연결') ? 'fa-crown' : 'fa-shield-halved'} text-[#1E4BD8] text-sm`} aria-hidden="true"></i>
-                          </div>
-                          <div>
-                            {m.grade && <span class="text-[0.65rem] font-bold text-[#1E4BD8] uppercase tracking-wider block mb-0.5">{m.grade}</span>}
-                            <h3 class="font-bold text-gray-900 text-[1.05rem]" itemProp="name">{m.name}</h3>
-                            {m.origin && <span class="text-gray-400 text-[0.75rem]">{m.origin}</span>}
-                          </div>
+                      <header class="mat-head">
+                        <div>
+                          {m.grade && <span class="tag">{m.grade}</span>}
+                          <h3 itemProp="name">{m.name}</h3>
+                          {m.origin && <small>{m.origin}</small>}
                         </div>
                         {m.price && (
-                          <div class="sm:text-right flex-shrink-0">
-                            <span class="text-[1.15rem] font-extrabold text-[#1E4BD8]" itemProp="offers" itemScope itemType="https://schema.org/Offer">
-                              <meta itemProp="priceCurrency" content="KRW" />
-                              <span itemProp="price">{m.price}</span>
-                            </span>
-                          </div>
+                          <span class="mat-price" itemProp="offers" itemScope itemType="https://schema.org/Offer">
+                            <meta itemProp="priceCurrency" content="KRW" />
+                            <span itemProp="price">{m.price}</span>
+                          </span>
                         )}
-                      </div>
-
-                      {/* 본문 */}
-                      <div class="p-5">
-                        <p class="text-gray-600 text-[0.88rem] leading-relaxed mb-4" itemProp="description">{m.desc}</p>
-                        
-                        {/* 스펙 그리드 */}
-                        {(m.surface || m.connection || m.feature || m.bestFor) && (
-                          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                            {m.surface && (
-                              <div class="flex items-start gap-2 bg-gray-50 rounded-lg px-3.5 py-2.5">
-                                <i class="fa-solid fa-layer-group text-gray-400 text-[0.7rem] mt-1 flex-shrink-0" aria-hidden="true"></i>
-                                <div>
-                                  <span class="text-[0.68rem] font-semibold text-gray-400 uppercase block">표면처리</span>
-                                  <span class="text-gray-700 text-[0.82rem] font-medium">{m.surface}</span>
-                                </div>
-                              </div>
-                            )}
-                            {m.connection && (
-                              <div class="flex items-start gap-2 bg-gray-50 rounded-lg px-3.5 py-2.5">
-                                <i class="fa-solid fa-link text-gray-400 text-[0.7rem] mt-1 flex-shrink-0" aria-hidden="true"></i>
-                                <div>
-                                  <span class="text-[0.68rem] font-semibold text-gray-400 uppercase block">연결방식</span>
-                                  <span class="text-gray-700 text-[0.82rem] font-medium">{m.connection}</span>
-                                </div>
-                              </div>
-                            )}
-                            {m.feature && (
-                              <div class="flex items-start gap-2 bg-gray-50 rounded-lg px-3.5 py-2.5">
-                                <i class="fa-solid fa-star text-gray-400 text-[0.7rem] mt-1 flex-shrink-0" aria-hidden="true"></i>
-                                <div>
-                                  <span class="text-[0.68rem] font-semibold text-gray-400 uppercase block">주요 특징</span>
-                                  <span class="text-gray-700 text-[0.82rem] font-medium">{m.feature}</span>
-                                </div>
-                              </div>
-                            )}
-                            {m.bestFor && (
-                              <div class="flex items-start gap-2 bg-[#1E4BD8]/5 rounded-lg px-3.5 py-2.5">
-                                <i class="fa-solid fa-user-check text-[#1E4BD8]/60 text-[0.7rem] mt-1 flex-shrink-0" aria-hidden="true"></i>
-                                <div>
-                                  <span class="text-[0.68rem] font-semibold text-[#1E4BD8]/60 uppercase block">추천 대상</span>
-                                  <span class="text-gray-700 text-[0.82rem] font-medium">{m.bestFor}</span>
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                      </header>
+                      <p class="mat-desc" itemProp="description">{m.desc}</p>
+                      {(m.surface || m.connection || m.feature || m.bestFor) && (
+                        <dl class="mat-specs">
+                          {m.surface && <div><dt>표면처리</dt><dd>{m.surface}</dd></div>}
+                          {m.connection && <div><dt>연결방식</dt><dd>{m.connection}</dd></div>}
+                          {m.feature && <div><dt>주요 특징</dt><dd>{m.feature}</dd></div>}
+                          {m.bestFor && <div class="best"><dt>추천 대상</dt><dd>{m.bestFor}</dd></div>}
+                        </dl>
+                      )}
                     </div>
-                  </div>
+                  </article>
                 ))}
               </div>
             ) : (
               /* 기존 간단한 카드 레이아웃 (비임플란트 페이지) */
-              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger-children">
+              <div class="mat-grid" data-rv-group>
                 {t.materials.map(m => (
-                  <div class="glass-card p-5 flex flex-col">
-                    {m.grade && <span class="text-[0.7rem] font-semibold text-[#1E4BD8] uppercase tracking-wider mb-2">{m.grade}</span>}
-                    <h3 class="font-bold text-gray-900 text-[0.95rem] mb-1.5">{m.name}</h3>
-                    <p class="text-gray-500 text-[0.85rem] leading-relaxed">{m.desc}</p>
+                  <div class="card mat-tile">
+                    {m.grade && <span class="tag">{m.grade}</span>}
+                    <h3>{m.name}</h3>
+                    <p>{m.desc}</p>
                   </div>
                 ))}
               </div>
@@ -682,12 +631,9 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
 
             {/* 픽스처 페이지 안내 문구 */}
             {['implant','full-implant','digital-full-arch'].includes(t.slug) && (
-              <div class="mt-8 text-center reveal">
-                <p class="text-gray-400 text-[0.8rem]">
-                  <i class="fa-solid fa-circle-info mr-1.5" aria-hidden="true"></i>
-                  모든 픽스처는 식약처 인증 정품만 사용하며, 보증서를 발급해 드립니다. 정확한 비용은 CT 진단 후 안내됩니다.
-                </p>
-              </div>
+              <p class="fine mat-note" data-rv>
+                모든 픽스처는 식약처 인증 정품만 사용하며, 보증서를 발급해 드립니다. 정확한 비용은 CT 진단 후 안내됩니다.
+              </p>
             )}
           </div>
         </section>

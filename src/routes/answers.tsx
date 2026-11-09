@@ -8,22 +8,9 @@ import type { Bindings } from '../lib/types'
 import { ANSWER_HUB, type AnswerEntry } from '../data/answer-hub'
 import { CLINIC } from '../data/clinic'
 import { ORG_ID, AGENCY_HUB_PUBLISHED, CLINIC_GENERAL_INFO_NOTE } from '../lib/column-seo'
+import { Icon } from '../lib/icons'
 
 const answersRoutes = new Hono<{ Bindings: Bindings }>()
-
-// 카테고리별 아이콘
-const CATEGORY_ICON: Record<string, string> = {
-  '임플란트': 'fa-tooth',
-  '교정': 'fa-teeth-open',
-  '인비절라인': 'fa-grin',
-  '수면진료': 'fa-bed',
-  '미백': 'fa-smile',
-  '심미': 'fa-star',
-  '소아': 'fa-baby',
-  '응급': 'fa-truck-medical',
-  '비용': 'fa-coins',
-  '병원소개': 'fa-hospital',
-};
 
 // 슬러그 생성 함수 (질문 → URL slug)
 function questionToSlug(q: AnswerEntry): string {
@@ -82,81 +69,79 @@ answersRoutes.get('/answers', (c) => {
 
   const categoryOrder = ['임플란트', '교정', '인비절라인', '비용', '수면진료', '심미', '소아', '응급', '병원소개', '미백'];
   const allKeywords = ANSWER_HUB.flatMap(e => e.keywords).filter((v, i, a) => a.indexOf(v) === i).join(', ');
+  const cats = categoryOrder.filter(cat => grouped[cat]);
 
   return c.render(
-    <section class="min-h-screen bg-white">
+    <>
       {/* Hero */}
-      <div class="hero-premium" style="min-height:50vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-5 text-center" style="padding-top:16vh">
-          <p class="text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">AI ANSWER HUB</p>
-          <h1 class="text-3xl md:text-5xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
-            서울365치과 베스트 답변 모음
-          </h1>
-          <p class="text-white/40 text-sm md:text-base max-w-2xl mx-auto reveal reveal-fade" style="transition-delay:0.4s">
-            임플란트·교정·인비절라인·수면진료 등 가장 많이 묻는 질문에<br/>
-            서울365치과가 정리한 일반 건강정보입니다. ({ANSWER_HUB.length}개 답변)
-          </p>
-        </div>
-      </div>
-
-      {/* 카테고리별 Q&A */}
-      <div class="max-w-5xl mx-auto px-5 md:px-8 py-16 md:py-24">
-        {categoryOrder.filter(cat => grouped[cat]).map((cat) => {
-          const entries = grouped[cat];
-          const icon = CATEGORY_ICON[cat] || 'fa-circle-question';
-          return (
-            <div class="mb-16 reveal reveal-fade">
-              <div class="flex items-center gap-3 mb-6">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center">
-                  <i class={`fa-solid ${icon} text-white text-lg`}></i>
-                </div>
-                <div>
-                  <h2 class="text-2xl font-bold text-gray-900">{cat}</h2>
-                  <p class="text-xs text-gray-400">{entries.length}개 답변</p>
-                </div>
-              </div>
-              <div class="space-y-3">
-                {entries.map(entry => (
-                  <a
-                    href={`/answers/${questionToSlug(entry)}`}
-                    class="block p-6 rounded-2xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:shadow-lg transition-all bg-white"
-                  >
-                    <h3 class="text-base md:text-lg font-bold text-gray-900 mb-2 flex items-start gap-2">
-                      <i class="fa-solid fa-circle-question text-[#1E4BD8] text-sm mt-1.5 shrink-0"></i>
-                      <span>{entry.question}</span>
-                    </h3>
-                    <p class="text-sm text-gray-600 leading-relaxed pl-6">{entry.shortAnswer}</p>
-                    <div class="flex items-center gap-2 mt-3 pl-6 text-xs text-gray-400">
-                      <i class="fa-solid fa-hospital"></i>
-                      <span>서울365치과</span>
-                      <span class="mx-1">·</span>
-                      <span>{entry.updated}</span>
-                    </div>
-                  </a>
-                ))}
+      <section class="phead" aria-labelledby="answers-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">Answer Hub</li></ol></nav>
+            <p class="eyebrow">AI ANSWER HUB</p>
+            <h1 id="answers-h1" class="display-xl">서울365치과 베스트 답변 모음</h1>
+            <p class="lead hero-sub">
+              임플란트·교정·인비절라인·수면진료 등 가장 많이 묻는 질문에<br class="hidden md:inline" />{' '}
+              서울365치과가 정리한 일반 건강정보입니다. ({ANSWER_HUB.length}개 답변)
+            </p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
+            </div>
+          </div>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Categories · {cats.length}</p>
+              <div class="phead-jump">
+                {cats.map((cat, i) => <a href={`#ans-cat-${i}`}>{cat}<small>{grouped[cat].length}</small></a>)}
               </div>
             </div>
-          );
-        })}
-
-        {/* CTA */}
-        <div class="mt-20 p-8 md:p-12 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center reveal reveal-fade">
-          <h3 class="text-2xl md:text-3xl font-black mb-3">더 궁금한 점이 있으신가요?</h3>
-          <p class="text-white/80 mb-6">서울대 출신 5인 전문의가 1:1 무료 상담을 도와드립니다.</p>
-          <div class="flex flex-wrap justify-center gap-3">
-            <a href="/reservation" class="px-6 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold hover:scale-105 transition-all">
-              <i class="fa-solid fa-calendar-check mr-2"></i> 무료 상담 예약
-            </a>
-            <a href={CLINIC.phoneTel} class="px-6 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold hover:bg-white/20 transition-all">
-              <i class="fa-solid fa-phone mr-2"></i> {CLINIC.phone}
-            </a>
           </div>
         </div>
-      </div>
-    </section>,
+      </section>
+
+      {/* 카테고리별 Q&A */}
+      <section class="sec">
+        <div class="wrap">
+          {cats.map((cat, i) => {
+            const entries = grouped[cat];
+            return (
+              <article id={`ans-cat-${i}`} class="hubx-row" data-rv>
+                <div class="hubx-row-head">
+                  <h2>{cat}</h2>
+                  <span class="cnt">{entries.length}개 답변</span>
+                </div>
+                <div class="hubx-grid one">
+                  {entries.map(entry => (
+                    <a href={`/answers/${questionToSlug(entry)}`} class="card hubx-card hover">
+                      <h3>{entry.question}</h3>
+                      <p>{entry.shortAnswer}</p>
+                      <span class="meta">
+                        <span>서울365치과</span>
+                        <span>{entry.updated}</span>
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Consultation</p>
+          <h2 class="display-xl" data-rv>더 궁금한 점이 있으신가요?</h2>
+          <p class="lead" data-rv>서울대 출신 5인 전문의가 1:1 무료 상담을 도와드립니다.</p>
+          <div class="cta-actions" data-rv-group>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />무료 상담 예약</a>
+            <a href={CLINIC.phoneTel} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
+          </div>
+        </div>
+      </section>
+    </>,
     {
       title: `자주 묻는 질문 ${ANSWER_HUB.length}선 | 서울365치과 AI Answer Hub`,
       description: `인천 구월동 서울365치과 자주 묻는 질문 ${ANSWER_HUB.length}선. 임플란트 가격, 인비절라인 비용, 수면진료, 보험 적용까지 서울365치과가 정리한 답변.`,
@@ -181,7 +166,6 @@ answersRoutes.get('/answers/:slug', (c) => {
     .filter(e => e.category === entry.category && questionToSlug(e) !== slug)
     .slice(0, 4);
 
-  const icon = CATEGORY_ICON[entry.category] || 'fa-circle-question';
   const canonicalUrl = `https://seoul365dc.kr/answers/${slug}`;
 
   // === QAPage Schema (개별 질문) ===
@@ -274,129 +258,110 @@ answersRoutes.get('/answers/:slug', (c) => {
   };
 
   return c.render(
-    <section class="min-h-screen bg-white">
+    <>
       {/* Hero */}
-      <div class="hero-premium" style="min-height:45vh">
-        <div class="hero-grid"></div>
-        <div class="orb orb-1"></div>
-        <div class="relative z-10 max-w-3xl mx-auto px-5" style="padding-top:14vh">
-          <div class="flex items-center gap-2 text-[#8FB4FF] text-xs font-bold tracking-[0.3em] uppercase mb-4 reveal reveal-fade">
-            <i class={`fa-solid ${icon}`}></i>
-            <span>{entry.category}</span>
+      <section class="phead" aria-labelledby="answer-h1">
+        <div class="wrap phead-in">
+          <div class="phead-text">
+            {/* Breadcrumb */}
+            <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li><a href="/answers">Answer Hub</a></li><li aria-current="page">{entry.category}</li></ol></nav>
+            <p class="eyebrow">{entry.category}</p>
+            <h1 id="answer-h1" class="display-xl hubx-h1">{entry.question}</h1>
+            <p class="lead hero-sub">{entry.shortAnswer}</p>
+            <div class="phead-cta">
+              <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+              <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
+            </div>
           </div>
-          <h1 class="text-2xl md:text-4xl font-black text-white mb-4 reveal reveal-fade text-split" style="transition-delay:0.2s">
-            {entry.question}
-          </h1>
-          <p class="text-white/60 text-sm md:text-base reveal reveal-fade" style="transition-delay:0.4s">
-            {entry.shortAnswer}
-          </p>
+          <div class="phead-aside">
+            <div class="fact-card">
+              <p class="eyebrow">Answer</p>
+              <dl class="fact-rows">
+                <div><dt>분류</dt><dd>{entry.category}</dd></div>
+                <div><dt>작성·발행</dt><dd>서울365치과</dd></div>
+                <div><dt>최종 업데이트</dt><dd class="mono">{entry.updated}</dd></div>
+              </dl>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* 본문 */}
-      <article class="max-w-3xl mx-auto px-5 md:px-8 py-16">
-        {/* Breadcrumb */}
-        <nav class="text-xs text-gray-400 mb-6">
-          <a href="/" class="hover:text-[#1E4BD8]">홈</a>
-          <span class="mx-2">›</span>
-          <a href="/answers" class="hover:text-[#1E4BD8]">Answer Hub</a>
-          <span class="mx-2">›</span>
-          <span class="text-gray-700">{entry.category}</span>
-        </nav>
-
-        {/* 짧은 답변 (피처드 스니펫 타겟) */}
-        <div class="p-6 rounded-2xl bg-gradient-to-br from-[#E6F3FF] to-[#F0F8FF] border border-[#1E4BD8]/10 mb-8" itemscope itemtype="https://schema.org/Answer">
-          <div class="flex items-center gap-2 text-[#1E4BD8] font-bold text-sm mb-2">
-            <i class="fa-solid fa-bolt"></i>
-            <span>한 줄 답변</span>
+      <section class="sec">
+        <article class="wrap-n">
+          {/* 짧은 답변 (피처드 스니펫 타겟) */}
+          <div class="answer-card" style="margin-bottom:2.6rem" itemscope itemtype="https://schema.org/Answer" data-rv>
+            <p class="eyebrow">한 줄 답변</p>
+            <p class="answer-a" style="margin-bottom:0" itemprop="text">
+              {entry.shortAnswer}
+            </p>
           </div>
-          <p class="text-gray-900 font-semibold text-base md:text-lg leading-relaxed" itemprop="text">
-            {entry.shortAnswer}
-          </p>
-        </div>
 
-        {/* 상세 답변 */}
-        <div class="prose prose-lg max-w-none mb-8">
-          <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-circle-info text-[#1E4BD8]"></i>
-            상세 답변
-          </h2>
-          <p class="text-gray-700 leading-loose whitespace-pre-line">
-            {entry.detailedAnswer}
-          </p>
-        </div>
+          {/* 상세 답변 */}
+          <div class="prose-sec" data-rv>
+            <h2>상세 답변</h2>
+            <p style="white-space:pre-line">
+              {entry.detailedAnswer}
+            </p>
+          </div>
 
-        {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
-        <div class="p-6 rounded-2xl bg-gray-50 border border-gray-100 mb-8">
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-hospital text-white"></i>
-            </div>
-            <div class="flex-1">
-              <div class="text-xs text-gray-500 mb-1">작성·발행</div>
-              <div class="font-bold text-gray-900">서울365치과</div>
-              <div class="text-sm text-gray-600 mt-1">{CLINIC_GENERAL_INFO_NOTE}</div>
-              <div class="text-xs text-gray-400 mt-2">
-                <i class="fa-solid fa-calendar-check mr-1"></i>
-                최종 업데이트: {entry.updated}
+          {/* 작성·발행 = 병원 (원장 검토 근거 없음, 2026-10-08) */}
+          <aside class="card hubx-byline" data-rv>
+            <p class="k">작성·발행</p>
+            <p class="who">서울365치과</p>
+            <p class="note">{CLINIC_GENERAL_INFO_NOTE}</p>
+            <p class="meta-line">
+              최종 업데이트: {entry.updated}
+            </p>
+          </aside>
+
+          {/* 관련 페이지 링크 */}
+          {entry.relatedUrl && (
+            <aside class="card" style="padding:1.3rem 1.5rem;margin-bottom:2.6rem" data-rv>
+              <p class="box-h">관련 진료 안내</p>
+              <div class="link-row">
+                <a href={entry.relatedUrl} class="btn btn-ghost btn-sm">자세한 진료 정보 보기<Icon name="arrow" /></a>
               </div>
-            </div>
-          </div>
-        </div>
+            </aside>
+          )}
 
-        {/* 관련 페이지 링크 */}
-        {entry.relatedUrl && (
-          <a href={entry.relatedUrl} class="block p-5 rounded-2xl border border-[#1E4BD8]/20 hover:border-[#1E4BD8]/50 hover:bg-[#1E4BD8]/5 transition-all mb-8">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="text-xs text-[#1E4BD8] font-bold mb-1">관련 진료 안내</div>
-                <div class="text-gray-900 font-semibold">자세한 진료 정보 보기</div>
+          {/* 키워드 태그 */}
+          <div class="hubx-tags" style={related.length > 0 ? undefined : 'margin-bottom:0'} data-rv>
+            {entry.keywords.map(kw => (
+              <span class="chip">#{kw}</span>
+            ))}
+          </div>
+
+          {/* 관련 답변 */}
+          {related.length > 0 && (
+            <section class="hubx-sec" style="margin-bottom:0" data-rv>
+              <h2>관련 질문</h2>
+              <div class="hubx-grid one">
+                {related.map(r => (
+                  <a href={`/answers/${questionToSlug(r)}`} class="card hubx-card sm hover">
+                    <span class="t">{r.question}</span>
+                    <p>{r.shortAnswer.slice(0, 60)}...</p>
+                  </a>
+                ))}
               </div>
-              <i class="fa-solid fa-arrow-right text-[#1E4BD8]"></i>
-            </div>
-          </a>
-        )}
+            </section>
+          )}
+        </article>
+      </section>
 
-        {/* 키워드 태그 */}
-        <div class="flex flex-wrap gap-2 mb-12">
-          {entry.keywords.map(kw => (
-            <span class="px-3 py-1 rounded-full bg-gray-100 text-xs text-gray-600">#{kw}</span>
-          ))}
-        </div>
-
-        {/* 관련 답변 */}
-        {related.length > 0 && (
-          <div class="mb-12">
-            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <i class="fa-solid fa-link text-[#1E4BD8]"></i>
-              관련 질문
-            </h2>
-            <div class="space-y-2">
-              {related.map(r => (
-                <a href={`/answers/${questionToSlug(r)}`} class="block p-4 rounded-xl border border-gray-100 hover:border-[#1E4BD8]/30 hover:bg-gray-50 transition-all">
-                  <div class="text-sm font-semibold text-gray-900">{r.question}</div>
-                  <div class="text-xs text-gray-500 mt-1">{r.shortAnswer.slice(0, 60)}...</div>
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* CTA */}
-        <div class="p-8 rounded-3xl bg-gradient-to-br from-[#1E4BD8] to-[#3B63E8] text-white text-center">
-          <h3 class="text-xl md:text-2xl font-black mb-2">정확한 진단이 필요하신가요?</h3>
-          <p class="text-white/80 text-sm mb-5">서울365치과에서 무료 상담을 받아보세요.</p>
-          <div class="flex flex-wrap justify-center gap-2">
-            <a href="/reservation" class="px-5 py-3 rounded-xl bg-white text-[#1E4BD8] font-bold text-sm hover:scale-105 transition-all">
-              <i class="fa-solid fa-calendar-check mr-1.5"></i> 무료 상담 예약
-            </a>
-            <a href={CLINIC.phoneTel} class="px-5 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-bold text-sm hover:bg-white/20 transition-all">
-              <i class="fa-solid fa-phone mr-1.5"></i> {CLINIC.phone}
-            </a>
+      {/* CTA */}
+      <section class="cta-band" aria-label="상담 안내">
+        <div class="wrap-n" style="text-align:center;position:relative">
+          <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Consultation</p>
+          <h2 class="display-xl" data-rv>정확한 진단이 필요하신가요?</h2>
+          <p class="lead" data-rv>서울365치과에서 무료 상담을 받아보세요.</p>
+          <div class="cta-actions" data-rv-group>
+            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />무료 상담 예약</a>
+            <a href={CLINIC.phoneTel} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
           </div>
         </div>
-      </article>
-    </section>,
+      </section>
+    </>,
     {
       title: `${entry.question} | 서울365치과 답변`,
       description: `${entry.shortAnswer} - 서울365치과가 정리한 답변입니다.`,
