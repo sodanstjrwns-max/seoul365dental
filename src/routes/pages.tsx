@@ -3,6 +3,7 @@ import { HubA } from '../lib/hub-links'
 import { CONTENT_DATES } from '../lib/content-dates'
 import type { Bindings } from '../lib/types'
 import { CLINIC, HOURS } from '../data/clinic'
+import { imgV } from '../lib/img'
 import { treatments } from '../data/treatments'
 import { mainFaq, pricingData, pricingSummary, pricingCategories } from '../data/faq'
 import { MESSAGING } from '../data/brand'
@@ -796,7 +797,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
                     <div class="case-ph">
                       {/* Before 사진만 전체 표시 */}
                       {cs.before_image
-                        ? <img src={cs.before_image} alt={`${cs.title} 치료 전`} loading="lazy" decoding="async" />
+                        ? <img src={imgV(cs.before_image, 640)} alt={`${cs.title} 치료 전`} loading="lazy" decoding="async" />
                         : <span class="ph-empty">Before</span>}
                       {/* Before 라벨 */}
                       <span class="lab">Before</span>
@@ -871,7 +872,7 @@ pageRoutes.get('/cases/gallery', async (c) => {
           id: cs.id, title: cs.title, tag: cs.tag, duration: cs.duration || '',
           description: cs.description || '', doctor_name: cs.doctor_name || '',
           patient_age: cs.patient_age || '', patient_gender: cs.patient_gender || '',
-          before_image: cs.before_image || '', after_image: cs.after_image || '',
+          before_image: imgV(cs.before_image, 1600), after_image: imgV(cs.after_image, 1600),
         })))};
         var currentIdx = 0;
 
@@ -1111,7 +1112,7 @@ pageRoutes.get('/cases/:id', async (c) => {
                 {/* Before */}
                 <div class="case-shot">
                   {cs.before_image ? (
-                    <img src={cs.before_image} alt={`${txName} 치료 전`} loading="eager" decoding="async" />
+                    <img src={imgV(cs.before_image, 1600)} alt={`${txName} 치료 전`} loading="eager" decoding="async" />
                   ) : (
                     <span class="ph-empty">Before</span>
                   )}
@@ -1120,7 +1121,7 @@ pageRoutes.get('/cases/:id', async (c) => {
                 {/* After */}
                 <div class="case-shot">
                   {isLoggedIn && cs.after_image ? (
-                    <img src={cs.after_image} alt={`${txName} 치료 후`} loading="eager" decoding="async" />
+                    <img src={imgV(cs.after_image, 1600)} alt={`${txName} 치료 후`} loading="eager" decoding="async" />
                   ) : (
                     <div class="case-locked">
                       <Icon name="lock" />
@@ -1153,7 +1154,7 @@ pageRoutes.get('/cases/:id', async (c) => {
                       <a href={`/cases/${rc.id}`} class="card">
                         <div class="case-ph">
                           {rc.before_image ? (
-                            <img src={rc.before_image} alt={`${rc.tag || txName} 치료 전`} loading="lazy" decoding="async" />
+                            <img src={imgV(rc.before_image, 640)} alt={`${rc.tag || txName} 치료 전`} loading="lazy" decoding="async" />
                           ) : (
                             <span class="ph-empty">Before</span>
                           )}
@@ -1608,7 +1609,7 @@ pageRoutes.get('/notices/:id', async (c) => {
           <article class="card ntc-body">
             {notice.image && (
               <figure>
-                <img src={notice.image} alt={notice.title} loading="lazy" />
+                <img src={imgV(notice.image, 1600)} alt={notice.title} loading="lazy" />
               </figure>
             )}
             <div class="ntc-content" dangerouslySetInnerHTML={{__html: contentHtml}}></div>
@@ -1874,7 +1875,7 @@ pageRoutes.get('/encyclopedia/:slug', (c) => {
           <p class="notice" style="margin:1rem 0 1.6rem" data-rv>※ 본 내용은 일반적인 치과 정보 제공 목적이며, 개인에 따라 상태와 결과가 다를 수 있습니다. 정확한 진단과 치료 계획은 반드시 치과의사와 상담해 결정하시기 바랍니다.</p>
           <div class="link-row" data-rv>
             <a href="/encyclopedia" class="btn btn-ghost"><Icon name="book" />전체 용어 사전</a>
-            <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
+            <a href="/reservation" data-cta="article-end" class="btn btn-primary"><Icon name="calendar" />상담 예약</a>
           </div>
         </article>
       </section>

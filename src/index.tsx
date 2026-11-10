@@ -7,6 +7,7 @@ import { renderer, setCurrentSeoSettings } from './renderer'
 import type { Bindings } from './lib/types'
 import { getAllSeoSettings, getSetting, initSettingsTable } from './lib/db'
 import { phraseBreaks } from './lib/phrase'
+import { htmlPass } from './lib/html-pass'
 
 // Route modules
 import home from './routes/home'
@@ -135,7 +136,8 @@ app.use('*', async (c, next) => {
   if (!ct.includes('text/html') || (c.res.status >= 300 && c.res.status < 400)) return;
   try {
     const html = await c.res.text();
-    c.res = new Response(phraseBreaks(html), { status: c.res.status, headers: c.res.headers });
+    // htmlPass: 날짜 추적 템플릿을 건드리지 않고 입히는 손질(카드 사진 가벼운 사본·글 끝 상담 버튼 측정 속성) — src/lib/html-pass.ts
+    c.res = new Response(htmlPass(p, phraseBreaks(html)), { status: c.res.status, headers: c.res.headers });
   } catch {}
 })
 

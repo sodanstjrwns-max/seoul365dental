@@ -192,6 +192,7 @@ apiRoutes.get('/api/notices/:id', async (c) => {
 // R2 IMAGE UPLOAD / SERVE (블로그 이미지 무제한 업로드)
 // ============================================================
 import { getAdminFromCookie } from '../lib/db'
+import { IMG_WIDTHS } from '../lib/img'
 
 // Upload — multipart/form-data
 apiRoutes.post('/api/admin/upload', async (c) => {
@@ -277,17 +278,22 @@ apiRoutes.post('/api/admin/upload-multi', async (c) => {
 })
 
 // Serve R2 images — public, cached
+// ?w=640|1600 → 화면용 WebP 사본(R2 v/<폭>/<원본키>)이 있으면 사본을, 없으면 원본을 준다 (src/lib/img.ts)
 apiRoutes.get('/r2/*', async (c) => {
   const key = c.req.path.replace('/r2/', '');
   if (!key) return c.notFound();
 
   try {
-    const object = await c.env.R2.get(key);
+    const w = parseInt(c.req.query('w') || '0', 10);
+    const want = (IMG_WIDTHS as readonly number[]).includes(w) && !key.startsWith('v/') ? w : 0;
+    const variant = want ? await c.env.R2.get(`v/${want}/${key}`) : null;
+    const object = variant || await c.env.R2.get(key);
     if (!object) return c.notFound();
 
     const headers = new Headers();
     headers.set('Content-Type', object.httpMetadata?.contentType || 'image/jpeg');
-    headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    // 사본을 요청했는데 아직 없으면 원본을 주되 오래 캐시하지 않는다(사본이 생기면 곧 바뀌도록)
+    headers.set('Cache-Control', want && !variant ? 'public, max-age=600' : 'public, max-age=31536000, immutable');
     headers.set('ETag', object.httpEtag || '');
 
     // Conditional request support
@@ -302,6 +308,33 @@ apiRoutes.get('/r2/*', async (c) => {
   }
 })
 
+// 화면용 사본 저장 — 관리자 화면(app.js p365Variants)이 업로드 직후 브라우저에서 줄인 WebP 를 보낸다
+// key = 원본 R2 키(<폴더>/<파일>), w = 640|1600 → R2 v/<w>/<key>. 원본은 건드리지 않는다.
+apiRoutes.post('/api/admin/upload-variant', async (c) => {
+  const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
+  if (!admin) return c.json({ ok: false, error: '인증 필요' }, 401);
+
+  try {
+    const formData = await c.req.formData();
+    const file = formData.get('file') as File | null;
+    const key = String(formData.get('key') || '');
+    const w = parseInt(String(formData.get('w') || '0'), 10);
+    if (!file || !/^[a-z0-9-]+\/[\w.-]+$/i.test(key) || key.startsWith('v/') || !(IMG_WIDTHS as readonly number[]).includes(w)) {
+      return c.json({ ok: false, error: '잘못된 요청' }, 400);
+    }
+    if (!/^image\/(webp|jpeg)$/.test(file.type) || file.size > 3 * 1024 * 1024) {
+      return c.json({ ok: false, error: '사본은 WebP·JPEG 3MB 이하' }, 400);
+    }
+    if (!(await c.env.R2.head(key))) return c.json({ ok: false, error: '원본이 없습니다' }, 404);
+    await c.env.R2.put(`v/${w}/${key}`, await file.arrayBuffer(), {
+      httpMetadata: { contentType: file.type, cacheControl: 'public, max-age=31536000, immutable' },
+    });
+    return c.json({ ok: true, key: `v/${w}/${key}` });
+  } catch (e: any) {
+    return c.json({ ok: false, error: e.message || '사본 저장 실패' }, 500);
+  }
+})
+
 // Delete R2 image
 apiRoutes.delete('/api/admin/upload/:key{.+}', async (c) => {
   const admin = await getAdminFromCookie(c.env.DB, c.req.header('cookie'));
@@ -310,6 +343,8 @@ apiRoutes.delete('/api/admin/upload/:key{.+}', async (c) => {
   const key = c.req.param('key');
   try {
     await c.env.R2.delete(key);
+    // 화면용 사본도 함께 지운다(없으면 무시)
+    if (!key.startsWith('v/')) await c.env.R2.delete(IMG_WIDTHS.map((w) => `v/${w}/${key}`)).catch(() => {});
     return c.json({ ok: true });
   } catch (e: any) {
     return c.json({ ok: false, error: e.message || '삭제 실패' }, 500);

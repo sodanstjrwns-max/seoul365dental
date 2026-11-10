@@ -718,6 +718,7 @@ adminRoutes.get('/admin/dashboard', async (c) => {
             fd.append('folder', 'cases');
             const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
             const json = await res.json();
+            if (json.ok && window.p365Variants) { try { await window.p365Variants(file, json.key); } catch (e) {} } /* 화면용 사본(640·1600) */
             if (json.ok) {
               dataInput.value = json.url;
               preview.src = json.url;
@@ -1426,6 +1427,7 @@ adminRoutes.get('/admin/notices', async (c) => {
             fd.append('folder', 'notices');
             var res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
             var json = await res.json();
+            if (json.ok && window.p365Variants) { try { await window.p365Variants(file, json.key); } catch (e) {} } /* 화면용 사본(640·1600) */
             if (json.ok) {
               document.getElementById('noticeImage').value = json.url;
               preview.src = json.url;

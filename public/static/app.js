@@ -183,7 +183,10 @@
 // ====== POPUP NOTICE SYSTEM v4 (여러 개 동시 표시) ======
 // 이미지 팝업만 표시 · 최대 5개 (고정 우선 → 최신순, /api/popup-notices 의 popups 배열)
 //  - PC(≥768px): 딤 배경 한 장 위에 카드 나란히(줄바꿈 허용). 카드별 × / 닫기 / 오늘 하루 보지 않기
-//  - 모바일(≤767px): 우상단 "이벤트·공지 보기" 칩(기존 compact 모드) → 탭하면 한 장씩 넘겨보기
+//  - 모바일(≤767px): 헤더 줄 빈자리(로고와 메뉴 버튼 사이)의 "이벤트·공지" 알약(compact 모드) → 탭하면 한 장씩 넘겨보기
+//    · 2026-11-10: 알약이 첫 화면 위치 줄을 가리고 스크롤 내내 떠 있던 문제 → 헤더 줄 안으로 옮기고, 스크롤을 시작하면 숨김(맨 위로 오면 다시 표시)
+//    · 알약 × 는 세션 동안 기억(sessionStorage p365_chip_x = 닫을 때 있던 공지 id, 새 공지가 생기면 다시 표시)
+//    · 알약 상태에서는 팝업 이미지를 받지 않는다(탭할 때 받음). 이미지는 화면용 사본(?w=1600, src/lib/img.ts)
 // "오늘 하루 보지 않기" → 쿠키 popup_dismissed_{YYYY-MM-DD(KST)} 에 해당 카드 id만 추가(기존 키 형식 유지)
 (function(){
   if(window.location.pathname !== '/' && window.location.pathname !== '') return;
@@ -238,14 +241,24 @@
     + '#p365-popups .p365-close:hover{background:#f5f5f5}'
     + '#p365-popups :focus-visible{outline:2px solid #1E4BD8;outline-offset:2px}'
     + '#p365-popups .p365-chip,#p365-popups .p365-nav{display:none}'
-    // 모바일 compact 칩 (기존 compact 모드 유지: 우상단 88px, 260px, 흰 카드)
-    + '#p365-popups.compact{inset:88px 16px auto auto;padding:0;background:none;overflow:visible;width:260px;max-width:calc(100vw - 32px)}'
+    // 모바일 compact 알약 — 헤더 줄(높이 72px) 안, 메뉴 버튼(44px) 왼쪽 빈자리. 본문 글자를 가리지 않는다
+    + '#p365-popups.compact{inset:16px calc(clamp(18px,4vw,56px) + 52px) auto auto;padding:0;background:none;overflow:visible;width:auto;max-width:none;transition:opacity .25s ease,transform .25s ease,visibility 0s}'
+    + '#p365-popups.compact.away{opacity:0;transform:translateY(-10px);pointer-events:none;visibility:hidden;transition:opacity .2s ease,transform .2s ease,visibility 0s .2s}'
+    + 'body.menu-open #p365-popups.compact{display:none}'
     + '#p365-popups.compact .p365-stack,#p365-popups.compact .p365-nav{display:none}'
-    + '#p365-popups.compact .p365-chip{display:block;position:relative;width:100%;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.25)}'
-    + '#p365-popups .p365-expand{display:block;min-height:48px;width:100%;padding:12px 52px 12px 16px;border:0;background:#fff;color:#0050cc;font-size:14px;font-weight:700;text-align:left;cursor:pointer}'
-    + '#p365-popups .p365-count{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;margin-left:6px;padding:0 6px;border-radius:99px;background:#1E4BD8;color:#fff;font-size:12px;font-weight:800;vertical-align:1px}'
-    + '#p365-popups .p365-chip .p365-x{top:2px;right:2px;background:none;color:#999}'
+    + '#p365-popups.compact .p365-chip{display:flex;align-items:center;position:relative;height:40px;background:#fff;border:1px solid rgba(11,21,48,.1);border-radius:999px;overflow:hidden;box-shadow:0 2px 10px rgba(11,21,48,.1)}'
+    + '#p365-popups .p365-expand{display:flex;align-items:center;height:100%;padding:0 4px 0 13px;border:0;background:none;color:#1E4BD8;font-size:13px;font-weight:700;line-height:1;white-space:nowrap;cursor:pointer}'
+    + '#p365-popups .p365-ls{display:none}'
+    + '#p365-popups .p365-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;margin-left:6px;padding:0 5px;border-radius:99px;background:#1E4BD8;color:#fff;font-size:11px;font-weight:800}'
+    + '#p365-popups .p365-chip .p365-x{position:static;flex:none;width:32px;height:100%;border-radius:0;background:none;color:#8a93a8;font-size:17px}'
     + '#p365-popups .p365-chip .p365-x:hover{background:#f2f5fa;color:#333}'
+    // 좁은 화면(로고와 메뉴 버튼 사이가 좁음): 짧은 이름 "소식"
+    + '@media(max-width:384px){#p365-popups .p365-ll{display:none}#p365-popups .p365-ls{display:inline}}'
+    // 641~767px 는 헤더에 '예약하기' 버튼(약 108px)이 더 있으므로 그 왼쪽으로
+    + '@media(min-width:641px){#p365-popups.compact{right:calc(clamp(18px,4vw,56px) + 170px)}}'
+    + '@media(max-width:340px){#p365-popups.compact{right:calc(clamp(18px,4vw,56px) + 48px)}#p365-popups .p365-expand{padding:0 2px 0 9px;font-size:12px}#p365-popups .p365-count{min-width:18px;height:18px;margin-left:4px;padding:0 4px;font-size:10px}#p365-popups .p365-chip .p365-x{width:24px;font-size:15px}}'
+    // 탭해서 펼친 직후 이미지를 받는 동안 카드가 납작해 보이지 않게
+    + '#p365-popups .p365-card.ld .p365-img{min-height:46vh}'
     // 모바일 한 장씩 보기
     + '#p365-popups.single{flex-direction:column;align-items:center;padding:16px}'
     + '#p365-popups.single .p365-stack{margin:auto auto 0;width:100%;max-width:420px;flex-wrap:nowrap}'
@@ -259,12 +272,19 @@
     + '@keyframes p365In{from{opacity:0;transform:translateX(var(--p365-dx,0))}to{opacity:1;transform:none}}'
     + '@media(prefers-reduced-motion:reduce){#p365-popups,#p365-popups .p365-card{transition:none}#p365-popups.single .p365-card.active{animation:none}}';
 
-  function cardHtml(n){
+  // 화면용 사본(가로 1600 WebP). 사본이 없으면 서버가 원본을 준다
+  function vsrc(u){ u = String(u || ''); return (u.indexOf('/r2/') === 0 && u.indexOf('?') === -1) ? u + '?w=1600' : u; }
+  // 알약을 × 로 닫은 기억(세션). 닫을 때 있던 공지 id 를 적어 두고, 그 뒤 새 공지가 생기면 다시 보여 준다
+  var CHIP_KEY = 'p365_chip_x';
+  function chipClosedIds(){ try{ var v = sessionStorage.getItem(CHIP_KEY); return v ? v.split(',') : []; }catch(e){ return []; } }
+  function rememberChipClosed(ids){ try{ sessionStorage.setItem(CHIP_KEY, ids.join(',')); }catch(e){} }
+
+  function cardHtml(n, lazy){
     var id = Number(n.id);
     var title = n.title || '공지사항';
-    return '<div class="p365-card" id="p365-card-' + id + '" data-id="' + id + '" role="group" aria-label="' + esc(title) + '">'
+    return '<div class="p365-card' + (lazy ? ' ld' : '') + '" id="p365-card-' + id + '" data-id="' + id + '" role="group" aria-label="' + esc(title) + '">'
       + '<button type="button" class="p365-x" data-act="close" aria-label="' + esc(title) + ' 팝업 닫기">&times;</button>'
-      + '<div class="p365-img"><img src="' + esc(n.image) + '" alt="' + esc(title) + '" /></div>'
+      + '<div class="p365-img"><img ' + (lazy ? 'data-src' : 'src') + '="' + esc(vsrc(n.image)) + '" alt="' + esc(title) + '" /></div>'
       + '<div class="p365-foot">'
       +   '<button type="button" class="p365-hide" data-act="hide"><input type="checkbox" tabindex="-1" aria-hidden="true" /><span>오늘 하루 보지 않기</span></button>'
       +   '<button type="button" class="p365-close" data-act="close">닫기</button>'
@@ -284,6 +304,13 @@
       }).slice(0, MAX);
       if(list.length === 0) return;
       if(document.getElementById('p365-popups')) return;
+      var mq = matchMedia('(max-width:767px)');
+      if(mq.matches){
+        // 모바일: 이번 세션에 알약을 × 로 닫았고 그 뒤 새 공지가 없으면 띄우지 않는다
+        var shut = chipClosedIds();
+        if(shut.length && list.every(function(n){ return shut.indexOf(String(n.id)) !== -1; })) return;
+      }
+      var lazyImg = mq.matches; // 알약 상태에서는 이미지를 받지 않는다(탭할 때 받음)
 
       var ov = document.createElement('div');
       ov.id = 'p365-popups';
@@ -292,9 +319,9 @@
       ov.setAttribute('aria-label','병원 소식');
       ov.hidden = true;
       ov.innerHTML = '<style>' + CSS + '</style>'
-        + '<div class="p365-chip"><button type="button" class="p365-expand" aria-expanded="false" aria-controls="p365-stack">이벤트·공지 보기</button>'
+        + '<div class="p365-chip"><button type="button" class="p365-expand" aria-expanded="false" aria-controls="p365-stack">이벤트·공지</button>'
         + '<button type="button" class="p365-x" data-act="close-all" aria-label="공지 닫기">&times;</button></div>'
-        + '<div class="p365-stack" id="p365-stack">' + list.map(cardHtml).join('') + '</div>'
+        + '<div class="p365-stack" id="p365-stack">' + list.map(function(n){ return cardHtml(n, lazyImg); }).join('') + '</div>'
         + '<div class="p365-nav" hidden><button type="button" class="p365-prev" aria-label="이전 소식">&lsaquo;</button>'
         + '<span class="p365-ind" aria-live="polite">1 / ' + list.length + '</span>'
         + '<button type="button" class="p365-next" aria-label="다음 소식">&rsaquo;</button></div>';
@@ -302,8 +329,24 @@
 
       var stack = ov.querySelector('.p365-stack'), nav = ov.querySelector('.p365-nav'),
           ind = ov.querySelector('.p365-ind'), chip = ov.querySelector('.p365-expand');
-      var mq = matchMedia('(max-width:767px)');
       var compact = mq.matches, idx = 0, prevOverflow = '', locked = false, closed = false;
+      // 지연해 둔 이미지 받기(알약을 탭했을 때, 또는 화면이 넓어져 바로 펼쳐질 때)
+      function hydrate(){
+        Array.prototype.slice.call(stack.querySelectorAll('img[data-src]')).forEach(function(img){
+          var card = img.closest('.p365-card');
+          img.addEventListener('load', function(){ if(card) card.classList.remove('ld'); });
+          img.src = img.getAttribute('data-src'); img.removeAttribute('data-src');
+        });
+      }
+      // 알약: 스크롤을 시작하면 숨기고, 맨 위로 돌아오면 다시 보인다(헤더 줄 안에 있으므로 본문을 가리지 않는다)
+      var awayTick = false;
+      function syncAway(){
+        awayTick = false;
+        if(closed || !compact) return;
+        var y = window.scrollY || 0;
+        if(y > 24) ov.classList.add('away'); else if(y < 8) ov.classList.remove('away');
+      }
+      function onChipScroll(){ if(!awayTick){ awayTick = true; requestAnimationFrame(syncAway); } }
 
       function cards(){ return Array.prototype.slice.call(stack.querySelectorAll('.p365-card:not(.out)')); }
       // 스크롤 잠금 (2026-10-31 CLS 수정)
@@ -329,7 +372,7 @@
       }
       function updateChip(){
         var n = cards().length;
-        chip.innerHTML = '이벤트·공지 보기' + (n > 1 ? '<span class="p365-count">' + n + '</span>' : '');
+        chip.innerHTML = '<span class="p365-ll">이벤트·공지</span><span class="p365-ls">소식</span>' + (n > 1 ? '<span class="p365-count">' + n + '</span>' : '');
         chip.setAttribute('aria-label', '이벤트·공지 ' + n + '건 보기');
       }
       function show(i, dir){
@@ -352,9 +395,10 @@
         if(compact){
           ov.classList.add('compact'); ov.classList.remove('single');
           ov.setAttribute('role','region'); ov.removeAttribute('aria-modal');
-          updateChip(); return;
+          updateChip(); syncAway(); return;
         }
-        ov.classList.remove('compact');
+        ov.classList.remove('compact'); ov.classList.remove('away');
+        hydrate();
         ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true');
         ov.classList.toggle('single', mq.matches);
         if(mq.matches) show(idx, 0);
@@ -399,7 +443,12 @@
         }
         removeCard(c);
       });
-      ov.querySelector('[data-act="close-all"]').addEventListener('click', closeAll);
+      ov.querySelector('[data-act="close-all"]').addEventListener('click', function(){
+        // 알약의 × : 이번 세션 동안 다시 띄우지 않는다
+        if(compact) rememberChipClosed(cards().map(function(c){ return c.getAttribute('data-id'); }));
+        closeAll();
+      });
+      window.addEventListener('scroll', onChipScroll, {passive:true});
       chip.addEventListener('click', function(){
         compact = false; chip.setAttribute('aria-expanded','true');
         applyMode(); lock(); focusFirst();
@@ -425,7 +474,12 @@
           if(e.key === 'ArrowRight') show(idx+1, 1); else if(e.key === 'ArrowLeft') show(idx-1, -1);
         }
       });
-      var onMq = function(){ if(!compact && !closed) applyMode(); };
+      var onMq = function(){
+        if(closed) return;
+        // 알약 상태에서 화면이 넓어지면(가로 회전·창 크기) PC 처럼 바로 펼친다
+        if(compact && !mq.matches){ compact = false; applyMode(); lock(); return; }
+        if(!compact) applyMode();
+      };
       if(mq.addEventListener) mq.addEventListener('change', onMq); else if(mq.addListener) mq.addListener(onMq);
       // 팝업 이미지의 크기를 알게 된 뒤(naturalWidth — 파일 앞부분만 받아도 정해짐) 또는 실패·4초 초과 시 연다.
       // 숨긴 채(display:none) 기다리므로 이미지가 들어오며 카드 크기가 바뀌어도 화면이 움직이지 않는다 (CLS 방지 2026-10-31)
@@ -439,3 +493,41 @@
     })
     .catch(function(e){ /* 팝업 로드 실패 시 무시 */ });
 })();
+
+// ====== 관리자 업로드: 화면용 가벼운 사본(가로 640·1600 WebP) 자동 생성 (2026-11-10) ======
+// 관리자 화면에서 /api/admin/upload 로 원본을 올린 직후 호출한다 → 브라우저에서 줄여 /api/admin/upload-variant 로 보낸다.
+// 원본은 그대로 남고, 홈페이지 화면은 ?w=640|1600 사본을 쓴다(src/lib/img.ts). 실패해도 원본이 대신 나가므로 조용히 넘어간다.
+window.p365Variants = function(file, key){
+  if(!file || !key || !file.type || file.type.indexOf('image/') !== 0 || /gif|svg/.test(file.type)) return Promise.resolve();
+  return new Promise(function(resolve){
+    var img = new Image(), url = URL.createObjectURL(file), widths = [640, 1600], i = 0;
+    function done(){ try{ URL.revokeObjectURL(url); }catch(e){} resolve(); }
+    img.onerror = done;
+    img.onload = function(){
+      var nw = img.naturalWidth, nh = img.naturalHeight;
+      (function next(){
+        if(i >= widths.length || !nw || !nh) return done();
+        var w = widths[i++], cw = Math.min(w, nw), ch = Math.round(nh * cw / nw);
+        var cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+        var ctx = cv.getContext('2d');
+        if(!ctx) return done();
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, cw, ch);
+        function send(blob){
+          if(!blob) return next();
+          var fd = new FormData();
+          fd.append('file', new File([blob], 'v' + w + (blob.type === 'image/webp' ? '.webp' : '.jpg'), { type: blob.type }));
+          fd.append('key', key); fd.append('w', String(w));
+          fetch('/api/admin/upload-variant', { method: 'POST', body: fd }).then(next, next);
+        }
+        cv.toBlob(function(b){
+          if(b && b.type === 'image/webp') return send(b);
+          // WebP 로 저장하지 못하는 브라우저(사파리 일부): 투명 부분을 흰색으로 채워 JPEG 로
+          ctx.globalCompositeOperation = 'destination-over'; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch);
+          cv.toBlob(function(j){ send(j && j.type === 'image/jpeg' ? j : null); }, 'image/jpeg', 0.82);
+        }, 'image/webp', 0.8);
+      })();
+    };
+    img.src = url;
+  });
+};

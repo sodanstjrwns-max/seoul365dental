@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { BlogHubNote } from '../lib/hub-links'
 import { Icon } from '../lib/icons'
+import { imgV } from '../lib/img'
 import type { Bindings } from '../lib/types'
 import { treatments, getTreatmentBySlug } from '../data/treatments'
 import { doctors } from '../data/doctors'
@@ -659,6 +660,7 @@ blogRoutes.get('/admin/blog', async (c) => {
             var fd = new FormData(); fd.append('file', file);
             var res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
             var json = await res.json();
+            if (json.ok && window.p365Variants) { try { await window.p365Variants(file, json.key); } catch (e) {} } /* 화면용 사본(640·1600) */
             if (json.ok) {
               document.getElementById('postCoverImage').value = json.url;
               document.getElementById('coverPreviewImg').src = json.url;
@@ -753,6 +755,7 @@ blogRoutes.get('/admin/blog', async (c) => {
             var fd = new FormData(); fd.append('file', file);
             var res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
             var json = await res.json();
+            if (json.ok && window.p365Variants) { try { await window.p365Variants(file, json.key); } catch (e) {} } /* 화면용 사본(640·1600) */
             if (json.ok) {
               document.getElementById('imgInsertUrl').value = json.url;
               document.getElementById('imgInsertPreview').src = json.url;
@@ -811,6 +814,7 @@ blogRoutes.get('/admin/blog', async (c) => {
               var fd = new FormData(); fd.append('file', file);
               var res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
               var json = await res.json();
+              if (json.ok && window.p365Variants) { try { await window.p365Variants(file, json.key); } catch (e) {} } /* 화면용 사본(640·1600) */
               if (json.ok) {
                 // Open the image insert modal for each uploaded image so user can add alt
                 document.getElementById('imgInsertUrl').value = json.url;
@@ -1170,7 +1174,7 @@ blogRoutes.get('/blog', async (c) => {
                 <a href={`/blog/${post.slug}`} class="card" data-rv>
                   <div class="post-ph">
                     {post.cover_image
-                      ? <img src={post.cover_image} alt={post.title} loading="lazy" decoding="async" />
+                      ? <img src={imgV(post.cover_image, 640)} alt={post.title} loading="lazy" decoding="async" />
                       : <Icon name="news" />}
                   </div>
                   <div class="card-body">
@@ -1557,7 +1561,7 @@ blogRoutes.get('/blog/:slug', async (c) => {
             {post.cover_image && (
               <div class="phead-aside">
                 <figure class="phead-img post-cover">
-                  <img src={post.cover_image} alt={post.title} id="blogCover" loading="eager" fetchpriority="high" decoding="async" />
+                  <img src={imgV(post.cover_image, 1600)} alt={post.title} id="blogCover" loading="eager" fetchpriority="high" decoding="async" />
                 </figure>
               </div>
             )}
@@ -1672,7 +1676,7 @@ blogRoutes.get('/blog/:slug', async (c) => {
           <h2 class="display-xl" data-rv>더 궁금한 점이 있으신가요?</h2>
           <p class="lead" data-rv>서울365치과에서 직접 상담받아 보세요.</p>
           <div class="cta-actions" data-rv>
-            <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />무료 상담 예약</a>
+            <a href="/reservation" data-cta="article-end" class="btn btn-primary btn-lg"><Icon name="calendar" />무료 상담 예약</a>
           </div>
         </div>
       </section>
