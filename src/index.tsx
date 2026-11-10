@@ -40,6 +40,25 @@ import commercialRoutes from './routes/commercial'
 
 const app = new Hono<{ Bindings: Bindings }>()
 
+// ── 옛 도메인 → 대표 도메인 301 (2026-11-10) ──
+// seoul365dental.com(www·m 포함)은 이 Pages 프로젝트의 커스텀 도메인이라 새 사이트가 200 으로 그대로 보였다
+// (canonical 만 seoul365dc.kr). 네이버 플레이스·구글 프로필이 옛 주소를 가리켜 검색 신호가 갈리므로
+// 같은 경로·쿼리로 https://seoul365dc.kr 에 301 한다. 다른 라우트보다 먼저 실행돼야 한다.
+//  - GET·HEAD 만: 옛 주소로 열어 둔 화면에서 보내는 폼·API 요청(POST, /api/)은 그대로 처리한다.
+//  - /static/*·파비콘 등 정적 파일은 _routes.json 에서 워커를 거치지 않아 옛 주소에서도 200 이다.
+//  - seoul365dental.co.kr·서울365치과.com 은 이 프로젝트에 연결돼 있지 않다(밖에서 루트로 301) — 여기서 다룰 수 없다.
+const CANONICAL_ORIGIN = 'https://seoul365dc.kr'
+const LEGACY_HOSTS = new Set(['seoul365dental.com', 'www.seoul365dental.com', 'm.seoul365dental.com'])
+app.use('*', async (c, next) => {
+  const url = new URL(c.req.url)
+  if (LEGACY_HOSTS.has(url.hostname) && (c.req.method === 'GET' || c.req.method === 'HEAD') && !url.pathname.startsWith('/api/')) {
+    // 끝 슬래시는 여기서 같이 정리해 한 번에 도착하게 한다(아래 정규화와 같은 규칙)
+    const path = url.pathname !== '/' && url.pathname.endsWith('/') ? url.pathname.slice(0, -1) : url.pathname
+    return c.redirect(`${CANONICAL_ORIGIN}${path}${url.search}`, 301)
+  }
+  await next()
+})
+
 // ── IndexNow Key File (.txt) — Must be FIRST before any other route ──
 // Hono's /:param.txt pattern is unreliable; handle .txt requests at top level
 app.get('/:filename{.+\\.txt$}', async (c, next) => {
