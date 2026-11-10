@@ -13,7 +13,8 @@ import { GU_HUB_SLUGS, areaLastmod, AREA_INDEX_LASTMOD, AREA_TREATMENT_LASTMOD }
 import { GUWOL_CARDS, matrixCardImage } from '../lib/guwol-cards'
 import { getAreaBySlug } from '../data/areas'
 import { TERM_DETAILS_UPDATED } from '../data/encyclopedia-detail'
-import { initBlogTables, initAdminTables, getSetting, submitToIndexNow, initIndexNowLog } from '../lib/db'
+import { initBlogTables, initAdminTables, getSetting, submitToIndexNow, initIndexNowLog, getAdminFromCookie } from '../lib/db'
+import { clinicFactBlock } from '../lib/llms-facts'
 
 const seoRoutes = new Hono<{ Bindings: Bindings }>()
 
@@ -1215,6 +1216,8 @@ seoRoutes.get('/llms.txt', async (c) => {
 
 > 인천 구월동 서울대 출신 5인 전문의 협진 치과. 365일 진료, 자체 기공실, 수면진료, 무통마취.
 
+${clinicFactBlock()}
+
 ## 기본 정보
 - 정식명칭: 서울365치과의원
 - 영문명: Seoul 365 Dental Clinic
@@ -1411,6 +1414,8 @@ seoRoutes.get('/llms-full.txt', async (c) => {
 > 이 문서는 AI/LLM 시스템이 서울365치과에 대해 정확한 정보를 제공할 수 있도록 작성되었습니다.
 > 요약 버전: https://seoul365dc.kr/llms.txt
 
+${clinicFactBlock()}
+
 ## 병원 개요
 서울365치과의원은 2019년 인천광역시 남동구 구월동에 개원한 치과의원입니다.
 서울대학교 치과대학 출신 5명의 원장이 협진 체제로 운영하며,
@@ -1533,9 +1538,8 @@ seoRoutes.get('/indexnow-key-file', async (c) => {
 // IndexNow submit API (admin-triggered)
 seoRoutes.post('/api/indexnow/submit', async (c) => {
   // Verify admin session
-  const cookie = c.req.header('Cookie');
-  const match = cookie?.match(/(?:^|;\s*)admin_session=([^;]+)/);
-  if (!match) return c.json({ error: '관리자 인증 필요' }, 401);
+  // 2026-11-10: 예전엔 admin_session 쿠키가 있기만 하면 통과했다(값 검증 없음) → 세션 테이블로 확인
+  if (!(await getAdminFromCookie(c.env.DB, c.req.header('Cookie')))) return c.json({ error: '관리자 인증 필요' }, 401);
 
   const indexNowKey = await getSetting(c.env.DB, 'INDEXNOW_KEY', c.env.INDEXNOW_KEY || '');
   if (!indexNowKey) return c.json({ error: 'IndexNow 키가 설정되지 않았습니다' }, 400);
@@ -1586,9 +1590,8 @@ seoRoutes.post('/api/indexnow/submit', async (c) => {
 
 // Search Engine Ping — Notify sitemap updates
 seoRoutes.post('/api/seo/ping', async (c) => {
-  const cookie = c.req.header('Cookie');
-  const match = cookie?.match(/(?:^|;\s*)admin_session=([^;]+)/);
-  if (!match) return c.json({ error: '관리자 인증 필요' }, 401);
+  // 2026-11-10: 예전엔 admin_session 쿠키가 있기만 하면 통과했다(값 검증 없음) → 세션 테이블로 확인
+  if (!(await getAdminFromCookie(c.env.DB, c.req.header('Cookie')))) return c.json({ error: '관리자 인증 필요' }, 401);
 
   const sitemapUrl = 'https://seoul365dc.kr/sitemap.xml';
   // Google ping deprecated 2023-06 — Bing/Yandex만 핑
@@ -1875,9 +1878,8 @@ seoRoutes.notFound((c) => {
 
 // 색인 통계 — 관리자 대시보드 타일에서 호출
 seoRoutes.get('/api/seo/index-stats', async (c) => {
-  const cookie = c.req.header('Cookie');
-  const match = cookie?.match(/(?:^|;\s*)admin_session=([^;]+)/);
-  if (!match) return c.json({ error: '관리자 인증 필요' }, 401);
+  // 2026-11-10: 예전엔 admin_session 쿠키가 있기만 하면 통과했다(값 검증 없음) → 세션 테이블로 확인
+  if (!(await getAdminFromCookie(c.env.DB, c.req.header('Cookie')))) return c.json({ error: '관리자 인증 필요' }, 401);
 
   try {
     await initIndexNowLog(c.env.DB);
@@ -1950,9 +1952,8 @@ seoRoutes.get('/api/seo/index-stats', async (c) => {
 // 우선순위 일괄 색인 — 1,140개 area-variant URL을 배치로 IndexNow 제출
 // IndexNow 제한: 1회 호출 당 최대 10,000 URL — 안전하게 500개씩 배치 처리
 seoRoutes.post('/api/indexnow/bulk-priority', async (c) => {
-  const cookie = c.req.header('Cookie');
-  const match = cookie?.match(/(?:^|;\s*)admin_session=([^;]+)/);
-  if (!match) return c.json({ error: '관리자 인증 필요' }, 401);
+  // 2026-11-10: 예전엔 admin_session 쿠키가 있기만 하면 통과했다(값 검증 없음) → 세션 테이블로 확인
+  if (!(await getAdminFromCookie(c.env.DB, c.req.header('Cookie')))) return c.json({ error: '관리자 인증 필요' }, 401);
 
   const indexNowKey = await getSetting(c.env.DB, 'INDEXNOW_KEY', c.env.INDEXNOW_KEY || '');
   if (!indexNowKey) return c.json({ error: 'IndexNow 키가 설정되지 않았습니다' }, 400);
