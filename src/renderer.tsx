@@ -188,7 +188,7 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
     "areaServed": [
       {
         "@type": "GeoCircle",
-        "geoMidpoint": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
+        "geoMidpoint": { "@type": "GeoCoordinates", "latitude": String(CLINIC.geo.lat), "longitude": String(CLINIC.geo.lng) },
         "geoRadius": "15000",
       },
       { "@type": "AdministrativeArea", "name": "인천광역시 남동구" },
@@ -484,8 +484,8 @@ export const renderer = jsxRenderer(({ children, title, description, canonical, 
         {emitCanonical && raw(`<link rel="alternate" hreflang="x-default" href="${canonicalUrl}" />`)}
         <meta name="geo.region" content="KR-28" />
         <meta name="geo.placename" content="인천 남동구 구월동" />
-        <meta name="geo.position" content="37.4482;126.7042" />
-        <meta name="ICBM" content="37.4482, 126.7042" />
+        <meta name="geo.position" content={`${CLINIC.geo.lat};${CLINIC.geo.lng}`} />
+        <meta name="ICBM" content={`${CLINIC.geo.lat}, ${CLINIC.geo.lng}`} />
 
         {/* === THEME & ICONS === */}
         <meta name="theme-color" content="#0B1530" />

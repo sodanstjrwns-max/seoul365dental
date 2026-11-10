@@ -5,10 +5,11 @@
 //  본문이 그대로인 손질(사진 주소·측정용 속성) 때문에 그 파일을 고치면 수정일이 거짓으로 새로워진다.
 //  → 그런 손질은 템플릿을 건드리지 않고 여기서 응답 HTML 에 입힌다(src/index.tsx 의 HTML 미들웨어).
 //  날짜 추적이 없는 템플릿(blog.tsx·pages.tsx)은 같은 내용을 템플릿에 직접 적었다.
-//  ①② 는 JSON-LD·meta·본문 글자를 건드리지 않는다. ③④(2026-11-10 추가)는 각 설명에 적은 제목·스키마 값만 바꾼다.
+//  ①② 는 JSON-LD·meta·본문 글자를 건드리지 않는다. ③④(2026-11-10 추가)는 각 설명에 적은 제목·스키마 값만 바꾼다. ⑤ 는 병원 좌표 숫자만 바꾼다.
 // ============================================================
 import { imgV } from './img'
 import { doctors } from '../data/doctors'
+import { CLINIC } from '../data/clinic'
 
 // ① 카드 사진 — 홈(치료 사례·칼럼 카드)·진료 상세(치료 사례 카드)의 <img src="/r2/…"> 를 가로 640 사본으로
 //    (확대 모달은 스크립트가 원본 주소를 넣으므로 그대로 원본)
@@ -88,6 +89,24 @@ function doctorsAlumni(html: string): string {
   })
 }
 
+// ⑤ 병원 좌표 (2026-11-10, 네이버 플레이스 값으로 정정)
+//    역 페이지(/stations/:slug)·외국어 페이지(/en·/zh·/ru)는 템플릿에 옛 병원 좌표(37.4482, 126.7042)가 직접 적혀 있다
+//    (스키마 geo·geo.position 메타·/ru 구글 지도 임베드). 세 파일 모두 날짜 추적 파일이라 고치지 않고,
+//    응답에서 CLINIC.geo(src/data/clinic.ts) 값으로 바꾼다. 이 경로들에서 두 숫자는 병원 좌표로만 쓰인다.
+//    (지역 페이지 /area/guwol-dong… 의 같은 숫자는 구월동 지역 좌표 — src/data/areas.ts — 라 대상이 아니다.)
+const GEO_PATHS = /^\/(?:stations\/[^/]+|en|zh|ru)\/?$/
+const OLD_LAT = /(?<![\d.])37\.4482(?!\d)/g
+const OLD_LNG = /(?<![\d.])126\.7042(?!\d)/g
+// /ru 지도 임베드(pb=…)의 표시 이름: 옛 좌표의 도분초 표기(37°26'53.5"N 126°42'15.1"E) → 새 좌표(37°26'46.0"N 126°42'03.8"E)
+const OLD_MAP_LABEL = 'MzfCsDI2JzUzLjUiTiAxMjbCsDQyJzE1LjEiRQ'
+const NEW_MAP_LABEL = 'MzfCsDI2JzQ2LjAiTiAxMjbCsDQyJzAzLjgiRQ'
+function clinicGeo(html: string): string {
+  return html
+    .replace(OLD_LAT, String(CLINIC.geo.lat))
+    .replace(OLD_LNG, String(CLINIC.geo.lng))
+    .split(OLD_MAP_LABEL).join(NEW_MAP_LABEL)
+}
+
 export function htmlPass(path: string, html: string): string {
   if (CARD_IMG_PATHS.test(path)) {
     html = html.replace(R2_IMG, (_m, a, url, z) => a + imgV(url, 640) + z)
@@ -101,5 +120,6 @@ export function htmlPass(path: string, html: string): string {
   }
   if (TX_DETAIL_PATH.test(path)) html = regionTitle(html)
   if (path === '/doctors') html = doctorsAlumni(html)
+  if (GEO_PATHS.test(path)) html = clinicGeo(html)
   return html
 }

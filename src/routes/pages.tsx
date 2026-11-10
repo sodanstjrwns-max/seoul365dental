@@ -434,8 +434,8 @@ pageRoutes.get('/info', (c) => {
           "@type": "Place",
           "name": "서울365치과의원",
           "address": { "@type": "PostalAddress", "streetAddress": "예술로 138 이토타워 2층 212호", "addressLocality": "인천광역시 남동구", "addressRegion": "인천", "postalCode": "21556", "addressCountry": "KR" },
-          "geo": { "@type": "GeoCoordinates", "latitude": "37.4482", "longitude": "126.7042" },
-          "hasMap": "https://www.google.com/maps?q=37.4482,126.7042",
+          "geo": { "@type": "GeoCoordinates", "latitude": String(CLINIC.geo.lat), "longitude": String(CLINIC.geo.lng) },
+          "hasMap": `https://www.google.com/maps?q=${CLINIC.geo.lat},${CLINIC.geo.lng}`,
         },
         // Speakable for AEO (info page)
         {
