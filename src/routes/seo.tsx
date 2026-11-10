@@ -324,9 +324,11 @@ const urlsetOpen = `<?xml version="1.0" encoding="UTF-8"?>
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">`;
 
+// 사이트맵 <loc>는 프로토콜상 퍼센트 인코딩이어야 한다. 이미 인코딩된 부분은 건드리지 않고 한글 등 비ASCII만 인코딩한다.
+const smEncLoc = (s: string) => String(s).replace(/[^\x00-\x7F]+/g, (m) => encodeURIComponent(m))
 // Render a single <url> entry
 const renderUrl = (base: string, p: any) => `  <url>
-    <loc>${base}${p.loc}</loc>${p.lastmod ? `
+    <loc>${base}${smEncLoc(p.loc)}</loc>${p.lastmod ? `
     <lastmod>${p.lastmod}</lastmod>` : ''}
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
@@ -805,7 +807,7 @@ seoRoutes.get('/sitemap-news.xml', async (c) => {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
 ${newsItems.map(p => `  <url>
-    <loc>${base}/blog/${p.slug}</loc>
+    <loc>${base}/blog/${smEncLoc(p.slug)}</loc>
     <news:news>
       <news:publication>
         <news:name>서울365치과 블로그</news:name>
