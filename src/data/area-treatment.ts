@@ -168,7 +168,7 @@ export const MATRIX_TREATMENT_INFO: Record<MatrixTreatmentSlug, { name: string; 
 export const TREATMENT_PRICING: Record<MatrixTreatmentSlug, { rows: { item: string; price: string; note?: string }[]; insurance?: string }> = {
   'implant': {
     rows: [
-      { item: '오스템 임플란트 (이벤트)', price: '64만원', note: '인증의 시술' },
+      { item: '오스템 임플란트 (이벤트)', price: '69만원', note: '인증의 시술' },
       { item: '메가젠 AnyRidge', price: '79만원', note: '국산 프리미엄' },
       { item: '오스템 임플란트', price: '89만원', note: '+임시치아 99만원' },
       { item: '오스템 프리미엄 SOI', price: '104만원', note: '+임시치아 114만원' },
@@ -242,8 +242,8 @@ export const TREATMENT_PRICING: Record<MatrixTreatmentSlug, { rows: { item: stri
   'whitening': {
     rows: [
       { item: '미백 컨설팅', price: '무료', note: '예약제' },
-      { item: '오피스 미백 (1회)', price: '20~30만원', note: '병원 시술' },
-      { item: '오피스 미백 (3회 패키지)', price: '50~70만원', note: '최대 효과' },
+      { item: '오피스 미백 (1회)', price: '11만원', note: '부가세 별도 · 총 12만 1천원' },
+      { item: '오피스 미백 (3회)', price: '33만원', note: '부가세 별도 · 총 36만 3천원' },
       { item: '홈블리칭 (자가키트)', price: '15~25만원', note: '2주간' },
       { item: '듀얼 미백 (병원+홈)', price: '60~90만원', note: '최적 조합' },
     ],

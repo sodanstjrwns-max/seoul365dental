@@ -162,6 +162,8 @@ doctorRoutes.get('/doctors', (c) => {
 // ============================================================
 doctorRoutes.get('/doctors/:slug', (c) => {
   const slug = c.req.param('slug');
+  // 2026-11-11 원장 요청으로 프로필을 내린 원장 — 옛 주소는 의료진 목록으로 보낸다
+  if (slug === 'sang-sehoon') return c.redirect('/doctors', 301);
   const doc = getDoctorBySlug(slug);
   if (!doc) return c.notFound();
   const story = DOCTOR_STORIES[slug];

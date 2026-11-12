@@ -41,7 +41,7 @@ areaRoutes.get('/area', (c) => {
             <nav class="crumb" aria-label="현재 위치"><ol><li><a href="/">홈</a></li><li aria-current="page">지역 안내</li></ol></nav>
             <p class="eyebrow">Area Guide · {AREAS.length}</p>
             <h1 id="area-h1" class="display-xl">우리 동네에서 서울365치과까지</h1>
-            <p class="lead hero-sub">인천 {AREAS.length}개 지역에서 서울365치과까지의 거리와 소요시간을 안내합니다.<br/>예술회관역 5번 출구 도보 3분 — 어디서든 가까운 치과.</p>
+            <p class="lead hero-sub">인천 {AREAS.length}개 지역에서 서울365치과까지의 거리와 소요시간을 안내합니다.<br/>예술회관역 6번 출구 맞은편 — 어디서든 가까운 치과.</p>
             <div class="phead-cta">
               <a href="/reservation" class="btn btn-primary"><Icon name="calendar" />예약하기</a>
               <a href={CLINIC.phoneTel} class="btn btn-light mono"><Icon name="phone" />{CLINIC.phone}</a>
@@ -53,7 +53,7 @@ areaRoutes.get('/area', (c) => {
               <div class="phead-jump">
                 {gus.map(gu => <a href={`#gu-${guOrder.indexOf(gu)}`}>{gu}<small>{grouped[gu].length}</small></a>)}
               </div>
-              <p class="fine" style="margin:1rem 0 0;color:var(--sky)">{CLINIC.address} · 예술회관역 5번 출구 도보 3분</p>
+              <p class="fine" style="margin:1rem 0 0;color:var(--sky)">{CLINIC.address} · 예술회관역 6번 출구 맞은편</p>
             </div>
           </div>
         </div>
@@ -126,7 +126,7 @@ areaRoutes.get('/area', (c) => {
         <div class="wrap-n" style="text-align:center;position:relative">
           <p class="eyebrow eyebrow-light no-bar" style="justify-content:center" data-rv>Visit</p>
           <h2 class="display-xl" data-rv>어디서든 가까운 서울365치과</h2>
-          <p class="lead" data-rv>예술회관역 5번 출구 도보 3분 · 365일 야간21시 진료</p>
+          <p class="lead" data-rv>예술회관역 6번 출구 맞은편 · 365일 야간21시 진료</p>
           <div class="cta-actions" data-rv-group>
             <a href="/reservation" class="btn btn-primary btn-lg"><Icon name="calendar" />예약하기</a>
             <a href={CLINIC.phoneTel} class="btn btn-white btn-lg mono"><Icon name="phone" />{CLINIC.phone}</a>
@@ -136,7 +136,7 @@ areaRoutes.get('/area', (c) => {
     </>,
     {
       title: '인천 지역별 치과 안내 | 서울365치과 - 구월동·간석동·만수동·논현동·부평',
-      description: `인천 ${AREAS.length}개 지역에서 서울365치과까지 거리·소요시간 안내. 예술회관역 5번 출구 도보 3분. 서울대 5인 원장, 365일·야간21시 진료. 임플란트, 교정, 수면진료. ☎ 032-432-0365`,
+      description: `인천 ${AREAS.length}개 지역에서 서울365치과까지 거리·소요시간 안내. 예술회관역 6번 출구 맞은편. 서울대 5인 원장, 365일·야간21시 진료. 임플란트, 교정, 수면진료. ☎ 032-432-0365`,
       canonical: 'https://seoul365dc.kr/area',
       jsonLd: [
         {
@@ -220,7 +220,7 @@ areaRoutes.get('/area/:areaSlug/:treatmentSlug', (c) => {
     },
     {
       q: `${area.name}에서 ${treatment.name} 받으러 가는 길은?`,
-      a: `${area.travelDesc}. 인천 1호선 예술회관역 5번 출구에서 도보 3분, 이토타워 2층입니다. 자가용으로 오시면 이토타워 지하주차장을 이용하실 수 있습니다. ${area.name}에서 ${area.distKm === 0 ? '바로 인근' : `약 ${area.distKm}km`} 거리입니다.`,
+      a: `${area.travelDesc}. 인천 1호선 예술회관역 6번 출구 맞은편 이토타워 2층입니다. 자가용으로 오시면 이토타워 지하주차장을 이용하실 수 있습니다. ${area.name}에서 ${area.distKm === 0 ? '바로 인근' : `약 ${area.distKm}km`} 거리입니다.`,
     },
     {
       q: `${treatment.name} 받을 때 야간이나 주말도 가능한가요?`,
@@ -1074,7 +1074,7 @@ function renderAreaHub(c: any, hub: AreaHub) {
               <p class="eyebrow">핵심 정보</p>
               <dl class="fact-rows stack">
                 <div><dt>주소</dt><dd>{CLINIC.address} (우 {CLINIC.postalCode})</dd></div>
-                <div><dt>가까운 역</dt><dd>인천 1호선 예술회관역 5번 출구 약 250m</dd></div>
+                <div><dt>가까운 역</dt><dd>인천 1호선 예술회관역 6번 출구 맞은편</dd></div>
                 <div><dt>평일 야간</dt><dd class="mono">월~목 10:00~21:00</dd></div>
                 <div><dt>주말·공휴일</dt><dd class="mono">토 10:00~14:00 · 일·공휴일 14:00~18:00</dd></div>
                 <div><dt>전화</dt><dd class="mono"><a href={CLINIC.phoneTel}>{CLINIC.phone}</a></dd></div>
@@ -1282,7 +1282,7 @@ areaRoutes.get('/area/:slug', (c) => {
   const areaFaq = [
     {
       q: `${area.name}에서 서울365치과까지 얼마나 걸리나요?`,
-      a: `${area.name}에서 서울365치과까지 ${area.distKm === 0 ? '도보 3분 거리' : `약 ${area.travelMin}분`}이면 도착합니다. ${area.travelDesc}. 예술회관역 5번 출구에서 도보 3분 거리에 위치해 있습니다.`,
+      a: `${area.name}에서 서울365치과까지 ${area.distKm === 0 ? '도보 3분 거리' : `약 ${area.travelMin}분`}이면 도착합니다. ${area.travelDesc}. 예술회관역 6번 출구 맞은편에 있습니다.`,
     },
     {
       q: `서울365치과는 ${area.name} 주민도 많이 오나요?`,
@@ -1335,7 +1335,7 @@ areaRoutes.get('/area/:slug', (c) => {
               <dl class="fact-rows">
                 <div><dt>직선 거리</dt><dd class="mono">{area.distKm === 0 ? '원내' : `${area.distKm}km`}</dd></div>
                 <div><dt>소요 시간</dt><dd class="mono">{dist}</dd></div>
-                <div><dt>가까운 역</dt><dd>예술회관역 5번 출구</dd></div>
+                <div><dt>가까운 역</dt><dd>예술회관역 6번 출구 맞은편</dd></div>
                 <div><dt>주차</dt><dd>이토타워 지하주차장</dd></div>
                 <div><dt>야간 진료</dt><dd class="mono">월–목 21:00</dd></div>
               </dl>
@@ -1354,7 +1354,7 @@ areaRoutes.get('/area/:slug', (c) => {
           <div class="stat-row" data-rv-group>
             <div class="card stat"><p class="k">거리</p><p class="v">{area.distKm === 0 ? '0' : area.distKm}<small>km</small></p><p class="d">직선 거리</p></div>
             <div class="card stat"><p class="k">소요 시간</p><p class="v">{area.distKm === 0 ? '3' : area.travelMin}<small>분</small></p><p class="d">{area.distKm === 0 ? '도보 소요시간' : '대중교통 기준'}</p></div>
-            <div class="card stat"><p class="k">지하철</p><p class="v txt">예술회관역</p><p class="d">5번 출구 도보 3분</p></div>
+            <div class="card stat"><p class="k">지하철</p><p class="v txt">예술회관역</p><p class="d">6번 출구 맞은편</p></div>
           </div>
 
           {/* 상세 교통 */}
@@ -1363,7 +1363,7 @@ areaRoutes.get('/area/:slug', (c) => {
             <div class="card dir-card">
               <span class="tag">대중교통</span>
               <p>{area.travelDesc}</p>
-              <p class="fine">인천 1호선 예술회관역 5번 출구 → 도보 3분 → 이토타워 2층</p>
+              <p class="fine">인천 1호선 예술회관역 6번 출구 → 바로 맞은편 이토타워 2층</p>
             </div>
             <div class="card dir-card">
               <span class="tag">자가용</span>

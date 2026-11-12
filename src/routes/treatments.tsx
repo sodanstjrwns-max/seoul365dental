@@ -687,7 +687,7 @@ treatmentRoutes.get('/treatments/:slug', async (c) => {
                 <a href={`/area/${a.slug}/${t.slug}`} title={`${a.name} ${t.name}`}>{a.name} {t.name}<small>{a.distKm === 0 ? '도보 3분' : `${a.distKm}km · ${a.travelMin}분`}</small></a>
               ))}
             </div>
-            <p class="fine" style="text-align:center;margin-top:1.4rem">모든 지역에서 동일한 {t.name} 진료 · 예술회관역 5번 출구 도보 3분</p>
+            <p class="fine" style="text-align:center;margin-top:1.4rem">모든 지역에서 동일한 {t.name} 진료 · 예술회관역 6번 출구 맞은편</p>
           </div>
         </section>
       )}

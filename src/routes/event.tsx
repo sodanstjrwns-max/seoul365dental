@@ -16,7 +16,7 @@ eventRoutes.get('/event/implant', async (c) => {
   const brand = await getSetting(c.env.DB, 'EVENT_IMPLANT_BRAND', '오스템')
   const brandEn = await getSetting(c.env.DB, 'EVENT_IMPLANT_BRAND_EN', 'Osstem')
   const model = await getSetting(c.env.DB, 'EVENT_IMPLANT_MODEL', 'TS III SA')
-  const price = await getSetting(c.env.DB, 'EVENT_IMPLANT_PRICE', '64')
+  const price = await getSetting(c.env.DB, 'EVENT_IMPLANT_PRICE', '69')
   const originalPrice = await getSetting(c.env.DB, 'EVENT_IMPLANT_ORIGINAL_PRICE', '89')
   const origin = await getSetting(c.env.DB, 'EVENT_IMPLANT_ORIGIN', '한국')
   const subtitle = await getSetting(c.env.DB, 'EVENT_IMPLANT_SUBTITLE', 'SA 표면처리 · 국산 임플란트')
@@ -202,7 +202,7 @@ eventRoutes.get('/event/implant', async (c) => {
           </div>
           <p class="notice" style="margin-top:1.2rem" data-rv>
             상기 비용은 임플란트 1개(픽스처+크라운) 기준입니다.
-            네비게이션 가이드 10만원, 수면마취 20만원, CT 촬영 5만원, 뼈이식은 별도입니다.
+            네비게이션 가이드 10만원, 수면마취 20만원, 뼈이식은 별도입니다(CT 촬영 비용은 포함).
             65세 이상 어르신은 오스템 기준 2개까지 건강보험 적용 가능합니다.
           </p>
         </div>
@@ -329,7 +329,7 @@ eventRoutes.get('/event/implant', async (c) => {
             {[
               { q: `${brand} 임플란트가 왜 ${price}만원인가요?`, a: `서울365치과는 ${brand} 공식 파트너로 대량 직접 구매하여 유통 마진을 줄였습니다. 정품 인증서가 발급되며, 동일한 제품을 합리적인 가격에 제공합니다.` },
               { q: '오스템과 스트라우만의 차이는 뭔가요?', a: '오스템은 국산 브랜드로 국내 임상 자료가 많고 비용 부담이 상대적으로 적습니다. 스트라우만은 스위스 브랜드로 특수 합금과 표면처리가 특징입니다. 뼈 상태, 위치, 예산에 따라 추천이 달라지므로 상담 시 맞춤 안내 드립니다.' },
-              { q: `${price}만원에 포함되는 것은?`, a: `${brand} ${model} 픽스처(정품) + 어버트먼트 + 지르코니아 크라운이 포함됩니다. 네비게이션 가이드 10만원, 수면마취 20만원, CT 촬영 5만원, 뼈이식은 별도입니다.` },
+              { q: `${price}만원에 포함되는 것은?`, a: `${brand} ${model} 픽스처(정품) + 어버트먼트 + 지르코니아 크라운이 포함됩니다. 네비게이션 가이드 10만원, 수면마취 20만원, 뼈이식은 별도입니다(CT 촬영 비용은 포함).` },
               { q: '수술이 무섭습니다. 수면진료가 가능한가요?', a: '네, 가능합니다. 수면진료(20만원 별도) 시 잠을 자는 동안 수술이 진행되어 통증과 무서움을 느끼지 않습니다.' },
               { q: '건강보험 적용이 되나요?', a: '만 65세 이상이시면 오스템 임플란트 기준 본인부담 약 30% 수준으로 건강보험 적용(2개까지)이 가능합니다. 상담 시 보험 적용 여부를 확인해 드립니다.' },
               { q: '이벤트 기간은 언제까지인가요?', a: '월 한정 수량으로 소진 시 종료됩니다. 상담 예약 시점의 가격이 적용되므로, 관심 있으시면 빠른 상담을 권합니다.' },
@@ -476,7 +476,7 @@ eventRoutes.get('/event/implant', async (c) => {
           "mainEntity": [
             { "@type": "Question", "name": `${brand} 임플란트가 왜 ${price}만원인가요?`, "acceptedAnswer": { "@type": "Answer", "text": `서울365치과는 ${brand} 공식 파트너로 대량 직접 구매하여 유통 마진을 줄였습니다. 정품 인증서가 발급되며, 동일한 제품을 합리적인 가격에 제공합니다.` } },
             { "@type": "Question", "name": "오스템과 스트라우만의 차이는 뭔가요?", "acceptedAnswer": { "@type": "Answer", "text": "오스템은 국산 브랜드로 국내 임상 자료가 많고 비용 부담이 상대적으로 적습니다. 스트라우만은 스위스 브랜드로 특수 합금과 표면처리가 특징입니다." } },
-            { "@type": "Question", "name": `${price}만원에 포함되는 것은?`, "acceptedAnswer": { "@type": "Answer", "text": `${brand} ${model} 픽스처(정품) + 어버트먼트 + 지르코니아 크라운이 포함됩니다. 네비게이션 가이드 10만원, 수면마취 20만원, CT 촬영 5만원, 뼈이식은 별도입니다.` } },
+            { "@type": "Question", "name": `${price}만원에 포함되는 것은?`, "acceptedAnswer": { "@type": "Answer", "text": `${brand} ${model} 픽스처(정품) + 어버트먼트 + 지르코니아 크라운이 포함됩니다. 네비게이션 가이드 10만원, 수면마취 20만원, 뼈이식은 별도입니다(CT 촬영 비용은 포함).` } },
             { "@type": "Question", "name": "수면진료가 가능한가요?", "acceptedAnswer": { "@type": "Answer", "text": "네, 가능합니다. 수면진료(20만원 별도) 시 잠을 자는 동안 수술이 진행되어 통증과 무서움을 느끼지 않습니다." } },
             { "@type": "Question", "name": "건강보험 적용이 되나요?", "acceptedAnswer": { "@type": "Answer", "text": "만 65세 이상이시면 오스템 임플란트 기준 본인부담 약 30% 수준으로 건강보험 적용(2개까지)이 가능합니다." } },
             { "@type": "Question", "name": "이벤트 기간은 언제까지인가요?", "acceptedAnswer": { "@type": "Answer", "text": "월 한정 수량으로 소진 시 종료됩니다. 상담 예약 시점의 가격이 적용되므로, 관심 있으시면 빠른 상담을 권합니다." } },

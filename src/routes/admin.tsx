@@ -2179,7 +2179,7 @@ adminRoutes.get('/admin/pricing', async (c) => {
     { key: 'EVENT_IMPLANT_BRAND', label: '이벤트 브랜드', placeholder: '오스템', default: '오스템' },
     { key: 'EVENT_IMPLANT_BRAND_EN', label: '브랜드 (영문)', placeholder: 'Osstem', default: 'Osstem' },
     { key: 'EVENT_IMPLANT_MODEL', label: '모델명', placeholder: 'TS III SA', default: 'TS III SA' },
-    { key: 'EVENT_IMPLANT_PRICE', label: '이벤트가 (만원)', placeholder: '64', default: '64' },
+    { key: 'EVENT_IMPLANT_PRICE', label: '이벤트가 (만원)', placeholder: '69', default: '69' },
     { key: 'EVENT_IMPLANT_ORIGINAL_PRICE', label: '정가 (만원)', placeholder: '89', default: '89' },
     { key: 'EVENT_IMPLANT_ORIGIN', label: '원산지', placeholder: '한국', default: '한국' },
     { key: 'EVENT_IMPLANT_SUBTITLE', label: '서브타이틀 (특징)', placeholder: 'SA 표면처리 · 국산 임플란트', default: 'SA 표면처리 · 국산 임플란트' },
@@ -2274,7 +2274,7 @@ adminRoutes.get('/admin/pricing', async (c) => {
                 <div>
                   <label class="block text-white/50 text-xs font-semibold mb-1.5 uppercase tracking-wider">이벤트가 (만원)</label>
                   <div class="relative">
-                    <input type="number" name="EVENT_IMPLANT_PRICE" value={currentValues['EVENT_IMPLANT_PRICE']} placeholder="64"
+                    <input type="number" name="EVENT_IMPLANT_PRICE" value={currentValues['EVENT_IMPLANT_PRICE']} placeholder="69"
                       class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-2xl font-black placeholder-white/20 focus:border-amber-400/50 focus:outline-none transition" />
                     <span class="absolute right-4 top-1/2 -translate-y-1/2 text-white/20 text-sm">만원</span>
                   </div>

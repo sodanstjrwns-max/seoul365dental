@@ -61,7 +61,7 @@ intlRoutes.get('/en', (c) => {
                   <tr><td>Address</td><td>138 Yesul-ro, Ito Tower 2F #212, Namdong-gu, Incheon</td></tr>
                   <tr><td>Phone</td><td>+82-32-432-0365</td></tr>
                   <tr><td>Hours</td><td>Mon-Thu 10:00-21:00 / Fri 10:00-19:00 / Sat 10:00-14:00 / Sun 14:00-18:00</td></tr>
-                  <tr><td>Subway</td><td>Arts Center Station (Incheon Line 1) Exit 5, 3 min walk</td></tr>
+                  <tr><td>Subway</td><td>Arts Center Station (Incheon Line 1), right across from Exit 6</td></tr>
                   <tr><td>Languages</td><td>Korean (primary), English (basic), translation service available</td></tr>
                 </tbody>
               </table>
@@ -99,7 +99,7 @@ intlRoutes.get('/en', (c) => {
               '5 dentists graduated from Seoul National University Dental College',
               'In-house dental lab for faster prosthetics',
               'Korean & English consultation available',
-              'Located in Guwol-dong (3 min walk from Arts Center Station Exit 5)',
+              'Located in Guwol-dong (right across from Arts Center Station Exit 6)',
               'Easy access from Songdo International City (25 min by subway)',
               'CT diagnostic equipment & 3D oral scanner',
             ].map(line => (
@@ -188,7 +188,7 @@ intlRoutes.get('/zh', (c) => {
                   <tr><td>地址</td><td>仁川市南洞区艺术路138号 Ito大厦2楼212号</td></tr>
                   <tr><td>电话</td><td>+82-32-432-0365</td></tr>
                   <tr><td>营业时间</td><td>周一~四 10:00-21:00 / 周五 10:00-19:00 / 周六 10:00-14:00 / 周日 14:00-18:00</td></tr>
-                  <tr><td>地铁</td><td>仁川1号线 艺术会馆站5号出口 步行3分钟</td></tr>
+                  <tr><td>地铁</td><td>仁川1号线 艺术会馆站6号出口对面</td></tr>
                 </tbody>
               </table>
             </div>
@@ -224,7 +224,7 @@ intlRoutes.get('/zh', (c) => {
               '全年365天营业(平日至21点,周日14~18点)',
               '5位首尔大学齿科大学毕业的医师协诊',
               '自有牙科技工室 — 更快的修复体制作',
-              '位于九月洞(艺术会馆站5号出口步行3分钟)',
+              '位于九月洞(艺术会馆站6号出口对面)',
               '从松岛国际城市方便到达(地铁25分钟)',
               'CT精密诊断设备 + 3D口腔扫描仪',
             ].map(line => (

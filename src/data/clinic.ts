@@ -9,7 +9,7 @@ export const CLINIC = {
   addressShort: '인천 남동구 예술로 138',
   addressDetail: '이토타워 2층',
   postalCode: '21556',
-  nearStation: '예술회관역 5번 출구 250m',
+  nearStation: '예술회관역 6번 출구 맞은편',
   // 네이버 플레이스 좌표 (2026-11-10 확인). 스키마 geo·geo.position·ICBM·hasMap·구글 지도 링크가 이 값을 쓴다.
   // 날짜 추적 템플릿(stations·intl·ru)에 적힌 옛 값은 src/lib/html-pass.ts ⑤ 가 응답에서 이 값으로 바꾼다.
   geo: { lat: 37.4461225, lng: 126.7010664 },

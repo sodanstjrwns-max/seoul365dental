@@ -17,7 +17,7 @@ const DIFFERENTIATORS = [
   { feature: '감염 관리', us: '에어샤워 · 진료실별 멸균 시스템 · CDC 기준', icon: 'shield-virus' },
   { feature: '수면진료', us: '마취과 전문의 직접 진정관리', icon: 'bed' },
   { feature: '진료 분야', us: '임플란트·교정·소아·심미·수면진료 전 분야 원스톱', icon: 'th' },
-  { feature: '접근성', us: '예술회관역 5번 출구 도보 3분 · 지하주차장', icon: 'subway' },
+  { feature: '접근성', us: '예술회관역 6번 출구 맞은편 · 지하주차장', icon: 'subway' },
   { feature: '응급 대응', us: '365일 진료로 휴일 응급환자 대응 가능', icon: 'briefcase-medical' },
 ];
 
@@ -125,10 +125,6 @@ app.get('/why-us', (c) => {
             <div class="card wu-doc">
               <div class="wu-doc-name">정문희</div>
               <div class="wu-doc-role">보존과 전문의</div>
-            </div>
-            <div class="card wu-doc">
-              <div class="wu-doc-name">상세훈</div>
-              <div class="wu-doc-role">보철</div>
             </div>
             <div class="card wu-doc">
               <div class="wu-doc-name">하누리</div>

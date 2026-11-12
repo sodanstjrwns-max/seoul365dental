@@ -28,9 +28,9 @@ export const STATIONS: StationInfo[] = [
     name: '예술회관역',
     line: '인천 1호선',
     travelMin: 3,
-    travelDesc: '5번 출구 도보 3분',
+    travelDesc: '6번 출구 맞은편',
     area: '인천 남동구 구월동',
-    keywords: ['예술회관역 치과', '예술회관역 임플란트', '예술회관역 인비절라인', '예술회관역치과', '예술회관역5번출구치과'],
+    keywords: ['예술회관역 치과', '예술회관역 임플란트', '예술회관역 인비절라인', '예술회관역치과', '예술회관역6번출구치과'],
   },
   {
     slug: 'incheon-city-hall',

@@ -1,7 +1,7 @@
 export const mainFaq = [
   {
     q: '임플란트 비용은 얼마인가요?',
-    a: '서울365치과 기준 오스템 이벤트 64만원, 메가젠 79만원, 오스템 89만원, 오스템 프리미엄 SOI 104만원, 스트라우만 이벤트 139만원입니다. 65세 이상은 2개까지 건강보험 적용 가능합니다.',
+    a: '서울365치과 기준 오스템 이벤트 69만원, 메가젠 79만원, 오스템 89만원, 오스템 프리미엄 SOI 104만원, 스트라우만 이벤트 139만원입니다. 65세 이상은 2개까지 건강보험 적용 가능합니다.',
   },
   {
     q: '임플란트 수명은 얼마나 되나요?',
@@ -46,7 +46,7 @@ export const pricingCategories = [
 
 export const pricingData: PricingItem[] = [
   // ── 임플란트 치료 (저렴한 순) ──
-  { treatment: '오스템 임플란트 (이벤트)', price: '64만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
+  { treatment: '오스템 임플란트 (이벤트)', price: '69만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
   { treatment: '메가젠 임플란트', price: '79만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트', price: '89만원', insurance: '65세 건보 적용 가능', category: '임플란트' },
   { treatment: '오스템 프리미엄 SOI', price: '104만원', insurance: '비급여', category: '임플란트' },
@@ -105,7 +105,7 @@ export const pricingData: PricingItem[] = [
   { treatment: 'Halterman', price: '40만원', insurance: '비급여', category: '소아' },
 
   // ── 교정 치료 (저렴한 순) ──
-  { treatment: '교정 진단', price: '5만원', insurance: '비급여', category: '교정' },
+  { treatment: '교정 진단', price: '5만원', insurance: '비급여', category: '교정', note: '본원에서 교정을 시작하면 전체 교정비에서 차감' },
   { treatment: '교정용 Screw', price: '5만원', insurance: '비급여', category: '교정' },
   { treatment: '부분 교정 CLIPPY-C (3-3)', price: '140만원', insurance: '비급여', category: '교정' },
   { treatment: '부분 교정', price: '150만원', insurance: '비급여', category: '교정' },
@@ -116,18 +116,18 @@ export const pricingData: PricingItem[] = [
 
   // ── 미용 치료 · 과세 (저렴한 순) ──
   { treatment: '잇몸성형술 (간단)', price: '3만원', insurance: '비급여 (과세)', category: '미용' },
-  { treatment: '치아 미백 (1회)', price: '9만원', insurance: '비급여 (과세)', category: '미용' },
   { treatment: '잇몸성형술 (치조골삭제)', price: '10만원', insurance: '비급여 (과세)', category: '미용' },
   { treatment: '실활치 미백', price: '10만원', insurance: '비급여 (과세)', category: '미용' },
-  { treatment: '치아 미백 (3회)', price: '19만원', insurance: '비급여 (과세)', category: '미용' },
+  { treatment: '치아 미백 (1회)', price: '11만원', insurance: '비급여 (과세)', category: '미용', note: '부가세 별도 · 총 12만 1천원' },
   { treatment: '해피타임 치아 미백 (2회)', price: '20만원', insurance: '비급여 (과세)', category: '미용', note: '부가세 별도 · 총 22만원' },
-  { treatment: '무삭제 라미네이트 (이벤트)', price: '40만원', insurance: '비급여 (과세)', category: '미용', note: '이벤트' },
-  { treatment: '라미네이트', price: '60만원', insurance: '비급여 (과세)', category: '미용' },
+  { treatment: '치아 미백 (3회)', price: '33만원', insurance: '비급여 (과세)', category: '미용', note: '부가세 별도 · 총 36만 3천원' },
+  { treatment: '무삭제 라미네이트 (이벤트)', price: '40만원', insurance: '비급여 (과세)', category: '미용', note: '이벤트 · 부가세 별도 · 총 44만원' },
+  { treatment: '라미네이트 (삭제)', price: '60만원', insurance: '비급여 (과세)', category: '미용', note: '부가세 별도 · 총 66만원' },
 
   // ── 기타 치료 (저렴한 순) ──
   { treatment: 'TBI (칫솔질 교육)', price: '무료', insurance: '-', category: '기타' },
   { treatment: '미노클린', price: '2만원', insurance: '비급여', category: '기타' },
-  { treatment: '임시치아 재부착', price: '2만원', insurance: '비급여', category: '기타' },
+  { treatment: '임시치아 재부착', price: '2~5만원', insurance: '비급여', category: '기타' },
   { treatment: 'Fermit (임시충전)', price: '2만원', insurance: '비급여', category: '기타' },
   { treatment: '잠간고정술 레진 (비보)', price: '4만원', insurance: '비급여', category: '기타' },
   { treatment: '지혈제', price: '5만원', insurance: '비급여', category: '기타' },
@@ -137,7 +137,7 @@ export const pricingData: PricingItem[] = [
 
 // 대표 수가 요약 (홈/pricing 간략 표시용) — 가격순 정렬, 이벤트 표시
 export const pricingSummary: PricingItem[] = [
-  { treatment: '오스템 임플란트 (이벤트)', price: '64만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
+  { treatment: '오스템 임플란트 (이벤트)', price: '69만원', insurance: '비급여', category: '임플란트', note: '이벤트' },
   { treatment: '메가젠 임플란트', price: '79만원', insurance: '비급여', category: '임플란트' },
   { treatment: '오스템 임플란트', price: '89만원', insurance: '65세 건보 적용 가능', category: '임플란트' },
   { treatment: '오스템 프리미엄 SOI', price: '104만원', insurance: '비급여', category: '임플란트' },

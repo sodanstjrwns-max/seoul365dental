@@ -103,7 +103,7 @@ home.get('/', async (c) => {
             <p class="hero-eyebrow" data-hero>
               <Icon name="pin" size={14} />
               <span>인천 남동구 <a href="/area/guwol-dong">구월동 치과</a></span><i class="sep" aria-hidden="true"></i>
-              <span>예술회관역 5번 출구 도보 3분</span><i class="sep" aria-hidden="true"></i>
+              <span>예술회관역 6번 출구 맞은편</span><i class="sep" aria-hidden="true"></i>
               <span>365일 진료</span>
             </p>
             <h1 class="hero-h1">
@@ -270,7 +270,7 @@ home.get('/', async (c) => {
             <div class="sec-head" data-rv style="margin-bottom:1.4rem">
               <p class="eyebrow">Guwol-dong guide</p>
               <h2 id="gw-home-h" class="display-2">구월동 진료 안내</h2>
-              <p class="t-mute" style="font-size:.92rem;margin-top:.5rem">예술회관역 5번 출구 도보 3분. 구월동에서 많이 찾으시는 진료 여섯 가지를 사진과 함께 정리했습니다.</p>
+              <p class="t-mute" style="font-size:.92rem;margin-top:.5rem">예술회관역 6번 출구 맞은편. 구월동에서 많이 찾으시는 진료 여섯 가지를 사진과 함께 정리했습니다.</p>
             </div>
             <GuwolCardGrid idPrefix="home" />
           </div>
@@ -526,7 +526,7 @@ home.get('/', async (c) => {
     {
       // 대표 키워드 "구월동 치과"를 title 맨 앞에 (브랜드 유지) — 2026-10-08 지역 SEO
       title: '구월동 치과 서울365치과 | 인천 남동구 예술회관역 임플란트·인비절라인·수면진료, 365일 야간진료',
-      description: '인천 남동구 구월동 치과 서울365치과. 예술회관역 5번 출구 도보 3분, 월~목 21시·일요일·공휴일 진료. 서울대 출신 원장 협진, 인비절라인 인증의 진료, 수면진료·자체 기공실. 032-432-0365',
+      description: '인천 남동구 구월동 치과 서울365치과. 예술회관역 6번 출구 맞은편, 월~목 21시·일요일·공휴일 진료. 서울대 출신 원장 협진, 인비절라인 인증의 진료, 수면진료·자체 기공실. 032-432-0365',
       canonical: 'https://seoul365dc.kr',
       dateModified: CONTENT_DATES.home,
       jsonLd: [

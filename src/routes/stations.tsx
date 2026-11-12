@@ -75,7 +75,7 @@ stationsRoutes.get('/stations', (c) => {
     </>,
     {
       title: '지하철역·랜드마크별 길안내 | 서울365치과',
-      description: '예술회관역 5번 출구 도보 3분. 인천시청역, 간석오거리역, 인천종합터미널, 롯데백화점 등 주요 역·랜드마크에서 서울365치과까지의 길안내.',
+      description: '예술회관역 6번 출구 맞은편. 인천시청역, 간석오거리역, 인천종합터미널, 롯데백화점 등 주요 역·랜드마크에서 서울365치과까지의 길안내.',
       canonical: 'https://seoul365dc.kr/stations',
       keywords: STATIONS.flatMap(s => s.keywords).join(', '),
       jsonLd: [breadcrumb],
@@ -190,7 +190,7 @@ stationsRoutes.get('/stations/:slug', (c) => {
             <p>
               {st.name}에서 인천 구월동에 위치한 서울365치과까지는 {st.travelDesc}이면 도착하실 수 있습니다.
               서울365치과는 인천 구월동 예술로 138 이토타워 2층 212호에 위치하고 있으며,
-              예술회관역 5번 출구에서 도보 3분 거리의 최적의 입지를 자랑합니다.
+              예술회관역 6번 출구 맞은편의 최적의 입지를 자랑합니다.
             </p>
             <p>
               <strong>{st.name} 인근에서 치과를 찾으시는 분</strong>들에게 서울365치과는 다음과 같은 장점을 제공합니다:

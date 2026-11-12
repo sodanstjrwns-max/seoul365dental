@@ -113,32 +113,6 @@ export const doctors: Doctor[] = [
     metaDesc: '서울365치과 정문희 원장. 서울대 박사, 보존과 전문의. 신경치료·재신경치료·치근단절제술 전문.',
   },
   {
-    slug: 'sang-sehoon',
-    name: '상세훈',
-    title: '원장',
-    titleShort: '원장',
-    photo: '/static/dr-sang-sehoon-profile.jpg',
-    photoFallback: '/static/dr-sang-sehoon-profile.svg',
-    philosophy: '정확한 진단이 좋은 치료의 시작입니다. 환자분과 함께 최적의 치료를 찾겠습니다.',
-    education: [
-      '서울대학교 치과대학 졸업',
-      '서울대학교 치의학대학원 석사',
-    ],
-    credentials: [],
-    career: [
-      '서울대학교 치과병원 수련의',
-    ],
-    societies: [
-      '대한치과보철학회 정회원',
-      '대한구강악안면임플란트 정회원',
-    ],
-    specialties: ['보철치료', '종합진료'],
-    treatmentLinks: ['/treatments/crown', '/treatments/bridge'],
-    h1: '상세훈 원장 – 서울대 치의학석사',
-    metaTitle: '상세훈 원장 | 서울365치과 - 서울대 치의학석사',
-    metaDesc: '서울365치과 상세훈 원장. 서울대 치의학석사. 보철치료 전문.',
-  },
-  {
     slug: 'ha-nuri',
     name: '하누리',
     title: '원장 (교정과 전문의)',

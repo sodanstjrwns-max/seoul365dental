@@ -30,7 +30,7 @@ ruRoutes.get('/ru', async (c) => {
   const brand = await getSetting(c.env.DB, 'EVENT_IMPLANT_BRAND', '오스템')
   const brandEn = await getSetting(c.env.DB, 'EVENT_IMPLANT_BRAND_EN', 'Osstem')
   const model = await getSetting(c.env.DB, 'EVENT_IMPLANT_MODEL', 'TS III SA')
-  const price = await getSetting(c.env.DB, 'EVENT_IMPLANT_PRICE', '64')
+  const price = await getSetting(c.env.DB, 'EVENT_IMPLANT_PRICE', '69')
   const originalPrice = await getSetting(c.env.DB, 'EVENT_IMPLANT_ORIGINAL_PRICE', '89')
   const periodText = await getSetting(c.env.DB, 'EVENT_IMPLANT_PERIOD', '2026.05.01 ~ до окончания запасов')
   const isActive = await getSetting(c.env.DB, 'EVENT_IMPLANT_ACTIVE', '1')
@@ -862,14 +862,6 @@ ruRoutes.get('/ru', async (c) => {
 
         <div class="ru-doc">
           <div class="ph">
-            <img src="/static/dr-sang-sehoon-profile.jpg" alt="Д-р Сан Сехун" loading="lazy"/>
-          </div>
-          <b>Сан Сехун</b>
-          <small>Имплантация</small>
-        </div>
-
-        <div class="ru-doc">
-          <div class="ph">
             <img src="/static/dr-ha-nuri-profile.jpg" alt="Д-р Ха Нури" loading="lazy"/>
           </div>
           <b>Ха Нури</b>
@@ -1117,7 +1109,7 @@ ruRoutes.get('/ru', async (c) => {
             </div>
             <div class="ru-arow">
               ${ic('map', 16)}
-              <p>Станция Yesulhoeggwan (예술회관역) — выход 5, 250м</p>
+              <p>Станция Yesulhoeggwan (예술회관역) — напротив выхода 6</p>
             </div>
             <div class="ru-arow">
               ${ic('phone', 16)}
